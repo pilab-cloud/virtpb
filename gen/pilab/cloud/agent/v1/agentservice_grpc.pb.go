@@ -30,6 +30,7 @@ const (
 	AgentService_VmMigrate_FullMethodName                = "/pilab.cloud.agent.v1.AgentService/VmMigrate"
 	AgentService_VmIpList_FullMethodName                 = "/pilab.cloud.agent.v1.AgentService/VmIpList"
 	AgentService_VmChangeUserPassword_FullMethodName     = "/pilab.cloud.agent.v1.AgentService/VmChangeUserPassword"
+	AgentService_VmGuestInfo_FullMethodName              = "/pilab.cloud.agent.v1.AgentService/VmGuestInfo"
 	AgentService_VmBackupSystemVolume_FullMethodName     = "/pilab.cloud.agent.v1.AgentService/VmBackupSystemVolume"
 	AgentService_VmRestoreSystemVolume_FullMethodName    = "/pilab.cloud.agent.v1.AgentService/VmRestoreSystemVolume"
 	AgentService_VmAttachCloudInit_FullMethodName        = "/pilab.cloud.agent.v1.AgentService/VmAttachCloudInit"
@@ -71,10 +72,13 @@ type AgentServiceClient interface {
 	VmIpList(ctx context.Context, in *VmIpListRequest, opts ...grpc.CallOption) (*VmIpListResponse, error)
 	// VmChangeUserPassword changes the password of a virtual machine.
 	VmChangeUserPassword(ctx context.Context, in *VmChangeUserPasswordRequest, opts ...grpc.CallOption) (*VmChangeUserPasswordResponse, error)
+	// VmGuestInfo sends a guest agent command to the client to fetch the guest agent data.
+	VmGuestInfo(ctx context.Context, in *VmGuestInfoRequest, opts ...grpc.CallOption) (*VmGuestInfoResponse, error)
 	// VmBackupSystemVolume backs up the system volume of a virtual machine.
 	VmBackupSystemVolume(ctx context.Context, in *VmBackupSystemVolumeRequest, opts ...grpc.CallOption) (*VmBackupSystemVolumeResponse, error)
 	// VmRestoreSystemVolume restores the system volume of a virtual machine.
 	VmRestoreSystemVolume(ctx context.Context, in *VmRestoreSystemVolumeRequest, opts ...grpc.CallOption) (*VmRestoreSystemVolumeResponse, error)
+	// TODO: Refactor it to use cloud-config, not the cloud-init iso in bytes
 	// VmAttachCloudInit attaches a cloud-init ISO to a virtual machine.
 	VmAttachCloudInit(ctx context.Context, in *VmAttachCloudInitRequest, opts ...grpc.CallOption) (*VmAttachCloudInitResponse, error)
 	// VmAttachISO attaches an ISO to a virtual machine.
@@ -86,7 +90,7 @@ type AgentServiceClient interface {
 	VolumeResize(ctx context.Context, in *VolumeResizeRequest, opts ...grpc.CallOption) (*VolumeResizeResponse, error)
 	// DeleteVolume deletes a volume.
 	VolumeDelete(ctx context.Context, in *VolumeDeleteRequest, opts ...grpc.CallOption) (*VolumeDeleteResponse, error)
-	// Stream provides a stream to a ReadWriterCloser. Used for VNC, Pseudo Terminal
+	// Stream provides a stream to a ReadWriteCloser. Used for VNC, Pseudo Terminal
 	Stream(ctx context.Context, opts ...grpc.CallOption) (AgentService_StreamClient, error)
 	// VmSnapshotRestore restores a snapshot to a virtual machine.
 	VmSnapshotRestore(ctx context.Context, in *VmSnapshotRestoreRequest, opts ...grpc.CallOption) (*VmSnapshotRestoreResponse, error)
@@ -199,6 +203,15 @@ func (c *agentServiceClient) VmIpList(ctx context.Context, in *VmIpListRequest, 
 func (c *agentServiceClient) VmChangeUserPassword(ctx context.Context, in *VmChangeUserPasswordRequest, opts ...grpc.CallOption) (*VmChangeUserPasswordResponse, error) {
 	out := new(VmChangeUserPasswordResponse)
 	err := c.cc.Invoke(ctx, AgentService_VmChangeUserPassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *agentServiceClient) VmGuestInfo(ctx context.Context, in *VmGuestInfoRequest, opts ...grpc.CallOption) (*VmGuestInfoResponse, error) {
+	out := new(VmGuestInfoResponse)
+	err := c.cc.Invoke(ctx, AgentService_VmGuestInfo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -370,10 +383,13 @@ type AgentServiceServer interface {
 	VmIpList(context.Context, *VmIpListRequest) (*VmIpListResponse, error)
 	// VmChangeUserPassword changes the password of a virtual machine.
 	VmChangeUserPassword(context.Context, *VmChangeUserPasswordRequest) (*VmChangeUserPasswordResponse, error)
+	// VmGuestInfo sends a guest agent command to the client to fetch the guest agent data.
+	VmGuestInfo(context.Context, *VmGuestInfoRequest) (*VmGuestInfoResponse, error)
 	// VmBackupSystemVolume backs up the system volume of a virtual machine.
 	VmBackupSystemVolume(context.Context, *VmBackupSystemVolumeRequest) (*VmBackupSystemVolumeResponse, error)
 	// VmRestoreSystemVolume restores the system volume of a virtual machine.
 	VmRestoreSystemVolume(context.Context, *VmRestoreSystemVolumeRequest) (*VmRestoreSystemVolumeResponse, error)
+	// TODO: Refactor it to use cloud-config, not the cloud-init iso in bytes
 	// VmAttachCloudInit attaches a cloud-init ISO to a virtual machine.
 	VmAttachCloudInit(context.Context, *VmAttachCloudInitRequest) (*VmAttachCloudInitResponse, error)
 	// VmAttachISO attaches an ISO to a virtual machine.
@@ -385,7 +401,7 @@ type AgentServiceServer interface {
 	VolumeResize(context.Context, *VolumeResizeRequest) (*VolumeResizeResponse, error)
 	// DeleteVolume deletes a volume.
 	VolumeDelete(context.Context, *VolumeDeleteRequest) (*VolumeDeleteResponse, error)
-	// Stream provides a stream to a ReadWriterCloser. Used for VNC, Pseudo Terminal
+	// Stream provides a stream to a ReadWriteCloser. Used for VNC, Pseudo Terminal
 	Stream(AgentService_StreamServer) error
 	// VmSnapshotRestore restores a snapshot to a virtual machine.
 	VmSnapshotRestore(context.Context, *VmSnapshotRestoreRequest) (*VmSnapshotRestoreResponse, error)
@@ -434,6 +450,9 @@ func (UnimplementedAgentServiceServer) VmIpList(context.Context, *VmIpListReques
 }
 func (UnimplementedAgentServiceServer) VmChangeUserPassword(context.Context, *VmChangeUserPasswordRequest) (*VmChangeUserPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VmChangeUserPassword not implemented")
+}
+func (UnimplementedAgentServiceServer) VmGuestInfo(context.Context, *VmGuestInfoRequest) (*VmGuestInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VmGuestInfo not implemented")
 }
 func (UnimplementedAgentServiceServer) VmBackupSystemVolume(context.Context, *VmBackupSystemVolumeRequest) (*VmBackupSystemVolumeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VmBackupSystemVolume not implemented")
@@ -681,6 +700,24 @@ func _AgentService_VmChangeUserPassword_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AgentServiceServer).VmChangeUserPassword(ctx, req.(*VmChangeUserPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AgentService_VmGuestInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VmGuestInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServiceServer).VmGuestInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentService_VmGuestInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServiceServer).VmGuestInfo(ctx, req.(*VmGuestInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -977,6 +1014,10 @@ var AgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VmChangeUserPassword",
 			Handler:    _AgentService_VmChangeUserPassword_Handler,
+		},
+		{
+			MethodName: "VmGuestInfo",
+			Handler:    _AgentService_VmGuestInfo_Handler,
 		},
 		{
 			MethodName: "VmBackupSystemVolume",
