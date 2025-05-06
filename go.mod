@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	connectrpc.com/connect v1.18.1
 	google.golang.org/grpc v1.72.0
-	google.golang.org/protobuf v1.36.5
+	google.golang.org/protobuf v1.36.6
 )
 
 require (
