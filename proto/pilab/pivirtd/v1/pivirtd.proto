@@ -71,6 +71,7 @@ service PivirtdService {
   // VM Metadata Labels
   rpc SetLabels(SetLabelsRequest) returns (SetLabelsResponse);
   rpc GetLabels(GetLabelsRequest) returns (GetLabelsResponse);
+  rpc DeleteLabel(DeleteLabelRequest) returns (DeleteLabelResponse);
 
   // VM Provisioning
   rpc SetProvisioning(SetProvisioningRequest) returns (SetProvisioningResponse);
@@ -93,6 +94,9 @@ service PivirtdService {
   rpc ResizeDisk(ResizeDiskRequest) returns (VMResponse);
   rpc SetVNCPassword(SetVNCPasswordRequest) returns (VMResponse);
   rpc SetLinkState(SetLinkStateRequest) returns (VMResponse);
+  rpc RenameVM(RenameVMRequest) returns (VMResponse);
+  rpc ChangeISO(ChangeISORequest) returns (VMResponse);
+  rpc EjectISO(EjectISORequest) returns (VMResponse);
 
   // Snapshot Tree
   rpc GetSnapshotTree(GetSnapshotTreeRequest) returns (GetSnapshotTreeResponse);
@@ -214,6 +218,7 @@ message VMInfo {
   int32 memory_slots = 16;
   int32 max_vcpus = 17;
   bytes yaml_spec = 18;  // Raw hades.VirtualMachine YAML specification
+  map<string, string> labels = 19;  // VM metadata labels (key=value pairs)
 }
 
 message CPUConfig {
@@ -283,6 +288,14 @@ message DiskStats {
   int64 write_bytes = 3;
   int64 read_ops = 4;
   int64 write_ops = 5;
+  // read_iops / write_iops are deltas over the sampling window since the
+  // previous GetVMStats call for the same VM (0 on the first call).
+  int64 read_iops = 6;
+  int64 write_iops = 7;
+  // read_latency_ms / write_latency_ms are cumulative average service time
+  // per operation in milliseconds (0 when no operation completed).
+  double read_latency_ms = 8;
+  double write_latency_ms = 9;
 }
 
 message NetworkStats {
@@ -670,6 +683,15 @@ message GetLabelsResponse {
   map<string, string> labels = 1;
 }
 
+message DeleteLabelRequest {
+  string vm_name = 1;
+  string key = 2;
+}
+
+message DeleteLabelResponse {
+  bool success = 1;
+}
+
 // ==================== Provisioning Messages ====================
 
 message SetProvisioningRequest {
@@ -758,6 +780,22 @@ message SetLinkStateRequest {
   string vm_name = 1;
   string nic_id = 2;
   bool link_up = 3;
+}
+
+message RenameVMRequest {
+  string vm_name = 1;
+  string new_name = 2;
+}
+
+message ChangeISORequest {
+  string vm_name = 1;
+  string disk_id = 2;
+  string iso_path = 3;
+}
+
+message EjectISORequest {
+  string vm_name = 1;
+  string disk_id = 2;
 }
 
 // ==================== Snapshot Tree Messages ====================

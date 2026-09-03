@@ -60,6 +60,7 @@ const (
 	PivirtdService_ListOVSPorts_FullMethodName        = "/pilab.virtualization.v1.PivirtdService/ListOVSPorts"
 	PivirtdService_SetLabels_FullMethodName           = "/pilab.virtualization.v1.PivirtdService/SetLabels"
 	PivirtdService_GetLabels_FullMethodName           = "/pilab.virtualization.v1.PivirtdService/GetLabels"
+	PivirtdService_DeleteLabel_FullMethodName         = "/pilab.virtualization.v1.PivirtdService/DeleteLabel"
 	PivirtdService_SetProvisioning_FullMethodName     = "/pilab.virtualization.v1.PivirtdService/SetProvisioning"
 	PivirtdService_GetVMStatus_FullMethodName         = "/pilab.virtualization.v1.PivirtdService/GetVMStatus"
 	PivirtdService_StartDiskMove_FullMethodName       = "/pilab.virtualization.v1.PivirtdService/StartDiskMove"
@@ -72,6 +73,9 @@ const (
 	PivirtdService_ResizeDisk_FullMethodName          = "/pilab.virtualization.v1.PivirtdService/ResizeDisk"
 	PivirtdService_SetVNCPassword_FullMethodName      = "/pilab.virtualization.v1.PivirtdService/SetVNCPassword"
 	PivirtdService_SetLinkState_FullMethodName        = "/pilab.virtualization.v1.PivirtdService/SetLinkState"
+	PivirtdService_RenameVM_FullMethodName            = "/pilab.virtualization.v1.PivirtdService/RenameVM"
+	PivirtdService_ChangeISO_FullMethodName           = "/pilab.virtualization.v1.PivirtdService/ChangeISO"
+	PivirtdService_EjectISO_FullMethodName            = "/pilab.virtualization.v1.PivirtdService/EjectISO"
 	PivirtdService_GetSnapshotTree_FullMethodName     = "/pilab.virtualization.v1.PivirtdService/GetSnapshotTree"
 	PivirtdService_GetGuestInfo_FullMethodName        = "/pilab.virtualization.v1.PivirtdService/GetGuestInfo"
 	PivirtdService_GuestExec_FullMethodName           = "/pilab.virtualization.v1.PivirtdService/GuestExec"
@@ -139,6 +143,7 @@ type PivirtdServiceClient interface {
 	// VM Metadata Labels
 	SetLabels(ctx context.Context, in *SetLabelsRequest, opts ...grpc.CallOption) (*SetLabelsResponse, error)
 	GetLabels(ctx context.Context, in *GetLabelsRequest, opts ...grpc.CallOption) (*GetLabelsResponse, error)
+	DeleteLabel(ctx context.Context, in *DeleteLabelRequest, opts ...grpc.CallOption) (*DeleteLabelResponse, error)
 	// VM Provisioning
 	SetProvisioning(ctx context.Context, in *SetProvisioningRequest, opts ...grpc.CallOption) (*SetProvisioningResponse, error)
 	// VM Status
@@ -156,6 +161,9 @@ type PivirtdServiceClient interface {
 	ResizeDisk(ctx context.Context, in *ResizeDiskRequest, opts ...grpc.CallOption) (*VMResponse, error)
 	SetVNCPassword(ctx context.Context, in *SetVNCPasswordRequest, opts ...grpc.CallOption) (*VMResponse, error)
 	SetLinkState(ctx context.Context, in *SetLinkStateRequest, opts ...grpc.CallOption) (*VMResponse, error)
+	RenameVM(ctx context.Context, in *RenameVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
+	ChangeISO(ctx context.Context, in *ChangeISORequest, opts ...grpc.CallOption) (*VMResponse, error)
+	EjectISO(ctx context.Context, in *EjectISORequest, opts ...grpc.CallOption) (*VMResponse, error)
 	// Snapshot Tree
 	GetSnapshotTree(ctx context.Context, in *GetSnapshotTreeRequest, opts ...grpc.CallOption) (*GetSnapshotTreeResponse, error)
 	// Guest Agent
@@ -596,6 +604,16 @@ func (c *pivirtdServiceClient) GetLabels(ctx context.Context, in *GetLabelsReque
 	return out, nil
 }
 
+func (c *pivirtdServiceClient) DeleteLabel(ctx context.Context, in *DeleteLabelRequest, opts ...grpc.CallOption) (*DeleteLabelResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteLabelResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_DeleteLabel_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *pivirtdServiceClient) SetProvisioning(ctx context.Context, in *SetProvisioningRequest, opts ...grpc.CallOption) (*SetProvisioningResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SetProvisioningResponse)
@@ -710,6 +728,36 @@ func (c *pivirtdServiceClient) SetLinkState(ctx context.Context, in *SetLinkStat
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VMResponse)
 	err := c.cc.Invoke(ctx, PivirtdService_SetLinkState_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) RenameVM(ctx context.Context, in *RenameVMRequest, opts ...grpc.CallOption) (*VMResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VMResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_RenameVM_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ChangeISO(ctx context.Context, in *ChangeISORequest, opts ...grpc.CallOption) (*VMResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VMResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ChangeISO_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) EjectISO(ctx context.Context, in *EjectISORequest, opts ...grpc.CallOption) (*VMResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VMResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_EjectISO_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -862,6 +910,7 @@ type PivirtdServiceServer interface {
 	// VM Metadata Labels
 	SetLabels(context.Context, *SetLabelsRequest) (*SetLabelsResponse, error)
 	GetLabels(context.Context, *GetLabelsRequest) (*GetLabelsResponse, error)
+	DeleteLabel(context.Context, *DeleteLabelRequest) (*DeleteLabelResponse, error)
 	// VM Provisioning
 	SetProvisioning(context.Context, *SetProvisioningRequest) (*SetProvisioningResponse, error)
 	// VM Status
@@ -879,6 +928,9 @@ type PivirtdServiceServer interface {
 	ResizeDisk(context.Context, *ResizeDiskRequest) (*VMResponse, error)
 	SetVNCPassword(context.Context, *SetVNCPasswordRequest) (*VMResponse, error)
 	SetLinkState(context.Context, *SetLinkStateRequest) (*VMResponse, error)
+	RenameVM(context.Context, *RenameVMRequest) (*VMResponse, error)
+	ChangeISO(context.Context, *ChangeISORequest) (*VMResponse, error)
+	EjectISO(context.Context, *EjectISORequest) (*VMResponse, error)
 	// Snapshot Tree
 	GetSnapshotTree(context.Context, *GetSnapshotTreeRequest) (*GetSnapshotTreeResponse, error)
 	// Guest Agent
@@ -1023,6 +1075,9 @@ func (UnimplementedPivirtdServiceServer) SetLabels(context.Context, *SetLabelsRe
 func (UnimplementedPivirtdServiceServer) GetLabels(context.Context, *GetLabelsRequest) (*GetLabelsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetLabels not implemented")
 }
+func (UnimplementedPivirtdServiceServer) DeleteLabel(context.Context, *DeleteLabelRequest) (*DeleteLabelResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteLabel not implemented")
+}
 func (UnimplementedPivirtdServiceServer) SetProvisioning(context.Context, *SetProvisioningRequest) (*SetProvisioningResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetProvisioning not implemented")
 }
@@ -1058,6 +1113,15 @@ func (UnimplementedPivirtdServiceServer) SetVNCPassword(context.Context, *SetVNC
 }
 func (UnimplementedPivirtdServiceServer) SetLinkState(context.Context, *SetLinkStateRequest) (*VMResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetLinkState not implemented")
+}
+func (UnimplementedPivirtdServiceServer) RenameVM(context.Context, *RenameVMRequest) (*VMResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RenameVM not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ChangeISO(context.Context, *ChangeISORequest) (*VMResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ChangeISO not implemented")
+}
+func (UnimplementedPivirtdServiceServer) EjectISO(context.Context, *EjectISORequest) (*VMResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method EjectISO not implemented")
 }
 func (UnimplementedPivirtdServiceServer) GetSnapshotTree(context.Context, *GetSnapshotTreeRequest) (*GetSnapshotTreeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSnapshotTree not implemented")
@@ -1835,6 +1899,24 @@ func _PivirtdService_GetLabels_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PivirtdService_DeleteLabel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteLabelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).DeleteLabel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_DeleteLabel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).DeleteLabel(ctx, req.(*DeleteLabelRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PivirtdService_SetProvisioning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetProvisioningRequest)
 	if err := dec(in); err != nil {
@@ -2047,6 +2129,60 @@ func _PivirtdService_SetLinkState_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PivirtdServiceServer).SetLinkState(ctx, req.(*SetLinkStateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_RenameVM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenameVMRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).RenameVM(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_RenameVM_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).RenameVM(ctx, req.(*RenameVMRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ChangeISO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeISORequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ChangeISO(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ChangeISO_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ChangeISO(ctx, req.(*ChangeISORequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_EjectISO_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EjectISORequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).EjectISO(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_EjectISO_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).EjectISO(ctx, req.(*EjectISORequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2356,6 +2492,10 @@ var PivirtdService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PivirtdService_GetLabels_Handler,
 		},
 		{
+			MethodName: "DeleteLabel",
+			Handler:    _PivirtdService_DeleteLabel_Handler,
+		},
+		{
 			MethodName: "SetProvisioning",
 			Handler:    _PivirtdService_SetProvisioning_Handler,
 		},
@@ -2402,6 +2542,18 @@ var PivirtdService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetLinkState",
 			Handler:    _PivirtdService_SetLinkState_Handler,
+		},
+		{
+			MethodName: "RenameVM",
+			Handler:    _PivirtdService_RenameVM_Handler,
+		},
+		{
+			MethodName: "ChangeISO",
+			Handler:    _PivirtdService_ChangeISO_Handler,
+		},
+		{
+			MethodName: "EjectISO",
+			Handler:    _PivirtdService_EjectISO_Handler,
 		},
 		{
 			MethodName: "GetSnapshotTree",

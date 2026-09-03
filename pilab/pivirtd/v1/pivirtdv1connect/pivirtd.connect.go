@@ -146,6 +146,9 @@ const (
 	// PivirtdServiceGetLabelsProcedure is the fully-qualified name of the PivirtdService's GetLabels
 	// RPC.
 	PivirtdServiceGetLabelsProcedure = "/pilab.virtualization.v1.PivirtdService/GetLabels"
+	// PivirtdServiceDeleteLabelProcedure is the fully-qualified name of the PivirtdService's
+	// DeleteLabel RPC.
+	PivirtdServiceDeleteLabelProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteLabel"
 	// PivirtdServiceSetProvisioningProcedure is the fully-qualified name of the PivirtdService's
 	// SetProvisioning RPC.
 	PivirtdServiceSetProvisioningProcedure = "/pilab.virtualization.v1.PivirtdService/SetProvisioning"
@@ -182,6 +185,13 @@ const (
 	// PivirtdServiceSetLinkStateProcedure is the fully-qualified name of the PivirtdService's
 	// SetLinkState RPC.
 	PivirtdServiceSetLinkStateProcedure = "/pilab.virtualization.v1.PivirtdService/SetLinkState"
+	// PivirtdServiceRenameVMProcedure is the fully-qualified name of the PivirtdService's RenameVM RPC.
+	PivirtdServiceRenameVMProcedure = "/pilab.virtualization.v1.PivirtdService/RenameVM"
+	// PivirtdServiceChangeISOProcedure is the fully-qualified name of the PivirtdService's ChangeISO
+	// RPC.
+	PivirtdServiceChangeISOProcedure = "/pilab.virtualization.v1.PivirtdService/ChangeISO"
+	// PivirtdServiceEjectISOProcedure is the fully-qualified name of the PivirtdService's EjectISO RPC.
+	PivirtdServiceEjectISOProcedure = "/pilab.virtualization.v1.PivirtdService/EjectISO"
 	// PivirtdServiceGetSnapshotTreeProcedure is the fully-qualified name of the PivirtdService's
 	// GetSnapshotTree RPC.
 	PivirtdServiceGetSnapshotTreeProcedure = "/pilab.virtualization.v1.PivirtdService/GetSnapshotTree"
@@ -261,6 +271,7 @@ type PivirtdServiceClient interface {
 	// VM Metadata Labels
 	SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error)
 	GetLabels(context.Context, *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error)
+	DeleteLabel(context.Context, *connect.Request[v1.DeleteLabelRequest]) (*connect.Response[v1.DeleteLabelResponse], error)
 	// VM Provisioning
 	SetProvisioning(context.Context, *connect.Request[v1.SetProvisioningRequest]) (*connect.Response[v1.SetProvisioningResponse], error)
 	// VM Status
@@ -278,6 +289,9 @@ type PivirtdServiceClient interface {
 	ResizeDisk(context.Context, *connect.Request[v1.ResizeDiskRequest]) (*connect.Response[v1.VMResponse], error)
 	SetVNCPassword(context.Context, *connect.Request[v1.SetVNCPasswordRequest]) (*connect.Response[v1.VMResponse], error)
 	SetLinkState(context.Context, *connect.Request[v1.SetLinkStateRequest]) (*connect.Response[v1.VMResponse], error)
+	RenameVM(context.Context, *connect.Request[v1.RenameVMRequest]) (*connect.Response[v1.VMResponse], error)
+	ChangeISO(context.Context, *connect.Request[v1.ChangeISORequest]) (*connect.Response[v1.VMResponse], error)
+	EjectISO(context.Context, *connect.Request[v1.EjectISORequest]) (*connect.Response[v1.VMResponse], error)
 	// Snapshot Tree
 	GetSnapshotTree(context.Context, *connect.Request[v1.GetSnapshotTreeRequest]) (*connect.Response[v1.GetSnapshotTreeResponse], error)
 	// Guest Agent
@@ -548,6 +562,12 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(pivirtdServiceMethods.ByName("GetLabels")),
 			connect.WithClientOptions(opts...),
 		),
+		deleteLabel: connect.NewClient[v1.DeleteLabelRequest, v1.DeleteLabelResponse](
+			httpClient,
+			baseURL+PivirtdServiceDeleteLabelProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("DeleteLabel")),
+			connect.WithClientOptions(opts...),
+		),
 		setProvisioning: connect.NewClient[v1.SetProvisioningRequest, v1.SetProvisioningResponse](
 			httpClient,
 			baseURL+PivirtdServiceSetProvisioningProcedure,
@@ -618,6 +638,24 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+PivirtdServiceSetLinkStateProcedure,
 			connect.WithSchema(pivirtdServiceMethods.ByName("SetLinkState")),
+			connect.WithClientOptions(opts...),
+		),
+		renameVM: connect.NewClient[v1.RenameVMRequest, v1.VMResponse](
+			httpClient,
+			baseURL+PivirtdServiceRenameVMProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("RenameVM")),
+			connect.WithClientOptions(opts...),
+		),
+		changeISO: connect.NewClient[v1.ChangeISORequest, v1.VMResponse](
+			httpClient,
+			baseURL+PivirtdServiceChangeISOProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ChangeISO")),
+			connect.WithClientOptions(opts...),
+		),
+		ejectISO: connect.NewClient[v1.EjectISORequest, v1.VMResponse](
+			httpClient,
+			baseURL+PivirtdServiceEjectISOProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("EjectISO")),
 			connect.WithClientOptions(opts...),
 		),
 		getSnapshotTree: connect.NewClient[v1.GetSnapshotTreeRequest, v1.GetSnapshotTreeResponse](
@@ -714,6 +752,7 @@ type pivirtdServiceClient struct {
 	listOVSPorts        *connect.Client[v1.ListOVSPortsRequest, v1.ListOVSPortsResponse]
 	setLabels           *connect.Client[v1.SetLabelsRequest, v1.SetLabelsResponse]
 	getLabels           *connect.Client[v1.GetLabelsRequest, v1.GetLabelsResponse]
+	deleteLabel         *connect.Client[v1.DeleteLabelRequest, v1.DeleteLabelResponse]
 	setProvisioning     *connect.Client[v1.SetProvisioningRequest, v1.SetProvisioningResponse]
 	getVMStatus         *connect.Client[v1.GetVMStatusRequest, v1.GetVMStatusResponse]
 	startDiskMove       *connect.Client[v1.StartDiskMoveRequest, v1.DiskMoveStatusResponse]
@@ -726,6 +765,9 @@ type pivirtdServiceClient struct {
 	resizeDisk          *connect.Client[v1.ResizeDiskRequest, v1.VMResponse]
 	setVNCPassword      *connect.Client[v1.SetVNCPasswordRequest, v1.VMResponse]
 	setLinkState        *connect.Client[v1.SetLinkStateRequest, v1.VMResponse]
+	renameVM            *connect.Client[v1.RenameVMRequest, v1.VMResponse]
+	changeISO           *connect.Client[v1.ChangeISORequest, v1.VMResponse]
+	ejectISO            *connect.Client[v1.EjectISORequest, v1.VMResponse]
 	getSnapshotTree     *connect.Client[v1.GetSnapshotTreeRequest, v1.GetSnapshotTreeResponse]
 	getGuestInfo        *connect.Client[v1.GetGuestInfoRequest, v1.GetGuestInfoResponse]
 	guestExec           *connect.Client[v1.GuestExecRequest, v1.GuestExecResponse]
@@ -941,6 +983,11 @@ func (c *pivirtdServiceClient) GetLabels(ctx context.Context, req *connect.Reque
 	return c.getLabels.CallUnary(ctx, req)
 }
 
+// DeleteLabel calls pilab.virtualization.v1.PivirtdService.DeleteLabel.
+func (c *pivirtdServiceClient) DeleteLabel(ctx context.Context, req *connect.Request[v1.DeleteLabelRequest]) (*connect.Response[v1.DeleteLabelResponse], error) {
+	return c.deleteLabel.CallUnary(ctx, req)
+}
+
 // SetProvisioning calls pilab.virtualization.v1.PivirtdService.SetProvisioning.
 func (c *pivirtdServiceClient) SetProvisioning(ctx context.Context, req *connect.Request[v1.SetProvisioningRequest]) (*connect.Response[v1.SetProvisioningResponse], error) {
 	return c.setProvisioning.CallUnary(ctx, req)
@@ -999,6 +1046,21 @@ func (c *pivirtdServiceClient) SetVNCPassword(ctx context.Context, req *connect.
 // SetLinkState calls pilab.virtualization.v1.PivirtdService.SetLinkState.
 func (c *pivirtdServiceClient) SetLinkState(ctx context.Context, req *connect.Request[v1.SetLinkStateRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.setLinkState.CallUnary(ctx, req)
+}
+
+// RenameVM calls pilab.virtualization.v1.PivirtdService.RenameVM.
+func (c *pivirtdServiceClient) RenameVM(ctx context.Context, req *connect.Request[v1.RenameVMRequest]) (*connect.Response[v1.VMResponse], error) {
+	return c.renameVM.CallUnary(ctx, req)
+}
+
+// ChangeISO calls pilab.virtualization.v1.PivirtdService.ChangeISO.
+func (c *pivirtdServiceClient) ChangeISO(ctx context.Context, req *connect.Request[v1.ChangeISORequest]) (*connect.Response[v1.VMResponse], error) {
+	return c.changeISO.CallUnary(ctx, req)
+}
+
+// EjectISO calls pilab.virtualization.v1.PivirtdService.EjectISO.
+func (c *pivirtdServiceClient) EjectISO(ctx context.Context, req *connect.Request[v1.EjectISORequest]) (*connect.Response[v1.VMResponse], error) {
+	return c.ejectISO.CallUnary(ctx, req)
 }
 
 // GetSnapshotTree calls pilab.virtualization.v1.PivirtdService.GetSnapshotTree.
@@ -1094,6 +1156,7 @@ type PivirtdServiceHandler interface {
 	// VM Metadata Labels
 	SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error)
 	GetLabels(context.Context, *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error)
+	DeleteLabel(context.Context, *connect.Request[v1.DeleteLabelRequest]) (*connect.Response[v1.DeleteLabelResponse], error)
 	// VM Provisioning
 	SetProvisioning(context.Context, *connect.Request[v1.SetProvisioningRequest]) (*connect.Response[v1.SetProvisioningResponse], error)
 	// VM Status
@@ -1111,6 +1174,9 @@ type PivirtdServiceHandler interface {
 	ResizeDisk(context.Context, *connect.Request[v1.ResizeDiskRequest]) (*connect.Response[v1.VMResponse], error)
 	SetVNCPassword(context.Context, *connect.Request[v1.SetVNCPasswordRequest]) (*connect.Response[v1.VMResponse], error)
 	SetLinkState(context.Context, *connect.Request[v1.SetLinkStateRequest]) (*connect.Response[v1.VMResponse], error)
+	RenameVM(context.Context, *connect.Request[v1.RenameVMRequest]) (*connect.Response[v1.VMResponse], error)
+	ChangeISO(context.Context, *connect.Request[v1.ChangeISORequest]) (*connect.Response[v1.VMResponse], error)
+	EjectISO(context.Context, *connect.Request[v1.EjectISORequest]) (*connect.Response[v1.VMResponse], error)
 	// Snapshot Tree
 	GetSnapshotTree(context.Context, *connect.Request[v1.GetSnapshotTreeRequest]) (*connect.Response[v1.GetSnapshotTreeResponse], error)
 	// Guest Agent
@@ -1377,6 +1443,12 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		connect.WithSchema(pivirtdServiceMethods.ByName("GetLabels")),
 		connect.WithHandlerOptions(opts...),
 	)
+	pivirtdServiceDeleteLabelHandler := connect.NewUnaryHandler(
+		PivirtdServiceDeleteLabelProcedure,
+		svc.DeleteLabel,
+		connect.WithSchema(pivirtdServiceMethods.ByName("DeleteLabel")),
+		connect.WithHandlerOptions(opts...),
+	)
 	pivirtdServiceSetProvisioningHandler := connect.NewUnaryHandler(
 		PivirtdServiceSetProvisioningProcedure,
 		svc.SetProvisioning,
@@ -1447,6 +1519,24 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		PivirtdServiceSetLinkStateProcedure,
 		svc.SetLinkState,
 		connect.WithSchema(pivirtdServiceMethods.ByName("SetLinkState")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceRenameVMHandler := connect.NewUnaryHandler(
+		PivirtdServiceRenameVMProcedure,
+		svc.RenameVM,
+		connect.WithSchema(pivirtdServiceMethods.ByName("RenameVM")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceChangeISOHandler := connect.NewUnaryHandler(
+		PivirtdServiceChangeISOProcedure,
+		svc.ChangeISO,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ChangeISO")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceEjectISOHandler := connect.NewUnaryHandler(
+		PivirtdServiceEjectISOProcedure,
+		svc.EjectISO,
+		connect.WithSchema(pivirtdServiceMethods.ByName("EjectISO")),
 		connect.WithHandlerOptions(opts...),
 	)
 	pivirtdServiceGetSnapshotTreeHandler := connect.NewUnaryHandler(
@@ -1581,6 +1671,8 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 			pivirtdServiceSetLabelsHandler.ServeHTTP(w, r)
 		case PivirtdServiceGetLabelsProcedure:
 			pivirtdServiceGetLabelsHandler.ServeHTTP(w, r)
+		case PivirtdServiceDeleteLabelProcedure:
+			pivirtdServiceDeleteLabelHandler.ServeHTTP(w, r)
 		case PivirtdServiceSetProvisioningProcedure:
 			pivirtdServiceSetProvisioningHandler.ServeHTTP(w, r)
 		case PivirtdServiceGetVMStatusProcedure:
@@ -1605,6 +1697,12 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 			pivirtdServiceSetVNCPasswordHandler.ServeHTTP(w, r)
 		case PivirtdServiceSetLinkStateProcedure:
 			pivirtdServiceSetLinkStateHandler.ServeHTTP(w, r)
+		case PivirtdServiceRenameVMProcedure:
+			pivirtdServiceRenameVMHandler.ServeHTTP(w, r)
+		case PivirtdServiceChangeISOProcedure:
+			pivirtdServiceChangeISOHandler.ServeHTTP(w, r)
+		case PivirtdServiceEjectISOProcedure:
+			pivirtdServiceEjectISOHandler.ServeHTTP(w, r)
 		case PivirtdServiceGetSnapshotTreeProcedure:
 			pivirtdServiceGetSnapshotTreeHandler.ServeHTTP(w, r)
 		case PivirtdServiceGetGuestInfoProcedure:
@@ -1794,6 +1892,10 @@ func (UnimplementedPivirtdServiceHandler) GetLabels(context.Context, *connect.Re
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetLabels is not implemented"))
 }
 
+func (UnimplementedPivirtdServiceHandler) DeleteLabel(context.Context, *connect.Request[v1.DeleteLabelRequest]) (*connect.Response[v1.DeleteLabelResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteLabel is not implemented"))
+}
+
 func (UnimplementedPivirtdServiceHandler) SetProvisioning(context.Context, *connect.Request[v1.SetProvisioningRequest]) (*connect.Response[v1.SetProvisioningResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SetProvisioning is not implemented"))
 }
@@ -1840,6 +1942,18 @@ func (UnimplementedPivirtdServiceHandler) SetVNCPassword(context.Context, *conne
 
 func (UnimplementedPivirtdServiceHandler) SetLinkState(context.Context, *connect.Request[v1.SetLinkStateRequest]) (*connect.Response[v1.VMResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SetLinkState is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) RenameVM(context.Context, *connect.Request[v1.RenameVMRequest]) (*connect.Response[v1.VMResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.RenameVM is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ChangeISO(context.Context, *connect.Request[v1.ChangeISORequest]) (*connect.Response[v1.VMResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ChangeISO is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) EjectISO(context.Context, *connect.Request[v1.EjectISORequest]) (*connect.Response[v1.VMResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.EjectISO is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetSnapshotTree(context.Context, *connect.Request[v1.GetSnapshotTreeRequest]) (*connect.Response[v1.GetSnapshotTreeResponse], error) {
