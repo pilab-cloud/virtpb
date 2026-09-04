@@ -1,0 +1,177 @@
+// Package director provides distributed task orchestration and agent coordination.
+// NodeService is the PIVIRT-83 (control-plane consolidation, Phase 2) session
+// stream: one bidirectional stream per node, replacing
+// director/v1.CloudDirectorService.AgentEvents and (eventually, Phase 5)
+// TaskService.Subscribe. A node's identity is a director-minted UUID bound
+// to its mTLS client certificate, never a client-supplied claim.
+
+syntax = "proto3";
+
+package pilab.director.v2;
+
+option go_package = "go.pilab.hu/cloud/virtpb/pilab/director/v2;directorv2";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "pilab/director/v2/task_service.proto";
+import "pilab/pivirtd/v1/host_resource.proto";
+import "pilab/common/v1/host.proto";
+
+service NodeService {
+  // Register establishes (first join) or re-establishes (reconnect) a
+  // node's identity with the director. On first join, called without an
+  // mTLS client certificate yet -- authenticated instead by
+  // bootstrap_token -- and the director mints a new node_uuid. On
+  // reconnect, the caller's mTLS peer identity must already be bound to
+  // the supplied node_uuid.
+  rpc Register(RegisterNodeRequest) returns (RegisterNodeResponse);
+
+  // RequestCertificate submits a CSR for the node_uuid minted by Register
+  // and returns a signed mTLS client certificate whose SAN the director
+  // asserts itself (spiffe://pilab.hu/node/<node_uuid>), regardless of
+  // what the CSR itself claims. Like Register, usable without an existing
+  // client certificate via bootstrap_token; a node_uuid may only be
+  // certified once (rejects if already bound to a peer identity).
+  rpc RequestCertificate(RequestCertificateRequest) returns (RequestCertificateResponse);
+
+  // Session is the node's single long-lived stream to the director. It
+  // requires a verified mTLS client certificate -- there is no
+  // bootstrap-token path here. The first NodeEvent on the stream must
+  // carry the node's current node_uuid and lease_epoch; events from a
+  // stale epoch (an older Register than the one currently on record) are
+  // dropped, which is what makes a duplicate or restarted agent process
+  // safe.
+  rpc Session(stream NodeEvent) returns (stream NodeDirective);
+}
+
+message RegisterNodeRequest {
+  // Empty on first join. On reconnect, must match the node_uuid bound to
+  // the caller's mTLS peer identity.
+  string node_uuid = 1;
+  // Required only when the caller has no client certificate yet (first
+  // join). Ignored (and unnecessary) once the node has a director-issued
+  // certificate, since the mTLS peer identity is authoritative then.
+  string bootstrap_token = 2;
+  string hostname = 3;
+  string agent_version = 4;
+  uint32 cores_count = 5;
+  uint64 mem_size = 6;
+  string platform = 7;
+  string platform_family = 8;
+  string kernel_version = 9;
+  string kernel_arch = 10;
+}
+
+message RegisterNodeResponse {
+  string node_uuid = 1;
+  int64 lease_epoch = 2;
+}
+
+message RequestCertificateRequest {
+  string node_uuid = 1;
+  string bootstrap_token = 2;
+  // PEM-encoded PKCS#10 certificate signing request. Any SAN it contains
+  // is ignored -- the director asserts the SAN itself.
+  string csr_pem = 3;
+}
+
+message RequestCertificateResponse {
+  string certificate_pem = 1;
+  string ca_chain_pem = 2;
+}
+
+message NodeEvent {
+  string node_uuid = 1;
+  int64 lease_epoch = 2;
+  // Monotonic per-epoch sequence number, for gap detection.
+  int64 seq = 3;
+
+  oneof event {
+    HeartbeatEvent heartbeat = 4;
+    pilab.virtualization.v1.HostResourceReport host_report = 5;
+    VmStatusEvent vm_status = 6;
+    pilab.common.v1.VmMetrics vm_metrics = 7;
+    TaskProgressEvent task_progress = 8;
+    TaskResultEvent task_result = 9;
+    FullInventoryEvent full_inventory = 10;
+  }
+}
+
+message HeartbeatEvent {
+  google.protobuf.Timestamp timestamp = 1;
+}
+
+message VmStatusEvent {
+  string vm_name = 1;
+  string vm_uuid = 2;
+  string previous_state = 3;
+  string new_state = 4;
+}
+
+message TaskProgressEvent {
+  string task_id = 1;
+  google.protobuf.Struct progress = 2;
+}
+
+message TaskResultEvent {
+  string task_id = 1;
+  TaskStatus status = 2;
+  string error_message = 3;
+}
+
+// FullInventoryEvent is the agent's reply to a ResyncDirective. Its shape
+// is intentionally minimal for now -- full reconciliation against
+// uid/generation is Phase 3 (PIVIRT-84) work; this only carries enough to
+// exercise the transport.
+message FullInventoryEvent {
+  message VmEntry {
+    string vm_uuid = 1;
+    string vm_name = 2;
+    string state = 3;
+  }
+  repeated VmEntry vms = 1;
+}
+
+message NodeDirective {
+  oneof directive {
+    Task task = 1;
+    CancelTaskDirective cancel_task = 2;
+    ResyncDirective resync = 3;
+    ConfigDirective config = 4;
+    ClusterJoinDirective cluster_join = 5;
+    ClusterLeaveDirective cluster_leave = 6;
+    DrainDirective drain = 7;
+  }
+}
+
+message CancelTaskDirective {
+  string task_id = 1;
+  string reason = 2;
+}
+
+// ResyncDirective asks the node to reply with a FullInventoryEvent.
+// Transport plumbing only in this phase -- the director does not yet
+// trigger or reconcile against it; see PIVIRT-84 (Phase 3).
+message ResyncDirective {}
+
+// ConfigDirective pushes opaque configuration to the node. Transport
+// plumbing only in this phase; no producer exists yet.
+message ConfigDirective {
+  google.protobuf.Struct config = 1;
+}
+
+// ClusterJoinDirective/ClusterLeaveDirective/DrainDirective are transport
+// plumbing only in this phase -- wiring them to pkg/netcluster's cluster
+// membership concept is new integration work, not part of PIVIRT-83.
+message ClusterJoinDirective {
+  string cluster_id = 1;
+}
+
+message ClusterLeaveDirective {
+  string cluster_id = 1;
+  bool force = 2;
+}
+
+message DrainDirective {
+  string reason = 1;
+}
