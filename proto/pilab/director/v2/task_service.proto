@@ -56,6 +56,11 @@ enum TaskStatus {
 message Task {
   string id = 1;
   TaskType type = 2;
+  // vm_id is the cluster uid of the target VM once one has been assigned
+  // (PIVIRT-84, Phase 3) -- see control-plane-architecture.md §2.5 / D4's
+  // control loop, "NodeDirective{Task, uid, generation, spec}". Empty for
+  // the initial VM_CREATE task, whose uid the director mints only after
+  // this task is scheduled.
   string vm_id = 3;
   string vm_name = 4;
   google.protobuf.Struct params = 5;
@@ -72,6 +77,11 @@ message Task {
   google.protobuf.Timestamp assigned_at = 16;
   int32 priority = 17;
   string reason = 18;
+  // generation is the spec generation this task is reconciling the VM
+  // toward (PIVIRT-84, Phase 3). The agent persists it alongside vm_id on
+  // successful completion, so observed_generation can be reported back on
+  // the next resync/status event.
+  uint64 generation = 19;
 }
 
 message SubscribeRequest {
