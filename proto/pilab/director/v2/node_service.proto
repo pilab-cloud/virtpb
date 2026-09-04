@@ -16,6 +16,7 @@ import "google/protobuf/struct.proto";
 import "pilab/director/v2/task_service.proto";
 import "pilab/pivirtd/v1/host_resource.proto";
 import "pilab/common/v1/host.proto";
+import "pilab/common/v1/phase.proto";
 
 service NodeService {
   // Register establishes (first join) or re-establishes (reconnect) a
@@ -106,6 +107,13 @@ message VmStatusEvent {
   string vm_uuid = 2;
   string previous_state = 3;
   string new_state = 4;
+
+  // generation/observed_generation/phase are PIVIRT-84 (Phase 3): what the
+  // node last reconciled this VM to, for drift detection. See
+  // control-plane-architecture.md §2.5 / D4.
+  uint64 generation = 5;
+  uint64 observed_generation = 6;
+  pilab.common.v1.Phase phase = 7;
 }
 
 message TaskProgressEvent {
@@ -119,15 +127,21 @@ message TaskResultEvent {
   string error_message = 3;
 }
 
-// FullInventoryEvent is the agent's reply to a ResyncDirective. Its shape
-// is intentionally minimal for now -- full reconciliation against
-// uid/generation is Phase 3 (PIVIRT-84) work; this only carries enough to
-// exercise the transport.
+// FullInventoryEvent is the agent's reply to a ResyncDirective: every VM
+// the node's projection holds, for the director to diff against cluster
+// state (control-plane-architecture.md §2.5 / D4, resync table).
 message FullInventoryEvent {
   message VmEntry {
     string vm_uuid = 1;
     string vm_name = 2;
     string state = 3;
+    // generation/observed_generation/phase are empty/zero for a VM the
+    // node has never received a uid for (hand-made on the host) -- this is
+    // exactly the "no uid" row of the resync table, and what a later
+    // `terraform import` binds to.
+    uint64 generation = 4;
+    uint64 observed_generation = 5;
+    pilab.common.v1.Phase phase = 6;
   }
   repeated VmEntry vms = 1;
 }
@@ -149,9 +163,8 @@ message CancelTaskDirective {
   string reason = 2;
 }
 
-// ResyncDirective asks the node to reply with a FullInventoryEvent.
-// Transport plumbing only in this phase -- the director does not yet
-// trigger or reconcile against it; see PIVIRT-84 (Phase 3).
+// ResyncDirective asks the node to reply with a FullInventoryEvent. Sent by
+// the director on session start and periodically (PIVIRT-84, Phase 3).
 message ResyncDirective {}
 
 // ConfigDirective pushes opaque configuration to the node. Transport
