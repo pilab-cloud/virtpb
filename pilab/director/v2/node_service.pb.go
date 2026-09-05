@@ -551,19 +551,28 @@ func (x *HeartbeatEvent) GetTimestamp() *timestamppb.Timestamp {
 }
 
 type VmStatusEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	VmName        string                 `protobuf:"bytes,1,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
-	VmUuid        string                 `protobuf:"bytes,2,opt,name=vm_uuid,json=vmUuid,proto3" json:"vm_uuid,omitempty"`
-	PreviousState string                 `protobuf:"bytes,3,opt,name=previous_state,json=previousState,proto3" json:"previous_state,omitempty"`
-	NewState      string                 `protobuf:"bytes,4,opt,name=new_state,json=newState,proto3" json:"new_state,omitempty"`
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	VmName string                 `protobuf:"bytes,1,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
+	// vm_uuid is the hypervisor-level VM UUID (pivirtd's own identifier,
+	// e.g. VMInfo.uuid) -- same meaning as the vm_uuid field on
+	// pivirtd/v1's VmLifecycleEvent/VmDiskMoveEvent/VmSnapshotEvent, which
+	// this event family sits alongside. It is NOT the director-minted
+	// cluster identity; see uid below.
+	VmUuid        string `protobuf:"bytes,2,opt,name=vm_uuid,json=vmUuid,proto3" json:"vm_uuid,omitempty"`
+	PreviousState string `protobuf:"bytes,3,opt,name=previous_state,json=previousState,proto3" json:"previous_state,omitempty"`
+	NewState      string `protobuf:"bytes,4,opt,name=new_state,json=newState,proto3" json:"new_state,omitempty"`
 	// generation/observed_generation/phase are PIVIRT-84 (Phase 3): what the
 	// node last reconciled this VM to, for drift detection. See
 	// control-plane-architecture.md §2.5 / D4.
 	Generation         uint64    `protobuf:"varint,5,opt,name=generation,proto3" json:"generation,omitempty"`
 	ObservedGeneration uint64    `protobuf:"varint,6,opt,name=observed_generation,json=observedGeneration,proto3" json:"observed_generation,omitempty"`
 	Phase              v11.Phase `protobuf:"varint,7,opt,name=phase,proto3,enum=pilab.common.v1.Phase" json:"phase,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// uid is the director-minted cluster identity (control-plane-
+	// architecture.md §2.7 / D6) -- distinct from vm_uuid above. Empty for
+	// a VM the node has never received a uid for.
+	Uid           string `protobuf:"bytes,8,opt,name=uid,proto3" json:"uid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *VmStatusEvent) Reset() {
@@ -643,6 +652,13 @@ func (x *VmStatusEvent) GetPhase() v11.Phase {
 		return x.Phase
 	}
 	return v11.Phase(0)
+}
+
+func (x *VmStatusEvent) GetUid() string {
+	if x != nil {
+		return x.Uid
+	}
+	return ""
 }
 
 type TaskProgressEvent struct {
@@ -1246,10 +1262,13 @@ func (x *DrainDirective) GetReason() string {
 }
 
 type FullInventoryEvent_VmEntry struct {
-	state  protoimpl.MessageState `protogen:"open.v1"`
-	VmUuid string                 `protobuf:"bytes,1,opt,name=vm_uuid,json=vmUuid,proto3" json:"vm_uuid,omitempty"`
-	VmName string                 `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
-	State  string                 `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// vm_uuid is the hypervisor-level VM UUID (pivirtd's own identifier) --
+	// see VmStatusEvent.vm_uuid's comment. Not the cluster identity; see
+	// uid below.
+	VmUuid string `protobuf:"bytes,1,opt,name=vm_uuid,json=vmUuid,proto3" json:"vm_uuid,omitempty"`
+	VmName string `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
+	State  string `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty"`
 	// generation/observed_generation/phase are empty/zero for a VM the
 	// node has never received a uid for (hand-made on the host) -- this is
 	// exactly the "no uid" row of the resync table, and what a later
@@ -1257,8 +1276,13 @@ type FullInventoryEvent_VmEntry struct {
 	Generation         uint64    `protobuf:"varint,4,opt,name=generation,proto3" json:"generation,omitempty"`
 	ObservedGeneration uint64    `protobuf:"varint,5,opt,name=observed_generation,json=observedGeneration,proto3" json:"observed_generation,omitempty"`
 	Phase              v11.Phase `protobuf:"varint,6,opt,name=phase,proto3,enum=pilab.common.v1.Phase" json:"phase,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// uid is the director-minted cluster identity (control-plane-
+	// architecture.md §2.7 / D6) -- distinct from vm_uuid above. Empty for
+	// a VM the node has never received a uid for (the "no uid" row this
+	// message's own comment above already describes).
+	Uid           string `protobuf:"bytes,7,opt,name=uid,proto3" json:"uid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FullInventoryEvent_VmEntry) Reset() {
@@ -1333,6 +1357,13 @@ func (x *FullInventoryEvent_VmEntry) GetPhase() v11.Phase {
 	return v11.Phase(0)
 }
 
+func (x *FullInventoryEvent_VmEntry) GetUid() string {
+	if x != nil {
+		return x.Uid
+	}
+	return ""
+}
+
 var File_pilab_director_v2_node_service_proto protoreflect.FileDescriptor
 
 const file_pilab_director_v2_node_service_proto_rawDesc = "" +
@@ -1382,7 +1413,7 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	" \x01(\v2%.pilab.director.v2.FullInventoryEventH\x00R\rfullInventoryB\a\n" +
 	"\x05event\"J\n" +
 	"\x0eHeartbeatEvent\x128\n" +
-	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"\x84\x02\n" +
+	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"\x96\x02\n" +
 	"\rVmStatusEvent\x12\x17\n" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12\x17\n" +
 	"\avm_uuid\x18\x02 \x01(\tR\x06vmUuid\x12%\n" +
@@ -1392,16 +1423,17 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"generation\x18\x05 \x01(\x04R\n" +
 	"generation\x12/\n" +
 	"\x13observed_generation\x18\x06 \x01(\x04R\x12observedGeneration\x12,\n" +
-	"\x05phase\x18\a \x01(\x0e2\x16.pilab.common.v1.PhaseR\x05phase\"a\n" +
+	"\x05phase\x18\a \x01(\x0e2\x16.pilab.common.v1.PhaseR\x05phase\x12\x10\n" +
+	"\x03uid\x18\b \x01(\tR\x03uid\"a\n" +
 	"\x11TaskProgressEvent\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x123\n" +
 	"\bprogress\x18\x02 \x01(\v2\x17.google.protobuf.StructR\bprogress\"\x86\x01\n" +
 	"\x0fTaskResultEvent\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x125\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x1d.pilab.director.v2.TaskStatusR\x06status\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\xa8\x02\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\xba\x02\n" +
 	"\x12FullInventoryEvent\x12?\n" +
-	"\x03vms\x18\x01 \x03(\v2-.pilab.director.v2.FullInventoryEvent.VmEntryR\x03vms\x1a\xd0\x01\n" +
+	"\x03vms\x18\x01 \x03(\v2-.pilab.director.v2.FullInventoryEvent.VmEntryR\x03vms\x1a\xe2\x01\n" +
 	"\aVmEntry\x12\x17\n" +
 	"\avm_uuid\x18\x01 \x01(\tR\x06vmUuid\x12\x17\n" +
 	"\avm_name\x18\x02 \x01(\tR\x06vmName\x12\x14\n" +
@@ -1410,7 +1442,8 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"generation\x18\x04 \x01(\x04R\n" +
 	"generation\x12/\n" +
 	"\x13observed_generation\x18\x05 \x01(\x04R\x12observedGeneration\x12,\n" +
-	"\x05phase\x18\x06 \x01(\x0e2\x16.pilab.common.v1.PhaseR\x05phase\"\xec\x03\n" +
+	"\x05phase\x18\x06 \x01(\x0e2\x16.pilab.common.v1.PhaseR\x05phase\x12\x10\n" +
+	"\x03uid\x18\a \x01(\tR\x03uid\"\xec\x03\n" +
 	"\rNodeDirective\x12-\n" +
 	"\x04task\x18\x01 \x01(\v2\x17.pilab.director.v2.TaskH\x00R\x04task\x12I\n" +
 	"\vcancel_task\x18\x02 \x01(\v2&.pilab.director.v2.CancelTaskDirectiveH\x00R\n" +

@@ -104,6 +104,11 @@ message HeartbeatEvent {
 
 message VmStatusEvent {
   string vm_name = 1;
+  // vm_uuid is the hypervisor-level VM UUID (pivirtd's own identifier,
+  // e.g. VMInfo.uuid) -- same meaning as the vm_uuid field on
+  // pivirtd/v1's VmLifecycleEvent/VmDiskMoveEvent/VmSnapshotEvent, which
+  // this event family sits alongside. It is NOT the director-minted
+  // cluster identity; see uid below.
   string vm_uuid = 2;
   string previous_state = 3;
   string new_state = 4;
@@ -114,6 +119,10 @@ message VmStatusEvent {
   uint64 generation = 5;
   uint64 observed_generation = 6;
   pilab.common.v1.Phase phase = 7;
+  // uid is the director-minted cluster identity (control-plane-
+  // architecture.md §2.7 / D6) -- distinct from vm_uuid above. Empty for
+  // a VM the node has never received a uid for.
+  string uid = 8;
 }
 
 message TaskProgressEvent {
@@ -132,6 +141,9 @@ message TaskResultEvent {
 // state (control-plane-architecture.md §2.5 / D4, resync table).
 message FullInventoryEvent {
   message VmEntry {
+    // vm_uuid is the hypervisor-level VM UUID (pivirtd's own identifier) --
+    // see VmStatusEvent.vm_uuid's comment. Not the cluster identity; see
+    // uid below.
     string vm_uuid = 1;
     string vm_name = 2;
     string state = 3;
@@ -142,6 +154,11 @@ message FullInventoryEvent {
     uint64 generation = 4;
     uint64 observed_generation = 5;
     pilab.common.v1.Phase phase = 6;
+    // uid is the director-minted cluster identity (control-plane-
+    // architecture.md §2.7 / D6) -- distinct from vm_uuid above. Empty for
+    // a VM the node has never received a uid for (the "no uid" row this
+    // message's own comment above already describes).
+    string uid = 7;
   }
   repeated VmEntry vms = 1;
 }
