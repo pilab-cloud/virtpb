@@ -556,8 +556,14 @@ type VmStatusEvent struct {
 	VmUuid        string                 `protobuf:"bytes,2,opt,name=vm_uuid,json=vmUuid,proto3" json:"vm_uuid,omitempty"`
 	PreviousState string                 `protobuf:"bytes,3,opt,name=previous_state,json=previousState,proto3" json:"previous_state,omitempty"`
 	NewState      string                 `protobuf:"bytes,4,opt,name=new_state,json=newState,proto3" json:"new_state,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// generation/observed_generation/phase are PIVIRT-84 (Phase 3): what the
+	// node last reconciled this VM to, for drift detection. See
+	// control-plane-architecture.md §2.5 / D4.
+	Generation         uint64    `protobuf:"varint,5,opt,name=generation,proto3" json:"generation,omitempty"`
+	ObservedGeneration uint64    `protobuf:"varint,6,opt,name=observed_generation,json=observedGeneration,proto3" json:"observed_generation,omitempty"`
+	Phase              v11.Phase `protobuf:"varint,7,opt,name=phase,proto3,enum=pilab.common.v1.Phase" json:"phase,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *VmStatusEvent) Reset() {
@@ -616,6 +622,27 @@ func (x *VmStatusEvent) GetNewState() string {
 		return x.NewState
 	}
 	return ""
+}
+
+func (x *VmStatusEvent) GetGeneration() uint64 {
+	if x != nil {
+		return x.Generation
+	}
+	return 0
+}
+
+func (x *VmStatusEvent) GetObservedGeneration() uint64 {
+	if x != nil {
+		return x.ObservedGeneration
+	}
+	return 0
+}
+
+func (x *VmStatusEvent) GetPhase() v11.Phase {
+	if x != nil {
+		return x.Phase
+	}
+	return v11.Phase(0)
 }
 
 type TaskProgressEvent struct {
@@ -730,10 +757,9 @@ func (x *TaskResultEvent) GetErrorMessage() string {
 	return ""
 }
 
-// FullInventoryEvent is the agent's reply to a ResyncDirective. Its shape
-// is intentionally minimal for now -- full reconciliation against
-// uid/generation is Phase 3 (PIVIRT-84) work; this only carries enough to
-// exercise the transport.
+// FullInventoryEvent is the agent's reply to a ResyncDirective: every VM
+// the node's projection holds, for the director to diff against cluster
+// state (control-plane-architecture.md §2.5 / D4, resync table).
 type FullInventoryEvent struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
 	Vms           []*FullInventoryEvent_VmEntry `protobuf:"bytes,1,rep,name=vms,proto3" json:"vms,omitempty"`
@@ -992,9 +1018,8 @@ func (x *CancelTaskDirective) GetReason() string {
 	return ""
 }
 
-// ResyncDirective asks the node to reply with a FullInventoryEvent.
-// Transport plumbing only in this phase -- the director does not yet
-// trigger or reconcile against it; see PIVIRT-84 (Phase 3).
+// ResyncDirective asks the node to reply with a FullInventoryEvent. Sent by
+// the director on session start and periodically (PIVIRT-84, Phase 3).
 type ResyncDirective struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1221,12 +1246,19 @@ func (x *DrainDirective) GetReason() string {
 }
 
 type FullInventoryEvent_VmEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	VmUuid        string                 `protobuf:"bytes,1,opt,name=vm_uuid,json=vmUuid,proto3" json:"vm_uuid,omitempty"`
-	VmName        string                 `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
-	State         string                 `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	VmUuid string                 `protobuf:"bytes,1,opt,name=vm_uuid,json=vmUuid,proto3" json:"vm_uuid,omitempty"`
+	VmName string                 `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
+	State  string                 `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty"`
+	// generation/observed_generation/phase are empty/zero for a VM the
+	// node has never received a uid for (hand-made on the host) -- this is
+	// exactly the "no uid" row of the resync table, and what a later
+	// `terraform import` binds to.
+	Generation         uint64    `protobuf:"varint,4,opt,name=generation,proto3" json:"generation,omitempty"`
+	ObservedGeneration uint64    `protobuf:"varint,5,opt,name=observed_generation,json=observedGeneration,proto3" json:"observed_generation,omitempty"`
+	Phase              v11.Phase `protobuf:"varint,6,opt,name=phase,proto3,enum=pilab.common.v1.Phase" json:"phase,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *FullInventoryEvent_VmEntry) Reset() {
@@ -1280,11 +1312,32 @@ func (x *FullInventoryEvent_VmEntry) GetState() string {
 	return ""
 }
 
+func (x *FullInventoryEvent_VmEntry) GetGeneration() uint64 {
+	if x != nil {
+		return x.Generation
+	}
+	return 0
+}
+
+func (x *FullInventoryEvent_VmEntry) GetObservedGeneration() uint64 {
+	if x != nil {
+		return x.ObservedGeneration
+	}
+	return 0
+}
+
+func (x *FullInventoryEvent_VmEntry) GetPhase() v11.Phase {
+	if x != nil {
+		return x.Phase
+	}
+	return v11.Phase(0)
+}
+
 var File_pilab_director_v2_node_service_proto protoreflect.FileDescriptor
 
 const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"\n" +
-	"$pilab/director/v2/node_service.proto\x12\x11pilab.director.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a$pilab/director/v2/task_service.proto\x1a$pilab/pivirtd/v1/host_resource.proto\x1a\x1apilab/common/v1/host.proto\"\xe5\x02\n" +
+	"$pilab/director/v2/node_service.proto\x12\x11pilab.director.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a$pilab/director/v2/task_service.proto\x1a$pilab/pivirtd/v1/host_resource.proto\x1a\x1apilab/common/v1/host.proto\x1a\x1bpilab/common/v1/phase.proto\"\xe5\x02\n" +
 	"\x13RegisterNodeRequest\x12\x1b\n" +
 	"\tnode_uuid\x18\x01 \x01(\tR\bnodeUuid\x12'\n" +
 	"\x0fbootstrap_token\x18\x02 \x01(\tR\x0ebootstrapToken\x12\x1a\n" +
@@ -1329,25 +1382,35 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	" \x01(\v2%.pilab.director.v2.FullInventoryEventH\x00R\rfullInventoryB\a\n" +
 	"\x05event\"J\n" +
 	"\x0eHeartbeatEvent\x128\n" +
-	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"\x85\x01\n" +
+	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"\x84\x02\n" +
 	"\rVmStatusEvent\x12\x17\n" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12\x17\n" +
 	"\avm_uuid\x18\x02 \x01(\tR\x06vmUuid\x12%\n" +
 	"\x0eprevious_state\x18\x03 \x01(\tR\rpreviousState\x12\x1b\n" +
-	"\tnew_state\x18\x04 \x01(\tR\bnewState\"a\n" +
+	"\tnew_state\x18\x04 \x01(\tR\bnewState\x12\x1e\n" +
+	"\n" +
+	"generation\x18\x05 \x01(\x04R\n" +
+	"generation\x12/\n" +
+	"\x13observed_generation\x18\x06 \x01(\x04R\x12observedGeneration\x12,\n" +
+	"\x05phase\x18\a \x01(\x0e2\x16.pilab.common.v1.PhaseR\x05phase\"a\n" +
 	"\x11TaskProgressEvent\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x123\n" +
 	"\bprogress\x18\x02 \x01(\v2\x17.google.protobuf.StructR\bprogress\"\x86\x01\n" +
 	"\x0fTaskResultEvent\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x125\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x1d.pilab.director.v2.TaskStatusR\x06status\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\xa8\x01\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\xa8\x02\n" +
 	"\x12FullInventoryEvent\x12?\n" +
-	"\x03vms\x18\x01 \x03(\v2-.pilab.director.v2.FullInventoryEvent.VmEntryR\x03vms\x1aQ\n" +
+	"\x03vms\x18\x01 \x03(\v2-.pilab.director.v2.FullInventoryEvent.VmEntryR\x03vms\x1a\xd0\x01\n" +
 	"\aVmEntry\x12\x17\n" +
 	"\avm_uuid\x18\x01 \x01(\tR\x06vmUuid\x12\x17\n" +
 	"\avm_name\x18\x02 \x01(\tR\x06vmName\x12\x14\n" +
-	"\x05state\x18\x03 \x01(\tR\x05state\"\xec\x03\n" +
+	"\x05state\x18\x03 \x01(\tR\x05state\x12\x1e\n" +
+	"\n" +
+	"generation\x18\x04 \x01(\x04R\n" +
+	"generation\x12/\n" +
+	"\x13observed_generation\x18\x05 \x01(\x04R\x12observedGeneration\x12,\n" +
+	"\x05phase\x18\x06 \x01(\x0e2\x16.pilab.common.v1.PhaseR\x05phase\"\xec\x03\n" +
 	"\rNodeDirective\x12-\n" +
 	"\x04task\x18\x01 \x01(\v2\x17.pilab.director.v2.TaskH\x00R\x04task\x12I\n" +
 	"\vcancel_task\x18\x02 \x01(\v2&.pilab.director.v2.CancelTaskDirectiveH\x00R\n" +
@@ -1413,9 +1476,10 @@ var file_pilab_director_v2_node_service_proto_goTypes = []any{
 	(*v1.HostResourceReport)(nil),      // 18: pilab.virtualization.v1.HostResourceReport
 	(*v11.VmMetrics)(nil),              // 19: pilab.common.v1.VmMetrics
 	(*timestamppb.Timestamp)(nil),      // 20: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),            // 21: google.protobuf.Struct
-	(TaskStatus)(0),                    // 22: pilab.director.v2.TaskStatus
-	(*Task)(nil),                       // 23: pilab.director.v2.Task
+	(v11.Phase)(0),                     // 21: pilab.common.v1.Phase
+	(*structpb.Struct)(nil),            // 22: google.protobuf.Struct
+	(TaskStatus)(0),                    // 23: pilab.director.v2.TaskStatus
+	(*Task)(nil),                       // 24: pilab.director.v2.Task
 }
 var file_pilab_director_v2_node_service_proto_depIdxs = []int32{
 	5,  // 0: pilab.director.v2.NodeEvent.heartbeat:type_name -> pilab.director.v2.HeartbeatEvent
@@ -1426,28 +1490,30 @@ var file_pilab_director_v2_node_service_proto_depIdxs = []int32{
 	8,  // 5: pilab.director.v2.NodeEvent.task_result:type_name -> pilab.director.v2.TaskResultEvent
 	9,  // 6: pilab.director.v2.NodeEvent.full_inventory:type_name -> pilab.director.v2.FullInventoryEvent
 	20, // 7: pilab.director.v2.HeartbeatEvent.timestamp:type_name -> google.protobuf.Timestamp
-	21, // 8: pilab.director.v2.TaskProgressEvent.progress:type_name -> google.protobuf.Struct
-	22, // 9: pilab.director.v2.TaskResultEvent.status:type_name -> pilab.director.v2.TaskStatus
-	17, // 10: pilab.director.v2.FullInventoryEvent.vms:type_name -> pilab.director.v2.FullInventoryEvent.VmEntry
-	23, // 11: pilab.director.v2.NodeDirective.task:type_name -> pilab.director.v2.Task
-	11, // 12: pilab.director.v2.NodeDirective.cancel_task:type_name -> pilab.director.v2.CancelTaskDirective
-	12, // 13: pilab.director.v2.NodeDirective.resync:type_name -> pilab.director.v2.ResyncDirective
-	13, // 14: pilab.director.v2.NodeDirective.config:type_name -> pilab.director.v2.ConfigDirective
-	14, // 15: pilab.director.v2.NodeDirective.cluster_join:type_name -> pilab.director.v2.ClusterJoinDirective
-	15, // 16: pilab.director.v2.NodeDirective.cluster_leave:type_name -> pilab.director.v2.ClusterLeaveDirective
-	16, // 17: pilab.director.v2.NodeDirective.drain:type_name -> pilab.director.v2.DrainDirective
-	21, // 18: pilab.director.v2.ConfigDirective.config:type_name -> google.protobuf.Struct
-	0,  // 19: pilab.director.v2.NodeService.Register:input_type -> pilab.director.v2.RegisterNodeRequest
-	2,  // 20: pilab.director.v2.NodeService.RequestCertificate:input_type -> pilab.director.v2.RequestCertificateRequest
-	4,  // 21: pilab.director.v2.NodeService.Session:input_type -> pilab.director.v2.NodeEvent
-	1,  // 22: pilab.director.v2.NodeService.Register:output_type -> pilab.director.v2.RegisterNodeResponse
-	3,  // 23: pilab.director.v2.NodeService.RequestCertificate:output_type -> pilab.director.v2.RequestCertificateResponse
-	10, // 24: pilab.director.v2.NodeService.Session:output_type -> pilab.director.v2.NodeDirective
-	22, // [22:25] is the sub-list for method output_type
-	19, // [19:22] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	21, // 8: pilab.director.v2.VmStatusEvent.phase:type_name -> pilab.common.v1.Phase
+	22, // 9: pilab.director.v2.TaskProgressEvent.progress:type_name -> google.protobuf.Struct
+	23, // 10: pilab.director.v2.TaskResultEvent.status:type_name -> pilab.director.v2.TaskStatus
+	17, // 11: pilab.director.v2.FullInventoryEvent.vms:type_name -> pilab.director.v2.FullInventoryEvent.VmEntry
+	24, // 12: pilab.director.v2.NodeDirective.task:type_name -> pilab.director.v2.Task
+	11, // 13: pilab.director.v2.NodeDirective.cancel_task:type_name -> pilab.director.v2.CancelTaskDirective
+	12, // 14: pilab.director.v2.NodeDirective.resync:type_name -> pilab.director.v2.ResyncDirective
+	13, // 15: pilab.director.v2.NodeDirective.config:type_name -> pilab.director.v2.ConfigDirective
+	14, // 16: pilab.director.v2.NodeDirective.cluster_join:type_name -> pilab.director.v2.ClusterJoinDirective
+	15, // 17: pilab.director.v2.NodeDirective.cluster_leave:type_name -> pilab.director.v2.ClusterLeaveDirective
+	16, // 18: pilab.director.v2.NodeDirective.drain:type_name -> pilab.director.v2.DrainDirective
+	22, // 19: pilab.director.v2.ConfigDirective.config:type_name -> google.protobuf.Struct
+	21, // 20: pilab.director.v2.FullInventoryEvent.VmEntry.phase:type_name -> pilab.common.v1.Phase
+	0,  // 21: pilab.director.v2.NodeService.Register:input_type -> pilab.director.v2.RegisterNodeRequest
+	2,  // 22: pilab.director.v2.NodeService.RequestCertificate:input_type -> pilab.director.v2.RequestCertificateRequest
+	4,  // 23: pilab.director.v2.NodeService.Session:input_type -> pilab.director.v2.NodeEvent
+	1,  // 24: pilab.director.v2.NodeService.Register:output_type -> pilab.director.v2.RegisterNodeResponse
+	3,  // 25: pilab.director.v2.NodeService.RequestCertificate:output_type -> pilab.director.v2.RequestCertificateResponse
+	10, // 26: pilab.director.v2.NodeService.Session:output_type -> pilab.director.v2.NodeDirective
+	24, // [24:27] is the sub-list for method output_type
+	21, // [21:24] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_pilab_director_v2_node_service_proto_init() }

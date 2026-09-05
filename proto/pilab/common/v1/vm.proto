@@ -7,6 +7,7 @@ syntax = "proto3";
 package pilab.common.v1;
 
 import "google/protobuf/timestamp.proto";
+import "pilab/common/v1/phase.proto";
 
 option go_package = "go.pilab.hu/cloud/virtpb/pilab/common/v1;commonv1";
 
@@ -63,6 +64,18 @@ message VM {
   google.protobuf.Timestamp updated_at = 11;
   map<string, string> metadata = 12;
   string description = 13;
+
+  // uid is the stable, director-minted identity that survives a rename --
+  // see control-plane-architecture.md §2.7 / D6. Distinct from id, which is
+  // the pre-PIVIRT-84 identifier and stays for backward compatibility.
+  string uid = 14;
+  // generation is bumped by the director iff spec changes.
+  uint64 generation = 15;
+  // observed_generation is the generation the node last successfully
+  // reconciled. The resource is settled iff observed_generation ==
+  // generation && phase == PHASE_READY.
+  uint64 observed_generation = 16;
+  Phase phase = 17;
 }
 
 // Disk represents a disk or volume attached to a VM.
