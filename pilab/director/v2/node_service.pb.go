@@ -1394,14 +1394,14 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"\x1aRequestCertificateResponse\x12'\n" +
 	"\x0fcertificate_pem\x18\x01 \x01(\tR\x0ecertificatePem\x12 \n" +
 	"\fca_chain_pem\x18\x02 \x01(\tR\n" +
-	"caChainPem\"\xd9\x04\n" +
+	"caChainPem\"\xd2\x04\n" +
 	"\tNodeEvent\x12\x1b\n" +
 	"\tnode_uuid\x18\x01 \x01(\tR\bnodeUuid\x12\x1f\n" +
 	"\vlease_epoch\x18\x02 \x01(\x03R\n" +
 	"leaseEpoch\x12\x10\n" +
 	"\x03seq\x18\x03 \x01(\x03R\x03seq\x12A\n" +
-	"\theartbeat\x18\x04 \x01(\v2!.pilab.director.v2.HeartbeatEventH\x00R\theartbeat\x12N\n" +
-	"\vhost_report\x18\x05 \x01(\v2+.pilab.virtualization.v1.HostResourceReportH\x00R\n" +
+	"\theartbeat\x18\x04 \x01(\v2!.pilab.director.v2.HeartbeatEventH\x00R\theartbeat\x12G\n" +
+	"\vhost_report\x18\x05 \x01(\v2$.pilab.pivirtd.v1.HostResourceReportH\x00R\n" +
 	"hostReport\x12?\n" +
 	"\tvm_status\x18\x06 \x01(\v2 .pilab.director.v2.VmStatusEventH\x00R\bvmStatus\x12;\n" +
 	"\n" +
@@ -1506,7 +1506,7 @@ var file_pilab_director_v2_node_service_proto_goTypes = []any{
 	(*ClusterLeaveDirective)(nil),      // 15: pilab.director.v2.ClusterLeaveDirective
 	(*DrainDirective)(nil),             // 16: pilab.director.v2.DrainDirective
 	(*FullInventoryEvent_VmEntry)(nil), // 17: pilab.director.v2.FullInventoryEvent.VmEntry
-	(*v1.HostResourceReport)(nil),      // 18: pilab.virtualization.v1.HostResourceReport
+	(*v1.HostResourceReport)(nil),      // 18: pilab.pivirtd.v1.HostResourceReport
 	(*v11.VmMetrics)(nil),              // 19: pilab.common.v1.VmMetrics
 	(*timestamppb.Timestamp)(nil),      // 20: google.protobuf.Timestamp
 	(v11.Phase)(0),                     // 21: pilab.common.v1.Phase
@@ -1516,7 +1516,7 @@ var file_pilab_director_v2_node_service_proto_goTypes = []any{
 }
 var file_pilab_director_v2_node_service_proto_depIdxs = []int32{
 	5,  // 0: pilab.director.v2.NodeEvent.heartbeat:type_name -> pilab.director.v2.HeartbeatEvent
-	18, // 1: pilab.director.v2.NodeEvent.host_report:type_name -> pilab.virtualization.v1.HostResourceReport
+	18, // 1: pilab.director.v2.NodeEvent.host_report:type_name -> pilab.pivirtd.v1.HostResourceReport
 	6,  // 2: pilab.director.v2.NodeEvent.vm_status:type_name -> pilab.director.v2.VmStatusEvent
 	19, // 3: pilab.director.v2.NodeEvent.vm_metrics:type_name -> pilab.common.v1.VmMetrics
 	7,  // 4: pilab.director.v2.NodeEvent.task_progress:type_name -> pilab.director.v2.TaskProgressEvent

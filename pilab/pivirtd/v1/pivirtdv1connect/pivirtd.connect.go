@@ -22,7 +22,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// PivirtdServiceName is the fully-qualified name of the PivirtdService service.
-	PivirtdServiceName = "pilab.virtualization.v1.PivirtdService"
+	PivirtdServiceName = "pilab.pivirtd.v1.PivirtdService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -34,193 +34,193 @@ const (
 // period.
 const (
 	// PivirtdServiceCreateVMProcedure is the fully-qualified name of the PivirtdService's CreateVM RPC.
-	PivirtdServiceCreateVMProcedure = "/pilab.virtualization.v1.PivirtdService/CreateVM"
+	PivirtdServiceCreateVMProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateVM"
 	// PivirtdServiceApplyVMProcedure is the fully-qualified name of the PivirtdService's ApplyVM RPC.
-	PivirtdServiceApplyVMProcedure = "/pilab.virtualization.v1.PivirtdService/ApplyVM"
+	PivirtdServiceApplyVMProcedure = "/pilab.pivirtd.v1.PivirtdService/ApplyVM"
 	// PivirtdServiceStartVMProcedure is the fully-qualified name of the PivirtdService's StartVM RPC.
-	PivirtdServiceStartVMProcedure = "/pilab.virtualization.v1.PivirtdService/StartVM"
+	PivirtdServiceStartVMProcedure = "/pilab.pivirtd.v1.PivirtdService/StartVM"
 	// PivirtdServiceStopVMProcedure is the fully-qualified name of the PivirtdService's StopVM RPC.
-	PivirtdServiceStopVMProcedure = "/pilab.virtualization.v1.PivirtdService/StopVM"
+	PivirtdServiceStopVMProcedure = "/pilab.pivirtd.v1.PivirtdService/StopVM"
 	// PivirtdServicePauseVMProcedure is the fully-qualified name of the PivirtdService's PauseVM RPC.
-	PivirtdServicePauseVMProcedure = "/pilab.virtualization.v1.PivirtdService/PauseVM"
+	PivirtdServicePauseVMProcedure = "/pilab.pivirtd.v1.PivirtdService/PauseVM"
 	// PivirtdServiceResumeVMProcedure is the fully-qualified name of the PivirtdService's ResumeVM RPC.
-	PivirtdServiceResumeVMProcedure = "/pilab.virtualization.v1.PivirtdService/ResumeVM"
+	PivirtdServiceResumeVMProcedure = "/pilab.pivirtd.v1.PivirtdService/ResumeVM"
 	// PivirtdServiceRebootVMProcedure is the fully-qualified name of the PivirtdService's RebootVM RPC.
-	PivirtdServiceRebootVMProcedure = "/pilab.virtualization.v1.PivirtdService/RebootVM"
+	PivirtdServiceRebootVMProcedure = "/pilab.pivirtd.v1.PivirtdService/RebootVM"
 	// PivirtdServiceDeleteVMProcedure is the fully-qualified name of the PivirtdService's DeleteVM RPC.
-	PivirtdServiceDeleteVMProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteVM"
+	PivirtdServiceDeleteVMProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteVM"
 	// PivirtdServiceListVMsProcedure is the fully-qualified name of the PivirtdService's ListVMs RPC.
-	PivirtdServiceListVMsProcedure = "/pilab.virtualization.v1.PivirtdService/ListVMs"
+	PivirtdServiceListVMsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListVMs"
 	// PivirtdServiceGetVMProcedure is the fully-qualified name of the PivirtdService's GetVM RPC.
-	PivirtdServiceGetVMProcedure = "/pilab.virtualization.v1.PivirtdService/GetVM"
+	PivirtdServiceGetVMProcedure = "/pilab.pivirtd.v1.PivirtdService/GetVM"
 	// PivirtdServiceGetVMStatsProcedure is the fully-qualified name of the PivirtdService's GetVMStats
 	// RPC.
-	PivirtdServiceGetVMStatsProcedure = "/pilab.virtualization.v1.PivirtdService/GetVMStats"
+	PivirtdServiceGetVMStatsProcedure = "/pilab.pivirtd.v1.PivirtdService/GetVMStats"
 	// PivirtdServiceUpdateVMMemoryProcedure is the fully-qualified name of the PivirtdService's
 	// UpdateVMMemory RPC.
-	PivirtdServiceUpdateVMMemoryProcedure = "/pilab.virtualization.v1.PivirtdService/UpdateVMMemory"
+	PivirtdServiceUpdateVMMemoryProcedure = "/pilab.pivirtd.v1.PivirtdService/UpdateVMMemory"
 	// PivirtdServiceUpdateVMCpuProcedure is the fully-qualified name of the PivirtdService's
 	// UpdateVMCpu RPC.
-	PivirtdServiceUpdateVMCpuProcedure = "/pilab.virtualization.v1.PivirtdService/UpdateVMCpu"
+	PivirtdServiceUpdateVMCpuProcedure = "/pilab.pivirtd.v1.PivirtdService/UpdateVMCpu"
 	// PivirtdServiceExecuteQMPProcedure is the fully-qualified name of the PivirtdService's ExecuteQMP
 	// RPC.
-	PivirtdServiceExecuteQMPProcedure = "/pilab.virtualization.v1.PivirtdService/ExecuteQMP"
+	PivirtdServiceExecuteQMPProcedure = "/pilab.pivirtd.v1.PivirtdService/ExecuteQMP"
 	// PivirtdServiceStreamQMPEventsProcedure is the fully-qualified name of the PivirtdService's
 	// StreamQMPEvents RPC.
-	PivirtdServiceStreamQMPEventsProcedure = "/pilab.virtualization.v1.PivirtdService/StreamQMPEvents"
+	PivirtdServiceStreamQMPEventsProcedure = "/pilab.pivirtd.v1.PivirtdService/StreamQMPEvents"
 	// PivirtdServiceCreateSnapshotProcedure is the fully-qualified name of the PivirtdService's
 	// CreateSnapshot RPC.
-	PivirtdServiceCreateSnapshotProcedure = "/pilab.virtualization.v1.PivirtdService/CreateSnapshot"
+	PivirtdServiceCreateSnapshotProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateSnapshot"
 	// PivirtdServiceListSnapshotsProcedure is the fully-qualified name of the PivirtdService's
 	// ListSnapshots RPC.
-	PivirtdServiceListSnapshotsProcedure = "/pilab.virtualization.v1.PivirtdService/ListSnapshots"
+	PivirtdServiceListSnapshotsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListSnapshots"
 	// PivirtdServiceRestoreSnapshotProcedure is the fully-qualified name of the PivirtdService's
 	// RestoreSnapshot RPC.
-	PivirtdServiceRestoreSnapshotProcedure = "/pilab.virtualization.v1.PivirtdService/RestoreSnapshot"
+	PivirtdServiceRestoreSnapshotProcedure = "/pilab.pivirtd.v1.PivirtdService/RestoreSnapshot"
 	// PivirtdServiceDeleteSnapshotProcedure is the fully-qualified name of the PivirtdService's
 	// DeleteSnapshot RPC.
-	PivirtdServiceDeleteSnapshotProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteSnapshot"
+	PivirtdServiceDeleteSnapshotProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteSnapshot"
 	// PivirtdServiceConsolidateSnapshotProcedure is the fully-qualified name of the PivirtdService's
 	// ConsolidateSnapshot RPC.
-	PivirtdServiceConsolidateSnapshotProcedure = "/pilab.virtualization.v1.PivirtdService/ConsolidateSnapshot"
+	PivirtdServiceConsolidateSnapshotProcedure = "/pilab.pivirtd.v1.PivirtdService/ConsolidateSnapshot"
 	// PivirtdServiceGetSnapshotStatusProcedure is the fully-qualified name of the PivirtdService's
 	// GetSnapshotStatus RPC.
-	PivirtdServiceGetSnapshotStatusProcedure = "/pilab.virtualization.v1.PivirtdService/GetSnapshotStatus"
+	PivirtdServiceGetSnapshotStatusProcedure = "/pilab.pivirtd.v1.PivirtdService/GetSnapshotStatus"
 	// PivirtdServiceCloneVMProcedure is the fully-qualified name of the PivirtdService's CloneVM RPC.
-	PivirtdServiceCloneVMProcedure = "/pilab.virtualization.v1.PivirtdService/CloneVM"
+	PivirtdServiceCloneVMProcedure = "/pilab.pivirtd.v1.PivirtdService/CloneVM"
 	// PivirtdServiceCloneSnapshotProcedure is the fully-qualified name of the PivirtdService's
 	// CloneSnapshot RPC.
-	PivirtdServiceCloneSnapshotProcedure = "/pilab.virtualization.v1.PivirtdService/CloneSnapshot"
+	PivirtdServiceCloneSnapshotProcedure = "/pilab.pivirtd.v1.PivirtdService/CloneSnapshot"
 	// PivirtdServiceMigrateVMProcedure is the fully-qualified name of the PivirtdService's MigrateVM
 	// RPC.
-	PivirtdServiceMigrateVMProcedure = "/pilab.virtualization.v1.PivirtdService/MigrateVM"
+	PivirtdServiceMigrateVMProcedure = "/pilab.pivirtd.v1.PivirtdService/MigrateVM"
 	// PivirtdServiceGetMigrationStatusProcedure is the fully-qualified name of the PivirtdService's
 	// GetMigrationStatus RPC.
-	PivirtdServiceGetMigrationStatusProcedure = "/pilab.virtualization.v1.PivirtdService/GetMigrationStatus"
+	PivirtdServiceGetMigrationStatusProcedure = "/pilab.pivirtd.v1.PivirtdService/GetMigrationStatus"
 	// PivirtdServiceCreateStoragePoolProcedure is the fully-qualified name of the PivirtdService's
 	// CreateStoragePool RPC.
-	PivirtdServiceCreateStoragePoolProcedure = "/pilab.virtualization.v1.PivirtdService/CreateStoragePool"
+	PivirtdServiceCreateStoragePoolProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateStoragePool"
 	// PivirtdServiceListStoragePoolsProcedure is the fully-qualified name of the PivirtdService's
 	// ListStoragePools RPC.
-	PivirtdServiceListStoragePoolsProcedure = "/pilab.virtualization.v1.PivirtdService/ListStoragePools"
+	PivirtdServiceListStoragePoolsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListStoragePools"
 	// PivirtdServiceDeleteStoragePoolProcedure is the fully-qualified name of the PivirtdService's
 	// DeleteStoragePool RPC.
-	PivirtdServiceDeleteStoragePoolProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteStoragePool"
+	PivirtdServiceDeleteStoragePoolProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteStoragePool"
 	// PivirtdServiceCreateTAPDeviceProcedure is the fully-qualified name of the PivirtdService's
 	// CreateTAPDevice RPC.
-	PivirtdServiceCreateTAPDeviceProcedure = "/pilab.virtualization.v1.PivirtdService/CreateTAPDevice"
+	PivirtdServiceCreateTAPDeviceProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateTAPDevice"
 	// PivirtdServiceDeleteTAPDeviceProcedure is the fully-qualified name of the PivirtdService's
 	// DeleteTAPDevice RPC.
-	PivirtdServiceDeleteTAPDeviceProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteTAPDevice"
+	PivirtdServiceDeleteTAPDeviceProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteTAPDevice"
 	// PivirtdServiceListTAPDevicesProcedure is the fully-qualified name of the PivirtdService's
 	// ListTAPDevices RPC.
-	PivirtdServiceListTAPDevicesProcedure = "/pilab.virtualization.v1.PivirtdService/ListTAPDevices"
+	PivirtdServiceListTAPDevicesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListTAPDevices"
 	// PivirtdServiceCreateBridgeProcedure is the fully-qualified name of the PivirtdService's
 	// CreateBridge RPC.
-	PivirtdServiceCreateBridgeProcedure = "/pilab.virtualization.v1.PivirtdService/CreateBridge"
+	PivirtdServiceCreateBridgeProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateBridge"
 	// PivirtdServiceDeleteBridgeProcedure is the fully-qualified name of the PivirtdService's
 	// DeleteBridge RPC.
-	PivirtdServiceDeleteBridgeProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteBridge"
+	PivirtdServiceDeleteBridgeProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteBridge"
 	// PivirtdServiceListBridgesProcedure is the fully-qualified name of the PivirtdService's
 	// ListBridges RPC.
-	PivirtdServiceListBridgesProcedure = "/pilab.virtualization.v1.PivirtdService/ListBridges"
+	PivirtdServiceListBridgesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListBridges"
 	// PivirtdServiceCreateOVSBridgeProcedure is the fully-qualified name of the PivirtdService's
 	// CreateOVSBridge RPC.
-	PivirtdServiceCreateOVSBridgeProcedure = "/pilab.virtualization.v1.PivirtdService/CreateOVSBridge"
+	PivirtdServiceCreateOVSBridgeProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateOVSBridge"
 	// PivirtdServiceDeleteOVSBridgeProcedure is the fully-qualified name of the PivirtdService's
 	// DeleteOVSBridge RPC.
-	PivirtdServiceDeleteOVSBridgeProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteOVSBridge"
+	PivirtdServiceDeleteOVSBridgeProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteOVSBridge"
 	// PivirtdServiceListOVSBridgesProcedure is the fully-qualified name of the PivirtdService's
 	// ListOVSBridges RPC.
-	PivirtdServiceListOVSBridgesProcedure = "/pilab.virtualization.v1.PivirtdService/ListOVSBridges"
+	PivirtdServiceListOVSBridgesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOVSBridges"
 	// PivirtdServiceAddOVSPortProcedure is the fully-qualified name of the PivirtdService's AddOVSPort
 	// RPC.
-	PivirtdServiceAddOVSPortProcedure = "/pilab.virtualization.v1.PivirtdService/AddOVSPort"
+	PivirtdServiceAddOVSPortProcedure = "/pilab.pivirtd.v1.PivirtdService/AddOVSPort"
 	// PivirtdServiceRemoveOVSPortProcedure is the fully-qualified name of the PivirtdService's
 	// RemoveOVSPort RPC.
-	PivirtdServiceRemoveOVSPortProcedure = "/pilab.virtualization.v1.PivirtdService/RemoveOVSPort"
+	PivirtdServiceRemoveOVSPortProcedure = "/pilab.pivirtd.v1.PivirtdService/RemoveOVSPort"
 	// PivirtdServiceListOVSPortsProcedure is the fully-qualified name of the PivirtdService's
 	// ListOVSPorts RPC.
-	PivirtdServiceListOVSPortsProcedure = "/pilab.virtualization.v1.PivirtdService/ListOVSPorts"
+	PivirtdServiceListOVSPortsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
 	// PivirtdServiceSetLabelsProcedure is the fully-qualified name of the PivirtdService's SetLabels
 	// RPC.
-	PivirtdServiceSetLabelsProcedure = "/pilab.virtualization.v1.PivirtdService/SetLabels"
+	PivirtdServiceSetLabelsProcedure = "/pilab.pivirtd.v1.PivirtdService/SetLabels"
 	// PivirtdServiceGetLabelsProcedure is the fully-qualified name of the PivirtdService's GetLabels
 	// RPC.
-	PivirtdServiceGetLabelsProcedure = "/pilab.virtualization.v1.PivirtdService/GetLabels"
+	PivirtdServiceGetLabelsProcedure = "/pilab.pivirtd.v1.PivirtdService/GetLabels"
 	// PivirtdServiceDeleteLabelProcedure is the fully-qualified name of the PivirtdService's
 	// DeleteLabel RPC.
-	PivirtdServiceDeleteLabelProcedure = "/pilab.virtualization.v1.PivirtdService/DeleteLabel"
+	PivirtdServiceDeleteLabelProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteLabel"
 	// PivirtdServiceSetProvisioningProcedure is the fully-qualified name of the PivirtdService's
 	// SetProvisioning RPC.
-	PivirtdServiceSetProvisioningProcedure = "/pilab.virtualization.v1.PivirtdService/SetProvisioning"
+	PivirtdServiceSetProvisioningProcedure = "/pilab.pivirtd.v1.PivirtdService/SetProvisioning"
 	// PivirtdServiceGetVMStatusProcedure is the fully-qualified name of the PivirtdService's
 	// GetVMStatus RPC.
-	PivirtdServiceGetVMStatusProcedure = "/pilab.virtualization.v1.PivirtdService/GetVMStatus"
+	PivirtdServiceGetVMStatusProcedure = "/pilab.pivirtd.v1.PivirtdService/GetVMStatus"
 	// PivirtdServiceStartDiskMoveProcedure is the fully-qualified name of the PivirtdService's
 	// StartDiskMove RPC.
-	PivirtdServiceStartDiskMoveProcedure = "/pilab.virtualization.v1.PivirtdService/StartDiskMove"
+	PivirtdServiceStartDiskMoveProcedure = "/pilab.pivirtd.v1.PivirtdService/StartDiskMove"
 	// PivirtdServiceGetDiskMoveStatusProcedure is the fully-qualified name of the PivirtdService's
 	// GetDiskMoveStatus RPC.
-	PivirtdServiceGetDiskMoveStatusProcedure = "/pilab.virtualization.v1.PivirtdService/GetDiskMoveStatus"
+	PivirtdServiceGetDiskMoveStatusProcedure = "/pilab.pivirtd.v1.PivirtdService/GetDiskMoveStatus"
 	// PivirtdServiceCancelDiskMoveProcedure is the fully-qualified name of the PivirtdService's
 	// CancelDiskMove RPC.
-	PivirtdServiceCancelDiskMoveProcedure = "/pilab.virtualization.v1.PivirtdService/CancelDiskMove"
+	PivirtdServiceCancelDiskMoveProcedure = "/pilab.pivirtd.v1.PivirtdService/CancelDiskMove"
 	// PivirtdServiceAttachDiskProcedure is the fully-qualified name of the PivirtdService's AttachDisk
 	// RPC.
-	PivirtdServiceAttachDiskProcedure = "/pilab.virtualization.v1.PivirtdService/AttachDisk"
+	PivirtdServiceAttachDiskProcedure = "/pilab.pivirtd.v1.PivirtdService/AttachDisk"
 	// PivirtdServiceDetachDiskProcedure is the fully-qualified name of the PivirtdService's DetachDisk
 	// RPC.
-	PivirtdServiceDetachDiskProcedure = "/pilab.virtualization.v1.PivirtdService/DetachDisk"
+	PivirtdServiceDetachDiskProcedure = "/pilab.pivirtd.v1.PivirtdService/DetachDisk"
 	// PivirtdServiceAttachNICProcedure is the fully-qualified name of the PivirtdService's AttachNIC
 	// RPC.
-	PivirtdServiceAttachNICProcedure = "/pilab.virtualization.v1.PivirtdService/AttachNIC"
+	PivirtdServiceAttachNICProcedure = "/pilab.pivirtd.v1.PivirtdService/AttachNIC"
 	// PivirtdServiceDetachNICProcedure is the fully-qualified name of the PivirtdService's DetachNIC
 	// RPC.
-	PivirtdServiceDetachNICProcedure = "/pilab.virtualization.v1.PivirtdService/DetachNIC"
+	PivirtdServiceDetachNICProcedure = "/pilab.pivirtd.v1.PivirtdService/DetachNIC"
 	// PivirtdServiceResizeDiskProcedure is the fully-qualified name of the PivirtdService's ResizeDisk
 	// RPC.
-	PivirtdServiceResizeDiskProcedure = "/pilab.virtualization.v1.PivirtdService/ResizeDisk"
+	PivirtdServiceResizeDiskProcedure = "/pilab.pivirtd.v1.PivirtdService/ResizeDisk"
 	// PivirtdServiceSetVNCPasswordProcedure is the fully-qualified name of the PivirtdService's
 	// SetVNCPassword RPC.
-	PivirtdServiceSetVNCPasswordProcedure = "/pilab.virtualization.v1.PivirtdService/SetVNCPassword"
+	PivirtdServiceSetVNCPasswordProcedure = "/pilab.pivirtd.v1.PivirtdService/SetVNCPassword"
 	// PivirtdServiceSetLinkStateProcedure is the fully-qualified name of the PivirtdService's
 	// SetLinkState RPC.
-	PivirtdServiceSetLinkStateProcedure = "/pilab.virtualization.v1.PivirtdService/SetLinkState"
+	PivirtdServiceSetLinkStateProcedure = "/pilab.pivirtd.v1.PivirtdService/SetLinkState"
 	// PivirtdServiceRenameVMProcedure is the fully-qualified name of the PivirtdService's RenameVM RPC.
-	PivirtdServiceRenameVMProcedure = "/pilab.virtualization.v1.PivirtdService/RenameVM"
+	PivirtdServiceRenameVMProcedure = "/pilab.pivirtd.v1.PivirtdService/RenameVM"
 	// PivirtdServiceChangeISOProcedure is the fully-qualified name of the PivirtdService's ChangeISO
 	// RPC.
-	PivirtdServiceChangeISOProcedure = "/pilab.virtualization.v1.PivirtdService/ChangeISO"
+	PivirtdServiceChangeISOProcedure = "/pilab.pivirtd.v1.PivirtdService/ChangeISO"
 	// PivirtdServiceEjectISOProcedure is the fully-qualified name of the PivirtdService's EjectISO RPC.
-	PivirtdServiceEjectISOProcedure = "/pilab.virtualization.v1.PivirtdService/EjectISO"
+	PivirtdServiceEjectISOProcedure = "/pilab.pivirtd.v1.PivirtdService/EjectISO"
 	// PivirtdServiceGetSnapshotTreeProcedure is the fully-qualified name of the PivirtdService's
 	// GetSnapshotTree RPC.
-	PivirtdServiceGetSnapshotTreeProcedure = "/pilab.virtualization.v1.PivirtdService/GetSnapshotTree"
+	PivirtdServiceGetSnapshotTreeProcedure = "/pilab.pivirtd.v1.PivirtdService/GetSnapshotTree"
 	// PivirtdServiceGetGuestInfoProcedure is the fully-qualified name of the PivirtdService's
 	// GetGuestInfo RPC.
-	PivirtdServiceGetGuestInfoProcedure = "/pilab.virtualization.v1.PivirtdService/GetGuestInfo"
+	PivirtdServiceGetGuestInfoProcedure = "/pilab.pivirtd.v1.PivirtdService/GetGuestInfo"
 	// PivirtdServiceGuestExecProcedure is the fully-qualified name of the PivirtdService's GuestExec
 	// RPC.
-	PivirtdServiceGuestExecProcedure = "/pilab.virtualization.v1.PivirtdService/GuestExec"
+	PivirtdServiceGuestExecProcedure = "/pilab.pivirtd.v1.PivirtdService/GuestExec"
 	// PivirtdServiceGetGuestExecStatusProcedure is the fully-qualified name of the PivirtdService's
 	// GetGuestExecStatus RPC.
-	PivirtdServiceGetGuestExecStatusProcedure = "/pilab.virtualization.v1.PivirtdService/GetGuestExecStatus"
+	PivirtdServiceGetGuestExecStatusProcedure = "/pilab.pivirtd.v1.PivirtdService/GetGuestExecStatus"
 	// PivirtdServiceSetGuestHostnameProcedure is the fully-qualified name of the PivirtdService's
 	// SetGuestHostname RPC.
-	PivirtdServiceSetGuestHostnameProcedure = "/pilab.virtualization.v1.PivirtdService/SetGuestHostname"
+	PivirtdServiceSetGuestHostnameProcedure = "/pilab.pivirtd.v1.PivirtdService/SetGuestHostname"
 	// PivirtdServiceCustomizeOSProcedure is the fully-qualified name of the PivirtdService's
 	// CustomizeOS RPC.
-	PivirtdServiceCustomizeOSProcedure = "/pilab.virtualization.v1.PivirtdService/CustomizeOS"
+	PivirtdServiceCustomizeOSProcedure = "/pilab.pivirtd.v1.PivirtdService/CustomizeOS"
 	// PivirtdServiceSubscribeEventsProcedure is the fully-qualified name of the PivirtdService's
 	// SubscribeEvents RPC.
-	PivirtdServiceSubscribeEventsProcedure = "/pilab.virtualization.v1.PivirtdService/SubscribeEvents"
+	PivirtdServiceSubscribeEventsProcedure = "/pilab.pivirtd.v1.PivirtdService/SubscribeEvents"
 	// PivirtdServiceGetHostResourceProcedure is the fully-qualified name of the PivirtdService's
 	// GetHostResource RPC.
-	PivirtdServiceGetHostResourceProcedure = "/pilab.virtualization.v1.PivirtdService/GetHostResource"
+	PivirtdServiceGetHostResourceProcedure = "/pilab.pivirtd.v1.PivirtdService/GetHostResource"
 )
 
-// PivirtdServiceClient is a client for the pilab.virtualization.v1.PivirtdService service.
+// PivirtdServiceClient is a client for the pilab.pivirtd.v1.PivirtdService service.
 type PivirtdServiceClient interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error)
@@ -308,10 +308,10 @@ type PivirtdServiceClient interface {
 	GetHostResource(context.Context, *connect.Request[v1.SubscribeEventsRequest]) (*connect.Response[v1.HostResourceReport], error)
 }
 
-// NewPivirtdServiceClient constructs a client for the pilab.virtualization.v1.PivirtdService
-// service. By default, it uses the Connect protocol with the binary Protobuf Codec, asks for
-// gzipped responses, and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply
-// the connect.WithGRPC() or connect.WithGRPCWeb() options.
+// NewPivirtdServiceClient constructs a client for the pilab.pivirtd.v1.PivirtdService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -788,337 +788,337 @@ type pivirtdServiceClient struct {
 	getHostResource     *connect.Client[v1.SubscribeEventsRequest, v1.HostResourceReport]
 }
 
-// CreateVM calls pilab.virtualization.v1.PivirtdService.CreateVM.
+// CreateVM calls pilab.pivirtd.v1.PivirtdService.CreateVM.
 func (c *pivirtdServiceClient) CreateVM(ctx context.Context, req *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.createVM.CallUnary(ctx, req)
 }
 
-// ApplyVM calls pilab.virtualization.v1.PivirtdService.ApplyVM.
+// ApplyVM calls pilab.pivirtd.v1.PivirtdService.ApplyVM.
 func (c *pivirtdServiceClient) ApplyVM(ctx context.Context, req *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.applyVM.CallUnary(ctx, req)
 }
 
-// StartVM calls pilab.virtualization.v1.PivirtdService.StartVM.
+// StartVM calls pilab.pivirtd.v1.PivirtdService.StartVM.
 func (c *pivirtdServiceClient) StartVM(ctx context.Context, req *connect.Request[v1.StartVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.startVM.CallUnary(ctx, req)
 }
 
-// StopVM calls pilab.virtualization.v1.PivirtdService.StopVM.
+// StopVM calls pilab.pivirtd.v1.PivirtdService.StopVM.
 func (c *pivirtdServiceClient) StopVM(ctx context.Context, req *connect.Request[v1.StopVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.stopVM.CallUnary(ctx, req)
 }
 
-// PauseVM calls pilab.virtualization.v1.PivirtdService.PauseVM.
+// PauseVM calls pilab.pivirtd.v1.PivirtdService.PauseVM.
 func (c *pivirtdServiceClient) PauseVM(ctx context.Context, req *connect.Request[v1.PauseVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.pauseVM.CallUnary(ctx, req)
 }
 
-// ResumeVM calls pilab.virtualization.v1.PivirtdService.ResumeVM.
+// ResumeVM calls pilab.pivirtd.v1.PivirtdService.ResumeVM.
 func (c *pivirtdServiceClient) ResumeVM(ctx context.Context, req *connect.Request[v1.ResumeVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.resumeVM.CallUnary(ctx, req)
 }
 
-// RebootVM calls pilab.virtualization.v1.PivirtdService.RebootVM.
+// RebootVM calls pilab.pivirtd.v1.PivirtdService.RebootVM.
 func (c *pivirtdServiceClient) RebootVM(ctx context.Context, req *connect.Request[v1.RebootVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.rebootVM.CallUnary(ctx, req)
 }
 
-// DeleteVM calls pilab.virtualization.v1.PivirtdService.DeleteVM.
+// DeleteVM calls pilab.pivirtd.v1.PivirtdService.DeleteVM.
 func (c *pivirtdServiceClient) DeleteVM(ctx context.Context, req *connect.Request[v1.DeleteVMRequest]) (*connect.Response[v1.DeleteVMResponse], error) {
 	return c.deleteVM.CallUnary(ctx, req)
 }
 
-// ListVMs calls pilab.virtualization.v1.PivirtdService.ListVMs.
+// ListVMs calls pilab.pivirtd.v1.PivirtdService.ListVMs.
 func (c *pivirtdServiceClient) ListVMs(ctx context.Context, req *connect.Request[v1.ListVMsRequest]) (*connect.Response[v1.ListVMsResponse], error) {
 	return c.listVMs.CallUnary(ctx, req)
 }
 
-// GetVM calls pilab.virtualization.v1.PivirtdService.GetVM.
+// GetVM calls pilab.pivirtd.v1.PivirtdService.GetVM.
 func (c *pivirtdServiceClient) GetVM(ctx context.Context, req *connect.Request[v1.GetVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.getVM.CallUnary(ctx, req)
 }
 
-// GetVMStats calls pilab.virtualization.v1.PivirtdService.GetVMStats.
+// GetVMStats calls pilab.pivirtd.v1.PivirtdService.GetVMStats.
 func (c *pivirtdServiceClient) GetVMStats(ctx context.Context, req *connect.Request[v1.GetVMStatsRequest]) (*connect.Response[v1.VMStatsResponse], error) {
 	return c.getVMStats.CallUnary(ctx, req)
 }
 
-// UpdateVMMemory calls pilab.virtualization.v1.PivirtdService.UpdateVMMemory.
+// UpdateVMMemory calls pilab.pivirtd.v1.PivirtdService.UpdateVMMemory.
 func (c *pivirtdServiceClient) UpdateVMMemory(ctx context.Context, req *connect.Request[v1.UpdateVMMemoryRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.updateVMMemory.CallUnary(ctx, req)
 }
 
-// UpdateVMCpu calls pilab.virtualization.v1.PivirtdService.UpdateVMCpu.
+// UpdateVMCpu calls pilab.pivirtd.v1.PivirtdService.UpdateVMCpu.
 func (c *pivirtdServiceClient) UpdateVMCpu(ctx context.Context, req *connect.Request[v1.UpdateVMCpuRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.updateVMCpu.CallUnary(ctx, req)
 }
 
-// ExecuteQMP calls pilab.virtualization.v1.PivirtdService.ExecuteQMP.
+// ExecuteQMP calls pilab.pivirtd.v1.PivirtdService.ExecuteQMP.
 func (c *pivirtdServiceClient) ExecuteQMP(ctx context.Context, req *connect.Request[v1.ExecuteQMPRequest]) (*connect.Response[v1.ExecuteQMPResponse], error) {
 	return c.executeQMP.CallUnary(ctx, req)
 }
 
-// StreamQMPEvents calls pilab.virtualization.v1.PivirtdService.StreamQMPEvents.
+// StreamQMPEvents calls pilab.pivirtd.v1.PivirtdService.StreamQMPEvents.
 func (c *pivirtdServiceClient) StreamQMPEvents(ctx context.Context, req *connect.Request[v1.StreamQMPRequest]) (*connect.ServerStreamForClient[v1.QMPEvent], error) {
 	return c.streamQMPEvents.CallServerStream(ctx, req)
 }
 
-// CreateSnapshot calls pilab.virtualization.v1.PivirtdService.CreateSnapshot.
+// CreateSnapshot calls pilab.pivirtd.v1.PivirtdService.CreateSnapshot.
 func (c *pivirtdServiceClient) CreateSnapshot(ctx context.Context, req *connect.Request[v1.CreateSnapshotRequest]) (*connect.Response[v1.SnapshotResponse], error) {
 	return c.createSnapshot.CallUnary(ctx, req)
 }
 
-// ListSnapshots calls pilab.virtualization.v1.PivirtdService.ListSnapshots.
+// ListSnapshots calls pilab.pivirtd.v1.PivirtdService.ListSnapshots.
 func (c *pivirtdServiceClient) ListSnapshots(ctx context.Context, req *connect.Request[v1.ListSnapshotsRequest]) (*connect.Response[v1.ListSnapshotsResponse], error) {
 	return c.listSnapshots.CallUnary(ctx, req)
 }
 
-// RestoreSnapshot calls pilab.virtualization.v1.PivirtdService.RestoreSnapshot.
+// RestoreSnapshot calls pilab.pivirtd.v1.PivirtdService.RestoreSnapshot.
 func (c *pivirtdServiceClient) RestoreSnapshot(ctx context.Context, req *connect.Request[v1.RestoreSnapshotRequest]) (*connect.Response[v1.SnapshotResponse], error) {
 	return c.restoreSnapshot.CallUnary(ctx, req)
 }
 
-// DeleteSnapshot calls pilab.virtualization.v1.PivirtdService.DeleteSnapshot.
+// DeleteSnapshot calls pilab.pivirtd.v1.PivirtdService.DeleteSnapshot.
 func (c *pivirtdServiceClient) DeleteSnapshot(ctx context.Context, req *connect.Request[v1.DeleteSnapshotRequest]) (*connect.Response[v1.DeleteSnapshotResponse], error) {
 	return c.deleteSnapshot.CallUnary(ctx, req)
 }
 
-// ConsolidateSnapshot calls pilab.virtualization.v1.PivirtdService.ConsolidateSnapshot.
+// ConsolidateSnapshot calls pilab.pivirtd.v1.PivirtdService.ConsolidateSnapshot.
 func (c *pivirtdServiceClient) ConsolidateSnapshot(ctx context.Context, req *connect.Request[v1.ConsolidateSnapshotRequest]) (*connect.Response[v1.SnapshotResponse], error) {
 	return c.consolidateSnapshot.CallUnary(ctx, req)
 }
 
-// GetSnapshotStatus calls pilab.virtualization.v1.PivirtdService.GetSnapshotStatus.
+// GetSnapshotStatus calls pilab.pivirtd.v1.PivirtdService.GetSnapshotStatus.
 func (c *pivirtdServiceClient) GetSnapshotStatus(ctx context.Context, req *connect.Request[v1.GetSnapshotStatusRequest]) (*connect.Response[v1.SnapshotStatusResponse], error) {
 	return c.getSnapshotStatus.CallUnary(ctx, req)
 }
 
-// CloneVM calls pilab.virtualization.v1.PivirtdService.CloneVM.
+// CloneVM calls pilab.pivirtd.v1.PivirtdService.CloneVM.
 func (c *pivirtdServiceClient) CloneVM(ctx context.Context, req *connect.Request[v1.CloneVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.cloneVM.CallUnary(ctx, req)
 }
 
-// CloneSnapshot calls pilab.virtualization.v1.PivirtdService.CloneSnapshot.
+// CloneSnapshot calls pilab.pivirtd.v1.PivirtdService.CloneSnapshot.
 func (c *pivirtdServiceClient) CloneSnapshot(ctx context.Context, req *connect.Request[v1.CloneSnapshotRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.cloneSnapshot.CallUnary(ctx, req)
 }
 
-// MigrateVM calls pilab.virtualization.v1.PivirtdService.MigrateVM.
+// MigrateVM calls pilab.pivirtd.v1.PivirtdService.MigrateVM.
 func (c *pivirtdServiceClient) MigrateVM(ctx context.Context, req *connect.Request[v1.MigrateVMRequest]) (*connect.Response[v1.MigrateVMResponse], error) {
 	return c.migrateVM.CallUnary(ctx, req)
 }
 
-// GetMigrationStatus calls pilab.virtualization.v1.PivirtdService.GetMigrationStatus.
+// GetMigrationStatus calls pilab.pivirtd.v1.PivirtdService.GetMigrationStatus.
 func (c *pivirtdServiceClient) GetMigrationStatus(ctx context.Context, req *connect.Request[v1.GetMigrationStatusRequest]) (*connect.Response[v1.MigrationStatusResponse], error) {
 	return c.getMigrationStatus.CallUnary(ctx, req)
 }
 
-// CreateStoragePool calls pilab.virtualization.v1.PivirtdService.CreateStoragePool.
+// CreateStoragePool calls pilab.pivirtd.v1.PivirtdService.CreateStoragePool.
 func (c *pivirtdServiceClient) CreateStoragePool(ctx context.Context, req *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
 	return c.createStoragePool.CallUnary(ctx, req)
 }
 
-// ListStoragePools calls pilab.virtualization.v1.PivirtdService.ListStoragePools.
+// ListStoragePools calls pilab.pivirtd.v1.PivirtdService.ListStoragePools.
 func (c *pivirtdServiceClient) ListStoragePools(ctx context.Context, req *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error) {
 	return c.listStoragePools.CallUnary(ctx, req)
 }
 
-// DeleteStoragePool calls pilab.virtualization.v1.PivirtdService.DeleteStoragePool.
+// DeleteStoragePool calls pilab.pivirtd.v1.PivirtdService.DeleteStoragePool.
 func (c *pivirtdServiceClient) DeleteStoragePool(ctx context.Context, req *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error) {
 	return c.deleteStoragePool.CallUnary(ctx, req)
 }
 
-// CreateTAPDevice calls pilab.virtualization.v1.PivirtdService.CreateTAPDevice.
+// CreateTAPDevice calls pilab.pivirtd.v1.PivirtdService.CreateTAPDevice.
 func (c *pivirtdServiceClient) CreateTAPDevice(ctx context.Context, req *connect.Request[v1.CreateTAPDeviceRequest]) (*connect.Response[v1.NetworkResponse], error) {
 	return c.createTAPDevice.CallUnary(ctx, req)
 }
 
-// DeleteTAPDevice calls pilab.virtualization.v1.PivirtdService.DeleteTAPDevice.
+// DeleteTAPDevice calls pilab.pivirtd.v1.PivirtdService.DeleteTAPDevice.
 func (c *pivirtdServiceClient) DeleteTAPDevice(ctx context.Context, req *connect.Request[v1.DeleteTAPDeviceRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
 	return c.deleteTAPDevice.CallUnary(ctx, req)
 }
 
-// ListTAPDevices calls pilab.virtualization.v1.PivirtdService.ListTAPDevices.
+// ListTAPDevices calls pilab.pivirtd.v1.PivirtdService.ListTAPDevices.
 func (c *pivirtdServiceClient) ListTAPDevices(ctx context.Context, req *connect.Request[v1.ListTAPDevicesRequest]) (*connect.Response[v1.ListTAPDevicesResponse], error) {
 	return c.listTAPDevices.CallUnary(ctx, req)
 }
 
-// CreateBridge calls pilab.virtualization.v1.PivirtdService.CreateBridge.
+// CreateBridge calls pilab.pivirtd.v1.PivirtdService.CreateBridge.
 func (c *pivirtdServiceClient) CreateBridge(ctx context.Context, req *connect.Request[v1.CreateBridgeRequest]) (*connect.Response[v1.NetworkResponse], error) {
 	return c.createBridge.CallUnary(ctx, req)
 }
 
-// DeleteBridge calls pilab.virtualization.v1.PivirtdService.DeleteBridge.
+// DeleteBridge calls pilab.pivirtd.v1.PivirtdService.DeleteBridge.
 func (c *pivirtdServiceClient) DeleteBridge(ctx context.Context, req *connect.Request[v1.DeleteBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
 	return c.deleteBridge.CallUnary(ctx, req)
 }
 
-// ListBridges calls pilab.virtualization.v1.PivirtdService.ListBridges.
+// ListBridges calls pilab.pivirtd.v1.PivirtdService.ListBridges.
 func (c *pivirtdServiceClient) ListBridges(ctx context.Context, req *connect.Request[v1.ListBridgesRequest]) (*connect.Response[v1.ListBridgesResponse], error) {
 	return c.listBridges.CallUnary(ctx, req)
 }
 
-// CreateOVSBridge calls pilab.virtualization.v1.PivirtdService.CreateOVSBridge.
+// CreateOVSBridge calls pilab.pivirtd.v1.PivirtdService.CreateOVSBridge.
 func (c *pivirtdServiceClient) CreateOVSBridge(ctx context.Context, req *connect.Request[v1.CreateOVSBridgeRequest]) (*connect.Response[v1.NetworkResponse], error) {
 	return c.createOVSBridge.CallUnary(ctx, req)
 }
 
-// DeleteOVSBridge calls pilab.virtualization.v1.PivirtdService.DeleteOVSBridge.
+// DeleteOVSBridge calls pilab.pivirtd.v1.PivirtdService.DeleteOVSBridge.
 func (c *pivirtdServiceClient) DeleteOVSBridge(ctx context.Context, req *connect.Request[v1.DeleteOVSBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
 	return c.deleteOVSBridge.CallUnary(ctx, req)
 }
 
-// ListOVSBridges calls pilab.virtualization.v1.PivirtdService.ListOVSBridges.
+// ListOVSBridges calls pilab.pivirtd.v1.PivirtdService.ListOVSBridges.
 func (c *pivirtdServiceClient) ListOVSBridges(ctx context.Context, req *connect.Request[v1.ListOVSBridgesRequest]) (*connect.Response[v1.ListOVSBridgesResponse], error) {
 	return c.listOVSBridges.CallUnary(ctx, req)
 }
 
-// AddOVSPort calls pilab.virtualization.v1.PivirtdService.AddOVSPort.
+// AddOVSPort calls pilab.pivirtd.v1.PivirtdService.AddOVSPort.
 func (c *pivirtdServiceClient) AddOVSPort(ctx context.Context, req *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error) {
 	return c.addOVSPort.CallUnary(ctx, req)
 }
 
-// RemoveOVSPort calls pilab.virtualization.v1.PivirtdService.RemoveOVSPort.
+// RemoveOVSPort calls pilab.pivirtd.v1.PivirtdService.RemoveOVSPort.
 func (c *pivirtdServiceClient) RemoveOVSPort(ctx context.Context, req *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
 	return c.removeOVSPort.CallUnary(ctx, req)
 }
 
-// ListOVSPorts calls pilab.virtualization.v1.PivirtdService.ListOVSPorts.
+// ListOVSPorts calls pilab.pivirtd.v1.PivirtdService.ListOVSPorts.
 func (c *pivirtdServiceClient) ListOVSPorts(ctx context.Context, req *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error) {
 	return c.listOVSPorts.CallUnary(ctx, req)
 }
 
-// SetLabels calls pilab.virtualization.v1.PivirtdService.SetLabels.
+// SetLabels calls pilab.pivirtd.v1.PivirtdService.SetLabels.
 func (c *pivirtdServiceClient) SetLabels(ctx context.Context, req *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error) {
 	return c.setLabels.CallUnary(ctx, req)
 }
 
-// GetLabels calls pilab.virtualization.v1.PivirtdService.GetLabels.
+// GetLabels calls pilab.pivirtd.v1.PivirtdService.GetLabels.
 func (c *pivirtdServiceClient) GetLabels(ctx context.Context, req *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error) {
 	return c.getLabels.CallUnary(ctx, req)
 }
 
-// DeleteLabel calls pilab.virtualization.v1.PivirtdService.DeleteLabel.
+// DeleteLabel calls pilab.pivirtd.v1.PivirtdService.DeleteLabel.
 func (c *pivirtdServiceClient) DeleteLabel(ctx context.Context, req *connect.Request[v1.DeleteLabelRequest]) (*connect.Response[v1.DeleteLabelResponse], error) {
 	return c.deleteLabel.CallUnary(ctx, req)
 }
 
-// SetProvisioning calls pilab.virtualization.v1.PivirtdService.SetProvisioning.
+// SetProvisioning calls pilab.pivirtd.v1.PivirtdService.SetProvisioning.
 func (c *pivirtdServiceClient) SetProvisioning(ctx context.Context, req *connect.Request[v1.SetProvisioningRequest]) (*connect.Response[v1.SetProvisioningResponse], error) {
 	return c.setProvisioning.CallUnary(ctx, req)
 }
 
-// GetVMStatus calls pilab.virtualization.v1.PivirtdService.GetVMStatus.
+// GetVMStatus calls pilab.pivirtd.v1.PivirtdService.GetVMStatus.
 func (c *pivirtdServiceClient) GetVMStatus(ctx context.Context, req *connect.Request[v1.GetVMStatusRequest]) (*connect.Response[v1.GetVMStatusResponse], error) {
 	return c.getVMStatus.CallUnary(ctx, req)
 }
 
-// StartDiskMove calls pilab.virtualization.v1.PivirtdService.StartDiskMove.
+// StartDiskMove calls pilab.pivirtd.v1.PivirtdService.StartDiskMove.
 func (c *pivirtdServiceClient) StartDiskMove(ctx context.Context, req *connect.Request[v1.StartDiskMoveRequest]) (*connect.Response[v1.DiskMoveStatusResponse], error) {
 	return c.startDiskMove.CallUnary(ctx, req)
 }
 
-// GetDiskMoveStatus calls pilab.virtualization.v1.PivirtdService.GetDiskMoveStatus.
+// GetDiskMoveStatus calls pilab.pivirtd.v1.PivirtdService.GetDiskMoveStatus.
 func (c *pivirtdServiceClient) GetDiskMoveStatus(ctx context.Context, req *connect.Request[v1.GetDiskMoveStatusRequest]) (*connect.Response[v1.DiskMoveStatusResponse], error) {
 	return c.getDiskMoveStatus.CallUnary(ctx, req)
 }
 
-// CancelDiskMove calls pilab.virtualization.v1.PivirtdService.CancelDiskMove.
+// CancelDiskMove calls pilab.pivirtd.v1.PivirtdService.CancelDiskMove.
 func (c *pivirtdServiceClient) CancelDiskMove(ctx context.Context, req *connect.Request[v1.CancelDiskMoveRequest]) (*connect.Response[v1.DiskMoveResponse], error) {
 	return c.cancelDiskMove.CallUnary(ctx, req)
 }
 
-// AttachDisk calls pilab.virtualization.v1.PivirtdService.AttachDisk.
+// AttachDisk calls pilab.pivirtd.v1.PivirtdService.AttachDisk.
 func (c *pivirtdServiceClient) AttachDisk(ctx context.Context, req *connect.Request[v1.AttachDiskRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.attachDisk.CallUnary(ctx, req)
 }
 
-// DetachDisk calls pilab.virtualization.v1.PivirtdService.DetachDisk.
+// DetachDisk calls pilab.pivirtd.v1.PivirtdService.DetachDisk.
 func (c *pivirtdServiceClient) DetachDisk(ctx context.Context, req *connect.Request[v1.DetachDiskRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.detachDisk.CallUnary(ctx, req)
 }
 
-// AttachNIC calls pilab.virtualization.v1.PivirtdService.AttachNIC.
+// AttachNIC calls pilab.pivirtd.v1.PivirtdService.AttachNIC.
 func (c *pivirtdServiceClient) AttachNIC(ctx context.Context, req *connect.Request[v1.AttachNICRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.attachNIC.CallUnary(ctx, req)
 }
 
-// DetachNIC calls pilab.virtualization.v1.PivirtdService.DetachNIC.
+// DetachNIC calls pilab.pivirtd.v1.PivirtdService.DetachNIC.
 func (c *pivirtdServiceClient) DetachNIC(ctx context.Context, req *connect.Request[v1.DetachNICRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.detachNIC.CallUnary(ctx, req)
 }
 
-// ResizeDisk calls pilab.virtualization.v1.PivirtdService.ResizeDisk.
+// ResizeDisk calls pilab.pivirtd.v1.PivirtdService.ResizeDisk.
 func (c *pivirtdServiceClient) ResizeDisk(ctx context.Context, req *connect.Request[v1.ResizeDiskRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.resizeDisk.CallUnary(ctx, req)
 }
 
-// SetVNCPassword calls pilab.virtualization.v1.PivirtdService.SetVNCPassword.
+// SetVNCPassword calls pilab.pivirtd.v1.PivirtdService.SetVNCPassword.
 func (c *pivirtdServiceClient) SetVNCPassword(ctx context.Context, req *connect.Request[v1.SetVNCPasswordRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.setVNCPassword.CallUnary(ctx, req)
 }
 
-// SetLinkState calls pilab.virtualization.v1.PivirtdService.SetLinkState.
+// SetLinkState calls pilab.pivirtd.v1.PivirtdService.SetLinkState.
 func (c *pivirtdServiceClient) SetLinkState(ctx context.Context, req *connect.Request[v1.SetLinkStateRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.setLinkState.CallUnary(ctx, req)
 }
 
-// RenameVM calls pilab.virtualization.v1.PivirtdService.RenameVM.
+// RenameVM calls pilab.pivirtd.v1.PivirtdService.RenameVM.
 func (c *pivirtdServiceClient) RenameVM(ctx context.Context, req *connect.Request[v1.RenameVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.renameVM.CallUnary(ctx, req)
 }
 
-// ChangeISO calls pilab.virtualization.v1.PivirtdService.ChangeISO.
+// ChangeISO calls pilab.pivirtd.v1.PivirtdService.ChangeISO.
 func (c *pivirtdServiceClient) ChangeISO(ctx context.Context, req *connect.Request[v1.ChangeISORequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.changeISO.CallUnary(ctx, req)
 }
 
-// EjectISO calls pilab.virtualization.v1.PivirtdService.EjectISO.
+// EjectISO calls pilab.pivirtd.v1.PivirtdService.EjectISO.
 func (c *pivirtdServiceClient) EjectISO(ctx context.Context, req *connect.Request[v1.EjectISORequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.ejectISO.CallUnary(ctx, req)
 }
 
-// GetSnapshotTree calls pilab.virtualization.v1.PivirtdService.GetSnapshotTree.
+// GetSnapshotTree calls pilab.pivirtd.v1.PivirtdService.GetSnapshotTree.
 func (c *pivirtdServiceClient) GetSnapshotTree(ctx context.Context, req *connect.Request[v1.GetSnapshotTreeRequest]) (*connect.Response[v1.GetSnapshotTreeResponse], error) {
 	return c.getSnapshotTree.CallUnary(ctx, req)
 }
 
-// GetGuestInfo calls pilab.virtualization.v1.PivirtdService.GetGuestInfo.
+// GetGuestInfo calls pilab.pivirtd.v1.PivirtdService.GetGuestInfo.
 func (c *pivirtdServiceClient) GetGuestInfo(ctx context.Context, req *connect.Request[v1.GetGuestInfoRequest]) (*connect.Response[v1.GetGuestInfoResponse], error) {
 	return c.getGuestInfo.CallUnary(ctx, req)
 }
 
-// GuestExec calls pilab.virtualization.v1.PivirtdService.GuestExec.
+// GuestExec calls pilab.pivirtd.v1.PivirtdService.GuestExec.
 func (c *pivirtdServiceClient) GuestExec(ctx context.Context, req *connect.Request[v1.GuestExecRequest]) (*connect.Response[v1.GuestExecResponse], error) {
 	return c.guestExec.CallUnary(ctx, req)
 }
 
-// GetGuestExecStatus calls pilab.virtualization.v1.PivirtdService.GetGuestExecStatus.
+// GetGuestExecStatus calls pilab.pivirtd.v1.PivirtdService.GetGuestExecStatus.
 func (c *pivirtdServiceClient) GetGuestExecStatus(ctx context.Context, req *connect.Request[v1.GetGuestExecStatusRequest]) (*connect.Response[v1.GetGuestExecStatusResponse], error) {
 	return c.getGuestExecStatus.CallUnary(ctx, req)
 }
 
-// SetGuestHostname calls pilab.virtualization.v1.PivirtdService.SetGuestHostname.
+// SetGuestHostname calls pilab.pivirtd.v1.PivirtdService.SetGuestHostname.
 func (c *pivirtdServiceClient) SetGuestHostname(ctx context.Context, req *connect.Request[v1.SetGuestHostnameRequest]) (*connect.Response[v1.SetGuestHostnameResponse], error) {
 	return c.setGuestHostname.CallUnary(ctx, req)
 }
 
-// CustomizeOS calls pilab.virtualization.v1.PivirtdService.CustomizeOS.
+// CustomizeOS calls pilab.pivirtd.v1.PivirtdService.CustomizeOS.
 func (c *pivirtdServiceClient) CustomizeOS(ctx context.Context, req *connect.Request[v1.CustomizeOSRequest]) (*connect.Response[v1.CustomizeOSResponse], error) {
 	return c.customizeOS.CallUnary(ctx, req)
 }
 
-// SubscribeEvents calls pilab.virtualization.v1.PivirtdService.SubscribeEvents.
+// SubscribeEvents calls pilab.pivirtd.v1.PivirtdService.SubscribeEvents.
 func (c *pivirtdServiceClient) SubscribeEvents(ctx context.Context, req *connect.Request[v1.SubscribeEventsRequest]) (*connect.ServerStreamForClient[v1.HostEvent], error) {
 	return c.subscribeEvents.CallServerStream(ctx, req)
 }
 
-// GetHostResource calls pilab.virtualization.v1.PivirtdService.GetHostResource.
+// GetHostResource calls pilab.pivirtd.v1.PivirtdService.GetHostResource.
 func (c *pivirtdServiceClient) GetHostResource(ctx context.Context, req *connect.Request[v1.SubscribeEventsRequest]) (*connect.Response[v1.HostResourceReport], error) {
 	return c.getHostResource.CallUnary(ctx, req)
 }
 
-// PivirtdServiceHandler is an implementation of the pilab.virtualization.v1.PivirtdService service.
+// PivirtdServiceHandler is an implementation of the pilab.pivirtd.v1.PivirtdService service.
 type PivirtdServiceHandler interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error)
@@ -1609,7 +1609,7 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		connect.WithSchema(pivirtdServiceMethods.ByName("GetHostResource")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/pilab.virtualization.v1.PivirtdService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/pilab.pivirtd.v1.PivirtdService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PivirtdServiceCreateVMProcedure:
 			pivirtdServiceCreateVMHandler.ServeHTTP(w, r)
@@ -1753,265 +1753,265 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 type UnimplementedPivirtdServiceHandler struct{}
 
 func (UnimplementedPivirtdServiceHandler) CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CreateVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ApplyVM(context.Context, *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ApplyVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ApplyVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) StartVM(context.Context, *connect.Request[v1.StartVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.StartVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.StartVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) StopVM(context.Context, *connect.Request[v1.StopVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.StopVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.StopVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) PauseVM(context.Context, *connect.Request[v1.PauseVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.PauseVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.PauseVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ResumeVM(context.Context, *connect.Request[v1.ResumeVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ResumeVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ResumeVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) RebootVM(context.Context, *connect.Request[v1.RebootVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.RebootVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.RebootVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DeleteVM(context.Context, *connect.Request[v1.DeleteVMRequest]) (*connect.Response[v1.DeleteVMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListVMs(context.Context, *connect.Request[v1.ListVMsRequest]) (*connect.Response[v1.ListVMsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ListVMs is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListVMs is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetVM(context.Context, *connect.Request[v1.GetVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetVMStats(context.Context, *connect.Request[v1.GetVMStatsRequest]) (*connect.Response[v1.VMStatsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetVMStats is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetVMStats is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) UpdateVMMemory(context.Context, *connect.Request[v1.UpdateVMMemoryRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.UpdateVMMemory is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.UpdateVMMemory is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) UpdateVMCpu(context.Context, *connect.Request[v1.UpdateVMCpuRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.UpdateVMCpu is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.UpdateVMCpu is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ExecuteQMP(context.Context, *connect.Request[v1.ExecuteQMPRequest]) (*connect.Response[v1.ExecuteQMPResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ExecuteQMP is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ExecuteQMP is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) StreamQMPEvents(context.Context, *connect.Request[v1.StreamQMPRequest], *connect.ServerStream[v1.QMPEvent]) error {
-	return connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.StreamQMPEvents is not implemented"))
+	return connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.StreamQMPEvents is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CreateSnapshot(context.Context, *connect.Request[v1.CreateSnapshotRequest]) (*connect.Response[v1.SnapshotResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CreateSnapshot is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateSnapshot is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListSnapshots(context.Context, *connect.Request[v1.ListSnapshotsRequest]) (*connect.Response[v1.ListSnapshotsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ListSnapshots is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListSnapshots is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) RestoreSnapshot(context.Context, *connect.Request[v1.RestoreSnapshotRequest]) (*connect.Response[v1.SnapshotResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.RestoreSnapshot is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.RestoreSnapshot is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DeleteSnapshot(context.Context, *connect.Request[v1.DeleteSnapshotRequest]) (*connect.Response[v1.DeleteSnapshotResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteSnapshot is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteSnapshot is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ConsolidateSnapshot(context.Context, *connect.Request[v1.ConsolidateSnapshotRequest]) (*connect.Response[v1.SnapshotResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ConsolidateSnapshot is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ConsolidateSnapshot is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetSnapshotStatus(context.Context, *connect.Request[v1.GetSnapshotStatusRequest]) (*connect.Response[v1.SnapshotStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetSnapshotStatus is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetSnapshotStatus is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CloneVM(context.Context, *connect.Request[v1.CloneVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CloneVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CloneVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CloneSnapshot(context.Context, *connect.Request[v1.CloneSnapshotRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CloneSnapshot is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CloneSnapshot is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) MigrateVM(context.Context, *connect.Request[v1.MigrateVMRequest]) (*connect.Response[v1.MigrateVMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.MigrateVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.MigrateVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetMigrationStatus(context.Context, *connect.Request[v1.GetMigrationStatusRequest]) (*connect.Response[v1.MigrationStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetMigrationStatus is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetMigrationStatus is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CreateStoragePool is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateStoragePool is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListStoragePools(context.Context, *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ListStoragePools is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListStoragePools is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteStoragePool is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteStoragePool is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CreateTAPDevice(context.Context, *connect.Request[v1.CreateTAPDeviceRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CreateTAPDevice is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateTAPDevice is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DeleteTAPDevice(context.Context, *connect.Request[v1.DeleteTAPDeviceRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteTAPDevice is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteTAPDevice is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListTAPDevices(context.Context, *connect.Request[v1.ListTAPDevicesRequest]) (*connect.Response[v1.ListTAPDevicesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ListTAPDevices is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListTAPDevices is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CreateBridge(context.Context, *connect.Request[v1.CreateBridgeRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CreateBridge is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateBridge is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DeleteBridge(context.Context, *connect.Request[v1.DeleteBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteBridge is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteBridge is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListBridges(context.Context, *connect.Request[v1.ListBridgesRequest]) (*connect.Response[v1.ListBridgesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ListBridges is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListBridges is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CreateOVSBridge(context.Context, *connect.Request[v1.CreateOVSBridgeRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CreateOVSBridge is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateOVSBridge is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DeleteOVSBridge(context.Context, *connect.Request[v1.DeleteOVSBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteOVSBridge is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteOVSBridge is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListOVSBridges(context.Context, *connect.Request[v1.ListOVSBridgesRequest]) (*connect.Response[v1.ListOVSBridgesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ListOVSBridges is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOVSBridges is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.AddOVSPort is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.AddOVSPort is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.RemoveOVSPort is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.RemoveOVSPort is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ListOVSPorts is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOVSPorts is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SetLabels is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.SetLabels is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetLabels(context.Context, *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetLabels is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetLabels is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DeleteLabel(context.Context, *connect.Request[v1.DeleteLabelRequest]) (*connect.Response[v1.DeleteLabelResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DeleteLabel is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteLabel is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SetProvisioning(context.Context, *connect.Request[v1.SetProvisioningRequest]) (*connect.Response[v1.SetProvisioningResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SetProvisioning is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.SetProvisioning is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetVMStatus(context.Context, *connect.Request[v1.GetVMStatusRequest]) (*connect.Response[v1.GetVMStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetVMStatus is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetVMStatus is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) StartDiskMove(context.Context, *connect.Request[v1.StartDiskMoveRequest]) (*connect.Response[v1.DiskMoveStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.StartDiskMove is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.StartDiskMove is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetDiskMoveStatus(context.Context, *connect.Request[v1.GetDiskMoveStatusRequest]) (*connect.Response[v1.DiskMoveStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetDiskMoveStatus is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetDiskMoveStatus is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CancelDiskMove(context.Context, *connect.Request[v1.CancelDiskMoveRequest]) (*connect.Response[v1.DiskMoveResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CancelDiskMove is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CancelDiskMove is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) AttachDisk(context.Context, *connect.Request[v1.AttachDiskRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.AttachDisk is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.AttachDisk is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DetachDisk(context.Context, *connect.Request[v1.DetachDiskRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DetachDisk is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DetachDisk is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) AttachNIC(context.Context, *connect.Request[v1.AttachNICRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.AttachNIC is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.AttachNIC is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) DetachNIC(context.Context, *connect.Request[v1.DetachNICRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.DetachNIC is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DetachNIC is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ResizeDisk(context.Context, *connect.Request[v1.ResizeDiskRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ResizeDisk is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ResizeDisk is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SetVNCPassword(context.Context, *connect.Request[v1.SetVNCPasswordRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SetVNCPassword is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.SetVNCPassword is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SetLinkState(context.Context, *connect.Request[v1.SetLinkStateRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SetLinkState is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.SetLinkState is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) RenameVM(context.Context, *connect.Request[v1.RenameVMRequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.RenameVM is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.RenameVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ChangeISO(context.Context, *connect.Request[v1.ChangeISORequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ChangeISO is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ChangeISO is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) EjectISO(context.Context, *connect.Request[v1.EjectISORequest]) (*connect.Response[v1.VMResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.EjectISO is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.EjectISO is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetSnapshotTree(context.Context, *connect.Request[v1.GetSnapshotTreeRequest]) (*connect.Response[v1.GetSnapshotTreeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetSnapshotTree is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetSnapshotTree is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetGuestInfo(context.Context, *connect.Request[v1.GetGuestInfoRequest]) (*connect.Response[v1.GetGuestInfoResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetGuestInfo is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetGuestInfo is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GuestExec(context.Context, *connect.Request[v1.GuestExecRequest]) (*connect.Response[v1.GuestExecResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GuestExec is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GuestExec is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetGuestExecStatus(context.Context, *connect.Request[v1.GetGuestExecStatusRequest]) (*connect.Response[v1.GetGuestExecStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetGuestExecStatus is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetGuestExecStatus is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SetGuestHostname(context.Context, *connect.Request[v1.SetGuestHostnameRequest]) (*connect.Response[v1.SetGuestHostnameResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SetGuestHostname is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.SetGuestHostname is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) CustomizeOS(context.Context, *connect.Request[v1.CustomizeOSRequest]) (*connect.Response[v1.CustomizeOSResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CustomizeOS is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CustomizeOS is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SubscribeEvents(context.Context, *connect.Request[v1.SubscribeEventsRequest], *connect.ServerStream[v1.HostEvent]) error {
-	return connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.SubscribeEvents is not implemented"))
+	return connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.SubscribeEvents is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) GetHostResource(context.Context, *connect.Request[v1.SubscribeEventsRequest]) (*connect.Response[v1.HostResourceReport], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.GetHostResource is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetHostResource is not implemented"))
 }

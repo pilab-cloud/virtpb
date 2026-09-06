@@ -89,7 +89,7 @@ message NodeEvent {
 
   oneof event {
     HeartbeatEvent heartbeat = 4;
-    pilab.virtualization.v1.HostResourceReport host_report = 5;
+    pilab.pivirtd.v1.HostResourceReport host_report = 5;
     VmStatusEvent vm_status = 6;
     pilab.common.v1.VmMetrics vm_metrics = 7;
     TaskProgressEvent task_progress = 8;

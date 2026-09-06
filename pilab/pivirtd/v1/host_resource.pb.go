@@ -460,7 +460,7 @@ func (*SubscribeEventsRequest) Descriptor() ([]byte, []int) {
 type HostEvent struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	Id        string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Type      HostEventType          `protobuf:"varint,2,opt,name=type,proto3,enum=pilab.virtualization.v1.HostEventType" json:"type,omitempty"`
+	Type      HostEventType          `protobuf:"varint,2,opt,name=type,proto3,enum=pilab.pivirtd.v1.HostEventType" json:"type,omitempty"`
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// Types that are valid to be assigned to Payload:
 	//
@@ -998,7 +998,7 @@ var File_pilab_pivirtd_v1_host_resource_proto protoreflect.FileDescriptor
 
 const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\n" +
-	"$pilab/pivirtd/v1/host_resource.proto\x12\x17pilab.virtualization.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\x05\n" +
+	"$pilab/pivirtd/v1/host_resource.proto\x12\x10pilab.pivirtd.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd3\x05\n" +
 	"\x12HostResourceReport\x12#\n" +
 	"\rphysical_cpus\x18\x01 \x01(\x05R\fphysicalCpus\x12%\n" +
 	"\x0ephysical_cores\x18\x02 \x01(\x05R\rphysicalCores\x12)\n" +
@@ -1009,16 +1009,16 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x0fmemory_total_mb\x18\x06 \x01(\x03R\rmemoryTotalMb\x12.\n" +
 	"\x13memory_available_mb\x18\a \x01(\x03R\x11memoryAvailableMb\x120\n" +
 	"\x15memory_used_by_vms_mb\x18\b \x01(\x03R\x11memoryUsedByVmsMb\x12,\n" +
-	"\x12memory_reserved_mb\x18\x10 \x01(\x03R\x10memoryReservedMb\x12@\n" +
+	"\x12memory_reserved_mb\x18\x10 \x01(\x03R\x10memoryReservedMb\x129\n" +
 	"\n" +
-	"numa_nodes\x18\t \x03(\v2!.pilab.virtualization.v1.NUMANodeR\tnumaNodes\x12#\n" +
+	"numa_nodes\x18\t \x03(\v2\x1a.pilab.pivirtd.v1.NUMANodeR\tnumaNodes\x12#\n" +
 	"\rkvm_available\x18\n" +
 	" \x01(\bR\fkvmAvailable\x123\n" +
 	"\x15nested_virtualization\x18\v \x01(\bR\x14nestedVirtualization\x12*\n" +
 	"\x11vmx_svm_supported\x18\f \x01(\bR\x0fvmxSvmSupported\x12/\n" +
 	"\x13hugepages_available\x18\r \x01(\bR\x12hugepagesAvailable\x12!\n" +
-	"\fqemu_version\x18\x0e \x01(\tR\vqemuVersion\x12A\n" +
-	"\astorage\x18\x0f \x01(\v2'.pilab.virtualization.v1.StorageSummaryR\astorage\"s\n" +
+	"\fqemu_version\x18\x0e \x01(\tR\vqemuVersion\x12:\n" +
+	"\astorage\x18\x0f \x01(\v2 .pilab.pivirtd.v1.StorageSummaryR\astorage\"s\n" +
 	"\bNUMANode\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\x05R\x06nodeId\x12,\n" +
 	"\x12memory_total_bytes\x18\x02 \x01(\x03R\x10memoryTotalBytes\x12 \n" +
@@ -1028,19 +1028,19 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x10pool_total_bytes\x18\x01 \x01(\x03R\x0epoolTotalBytes\x120\n" +
 	"\x14pool_available_bytes\x18\x02 \x01(\x03R\x12poolAvailableBytes\x12&\n" +
 	"\x0fpool_used_bytes\x18\x03 \x01(\x03R\rpoolUsedBytes\"\x18\n" +
-	"\x16SubscribeEventsRequest\"\x8b\x05\n" +
+	"\x16SubscribeEventsRequest\"\xda\x04\n" +
 	"\tHostEvent\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12:\n" +
-	"\x04type\x18\x02 \x01(\x0e2&.pilab.virtualization.v1.HostEventTypeR\x04type\x128\n" +
-	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12N\n" +
-	"\fvm_lifecycle\x18\x04 \x01(\v2).pilab.virtualization.v1.VmLifecycleEventH\x00R\vvmLifecycle\x12K\n" +
-	"\vhost_health\x18\x05 \x01(\v2(.pilab.virtualization.v1.HostHealthEventH\x00R\n" +
-	"hostHealth\x12]\n" +
-	"\x11resource_pressure\x18\x06 \x01(\v2..pilab.virtualization.v1.ResourcePressureEventH\x00R\x10resourcePressure\x12V\n" +
-	"\x0fresource_report\x18\a \x01(\v2+.pilab.virtualization.v1.HostResourceReportH\x00R\x0eresourceReport\x12L\n" +
-	"\fvm_disk_move\x18\b \x01(\v2(.pilab.virtualization.v1.VmDiskMoveEventH\x00R\n" +
-	"vmDiskMove\x12K\n" +
-	"\vvm_snapshot\x18\t \x01(\v2(.pilab.virtualization.v1.VmSnapshotEventH\x00R\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x123\n" +
+	"\x04type\x18\x02 \x01(\x0e2\x1f.pilab.pivirtd.v1.HostEventTypeR\x04type\x128\n" +
+	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12G\n" +
+	"\fvm_lifecycle\x18\x04 \x01(\v2\".pilab.pivirtd.v1.VmLifecycleEventH\x00R\vvmLifecycle\x12D\n" +
+	"\vhost_health\x18\x05 \x01(\v2!.pilab.pivirtd.v1.HostHealthEventH\x00R\n" +
+	"hostHealth\x12V\n" +
+	"\x11resource_pressure\x18\x06 \x01(\v2'.pilab.pivirtd.v1.ResourcePressureEventH\x00R\x10resourcePressure\x12O\n" +
+	"\x0fresource_report\x18\a \x01(\v2$.pilab.pivirtd.v1.HostResourceReportH\x00R\x0eresourceReport\x12E\n" +
+	"\fvm_disk_move\x18\b \x01(\v2!.pilab.pivirtd.v1.VmDiskMoveEventH\x00R\n" +
+	"vmDiskMove\x12D\n" +
+	"\vvm_snapshot\x18\t \x01(\v2!.pilab.pivirtd.v1.VmSnapshotEventH\x00R\n" +
 	"vmSnapshotB\t\n" +
 	"\apayload\"\x88\x01\n" +
 	"\x10VmLifecycleEvent\x12\x17\n" +
@@ -1113,30 +1113,30 @@ func file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP() []byte {
 var file_pilab_pivirtd_v1_host_resource_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_pilab_pivirtd_v1_host_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_pilab_pivirtd_v1_host_resource_proto_goTypes = []any{
-	(HostEventType)(0),             // 0: pilab.virtualization.v1.HostEventType
-	(*HostResourceReport)(nil),     // 1: pilab.virtualization.v1.HostResourceReport
-	(*NUMANode)(nil),               // 2: pilab.virtualization.v1.NUMANode
-	(*StorageSummary)(nil),         // 3: pilab.virtualization.v1.StorageSummary
-	(*SubscribeEventsRequest)(nil), // 4: pilab.virtualization.v1.SubscribeEventsRequest
-	(*HostEvent)(nil),              // 5: pilab.virtualization.v1.HostEvent
-	(*VmLifecycleEvent)(nil),       // 6: pilab.virtualization.v1.VmLifecycleEvent
-	(*HostHealthEvent)(nil),        // 7: pilab.virtualization.v1.HostHealthEvent
-	(*ResourcePressureEvent)(nil),  // 8: pilab.virtualization.v1.ResourcePressureEvent
-	(*VmDiskMoveEvent)(nil),        // 9: pilab.virtualization.v1.VmDiskMoveEvent
-	(*VmSnapshotEvent)(nil),        // 10: pilab.virtualization.v1.VmSnapshotEvent
+	(HostEventType)(0),             // 0: pilab.pivirtd.v1.HostEventType
+	(*HostResourceReport)(nil),     // 1: pilab.pivirtd.v1.HostResourceReport
+	(*NUMANode)(nil),               // 2: pilab.pivirtd.v1.NUMANode
+	(*StorageSummary)(nil),         // 3: pilab.pivirtd.v1.StorageSummary
+	(*SubscribeEventsRequest)(nil), // 4: pilab.pivirtd.v1.SubscribeEventsRequest
+	(*HostEvent)(nil),              // 5: pilab.pivirtd.v1.HostEvent
+	(*VmLifecycleEvent)(nil),       // 6: pilab.pivirtd.v1.VmLifecycleEvent
+	(*HostHealthEvent)(nil),        // 7: pilab.pivirtd.v1.HostHealthEvent
+	(*ResourcePressureEvent)(nil),  // 8: pilab.pivirtd.v1.ResourcePressureEvent
+	(*VmDiskMoveEvent)(nil),        // 9: pilab.pivirtd.v1.VmDiskMoveEvent
+	(*VmSnapshotEvent)(nil),        // 10: pilab.pivirtd.v1.VmSnapshotEvent
 	(*timestamppb.Timestamp)(nil),  // 11: google.protobuf.Timestamp
 }
 var file_pilab_pivirtd_v1_host_resource_proto_depIdxs = []int32{
-	2,  // 0: pilab.virtualization.v1.HostResourceReport.numa_nodes:type_name -> pilab.virtualization.v1.NUMANode
-	3,  // 1: pilab.virtualization.v1.HostResourceReport.storage:type_name -> pilab.virtualization.v1.StorageSummary
-	0,  // 2: pilab.virtualization.v1.HostEvent.type:type_name -> pilab.virtualization.v1.HostEventType
-	11, // 3: pilab.virtualization.v1.HostEvent.timestamp:type_name -> google.protobuf.Timestamp
-	6,  // 4: pilab.virtualization.v1.HostEvent.vm_lifecycle:type_name -> pilab.virtualization.v1.VmLifecycleEvent
-	7,  // 5: pilab.virtualization.v1.HostEvent.host_health:type_name -> pilab.virtualization.v1.HostHealthEvent
-	8,  // 6: pilab.virtualization.v1.HostEvent.resource_pressure:type_name -> pilab.virtualization.v1.ResourcePressureEvent
-	1,  // 7: pilab.virtualization.v1.HostEvent.resource_report:type_name -> pilab.virtualization.v1.HostResourceReport
-	9,  // 8: pilab.virtualization.v1.HostEvent.vm_disk_move:type_name -> pilab.virtualization.v1.VmDiskMoveEvent
-	10, // 9: pilab.virtualization.v1.HostEvent.vm_snapshot:type_name -> pilab.virtualization.v1.VmSnapshotEvent
+	2,  // 0: pilab.pivirtd.v1.HostResourceReport.numa_nodes:type_name -> pilab.pivirtd.v1.NUMANode
+	3,  // 1: pilab.pivirtd.v1.HostResourceReport.storage:type_name -> pilab.pivirtd.v1.StorageSummary
+	0,  // 2: pilab.pivirtd.v1.HostEvent.type:type_name -> pilab.pivirtd.v1.HostEventType
+	11, // 3: pilab.pivirtd.v1.HostEvent.timestamp:type_name -> google.protobuf.Timestamp
+	6,  // 4: pilab.pivirtd.v1.HostEvent.vm_lifecycle:type_name -> pilab.pivirtd.v1.VmLifecycleEvent
+	7,  // 5: pilab.pivirtd.v1.HostEvent.host_health:type_name -> pilab.pivirtd.v1.HostHealthEvent
+	8,  // 6: pilab.pivirtd.v1.HostEvent.resource_pressure:type_name -> pilab.pivirtd.v1.ResourcePressureEvent
+	1,  // 7: pilab.pivirtd.v1.HostEvent.resource_report:type_name -> pilab.pivirtd.v1.HostResourceReport
+	9,  // 8: pilab.pivirtd.v1.HostEvent.vm_disk_move:type_name -> pilab.pivirtd.v1.VmDiskMoveEvent
+	10, // 9: pilab.pivirtd.v1.HostEvent.vm_snapshot:type_name -> pilab.pivirtd.v1.VmSnapshotEvent
 	10, // [10:10] is the sub-list for method output_type
 	10, // [10:10] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
