@@ -41,6 +41,11 @@ enum TaskType {
   TASK_TYPE_VM_ATTACH_NETWORK = 16;
   TASK_TYPE_VM_DETACH_NETWORK = 17;
   TASK_TYPE_VM_CLONE = 18;
+  // TASK_TYPE_VM_DISK_MOVE drives pivirtd's live disk-move (block-job
+  // drive-mirror) — resource-model-and-tasks.md §5.8: the agent runs it as
+  // a Task like any other, reporting progress upward via UpdateTaskStatus
+  // instead of the director having to poll for it.
+  TASK_TYPE_VM_DISK_MOVE = 19;
 }
 
 enum TaskStatus {
