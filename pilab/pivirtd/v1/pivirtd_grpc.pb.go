@@ -19,72 +19,86 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PivirtdService_CreateVM_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/CreateVM"
-	PivirtdService_ApplyVM_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/ApplyVM"
-	PivirtdService_StartVM_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/StartVM"
-	PivirtdService_StopVM_FullMethodName              = "/pilab.pivirtd.v1.PivirtdService/StopVM"
-	PivirtdService_PauseVM_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/PauseVM"
-	PivirtdService_ResumeVM_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/ResumeVM"
-	PivirtdService_RebootVM_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/RebootVM"
-	PivirtdService_DeleteVM_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/DeleteVM"
-	PivirtdService_ListVMs_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/ListVMs"
-	PivirtdService_GetVM_FullMethodName               = "/pilab.pivirtd.v1.PivirtdService/GetVM"
-	PivirtdService_GetVMStats_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/GetVMStats"
-	PivirtdService_UpdateVMMemory_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/UpdateVMMemory"
-	PivirtdService_UpdateVMCpu_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/UpdateVMCpu"
-	PivirtdService_ExecuteQMP_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ExecuteQMP"
-	PivirtdService_StreamQMPEvents_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/StreamQMPEvents"
-	PivirtdService_CreateSnapshot_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/CreateSnapshot"
-	PivirtdService_ListSnapshots_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/ListSnapshots"
-	PivirtdService_RestoreSnapshot_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/RestoreSnapshot"
-	PivirtdService_DeleteSnapshot_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/DeleteSnapshot"
-	PivirtdService_ConsolidateSnapshot_FullMethodName = "/pilab.pivirtd.v1.PivirtdService/ConsolidateSnapshot"
-	PivirtdService_GetSnapshotStatus_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/GetSnapshotStatus"
-	PivirtdService_CloneVM_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/CloneVM"
-	PivirtdService_CloneSnapshot_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/CloneSnapshot"
-	PivirtdService_MigrateVM_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/MigrateVM"
-	PivirtdService_GetMigrationStatus_FullMethodName  = "/pilab.pivirtd.v1.PivirtdService/GetMigrationStatus"
-	PivirtdService_CreateStoragePool_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/CreateStoragePool"
-	PivirtdService_ListStoragePools_FullMethodName    = "/pilab.pivirtd.v1.PivirtdService/ListStoragePools"
-	PivirtdService_DeleteStoragePool_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/DeleteStoragePool"
-	PivirtdService_CreateTAPDevice_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/CreateTAPDevice"
-	PivirtdService_DeleteTAPDevice_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/DeleteTAPDevice"
-	PivirtdService_ListTAPDevices_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/ListTAPDevices"
-	PivirtdService_CreateBridge_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/CreateBridge"
-	PivirtdService_DeleteBridge_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/DeleteBridge"
-	PivirtdService_ListBridges_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/ListBridges"
-	PivirtdService_CreateOVSBridge_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/CreateOVSBridge"
-	PivirtdService_DeleteOVSBridge_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/DeleteOVSBridge"
-	PivirtdService_ListOVSBridges_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/ListOVSBridges"
-	PivirtdService_AddOVSPort_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/AddOVSPort"
-	PivirtdService_RemoveOVSPort_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/RemoveOVSPort"
-	PivirtdService_ListOVSPorts_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
-	PivirtdService_SetLabels_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/SetLabels"
-	PivirtdService_GetLabels_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/GetLabels"
-	PivirtdService_DeleteLabel_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/DeleteLabel"
-	PivirtdService_SetProvisioning_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/SetProvisioning"
-	PivirtdService_GetVMStatus_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/GetVMStatus"
-	PivirtdService_StartDiskMove_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/StartDiskMove"
-	PivirtdService_GetDiskMoveStatus_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/GetDiskMoveStatus"
-	PivirtdService_CancelDiskMove_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/CancelDiskMove"
-	PivirtdService_AttachDisk_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/AttachDisk"
-	PivirtdService_DetachDisk_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/DetachDisk"
-	PivirtdService_AttachNIC_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/AttachNIC"
-	PivirtdService_DetachNIC_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/DetachNIC"
-	PivirtdService_ResizeDisk_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ResizeDisk"
-	PivirtdService_SetVNCPassword_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/SetVNCPassword"
-	PivirtdService_SetLinkState_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/SetLinkState"
-	PivirtdService_RenameVM_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/RenameVM"
-	PivirtdService_ChangeISO_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/ChangeISO"
-	PivirtdService_EjectISO_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/EjectISO"
-	PivirtdService_GetSnapshotTree_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/GetSnapshotTree"
-	PivirtdService_GetGuestInfo_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/GetGuestInfo"
-	PivirtdService_GuestExec_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/GuestExec"
-	PivirtdService_GetGuestExecStatus_FullMethodName  = "/pilab.pivirtd.v1.PivirtdService/GetGuestExecStatus"
-	PivirtdService_SetGuestHostname_FullMethodName    = "/pilab.pivirtd.v1.PivirtdService/SetGuestHostname"
-	PivirtdService_CustomizeOS_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/CustomizeOS"
-	PivirtdService_SubscribeEvents_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/SubscribeEvents"
-	PivirtdService_GetHostResource_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/GetHostResource"
+	PivirtdService_CreateVM_FullMethodName              = "/pilab.pivirtd.v1.PivirtdService/CreateVM"
+	PivirtdService_ApplyVM_FullMethodName               = "/pilab.pivirtd.v1.PivirtdService/ApplyVM"
+	PivirtdService_StartVM_FullMethodName               = "/pilab.pivirtd.v1.PivirtdService/StartVM"
+	PivirtdService_StopVM_FullMethodName                = "/pilab.pivirtd.v1.PivirtdService/StopVM"
+	PivirtdService_PauseVM_FullMethodName               = "/pilab.pivirtd.v1.PivirtdService/PauseVM"
+	PivirtdService_ResumeVM_FullMethodName              = "/pilab.pivirtd.v1.PivirtdService/ResumeVM"
+	PivirtdService_RebootVM_FullMethodName              = "/pilab.pivirtd.v1.PivirtdService/RebootVM"
+	PivirtdService_DeleteVM_FullMethodName              = "/pilab.pivirtd.v1.PivirtdService/DeleteVM"
+	PivirtdService_ListVMs_FullMethodName               = "/pilab.pivirtd.v1.PivirtdService/ListVMs"
+	PivirtdService_GetVM_FullMethodName                 = "/pilab.pivirtd.v1.PivirtdService/GetVM"
+	PivirtdService_GetVMStats_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/GetVMStats"
+	PivirtdService_UpdateVMMemory_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/UpdateVMMemory"
+	PivirtdService_UpdateVMCpu_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/UpdateVMCpu"
+	PivirtdService_ExecuteQMP_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/ExecuteQMP"
+	PivirtdService_StreamQMPEvents_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/StreamQMPEvents"
+	PivirtdService_CreateSnapshot_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/CreateSnapshot"
+	PivirtdService_ListSnapshots_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/ListSnapshots"
+	PivirtdService_RestoreSnapshot_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/RestoreSnapshot"
+	PivirtdService_DeleteSnapshot_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/DeleteSnapshot"
+	PivirtdService_ConsolidateSnapshot_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/ConsolidateSnapshot"
+	PivirtdService_GetSnapshotStatus_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/GetSnapshotStatus"
+	PivirtdService_CloneVM_FullMethodName               = "/pilab.pivirtd.v1.PivirtdService/CloneVM"
+	PivirtdService_CloneSnapshot_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/CloneSnapshot"
+	PivirtdService_MigrateVM_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/MigrateVM"
+	PivirtdService_GetMigrationStatus_FullMethodName    = "/pilab.pivirtd.v1.PivirtdService/GetMigrationStatus"
+	PivirtdService_CreateStoragePool_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/CreateStoragePool"
+	PivirtdService_ListStoragePools_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/ListStoragePools"
+	PivirtdService_DeleteStoragePool_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/DeleteStoragePool"
+	PivirtdService_GetStoragePool_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/GetStoragePool"
+	PivirtdService_ActivateStoragePool_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/ActivateStoragePool"
+	PivirtdService_DeactivateStoragePool_FullMethodName = "/pilab.pivirtd.v1.PivirtdService/DeactivateStoragePool"
+	PivirtdService_CreateTAPDevice_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/CreateTAPDevice"
+	PivirtdService_DeleteTAPDevice_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/DeleteTAPDevice"
+	PivirtdService_ListTAPDevices_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/ListTAPDevices"
+	PivirtdService_CreateBridge_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/CreateBridge"
+	PivirtdService_DeleteBridge_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/DeleteBridge"
+	PivirtdService_ListBridges_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/ListBridges"
+	PivirtdService_CreateOVSBridge_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/CreateOVSBridge"
+	PivirtdService_DeleteOVSBridge_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/DeleteOVSBridge"
+	PivirtdService_ListOVSBridges_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/ListOVSBridges"
+	PivirtdService_AddOVSPort_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/AddOVSPort"
+	PivirtdService_RemoveOVSPort_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/RemoveOVSPort"
+	PivirtdService_ListOVSPorts_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
+	PivirtdService_ApplyNetwork_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ApplyNetwork"
+	PivirtdService_DeleteNetwork_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/DeleteNetwork"
+	PivirtdService_ListNetworks_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ListNetworks"
+	PivirtdService_GetNetwork_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/GetNetwork"
+	PivirtdService_ApplyOverlayNetwork_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/ApplyOverlayNetwork"
+	PivirtdService_DeleteOverlayNetwork_FullMethodName  = "/pilab.pivirtd.v1.PivirtdService/DeleteOverlayNetwork"
+	PivirtdService_ListOverlayNetworks_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/ListOverlayNetworks"
+	PivirtdService_BindExternalIP_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/BindExternalIP"
+	PivirtdService_UnbindExternalIP_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/UnbindExternalIP"
+	PivirtdService_ListExternalIPs_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/ListExternalIPs"
+	PivirtdService_ListNetworkNamespaces_FullMethodName = "/pilab.pivirtd.v1.PivirtdService/ListNetworkNamespaces"
+	PivirtdService_SetLabels_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/SetLabels"
+	PivirtdService_GetLabels_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/GetLabels"
+	PivirtdService_DeleteLabel_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/DeleteLabel"
+	PivirtdService_SetProvisioning_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/SetProvisioning"
+	PivirtdService_GetVMStatus_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/GetVMStatus"
+	PivirtdService_StartDiskMove_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/StartDiskMove"
+	PivirtdService_GetDiskMoveStatus_FullMethodName     = "/pilab.pivirtd.v1.PivirtdService/GetDiskMoveStatus"
+	PivirtdService_CancelDiskMove_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/CancelDiskMove"
+	PivirtdService_AttachDisk_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/AttachDisk"
+	PivirtdService_DetachDisk_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/DetachDisk"
+	PivirtdService_AttachNIC_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/AttachNIC"
+	PivirtdService_DetachNIC_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/DetachNIC"
+	PivirtdService_ResizeDisk_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/ResizeDisk"
+	PivirtdService_SetVNCPassword_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/SetVNCPassword"
+	PivirtdService_SetLinkState_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/SetLinkState"
+	PivirtdService_RenameVM_FullMethodName              = "/pilab.pivirtd.v1.PivirtdService/RenameVM"
+	PivirtdService_ChangeISO_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/ChangeISO"
+	PivirtdService_EjectISO_FullMethodName              = "/pilab.pivirtd.v1.PivirtdService/EjectISO"
+	PivirtdService_GetSnapshotTree_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/GetSnapshotTree"
+	PivirtdService_GetGuestInfo_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/GetGuestInfo"
+	PivirtdService_GuestExec_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/GuestExec"
+	PivirtdService_GetGuestExecStatus_FullMethodName    = "/pilab.pivirtd.v1.PivirtdService/GetGuestExecStatus"
+	PivirtdService_SetGuestHostname_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/SetGuestHostname"
+	PivirtdService_CustomizeOS_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/CustomizeOS"
+	PivirtdService_SubscribeEvents_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/SubscribeEvents"
+	PivirtdService_GetHostResource_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/GetHostResource"
 )
 
 // PivirtdServiceClient is the client API for PivirtdService service.
@@ -129,6 +143,9 @@ type PivirtdServiceClient interface {
 	CreateStoragePool(ctx context.Context, in *CreateStoragePoolRequest, opts ...grpc.CallOption) (*StoragePoolResponse, error)
 	ListStoragePools(ctx context.Context, in *ListStoragePoolsRequest, opts ...grpc.CallOption) (*ListStoragePoolsResponse, error)
 	DeleteStoragePool(ctx context.Context, in *DeleteStoragePoolRequest, opts ...grpc.CallOption) (*DeleteStoragePoolResponse, error)
+	GetStoragePool(ctx context.Context, in *GetStoragePoolRequest, opts ...grpc.CallOption) (*StoragePoolResponse, error)
+	ActivateStoragePool(ctx context.Context, in *ActivateStoragePoolRequest, opts ...grpc.CallOption) (*StoragePoolResponse, error)
+	DeactivateStoragePool(ctx context.Context, in *DeactivateStoragePoolRequest, opts ...grpc.CallOption) (*StoragePoolResponse, error)
 	// Network Management
 	CreateTAPDevice(ctx context.Context, in *CreateTAPDeviceRequest, opts ...grpc.CallOption) (*NetworkResponse, error)
 	DeleteTAPDevice(ctx context.Context, in *DeleteTAPDeviceRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
@@ -143,6 +160,21 @@ type PivirtdServiceClient interface {
 	AddOVSPort(ctx context.Context, in *AddOVSPortRequest, opts ...grpc.CallOption) (*NetworkResponse, error)
 	RemoveOVSPort(ctx context.Context, in *RemoveOVSPortRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
 	ListOVSPorts(ctx context.Context, in *ListOVSPortsRequest, opts ...grpc.CallOption) (*ListOVSPortsResponse, error)
+	// Host Networks (isolated / NAT / routed / bridged bridges)
+	ApplyNetwork(ctx context.Context, in *ApplyNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error)
+	DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest2, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
+	ListNetworks(ctx context.Context, in *ListNetworksRequest, opts ...grpc.CallOption) (*ListNetworksResponse, error)
+	GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error)
+	// OVS Overlay Networks
+	ApplyOverlayNetwork(ctx context.Context, in *ApplyOverlayNetworkRequest, opts ...grpc.CallOption) (*OverlayNetworkResponse, error)
+	DeleteOverlayNetwork(ctx context.Context, in *DeleteOverlayNetworkRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
+	ListOverlayNetworks(ctx context.Context, in *ListOverlayNetworksRequest, opts ...grpc.CallOption) (*ListOverlayNetworksResponse, error)
+	// External IP Bindings
+	BindExternalIP(ctx context.Context, in *BindExternalIPRequest, opts ...grpc.CallOption) (*ExternalIPResponse, error)
+	UnbindExternalIP(ctx context.Context, in *UnbindExternalIPRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
+	ListExternalIPs(ctx context.Context, in *ListExternalIPsRequest, opts ...grpc.CallOption) (*ListExternalIPsResponse, error)
+	// Network Namespaces
+	ListNetworkNamespaces(ctx context.Context, in *ListNetworkNamespacesRequest, opts ...grpc.CallOption) (*ListNetworkNamespacesResponse, error)
 	// VM Metadata Labels
 	SetLabels(ctx context.Context, in *SetLabelsRequest, opts ...grpc.CallOption) (*SetLabelsResponse, error)
 	GetLabels(ctx context.Context, in *GetLabelsRequest, opts ...grpc.CallOption) (*GetLabelsResponse, error)
@@ -478,6 +510,36 @@ func (c *pivirtdServiceClient) DeleteStoragePool(ctx context.Context, in *Delete
 	return out, nil
 }
 
+func (c *pivirtdServiceClient) GetStoragePool(ctx context.Context, in *GetStoragePoolRequest, opts ...grpc.CallOption) (*StoragePoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StoragePoolResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_GetStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ActivateStoragePool(ctx context.Context, in *ActivateStoragePoolRequest, opts ...grpc.CallOption) (*StoragePoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StoragePoolResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ActivateStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) DeactivateStoragePool(ctx context.Context, in *DeactivateStoragePoolRequest, opts ...grpc.CallOption) (*StoragePoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StoragePoolResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_DeactivateStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *pivirtdServiceClient) CreateTAPDevice(ctx context.Context, in *CreateTAPDeviceRequest, opts ...grpc.CallOption) (*NetworkResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(NetworkResponse)
@@ -592,6 +654,116 @@ func (c *pivirtdServiceClient) ListOVSPorts(ctx context.Context, in *ListOVSPort
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListOVSPortsResponse)
 	err := c.cc.Invoke(ctx, PivirtdService_ListOVSPorts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ApplyNetwork(ctx context.Context, in *ApplyNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NetworkStatusResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ApplyNetwork_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest2, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteNetworkResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_DeleteNetwork_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ListNetworks(ctx context.Context, in *ListNetworksRequest, opts ...grpc.CallOption) (*ListNetworksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListNetworksResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ListNetworks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NetworkStatusResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_GetNetwork_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ApplyOverlayNetwork(ctx context.Context, in *ApplyOverlayNetworkRequest, opts ...grpc.CallOption) (*OverlayNetworkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OverlayNetworkResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ApplyOverlayNetwork_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) DeleteOverlayNetwork(ctx context.Context, in *DeleteOverlayNetworkRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteNetworkResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_DeleteOverlayNetwork_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ListOverlayNetworks(ctx context.Context, in *ListOverlayNetworksRequest, opts ...grpc.CallOption) (*ListOverlayNetworksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListOverlayNetworksResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ListOverlayNetworks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) BindExternalIP(ctx context.Context, in *BindExternalIPRequest, opts ...grpc.CallOption) (*ExternalIPResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExternalIPResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_BindExternalIP_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) UnbindExternalIP(ctx context.Context, in *UnbindExternalIPRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteNetworkResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_UnbindExternalIP_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ListExternalIPs(ctx context.Context, in *ListExternalIPsRequest, opts ...grpc.CallOption) (*ListExternalIPsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListExternalIPsResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ListExternalIPs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ListNetworkNamespaces(ctx context.Context, in *ListNetworkNamespacesRequest, opts ...grpc.CallOption) (*ListNetworkNamespacesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListNetworkNamespacesResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ListNetworkNamespaces_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -909,6 +1081,9 @@ type PivirtdServiceServer interface {
 	CreateStoragePool(context.Context, *CreateStoragePoolRequest) (*StoragePoolResponse, error)
 	ListStoragePools(context.Context, *ListStoragePoolsRequest) (*ListStoragePoolsResponse, error)
 	DeleteStoragePool(context.Context, *DeleteStoragePoolRequest) (*DeleteStoragePoolResponse, error)
+	GetStoragePool(context.Context, *GetStoragePoolRequest) (*StoragePoolResponse, error)
+	ActivateStoragePool(context.Context, *ActivateStoragePoolRequest) (*StoragePoolResponse, error)
+	DeactivateStoragePool(context.Context, *DeactivateStoragePoolRequest) (*StoragePoolResponse, error)
 	// Network Management
 	CreateTAPDevice(context.Context, *CreateTAPDeviceRequest) (*NetworkResponse, error)
 	DeleteTAPDevice(context.Context, *DeleteTAPDeviceRequest) (*DeleteNetworkResponse, error)
@@ -923,6 +1098,21 @@ type PivirtdServiceServer interface {
 	AddOVSPort(context.Context, *AddOVSPortRequest) (*NetworkResponse, error)
 	RemoveOVSPort(context.Context, *RemoveOVSPortRequest) (*DeleteNetworkResponse, error)
 	ListOVSPorts(context.Context, *ListOVSPortsRequest) (*ListOVSPortsResponse, error)
+	// Host Networks (isolated / NAT / routed / bridged bridges)
+	ApplyNetwork(context.Context, *ApplyNetworkRequest) (*NetworkStatusResponse, error)
+	DeleteNetwork(context.Context, *DeleteNetworkRequest2) (*DeleteNetworkResponse, error)
+	ListNetworks(context.Context, *ListNetworksRequest) (*ListNetworksResponse, error)
+	GetNetwork(context.Context, *GetNetworkRequest) (*NetworkStatusResponse, error)
+	// OVS Overlay Networks
+	ApplyOverlayNetwork(context.Context, *ApplyOverlayNetworkRequest) (*OverlayNetworkResponse, error)
+	DeleteOverlayNetwork(context.Context, *DeleteOverlayNetworkRequest) (*DeleteNetworkResponse, error)
+	ListOverlayNetworks(context.Context, *ListOverlayNetworksRequest) (*ListOverlayNetworksResponse, error)
+	// External IP Bindings
+	BindExternalIP(context.Context, *BindExternalIPRequest) (*ExternalIPResponse, error)
+	UnbindExternalIP(context.Context, *UnbindExternalIPRequest) (*DeleteNetworkResponse, error)
+	ListExternalIPs(context.Context, *ListExternalIPsRequest) (*ListExternalIPsResponse, error)
+	// Network Namespaces
+	ListNetworkNamespaces(context.Context, *ListNetworkNamespacesRequest) (*ListNetworkNamespacesResponse, error)
 	// VM Metadata Labels
 	SetLabels(context.Context, *SetLabelsRequest) (*SetLabelsResponse, error)
 	GetLabels(context.Context, *GetLabelsRequest) (*GetLabelsResponse, error)
@@ -1052,6 +1242,15 @@ func (UnimplementedPivirtdServiceServer) ListStoragePools(context.Context, *List
 func (UnimplementedPivirtdServiceServer) DeleteStoragePool(context.Context, *DeleteStoragePoolRequest) (*DeleteStoragePoolResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteStoragePool not implemented")
 }
+func (UnimplementedPivirtdServiceServer) GetStoragePool(context.Context, *GetStoragePoolRequest) (*StoragePoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetStoragePool not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ActivateStoragePool(context.Context, *ActivateStoragePoolRequest) (*StoragePoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ActivateStoragePool not implemented")
+}
+func (UnimplementedPivirtdServiceServer) DeactivateStoragePool(context.Context, *DeactivateStoragePoolRequest) (*StoragePoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeactivateStoragePool not implemented")
+}
 func (UnimplementedPivirtdServiceServer) CreateTAPDevice(context.Context, *CreateTAPDeviceRequest) (*NetworkResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateTAPDevice not implemented")
 }
@@ -1087,6 +1286,39 @@ func (UnimplementedPivirtdServiceServer) RemoveOVSPort(context.Context, *RemoveO
 }
 func (UnimplementedPivirtdServiceServer) ListOVSPorts(context.Context, *ListOVSPortsRequest) (*ListOVSPortsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListOVSPorts not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ApplyNetwork(context.Context, *ApplyNetworkRequest) (*NetworkStatusResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ApplyNetwork not implemented")
+}
+func (UnimplementedPivirtdServiceServer) DeleteNetwork(context.Context, *DeleteNetworkRequest2) (*DeleteNetworkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteNetwork not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ListNetworks(context.Context, *ListNetworksRequest) (*ListNetworksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListNetworks not implemented")
+}
+func (UnimplementedPivirtdServiceServer) GetNetwork(context.Context, *GetNetworkRequest) (*NetworkStatusResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetNetwork not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ApplyOverlayNetwork(context.Context, *ApplyOverlayNetworkRequest) (*OverlayNetworkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ApplyOverlayNetwork not implemented")
+}
+func (UnimplementedPivirtdServiceServer) DeleteOverlayNetwork(context.Context, *DeleteOverlayNetworkRequest) (*DeleteNetworkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteOverlayNetwork not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ListOverlayNetworks(context.Context, *ListOverlayNetworksRequest) (*ListOverlayNetworksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListOverlayNetworks not implemented")
+}
+func (UnimplementedPivirtdServiceServer) BindExternalIP(context.Context, *BindExternalIPRequest) (*ExternalIPResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BindExternalIP not implemented")
+}
+func (UnimplementedPivirtdServiceServer) UnbindExternalIP(context.Context, *UnbindExternalIPRequest) (*DeleteNetworkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnbindExternalIP not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ListExternalIPs(context.Context, *ListExternalIPsRequest) (*ListExternalIPsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListExternalIPs not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ListNetworkNamespaces(context.Context, *ListNetworkNamespacesRequest) (*ListNetworkNamespacesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListNetworkNamespaces not implemented")
 }
 func (UnimplementedPivirtdServiceServer) SetLabels(context.Context, *SetLabelsRequest) (*SetLabelsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetLabels not implemented")
@@ -1684,6 +1916,60 @@ func _PivirtdService_DeleteStoragePool_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PivirtdService_GetStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStoragePoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).GetStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_GetStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).GetStoragePool(ctx, req.(*GetStoragePoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ActivateStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivateStoragePoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ActivateStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ActivateStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ActivateStoragePool(ctx, req.(*ActivateStoragePoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_DeactivateStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeactivateStoragePoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).DeactivateStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_DeactivateStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).DeactivateStoragePool(ctx, req.(*DeactivateStoragePoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PivirtdService_CreateTAPDevice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateTAPDeviceRequest)
 	if err := dec(in); err != nil {
@@ -1896,6 +2182,204 @@ func _PivirtdService_ListOVSPorts_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PivirtdServiceServer).ListOVSPorts(ctx, req.(*ListOVSPortsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ApplyNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyNetworkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ApplyNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ApplyNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ApplyNetwork(ctx, req.(*ApplyNetworkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_DeleteNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteNetworkRequest2)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).DeleteNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_DeleteNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).DeleteNetwork(ctx, req.(*DeleteNetworkRequest2))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ListNetworks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNetworksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ListNetworks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ListNetworks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ListNetworks(ctx, req.(*ListNetworksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_GetNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNetworkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).GetNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_GetNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).GetNetwork(ctx, req.(*GetNetworkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ApplyOverlayNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyOverlayNetworkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ApplyOverlayNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ApplyOverlayNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ApplyOverlayNetwork(ctx, req.(*ApplyOverlayNetworkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_DeleteOverlayNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteOverlayNetworkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).DeleteOverlayNetwork(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_DeleteOverlayNetwork_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).DeleteOverlayNetwork(ctx, req.(*DeleteOverlayNetworkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ListOverlayNetworks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListOverlayNetworksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ListOverlayNetworks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ListOverlayNetworks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ListOverlayNetworks(ctx, req.(*ListOverlayNetworksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_BindExternalIP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindExternalIPRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).BindExternalIP(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_BindExternalIP_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).BindExternalIP(ctx, req.(*BindExternalIPRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_UnbindExternalIP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnbindExternalIPRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).UnbindExternalIP(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_UnbindExternalIP_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).UnbindExternalIP(ctx, req.(*UnbindExternalIPRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ListExternalIPs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListExternalIPsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ListExternalIPs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ListExternalIPs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ListExternalIPs(ctx, req.(*ListExternalIPsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ListNetworkNamespaces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNetworkNamespacesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ListNetworkNamespaces(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ListNetworkNamespaces_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ListNetworkNamespaces(ctx, req.(*ListNetworkNamespacesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2477,6 +2961,18 @@ var PivirtdService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PivirtdService_DeleteStoragePool_Handler,
 		},
 		{
+			MethodName: "GetStoragePool",
+			Handler:    _PivirtdService_GetStoragePool_Handler,
+		},
+		{
+			MethodName: "ActivateStoragePool",
+			Handler:    _PivirtdService_ActivateStoragePool_Handler,
+		},
+		{
+			MethodName: "DeactivateStoragePool",
+			Handler:    _PivirtdService_DeactivateStoragePool_Handler,
+		},
+		{
 			MethodName: "CreateTAPDevice",
 			Handler:    _PivirtdService_CreateTAPDevice_Handler,
 		},
@@ -2523,6 +3019,50 @@ var PivirtdService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListOVSPorts",
 			Handler:    _PivirtdService_ListOVSPorts_Handler,
+		},
+		{
+			MethodName: "ApplyNetwork",
+			Handler:    _PivirtdService_ApplyNetwork_Handler,
+		},
+		{
+			MethodName: "DeleteNetwork",
+			Handler:    _PivirtdService_DeleteNetwork_Handler,
+		},
+		{
+			MethodName: "ListNetworks",
+			Handler:    _PivirtdService_ListNetworks_Handler,
+		},
+		{
+			MethodName: "GetNetwork",
+			Handler:    _PivirtdService_GetNetwork_Handler,
+		},
+		{
+			MethodName: "ApplyOverlayNetwork",
+			Handler:    _PivirtdService_ApplyOverlayNetwork_Handler,
+		},
+		{
+			MethodName: "DeleteOverlayNetwork",
+			Handler:    _PivirtdService_DeleteOverlayNetwork_Handler,
+		},
+		{
+			MethodName: "ListOverlayNetworks",
+			Handler:    _PivirtdService_ListOverlayNetworks_Handler,
+		},
+		{
+			MethodName: "BindExternalIP",
+			Handler:    _PivirtdService_BindExternalIP_Handler,
+		},
+		{
+			MethodName: "UnbindExternalIP",
+			Handler:    _PivirtdService_UnbindExternalIP_Handler,
+		},
+		{
+			MethodName: "ListExternalIPs",
+			Handler:    _PivirtdService_ListExternalIPs_Handler,
+		},
+		{
+			MethodName: "ListNetworkNamespaces",
+			Handler:    _PivirtdService_ListNetworkNamespaces_Handler,
 		},
 		{
 			MethodName: "SetLabels",

@@ -106,6 +106,15 @@ const (
 	// PivirtdServiceDeleteStoragePoolProcedure is the fully-qualified name of the PivirtdService's
 	// DeleteStoragePool RPC.
 	PivirtdServiceDeleteStoragePoolProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteStoragePool"
+	// PivirtdServiceGetStoragePoolProcedure is the fully-qualified name of the PivirtdService's
+	// GetStoragePool RPC.
+	PivirtdServiceGetStoragePoolProcedure = "/pilab.pivirtd.v1.PivirtdService/GetStoragePool"
+	// PivirtdServiceActivateStoragePoolProcedure is the fully-qualified name of the PivirtdService's
+	// ActivateStoragePool RPC.
+	PivirtdServiceActivateStoragePoolProcedure = "/pilab.pivirtd.v1.PivirtdService/ActivateStoragePool"
+	// PivirtdServiceDeactivateStoragePoolProcedure is the fully-qualified name of the PivirtdService's
+	// DeactivateStoragePool RPC.
+	PivirtdServiceDeactivateStoragePoolProcedure = "/pilab.pivirtd.v1.PivirtdService/DeactivateStoragePool"
 	// PivirtdServiceCreateTAPDeviceProcedure is the fully-qualified name of the PivirtdService's
 	// CreateTAPDevice RPC.
 	PivirtdServiceCreateTAPDeviceProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateTAPDevice"
@@ -142,6 +151,39 @@ const (
 	// PivirtdServiceListOVSPortsProcedure is the fully-qualified name of the PivirtdService's
 	// ListOVSPorts RPC.
 	PivirtdServiceListOVSPortsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
+	// PivirtdServiceApplyNetworkProcedure is the fully-qualified name of the PivirtdService's
+	// ApplyNetwork RPC.
+	PivirtdServiceApplyNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/ApplyNetwork"
+	// PivirtdServiceDeleteNetworkProcedure is the fully-qualified name of the PivirtdService's
+	// DeleteNetwork RPC.
+	PivirtdServiceDeleteNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteNetwork"
+	// PivirtdServiceListNetworksProcedure is the fully-qualified name of the PivirtdService's
+	// ListNetworks RPC.
+	PivirtdServiceListNetworksProcedure = "/pilab.pivirtd.v1.PivirtdService/ListNetworks"
+	// PivirtdServiceGetNetworkProcedure is the fully-qualified name of the PivirtdService's GetNetwork
+	// RPC.
+	PivirtdServiceGetNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/GetNetwork"
+	// PivirtdServiceApplyOverlayNetworkProcedure is the fully-qualified name of the PivirtdService's
+	// ApplyOverlayNetwork RPC.
+	PivirtdServiceApplyOverlayNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/ApplyOverlayNetwork"
+	// PivirtdServiceDeleteOverlayNetworkProcedure is the fully-qualified name of the PivirtdService's
+	// DeleteOverlayNetwork RPC.
+	PivirtdServiceDeleteOverlayNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteOverlayNetwork"
+	// PivirtdServiceListOverlayNetworksProcedure is the fully-qualified name of the PivirtdService's
+	// ListOverlayNetworks RPC.
+	PivirtdServiceListOverlayNetworksProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOverlayNetworks"
+	// PivirtdServiceBindExternalIPProcedure is the fully-qualified name of the PivirtdService's
+	// BindExternalIP RPC.
+	PivirtdServiceBindExternalIPProcedure = "/pilab.pivirtd.v1.PivirtdService/BindExternalIP"
+	// PivirtdServiceUnbindExternalIPProcedure is the fully-qualified name of the PivirtdService's
+	// UnbindExternalIP RPC.
+	PivirtdServiceUnbindExternalIPProcedure = "/pilab.pivirtd.v1.PivirtdService/UnbindExternalIP"
+	// PivirtdServiceListExternalIPsProcedure is the fully-qualified name of the PivirtdService's
+	// ListExternalIPs RPC.
+	PivirtdServiceListExternalIPsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListExternalIPs"
+	// PivirtdServiceListNetworkNamespacesProcedure is the fully-qualified name of the PivirtdService's
+	// ListNetworkNamespaces RPC.
+	PivirtdServiceListNetworkNamespacesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListNetworkNamespaces"
 	// PivirtdServiceSetLabelsProcedure is the fully-qualified name of the PivirtdService's SetLabels
 	// RPC.
 	PivirtdServiceSetLabelsProcedure = "/pilab.pivirtd.v1.PivirtdService/SetLabels"
@@ -258,6 +300,9 @@ type PivirtdServiceClient interface {
 	CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
 	ListStoragePools(context.Context, *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error)
 	DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error)
+	GetStoragePool(context.Context, *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
+	ActivateStoragePool(context.Context, *connect.Request[v1.ActivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
+	DeactivateStoragePool(context.Context, *connect.Request[v1.DeactivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
 	// Network Management
 	CreateTAPDevice(context.Context, *connect.Request[v1.CreateTAPDeviceRequest]) (*connect.Response[v1.NetworkResponse], error)
 	DeleteTAPDevice(context.Context, *connect.Request[v1.DeleteTAPDeviceRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
@@ -272,6 +317,21 @@ type PivirtdServiceClient interface {
 	AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error)
 	RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
 	ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error)
+	// Host Networks (isolated / NAT / routed / bridged bridges)
+	ApplyNetwork(context.Context, *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
+	DeleteNetwork(context.Context, *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error)
+	ListNetworks(context.Context, *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error)
+	GetNetwork(context.Context, *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
+	// OVS Overlay Networks
+	ApplyOverlayNetwork(context.Context, *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error)
+	DeleteOverlayNetwork(context.Context, *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
+	ListOverlayNetworks(context.Context, *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error)
+	// External IP Bindings
+	BindExternalIP(context.Context, *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error)
+	UnbindExternalIP(context.Context, *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
+	ListExternalIPs(context.Context, *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error)
+	// Network Namespaces
+	ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error)
 	// VM Metadata Labels
 	SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error)
 	GetLabels(context.Context, *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error)
@@ -488,6 +548,24 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(pivirtdServiceMethods.ByName("DeleteStoragePool")),
 			connect.WithClientOptions(opts...),
 		),
+		getStoragePool: connect.NewClient[v1.GetStoragePoolRequest, v1.StoragePoolResponse](
+			httpClient,
+			baseURL+PivirtdServiceGetStoragePoolProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("GetStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		activateStoragePool: connect.NewClient[v1.ActivateStoragePoolRequest, v1.StoragePoolResponse](
+			httpClient,
+			baseURL+PivirtdServiceActivateStoragePoolProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ActivateStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		deactivateStoragePool: connect.NewClient[v1.DeactivateStoragePoolRequest, v1.StoragePoolResponse](
+			httpClient,
+			baseURL+PivirtdServiceDeactivateStoragePoolProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("DeactivateStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
 		createTAPDevice: connect.NewClient[v1.CreateTAPDeviceRequest, v1.NetworkResponse](
 			httpClient,
 			baseURL+PivirtdServiceCreateTAPDeviceProcedure,
@@ -558,6 +636,72 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+PivirtdServiceListOVSPortsProcedure,
 			connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSPorts")),
+			connect.WithClientOptions(opts...),
+		),
+		applyNetwork: connect.NewClient[v1.ApplyNetworkRequest, v1.NetworkStatusResponse](
+			httpClient,
+			baseURL+PivirtdServiceApplyNetworkProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ApplyNetwork")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteNetwork: connect.NewClient[v1.DeleteNetworkRequest2, v1.DeleteNetworkResponse](
+			httpClient,
+			baseURL+PivirtdServiceDeleteNetworkProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("DeleteNetwork")),
+			connect.WithClientOptions(opts...),
+		),
+		listNetworks: connect.NewClient[v1.ListNetworksRequest, v1.ListNetworksResponse](
+			httpClient,
+			baseURL+PivirtdServiceListNetworksProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworks")),
+			connect.WithClientOptions(opts...),
+		),
+		getNetwork: connect.NewClient[v1.GetNetworkRequest, v1.NetworkStatusResponse](
+			httpClient,
+			baseURL+PivirtdServiceGetNetworkProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("GetNetwork")),
+			connect.WithClientOptions(opts...),
+		),
+		applyOverlayNetwork: connect.NewClient[v1.ApplyOverlayNetworkRequest, v1.OverlayNetworkResponse](
+			httpClient,
+			baseURL+PivirtdServiceApplyOverlayNetworkProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ApplyOverlayNetwork")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteOverlayNetwork: connect.NewClient[v1.DeleteOverlayNetworkRequest, v1.DeleteNetworkResponse](
+			httpClient,
+			baseURL+PivirtdServiceDeleteOverlayNetworkProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("DeleteOverlayNetwork")),
+			connect.WithClientOptions(opts...),
+		),
+		listOverlayNetworks: connect.NewClient[v1.ListOverlayNetworksRequest, v1.ListOverlayNetworksResponse](
+			httpClient,
+			baseURL+PivirtdServiceListOverlayNetworksProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ListOverlayNetworks")),
+			connect.WithClientOptions(opts...),
+		),
+		bindExternalIP: connect.NewClient[v1.BindExternalIPRequest, v1.ExternalIPResponse](
+			httpClient,
+			baseURL+PivirtdServiceBindExternalIPProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("BindExternalIP")),
+			connect.WithClientOptions(opts...),
+		),
+		unbindExternalIP: connect.NewClient[v1.UnbindExternalIPRequest, v1.DeleteNetworkResponse](
+			httpClient,
+			baseURL+PivirtdServiceUnbindExternalIPProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("UnbindExternalIP")),
+			connect.WithClientOptions(opts...),
+		),
+		listExternalIPs: connect.NewClient[v1.ListExternalIPsRequest, v1.ListExternalIPsResponse](
+			httpClient,
+			baseURL+PivirtdServiceListExternalIPsProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ListExternalIPs")),
+			connect.WithClientOptions(opts...),
+		),
+		listNetworkNamespaces: connect.NewClient[v1.ListNetworkNamespacesRequest, v1.ListNetworkNamespacesResponse](
+			httpClient,
+			baseURL+PivirtdServiceListNetworkNamespacesProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworkNamespaces")),
 			connect.WithClientOptions(opts...),
 		),
 		setLabels: connect.NewClient[v1.SetLabelsRequest, v1.SetLabelsResponse](
@@ -721,72 +865,86 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // pivirtdServiceClient implements PivirtdServiceClient.
 type pivirtdServiceClient struct {
-	createVM            *connect.Client[v1.CreateVMRequest, v1.VMResponse]
-	applyVM             *connect.Client[v1.ApplyVMRequest, v1.VMResponse]
-	startVM             *connect.Client[v1.StartVMRequest, v1.VMResponse]
-	stopVM              *connect.Client[v1.StopVMRequest, v1.VMResponse]
-	pauseVM             *connect.Client[v1.PauseVMRequest, v1.VMResponse]
-	resumeVM            *connect.Client[v1.ResumeVMRequest, v1.VMResponse]
-	rebootVM            *connect.Client[v1.RebootVMRequest, v1.VMResponse]
-	deleteVM            *connect.Client[v1.DeleteVMRequest, v1.DeleteVMResponse]
-	listVMs             *connect.Client[v1.ListVMsRequest, v1.ListVMsResponse]
-	getVM               *connect.Client[v1.GetVMRequest, v1.VMResponse]
-	getVMStats          *connect.Client[v1.GetVMStatsRequest, v1.VMStatsResponse]
-	updateVMMemory      *connect.Client[v1.UpdateVMMemoryRequest, v1.VMResponse]
-	updateVMCpu         *connect.Client[v1.UpdateVMCpuRequest, v1.VMResponse]
-	executeQMP          *connect.Client[v1.ExecuteQMPRequest, v1.ExecuteQMPResponse]
-	streamQMPEvents     *connect.Client[v1.StreamQMPRequest, v1.QMPEvent]
-	createSnapshot      *connect.Client[v1.CreateSnapshotRequest, v1.SnapshotResponse]
-	listSnapshots       *connect.Client[v1.ListSnapshotsRequest, v1.ListSnapshotsResponse]
-	restoreSnapshot     *connect.Client[v1.RestoreSnapshotRequest, v1.SnapshotResponse]
-	deleteSnapshot      *connect.Client[v1.DeleteSnapshotRequest, v1.DeleteSnapshotResponse]
-	consolidateSnapshot *connect.Client[v1.ConsolidateSnapshotRequest, v1.SnapshotResponse]
-	getSnapshotStatus   *connect.Client[v1.GetSnapshotStatusRequest, v1.SnapshotStatusResponse]
-	cloneVM             *connect.Client[v1.CloneVMRequest, v1.VMResponse]
-	cloneSnapshot       *connect.Client[v1.CloneSnapshotRequest, v1.VMResponse]
-	migrateVM           *connect.Client[v1.MigrateVMRequest, v1.MigrateVMResponse]
-	getMigrationStatus  *connect.Client[v1.GetMigrationStatusRequest, v1.MigrationStatusResponse]
-	createStoragePool   *connect.Client[v1.CreateStoragePoolRequest, v1.StoragePoolResponse]
-	listStoragePools    *connect.Client[v1.ListStoragePoolsRequest, v1.ListStoragePoolsResponse]
-	deleteStoragePool   *connect.Client[v1.DeleteStoragePoolRequest, v1.DeleteStoragePoolResponse]
-	createTAPDevice     *connect.Client[v1.CreateTAPDeviceRequest, v1.NetworkResponse]
-	deleteTAPDevice     *connect.Client[v1.DeleteTAPDeviceRequest, v1.DeleteNetworkResponse]
-	listTAPDevices      *connect.Client[v1.ListTAPDevicesRequest, v1.ListTAPDevicesResponse]
-	createBridge        *connect.Client[v1.CreateBridgeRequest, v1.NetworkResponse]
-	deleteBridge        *connect.Client[v1.DeleteBridgeRequest, v1.DeleteNetworkResponse]
-	listBridges         *connect.Client[v1.ListBridgesRequest, v1.ListBridgesResponse]
-	createOVSBridge     *connect.Client[v1.CreateOVSBridgeRequest, v1.NetworkResponse]
-	deleteOVSBridge     *connect.Client[v1.DeleteOVSBridgeRequest, v1.DeleteNetworkResponse]
-	listOVSBridges      *connect.Client[v1.ListOVSBridgesRequest, v1.ListOVSBridgesResponse]
-	addOVSPort          *connect.Client[v1.AddOVSPortRequest, v1.NetworkResponse]
-	removeOVSPort       *connect.Client[v1.RemoveOVSPortRequest, v1.DeleteNetworkResponse]
-	listOVSPorts        *connect.Client[v1.ListOVSPortsRequest, v1.ListOVSPortsResponse]
-	setLabels           *connect.Client[v1.SetLabelsRequest, v1.SetLabelsResponse]
-	getLabels           *connect.Client[v1.GetLabelsRequest, v1.GetLabelsResponse]
-	deleteLabel         *connect.Client[v1.DeleteLabelRequest, v1.DeleteLabelResponse]
-	setProvisioning     *connect.Client[v1.SetProvisioningRequest, v1.SetProvisioningResponse]
-	getVMStatus         *connect.Client[v1.GetVMStatusRequest, v1.GetVMStatusResponse]
-	startDiskMove       *connect.Client[v1.StartDiskMoveRequest, v1.DiskMoveStatusResponse]
-	getDiskMoveStatus   *connect.Client[v1.GetDiskMoveStatusRequest, v1.DiskMoveStatusResponse]
-	cancelDiskMove      *connect.Client[v1.CancelDiskMoveRequest, v1.DiskMoveResponse]
-	attachDisk          *connect.Client[v1.AttachDiskRequest, v1.VMResponse]
-	detachDisk          *connect.Client[v1.DetachDiskRequest, v1.VMResponse]
-	attachNIC           *connect.Client[v1.AttachNICRequest, v1.VMResponse]
-	detachNIC           *connect.Client[v1.DetachNICRequest, v1.VMResponse]
-	resizeDisk          *connect.Client[v1.ResizeDiskRequest, v1.VMResponse]
-	setVNCPassword      *connect.Client[v1.SetVNCPasswordRequest, v1.VMResponse]
-	setLinkState        *connect.Client[v1.SetLinkStateRequest, v1.VMResponse]
-	renameVM            *connect.Client[v1.RenameVMRequest, v1.VMResponse]
-	changeISO           *connect.Client[v1.ChangeISORequest, v1.VMResponse]
-	ejectISO            *connect.Client[v1.EjectISORequest, v1.VMResponse]
-	getSnapshotTree     *connect.Client[v1.GetSnapshotTreeRequest, v1.GetSnapshotTreeResponse]
-	getGuestInfo        *connect.Client[v1.GetGuestInfoRequest, v1.GetGuestInfoResponse]
-	guestExec           *connect.Client[v1.GuestExecRequest, v1.GuestExecResponse]
-	getGuestExecStatus  *connect.Client[v1.GetGuestExecStatusRequest, v1.GetGuestExecStatusResponse]
-	setGuestHostname    *connect.Client[v1.SetGuestHostnameRequest, v1.SetGuestHostnameResponse]
-	customizeOS         *connect.Client[v1.CustomizeOSRequest, v1.CustomizeOSResponse]
-	subscribeEvents     *connect.Client[v1.SubscribeEventsRequest, v1.HostEvent]
-	getHostResource     *connect.Client[v1.SubscribeEventsRequest, v1.HostResourceReport]
+	createVM              *connect.Client[v1.CreateVMRequest, v1.VMResponse]
+	applyVM               *connect.Client[v1.ApplyVMRequest, v1.VMResponse]
+	startVM               *connect.Client[v1.StartVMRequest, v1.VMResponse]
+	stopVM                *connect.Client[v1.StopVMRequest, v1.VMResponse]
+	pauseVM               *connect.Client[v1.PauseVMRequest, v1.VMResponse]
+	resumeVM              *connect.Client[v1.ResumeVMRequest, v1.VMResponse]
+	rebootVM              *connect.Client[v1.RebootVMRequest, v1.VMResponse]
+	deleteVM              *connect.Client[v1.DeleteVMRequest, v1.DeleteVMResponse]
+	listVMs               *connect.Client[v1.ListVMsRequest, v1.ListVMsResponse]
+	getVM                 *connect.Client[v1.GetVMRequest, v1.VMResponse]
+	getVMStats            *connect.Client[v1.GetVMStatsRequest, v1.VMStatsResponse]
+	updateVMMemory        *connect.Client[v1.UpdateVMMemoryRequest, v1.VMResponse]
+	updateVMCpu           *connect.Client[v1.UpdateVMCpuRequest, v1.VMResponse]
+	executeQMP            *connect.Client[v1.ExecuteQMPRequest, v1.ExecuteQMPResponse]
+	streamQMPEvents       *connect.Client[v1.StreamQMPRequest, v1.QMPEvent]
+	createSnapshot        *connect.Client[v1.CreateSnapshotRequest, v1.SnapshotResponse]
+	listSnapshots         *connect.Client[v1.ListSnapshotsRequest, v1.ListSnapshotsResponse]
+	restoreSnapshot       *connect.Client[v1.RestoreSnapshotRequest, v1.SnapshotResponse]
+	deleteSnapshot        *connect.Client[v1.DeleteSnapshotRequest, v1.DeleteSnapshotResponse]
+	consolidateSnapshot   *connect.Client[v1.ConsolidateSnapshotRequest, v1.SnapshotResponse]
+	getSnapshotStatus     *connect.Client[v1.GetSnapshotStatusRequest, v1.SnapshotStatusResponse]
+	cloneVM               *connect.Client[v1.CloneVMRequest, v1.VMResponse]
+	cloneSnapshot         *connect.Client[v1.CloneSnapshotRequest, v1.VMResponse]
+	migrateVM             *connect.Client[v1.MigrateVMRequest, v1.MigrateVMResponse]
+	getMigrationStatus    *connect.Client[v1.GetMigrationStatusRequest, v1.MigrationStatusResponse]
+	createStoragePool     *connect.Client[v1.CreateStoragePoolRequest, v1.StoragePoolResponse]
+	listStoragePools      *connect.Client[v1.ListStoragePoolsRequest, v1.ListStoragePoolsResponse]
+	deleteStoragePool     *connect.Client[v1.DeleteStoragePoolRequest, v1.DeleteStoragePoolResponse]
+	getStoragePool        *connect.Client[v1.GetStoragePoolRequest, v1.StoragePoolResponse]
+	activateStoragePool   *connect.Client[v1.ActivateStoragePoolRequest, v1.StoragePoolResponse]
+	deactivateStoragePool *connect.Client[v1.DeactivateStoragePoolRequest, v1.StoragePoolResponse]
+	createTAPDevice       *connect.Client[v1.CreateTAPDeviceRequest, v1.NetworkResponse]
+	deleteTAPDevice       *connect.Client[v1.DeleteTAPDeviceRequest, v1.DeleteNetworkResponse]
+	listTAPDevices        *connect.Client[v1.ListTAPDevicesRequest, v1.ListTAPDevicesResponse]
+	createBridge          *connect.Client[v1.CreateBridgeRequest, v1.NetworkResponse]
+	deleteBridge          *connect.Client[v1.DeleteBridgeRequest, v1.DeleteNetworkResponse]
+	listBridges           *connect.Client[v1.ListBridgesRequest, v1.ListBridgesResponse]
+	createOVSBridge       *connect.Client[v1.CreateOVSBridgeRequest, v1.NetworkResponse]
+	deleteOVSBridge       *connect.Client[v1.DeleteOVSBridgeRequest, v1.DeleteNetworkResponse]
+	listOVSBridges        *connect.Client[v1.ListOVSBridgesRequest, v1.ListOVSBridgesResponse]
+	addOVSPort            *connect.Client[v1.AddOVSPortRequest, v1.NetworkResponse]
+	removeOVSPort         *connect.Client[v1.RemoveOVSPortRequest, v1.DeleteNetworkResponse]
+	listOVSPorts          *connect.Client[v1.ListOVSPortsRequest, v1.ListOVSPortsResponse]
+	applyNetwork          *connect.Client[v1.ApplyNetworkRequest, v1.NetworkStatusResponse]
+	deleteNetwork         *connect.Client[v1.DeleteNetworkRequest2, v1.DeleteNetworkResponse]
+	listNetworks          *connect.Client[v1.ListNetworksRequest, v1.ListNetworksResponse]
+	getNetwork            *connect.Client[v1.GetNetworkRequest, v1.NetworkStatusResponse]
+	applyOverlayNetwork   *connect.Client[v1.ApplyOverlayNetworkRequest, v1.OverlayNetworkResponse]
+	deleteOverlayNetwork  *connect.Client[v1.DeleteOverlayNetworkRequest, v1.DeleteNetworkResponse]
+	listOverlayNetworks   *connect.Client[v1.ListOverlayNetworksRequest, v1.ListOverlayNetworksResponse]
+	bindExternalIP        *connect.Client[v1.BindExternalIPRequest, v1.ExternalIPResponse]
+	unbindExternalIP      *connect.Client[v1.UnbindExternalIPRequest, v1.DeleteNetworkResponse]
+	listExternalIPs       *connect.Client[v1.ListExternalIPsRequest, v1.ListExternalIPsResponse]
+	listNetworkNamespaces *connect.Client[v1.ListNetworkNamespacesRequest, v1.ListNetworkNamespacesResponse]
+	setLabels             *connect.Client[v1.SetLabelsRequest, v1.SetLabelsResponse]
+	getLabels             *connect.Client[v1.GetLabelsRequest, v1.GetLabelsResponse]
+	deleteLabel           *connect.Client[v1.DeleteLabelRequest, v1.DeleteLabelResponse]
+	setProvisioning       *connect.Client[v1.SetProvisioningRequest, v1.SetProvisioningResponse]
+	getVMStatus           *connect.Client[v1.GetVMStatusRequest, v1.GetVMStatusResponse]
+	startDiskMove         *connect.Client[v1.StartDiskMoveRequest, v1.DiskMoveStatusResponse]
+	getDiskMoveStatus     *connect.Client[v1.GetDiskMoveStatusRequest, v1.DiskMoveStatusResponse]
+	cancelDiskMove        *connect.Client[v1.CancelDiskMoveRequest, v1.DiskMoveResponse]
+	attachDisk            *connect.Client[v1.AttachDiskRequest, v1.VMResponse]
+	detachDisk            *connect.Client[v1.DetachDiskRequest, v1.VMResponse]
+	attachNIC             *connect.Client[v1.AttachNICRequest, v1.VMResponse]
+	detachNIC             *connect.Client[v1.DetachNICRequest, v1.VMResponse]
+	resizeDisk            *connect.Client[v1.ResizeDiskRequest, v1.VMResponse]
+	setVNCPassword        *connect.Client[v1.SetVNCPasswordRequest, v1.VMResponse]
+	setLinkState          *connect.Client[v1.SetLinkStateRequest, v1.VMResponse]
+	renameVM              *connect.Client[v1.RenameVMRequest, v1.VMResponse]
+	changeISO             *connect.Client[v1.ChangeISORequest, v1.VMResponse]
+	ejectISO              *connect.Client[v1.EjectISORequest, v1.VMResponse]
+	getSnapshotTree       *connect.Client[v1.GetSnapshotTreeRequest, v1.GetSnapshotTreeResponse]
+	getGuestInfo          *connect.Client[v1.GetGuestInfoRequest, v1.GetGuestInfoResponse]
+	guestExec             *connect.Client[v1.GuestExecRequest, v1.GuestExecResponse]
+	getGuestExecStatus    *connect.Client[v1.GetGuestExecStatusRequest, v1.GetGuestExecStatusResponse]
+	setGuestHostname      *connect.Client[v1.SetGuestHostnameRequest, v1.SetGuestHostnameResponse]
+	customizeOS           *connect.Client[v1.CustomizeOSRequest, v1.CustomizeOSResponse]
+	subscribeEvents       *connect.Client[v1.SubscribeEventsRequest, v1.HostEvent]
+	getHostResource       *connect.Client[v1.SubscribeEventsRequest, v1.HostResourceReport]
 }
 
 // CreateVM calls pilab.pivirtd.v1.PivirtdService.CreateVM.
@@ -931,6 +1089,21 @@ func (c *pivirtdServiceClient) DeleteStoragePool(ctx context.Context, req *conne
 	return c.deleteStoragePool.CallUnary(ctx, req)
 }
 
+// GetStoragePool calls pilab.pivirtd.v1.PivirtdService.GetStoragePool.
+func (c *pivirtdServiceClient) GetStoragePool(ctx context.Context, req *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
+	return c.getStoragePool.CallUnary(ctx, req)
+}
+
+// ActivateStoragePool calls pilab.pivirtd.v1.PivirtdService.ActivateStoragePool.
+func (c *pivirtdServiceClient) ActivateStoragePool(ctx context.Context, req *connect.Request[v1.ActivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
+	return c.activateStoragePool.CallUnary(ctx, req)
+}
+
+// DeactivateStoragePool calls pilab.pivirtd.v1.PivirtdService.DeactivateStoragePool.
+func (c *pivirtdServiceClient) DeactivateStoragePool(ctx context.Context, req *connect.Request[v1.DeactivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
+	return c.deactivateStoragePool.CallUnary(ctx, req)
+}
+
 // CreateTAPDevice calls pilab.pivirtd.v1.PivirtdService.CreateTAPDevice.
 func (c *pivirtdServiceClient) CreateTAPDevice(ctx context.Context, req *connect.Request[v1.CreateTAPDeviceRequest]) (*connect.Response[v1.NetworkResponse], error) {
 	return c.createTAPDevice.CallUnary(ctx, req)
@@ -989,6 +1162,61 @@ func (c *pivirtdServiceClient) RemoveOVSPort(ctx context.Context, req *connect.R
 // ListOVSPorts calls pilab.pivirtd.v1.PivirtdService.ListOVSPorts.
 func (c *pivirtdServiceClient) ListOVSPorts(ctx context.Context, req *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error) {
 	return c.listOVSPorts.CallUnary(ctx, req)
+}
+
+// ApplyNetwork calls pilab.pivirtd.v1.PivirtdService.ApplyNetwork.
+func (c *pivirtdServiceClient) ApplyNetwork(ctx context.Context, req *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
+	return c.applyNetwork.CallUnary(ctx, req)
+}
+
+// DeleteNetwork calls pilab.pivirtd.v1.PivirtdService.DeleteNetwork.
+func (c *pivirtdServiceClient) DeleteNetwork(ctx context.Context, req *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error) {
+	return c.deleteNetwork.CallUnary(ctx, req)
+}
+
+// ListNetworks calls pilab.pivirtd.v1.PivirtdService.ListNetworks.
+func (c *pivirtdServiceClient) ListNetworks(ctx context.Context, req *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error) {
+	return c.listNetworks.CallUnary(ctx, req)
+}
+
+// GetNetwork calls pilab.pivirtd.v1.PivirtdService.GetNetwork.
+func (c *pivirtdServiceClient) GetNetwork(ctx context.Context, req *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
+	return c.getNetwork.CallUnary(ctx, req)
+}
+
+// ApplyOverlayNetwork calls pilab.pivirtd.v1.PivirtdService.ApplyOverlayNetwork.
+func (c *pivirtdServiceClient) ApplyOverlayNetwork(ctx context.Context, req *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error) {
+	return c.applyOverlayNetwork.CallUnary(ctx, req)
+}
+
+// DeleteOverlayNetwork calls pilab.pivirtd.v1.PivirtdService.DeleteOverlayNetwork.
+func (c *pivirtdServiceClient) DeleteOverlayNetwork(ctx context.Context, req *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
+	return c.deleteOverlayNetwork.CallUnary(ctx, req)
+}
+
+// ListOverlayNetworks calls pilab.pivirtd.v1.PivirtdService.ListOverlayNetworks.
+func (c *pivirtdServiceClient) ListOverlayNetworks(ctx context.Context, req *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error) {
+	return c.listOverlayNetworks.CallUnary(ctx, req)
+}
+
+// BindExternalIP calls pilab.pivirtd.v1.PivirtdService.BindExternalIP.
+func (c *pivirtdServiceClient) BindExternalIP(ctx context.Context, req *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error) {
+	return c.bindExternalIP.CallUnary(ctx, req)
+}
+
+// UnbindExternalIP calls pilab.pivirtd.v1.PivirtdService.UnbindExternalIP.
+func (c *pivirtdServiceClient) UnbindExternalIP(ctx context.Context, req *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
+	return c.unbindExternalIP.CallUnary(ctx, req)
+}
+
+// ListExternalIPs calls pilab.pivirtd.v1.PivirtdService.ListExternalIPs.
+func (c *pivirtdServiceClient) ListExternalIPs(ctx context.Context, req *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error) {
+	return c.listExternalIPs.CallUnary(ctx, req)
+}
+
+// ListNetworkNamespaces calls pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces.
+func (c *pivirtdServiceClient) ListNetworkNamespaces(ctx context.Context, req *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error) {
+	return c.listNetworkNamespaces.CallUnary(ctx, req)
 }
 
 // SetLabels calls pilab.pivirtd.v1.PivirtdService.SetLabels.
@@ -1159,6 +1387,9 @@ type PivirtdServiceHandler interface {
 	CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
 	ListStoragePools(context.Context, *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error)
 	DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error)
+	GetStoragePool(context.Context, *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
+	ActivateStoragePool(context.Context, *connect.Request[v1.ActivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
+	DeactivateStoragePool(context.Context, *connect.Request[v1.DeactivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error)
 	// Network Management
 	CreateTAPDevice(context.Context, *connect.Request[v1.CreateTAPDeviceRequest]) (*connect.Response[v1.NetworkResponse], error)
 	DeleteTAPDevice(context.Context, *connect.Request[v1.DeleteTAPDeviceRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
@@ -1173,6 +1404,21 @@ type PivirtdServiceHandler interface {
 	AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error)
 	RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
 	ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error)
+	// Host Networks (isolated / NAT / routed / bridged bridges)
+	ApplyNetwork(context.Context, *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
+	DeleteNetwork(context.Context, *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error)
+	ListNetworks(context.Context, *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error)
+	GetNetwork(context.Context, *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
+	// OVS Overlay Networks
+	ApplyOverlayNetwork(context.Context, *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error)
+	DeleteOverlayNetwork(context.Context, *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
+	ListOverlayNetworks(context.Context, *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error)
+	// External IP Bindings
+	BindExternalIP(context.Context, *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error)
+	UnbindExternalIP(context.Context, *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
+	ListExternalIPs(context.Context, *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error)
+	// Network Namespaces
+	ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error)
 	// VM Metadata Labels
 	SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error)
 	GetLabels(context.Context, *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error)
@@ -1385,6 +1631,24 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		connect.WithSchema(pivirtdServiceMethods.ByName("DeleteStoragePool")),
 		connect.WithHandlerOptions(opts...),
 	)
+	pivirtdServiceGetStoragePoolHandler := connect.NewUnaryHandler(
+		PivirtdServiceGetStoragePoolProcedure,
+		svc.GetStoragePool,
+		connect.WithSchema(pivirtdServiceMethods.ByName("GetStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceActivateStoragePoolHandler := connect.NewUnaryHandler(
+		PivirtdServiceActivateStoragePoolProcedure,
+		svc.ActivateStoragePool,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ActivateStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceDeactivateStoragePoolHandler := connect.NewUnaryHandler(
+		PivirtdServiceDeactivateStoragePoolProcedure,
+		svc.DeactivateStoragePool,
+		connect.WithSchema(pivirtdServiceMethods.ByName("DeactivateStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
 	pivirtdServiceCreateTAPDeviceHandler := connect.NewUnaryHandler(
 		PivirtdServiceCreateTAPDeviceProcedure,
 		svc.CreateTAPDevice,
@@ -1455,6 +1719,72 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		PivirtdServiceListOVSPortsProcedure,
 		svc.ListOVSPorts,
 		connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSPorts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceApplyNetworkHandler := connect.NewUnaryHandler(
+		PivirtdServiceApplyNetworkProcedure,
+		svc.ApplyNetwork,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ApplyNetwork")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceDeleteNetworkHandler := connect.NewUnaryHandler(
+		PivirtdServiceDeleteNetworkProcedure,
+		svc.DeleteNetwork,
+		connect.WithSchema(pivirtdServiceMethods.ByName("DeleteNetwork")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceListNetworksHandler := connect.NewUnaryHandler(
+		PivirtdServiceListNetworksProcedure,
+		svc.ListNetworks,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceGetNetworkHandler := connect.NewUnaryHandler(
+		PivirtdServiceGetNetworkProcedure,
+		svc.GetNetwork,
+		connect.WithSchema(pivirtdServiceMethods.ByName("GetNetwork")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceApplyOverlayNetworkHandler := connect.NewUnaryHandler(
+		PivirtdServiceApplyOverlayNetworkProcedure,
+		svc.ApplyOverlayNetwork,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ApplyOverlayNetwork")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceDeleteOverlayNetworkHandler := connect.NewUnaryHandler(
+		PivirtdServiceDeleteOverlayNetworkProcedure,
+		svc.DeleteOverlayNetwork,
+		connect.WithSchema(pivirtdServiceMethods.ByName("DeleteOverlayNetwork")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceListOverlayNetworksHandler := connect.NewUnaryHandler(
+		PivirtdServiceListOverlayNetworksProcedure,
+		svc.ListOverlayNetworks,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ListOverlayNetworks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceBindExternalIPHandler := connect.NewUnaryHandler(
+		PivirtdServiceBindExternalIPProcedure,
+		svc.BindExternalIP,
+		connect.WithSchema(pivirtdServiceMethods.ByName("BindExternalIP")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceUnbindExternalIPHandler := connect.NewUnaryHandler(
+		PivirtdServiceUnbindExternalIPProcedure,
+		svc.UnbindExternalIP,
+		connect.WithSchema(pivirtdServiceMethods.ByName("UnbindExternalIP")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceListExternalIPsHandler := connect.NewUnaryHandler(
+		PivirtdServiceListExternalIPsProcedure,
+		svc.ListExternalIPs,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ListExternalIPs")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceListNetworkNamespacesHandler := connect.NewUnaryHandler(
+		PivirtdServiceListNetworkNamespacesProcedure,
+		svc.ListNetworkNamespaces,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworkNamespaces")),
 		connect.WithHandlerOptions(opts...),
 	)
 	pivirtdServiceSetLabelsHandler := connect.NewUnaryHandler(
@@ -1671,6 +2001,12 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 			pivirtdServiceListStoragePoolsHandler.ServeHTTP(w, r)
 		case PivirtdServiceDeleteStoragePoolProcedure:
 			pivirtdServiceDeleteStoragePoolHandler.ServeHTTP(w, r)
+		case PivirtdServiceGetStoragePoolProcedure:
+			pivirtdServiceGetStoragePoolHandler.ServeHTTP(w, r)
+		case PivirtdServiceActivateStoragePoolProcedure:
+			pivirtdServiceActivateStoragePoolHandler.ServeHTTP(w, r)
+		case PivirtdServiceDeactivateStoragePoolProcedure:
+			pivirtdServiceDeactivateStoragePoolHandler.ServeHTTP(w, r)
 		case PivirtdServiceCreateTAPDeviceProcedure:
 			pivirtdServiceCreateTAPDeviceHandler.ServeHTTP(w, r)
 		case PivirtdServiceDeleteTAPDeviceProcedure:
@@ -1695,6 +2031,28 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 			pivirtdServiceRemoveOVSPortHandler.ServeHTTP(w, r)
 		case PivirtdServiceListOVSPortsProcedure:
 			pivirtdServiceListOVSPortsHandler.ServeHTTP(w, r)
+		case PivirtdServiceApplyNetworkProcedure:
+			pivirtdServiceApplyNetworkHandler.ServeHTTP(w, r)
+		case PivirtdServiceDeleteNetworkProcedure:
+			pivirtdServiceDeleteNetworkHandler.ServeHTTP(w, r)
+		case PivirtdServiceListNetworksProcedure:
+			pivirtdServiceListNetworksHandler.ServeHTTP(w, r)
+		case PivirtdServiceGetNetworkProcedure:
+			pivirtdServiceGetNetworkHandler.ServeHTTP(w, r)
+		case PivirtdServiceApplyOverlayNetworkProcedure:
+			pivirtdServiceApplyOverlayNetworkHandler.ServeHTTP(w, r)
+		case PivirtdServiceDeleteOverlayNetworkProcedure:
+			pivirtdServiceDeleteOverlayNetworkHandler.ServeHTTP(w, r)
+		case PivirtdServiceListOverlayNetworksProcedure:
+			pivirtdServiceListOverlayNetworksHandler.ServeHTTP(w, r)
+		case PivirtdServiceBindExternalIPProcedure:
+			pivirtdServiceBindExternalIPHandler.ServeHTTP(w, r)
+		case PivirtdServiceUnbindExternalIPProcedure:
+			pivirtdServiceUnbindExternalIPHandler.ServeHTTP(w, r)
+		case PivirtdServiceListExternalIPsProcedure:
+			pivirtdServiceListExternalIPsHandler.ServeHTTP(w, r)
+		case PivirtdServiceListNetworkNamespacesProcedure:
+			pivirtdServiceListNetworkNamespacesHandler.ServeHTTP(w, r)
 		case PivirtdServiceSetLabelsProcedure:
 			pivirtdServiceSetLabelsHandler.ServeHTTP(w, r)
 		case PivirtdServiceGetLabelsProcedure:
@@ -1868,6 +2226,18 @@ func (UnimplementedPivirtdServiceHandler) DeleteStoragePool(context.Context, *co
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteStoragePool is not implemented"))
 }
 
+func (UnimplementedPivirtdServiceHandler) GetStoragePool(context.Context, *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetStoragePool is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ActivateStoragePool(context.Context, *connect.Request[v1.ActivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ActivateStoragePool is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) DeactivateStoragePool(context.Context, *connect.Request[v1.DeactivateStoragePoolRequest]) (*connect.Response[v1.StoragePoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeactivateStoragePool is not implemented"))
+}
+
 func (UnimplementedPivirtdServiceHandler) CreateTAPDevice(context.Context, *connect.Request[v1.CreateTAPDeviceRequest]) (*connect.Response[v1.NetworkResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateTAPDevice is not implemented"))
 }
@@ -1914,6 +2284,50 @@ func (UnimplementedPivirtdServiceHandler) RemoveOVSPort(context.Context, *connec
 
 func (UnimplementedPivirtdServiceHandler) ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOVSPorts is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ApplyNetwork(context.Context, *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ApplyNetwork is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) DeleteNetwork(context.Context, *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteNetwork is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ListNetworks(context.Context, *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListNetworks is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) GetNetwork(context.Context, *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetNetwork is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ApplyOverlayNetwork(context.Context, *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ApplyOverlayNetwork is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) DeleteOverlayNetwork(context.Context, *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteOverlayNetwork is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ListOverlayNetworks(context.Context, *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOverlayNetworks is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) BindExternalIP(context.Context, *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.BindExternalIP is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) UnbindExternalIP(context.Context, *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.UnbindExternalIP is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ListExternalIPs(context.Context, *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListExternalIPs is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error) {

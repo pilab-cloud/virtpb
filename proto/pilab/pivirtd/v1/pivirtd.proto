@@ -54,6 +54,9 @@ service PivirtdService {
   rpc CreateStoragePool(CreateStoragePoolRequest) returns (StoragePoolResponse);
   rpc ListStoragePools(ListStoragePoolsRequest) returns (ListStoragePoolsResponse);
   rpc DeleteStoragePool(DeleteStoragePoolRequest) returns (DeleteStoragePoolResponse);
+  rpc GetStoragePool(GetStoragePoolRequest) returns (StoragePoolResponse);
+  rpc ActivateStoragePool(ActivateStoragePoolRequest) returns (StoragePoolResponse);
+  rpc DeactivateStoragePool(DeactivateStoragePoolRequest) returns (StoragePoolResponse);
   
   // Network Management
   rpc CreateTAPDevice(CreateTAPDeviceRequest) returns (NetworkResponse);
@@ -70,6 +73,25 @@ service PivirtdService {
   rpc AddOVSPort(AddOVSPortRequest) returns (NetworkResponse);
   rpc RemoveOVSPort(RemoveOVSPortRequest) returns (DeleteNetworkResponse);
   rpc ListOVSPorts(ListOVSPortsRequest) returns (ListOVSPortsResponse);
+
+  // Host Networks (isolated / NAT / routed / bridged bridges)
+  rpc ApplyNetwork(ApplyNetworkRequest) returns (NetworkStatusResponse);
+  rpc DeleteNetwork(DeleteNetworkRequest2) returns (DeleteNetworkResponse);
+  rpc ListNetworks(ListNetworksRequest) returns (ListNetworksResponse);
+  rpc GetNetwork(GetNetworkRequest) returns (NetworkStatusResponse);
+
+  // OVS Overlay Networks
+  rpc ApplyOverlayNetwork(ApplyOverlayNetworkRequest) returns (OverlayNetworkResponse);
+  rpc DeleteOverlayNetwork(DeleteOverlayNetworkRequest) returns (DeleteNetworkResponse);
+  rpc ListOverlayNetworks(ListOverlayNetworksRequest) returns (ListOverlayNetworksResponse);
+
+  // External IP Bindings
+  rpc BindExternalIP(BindExternalIPRequest) returns (ExternalIPResponse);
+  rpc UnbindExternalIP(UnbindExternalIPRequest) returns (DeleteNetworkResponse);
+  rpc ListExternalIPs(ListExternalIPsRequest) returns (ListExternalIPsResponse);
+
+  // Network Namespaces
+  rpc ListNetworkNamespaces(ListNetworkNamespacesRequest) returns (ListNetworkNamespacesResponse);
 
   // VM Metadata Labels
   rpc SetLabels(SetLabelsRequest) returns (SetLabelsResponse);
@@ -522,12 +544,46 @@ message DeleteStoragePoolResponse {
 
 message StoragePool {
   string name = 1;
-  string type = 2;  // "dir", "iscsi", "lvm"
+  string type = 2;  // "dir", "nfs", "iscsi"
   string path = 3;
   int64 capacity_bytes = 4;
   int64 allocated_bytes = 5;
   int64 available_bytes = 6;
+  // active reports what the backend observes right now, not the stored
+  // intent: an NFS pool whose server is gone reports false even though its
+  // definition still says it should be up.
   bool active = 7;
+  // options carries the backend-specific settings the pool was created with.
+  // Secrets (CHAP passwords) are redacted.
+  map<string, string> options = 8;
+  // source is the backing source: a directory, "host:/export", or
+  // "iqn...@portal".
+  string source = 9;
+  // device is the block device backing the pool, for iSCSI pools.
+  string device = 10;
+  // phase is "Active", "Inactive" or "Unavailable".
+  string phase = 11;
+  // message explains a pool that is not available, or carries a non-fatal
+  // note about one that is.
+  string message = 12;
+  // desired_active is the stored intent, which differs from active when a
+  // pool failed to come up or went away underneath the daemon.
+  bool desired_active = 13;
+}
+
+message GetStoragePoolRequest {
+  string name = 1;
+}
+
+message ActivateStoragePoolRequest {
+  string name = 1;
+}
+
+message DeactivateStoragePoolRequest {
+  string name = 1;
+  // force allows a lazy unmount when the pool is busy, which is the only
+  // unmount that works against an unreachable NFS server.
+  bool force = 2;
 }
 
 // ==================== Network Messages ====================
@@ -892,4 +948,175 @@ message UserSpec {
 message CustomizeOSResponse {
   bool ok = 1;
   string message = 2;
+}
+
+// ==================== Host Network Messages ====================
+
+// NetworkSpec describes a bridge-backed network on one host.
+message NetworkSpec {
+  string name = 1;
+  // mode is "isolated", "nat", "routed" or "bridged".
+  string mode = 2;
+  // bridge is the Linux bridge name. Empty derives one from the name.
+  string bridge = 3;
+  // subnet is the network CIDR. Required in nat and routed mode.
+  string subnet = 4;
+  // gateway is the VMs' default route. Empty takes the first usable address.
+  string gateway = 5;
+  // uplink is the host interface outbound traffic leaves by.
+  string uplink = 6;
+  // physical_ports are enslaved to the bridge in bridged mode.
+  repeated string physical_ports = 7;
+  // vlan_filtering enables 802.1Q filtering on the bridge.
+  bool vlan_filtering = 8;
+  int32 mtu = 9;
+}
+
+// NetworkStatus is a host network's observed state.
+message NetworkStatus {
+  NetworkSpec spec = 1;
+  string bridge = 2;
+  // phase is "Active" or "Down".
+  string phase = 3;
+  // namespace is the router namespace, in routed mode.
+  string namespace = 4;
+  // transfer_net is the point-to-point link to that namespace.
+  string transfer_net = 5;
+  // ports are the interfaces currently on the bridge.
+  repeated string ports = 6;
+}
+
+message ApplyNetworkRequest {
+  NetworkSpec spec = 1;
+}
+
+message NetworkStatusResponse {
+  NetworkStatus status = 1;
+  // warnings are non-blocking notes about the applied spec.
+  repeated string warnings = 2;
+}
+
+message DeleteNetworkRequest2 {
+  string name = 1;
+}
+
+message ListNetworksRequest {}
+
+message ListNetworksResponse {
+  repeated NetworkStatus networks = 1;
+}
+
+message GetNetworkRequest {
+  string name = 1;
+}
+
+// ==================== Overlay Network Messages ====================
+
+// OverlayNetworkSpec describes one OVS-based overlay segment.
+message OverlayNetworkSpec {
+  string name = 1;
+  // vni is the segment id on the wire, 1-16777215.
+  uint32 vni = 2;
+  // bridge is the OVS integration bridge. Empty defaults to "br-int".
+  string bridge = 3;
+  // tunnel_type is "vxlan", "geneve" or "gre". Empty defaults to vxlan.
+  string tunnel_type = 4;
+  // local_ip is this node's underlay address.
+  string local_ip = 5;
+  // peers are the other nodes' underlay addresses.
+  repeated string peers = 6;
+  // dst_port overrides the tunnel destination UDP port.
+  int32 dst_port = 7;
+  // mtu is requested on the VM-facing ports. Encapsulation costs 50 bytes for
+  // VXLAN and 58 for Geneve on IPv4.
+  int32 mtu = 8;
+}
+
+// OverlayNetworkStatus is an overlay network's observed state.
+message OverlayNetworkStatus {
+  OverlayNetworkSpec spec = 1;
+  // local_vlan is the bridge-local VLAN the network is mapped to.
+  int32 local_vlan = 2;
+  // tunnel_ports are the tunnel ports currently serving the network.
+  repeated string tunnel_ports = 3;
+  // peers are the underlay addresses currently wired up.
+  repeated string peers = 4;
+  // local_ports are the VM ports attached on this host.
+  repeated string local_ports = 5;
+  string phase = 6;
+}
+
+message ApplyOverlayNetworkRequest {
+  OverlayNetworkSpec spec = 1;
+}
+
+message OverlayNetworkResponse {
+  OverlayNetworkStatus status = 1;
+  repeated string warnings = 2;
+}
+
+message DeleteOverlayNetworkRequest {
+  string name = 1;
+}
+
+message ListOverlayNetworksRequest {}
+
+message ListOverlayNetworksResponse {
+  repeated OverlayNetworkStatus networks = 1;
+}
+
+// ==================== External IP Messages ====================
+
+// PortForward maps one external port onto a port on the VM.
+message PortForward {
+  // protocol is "tcp" or "udp".
+  string protocol = 1;
+  int32 external_port = 2;
+  // internal_port defaults to external_port when zero.
+  int32 internal_port = 3;
+}
+
+// ExternalIPSpec binds a routable address on this host to a VM.
+message ExternalIPSpec {
+  string name = 1;
+  // address is the external address, without a prefix.
+  string address = 2;
+  // prefix_len is the prefix it is configured with. Zero means a host route.
+  int32 prefix_len = 3;
+  // interface is the host interface to bind it on.
+  string interface = 4;
+  // internal_ip is the VM address traffic is translated to.
+  string internal_ip = 5;
+  // namespace binds the address inside a router namespace instead of the host.
+  string namespace = 6;
+  // port_forwards restricts the mapping to those ports. Empty is one-to-one.
+  repeated PortForward port_forwards = 7;
+}
+
+message BindExternalIPRequest {
+  ExternalIPSpec spec = 1;
+}
+
+message ExternalIPResponse {
+  ExternalIPSpec spec = 1;
+  // mapping is "one-to-one" or "port-forward".
+  string mapping = 2;
+}
+
+message UnbindExternalIPRequest {
+  string name = 1;
+}
+
+message ListExternalIPsRequest {}
+
+message ListExternalIPsResponse {
+  repeated ExternalIPSpec bindings = 1;
+}
+
+// ==================== Network Namespace Messages ====================
+
+message ListNetworkNamespacesRequest {}
+
+message ListNetworkNamespacesResponse {
+  repeated string namespaces = 1;
 }
