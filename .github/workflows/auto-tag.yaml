@@ -23,19 +23,25 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
-      - name: Determine Version Bump and Tag
-        id: semver # Give this step an ID to reference its outputs
-        uses: anothrNick/github-tag-action@v1 # Use a specific version for stability
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
-          TAG_PREFIX: v
-          PRERELEASE: false
-          RELEASE_BRANCHES: release.*,hotfix.*,master
-          DEFAULT_BUMP: patch
-          
-      - name: Display new version (for debugging)
+      - name: Bump patch version and tag
+        id: semver
         run: |
-          echo "New Tag created: ${{ steps.semver.outputs.new_tag }}"
-          echo "Old tag: ${{ steps.semver.outputs.old_tag }}"
-          echo "The value of the latest tag after running this action: ${{ steps.semver.outputs.tag }}"
-          echo "Part: ${{ steps.semver.outputs.part }}"
+          LATEST=$(git tag -l 'v*' --sort=-v:refname | head -n1)
+          if [ -z "$LATEST" ]; then
+            LATEST="v0.0.0"
+          fi
+          echo "Latest tag: $LATEST"
+
+          VERSION=${LATEST#v}
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          PATCH=$(echo "$VERSION" | cut -d. -f3)
+          NEW_PATCH=$((PATCH + 1))
+          NEW_TAG="v${MAJOR}.${MINOR}.${NEW_PATCH}"
+
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "old_tag=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "New tag: $NEW_TAG"
+
+          git tag "$NEW_TAG"
+          git push origin "$NEW_TAG"
