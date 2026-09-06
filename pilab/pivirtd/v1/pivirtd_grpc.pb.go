@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	PivirtdService_CreateVM_FullMethodName            = "/pilab.virtualization.v1.PivirtdService/CreateVM"
+	PivirtdService_ApplyVM_FullMethodName             = "/pilab.virtualization.v1.PivirtdService/ApplyVM"
 	PivirtdService_StartVM_FullMethodName             = "/pilab.virtualization.v1.PivirtdService/StartVM"
 	PivirtdService_StopVM_FullMethodName              = "/pilab.virtualization.v1.PivirtdService/StopVM"
 	PivirtdService_PauseVM_FullMethodName             = "/pilab.virtualization.v1.PivirtdService/PauseVM"
@@ -94,6 +95,7 @@ const (
 type PivirtdServiceClient interface {
 	// VM Lifecycle Management
 	CreateVM(ctx context.Context, in *CreateVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
+	ApplyVM(ctx context.Context, in *ApplyVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
 	StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
 	StopVM(ctx context.Context, in *StopVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
 	PauseVM(ctx context.Context, in *PauseVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
@@ -189,6 +191,16 @@ func (c *pivirtdServiceClient) CreateVM(ctx context.Context, in *CreateVMRequest
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VMResponse)
 	err := c.cc.Invoke(ctx, PivirtdService_CreateVM_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ApplyVM(ctx context.Context, in *ApplyVMRequest, opts ...grpc.CallOption) (*VMResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VMResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ApplyVM_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -861,6 +873,7 @@ func (c *pivirtdServiceClient) GetHostResource(ctx context.Context, in *Subscrib
 type PivirtdServiceServer interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *CreateVMRequest) (*VMResponse, error)
+	ApplyVM(context.Context, *ApplyVMRequest) (*VMResponse, error)
 	StartVM(context.Context, *StartVMRequest) (*VMResponse, error)
 	StopVM(context.Context, *StopVMRequest) (*VMResponse, error)
 	PauseVM(context.Context, *PauseVMRequest) (*VMResponse, error)
@@ -954,6 +967,9 @@ type UnimplementedPivirtdServiceServer struct{}
 
 func (UnimplementedPivirtdServiceServer) CreateVM(context.Context, *CreateVMRequest) (*VMResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateVM not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ApplyVM(context.Context, *ApplyVMRequest) (*VMResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ApplyVM not implemented")
 }
 func (UnimplementedPivirtdServiceServer) StartVM(context.Context, *StartVMRequest) (*VMResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method StartVM not implemented")
@@ -1182,6 +1198,24 @@ func _PivirtdService_CreateVM_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PivirtdServiceServer).CreateVM(ctx, req.(*CreateVMRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ApplyVM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyVMRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ApplyVM(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ApplyVM_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ApplyVM(ctx, req.(*ApplyVMRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2334,6 +2368,10 @@ var PivirtdService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateVM",
 			Handler:    _PivirtdService_CreateVM_Handler,
+		},
+		{
+			MethodName: "ApplyVM",
+			Handler:    _PivirtdService_ApplyVM_Handler,
 		},
 		{
 			MethodName: "StartVM",

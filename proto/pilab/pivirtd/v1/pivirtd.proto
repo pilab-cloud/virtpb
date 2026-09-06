@@ -13,6 +13,7 @@ import "pilab/pivirtd/v1/host_resource.proto";
 service PivirtdService {
   // VM Lifecycle Management
   rpc CreateVM(CreateVMRequest) returns (VMResponse);
+  rpc ApplyVM(ApplyVMRequest) returns (VMResponse);
   rpc StartVM(StartVMRequest) returns (VMResponse);
   rpc StopVM(StopVMRequest) returns (VMResponse);
   rpc PauseVM(PauseVMRequest) returns (VMResponse);
@@ -136,6 +137,10 @@ message CreateVMRequest {
   int32 memory_slots = 18;
   int32 max_vcpus = 19;
   ResourceSpec resources = 20;
+}
+
+message ApplyVMRequest {
+  string yaml_manifest = 1;
 }
 
 message StartVMRequest {

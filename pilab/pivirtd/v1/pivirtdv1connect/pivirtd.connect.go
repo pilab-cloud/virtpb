@@ -35,6 +35,8 @@ const (
 const (
 	// PivirtdServiceCreateVMProcedure is the fully-qualified name of the PivirtdService's CreateVM RPC.
 	PivirtdServiceCreateVMProcedure = "/pilab.virtualization.v1.PivirtdService/CreateVM"
+	// PivirtdServiceApplyVMProcedure is the fully-qualified name of the PivirtdService's ApplyVM RPC.
+	PivirtdServiceApplyVMProcedure = "/pilab.virtualization.v1.PivirtdService/ApplyVM"
 	// PivirtdServiceStartVMProcedure is the fully-qualified name of the PivirtdService's StartVM RPC.
 	PivirtdServiceStartVMProcedure = "/pilab.virtualization.v1.PivirtdService/StartVM"
 	// PivirtdServiceStopVMProcedure is the fully-qualified name of the PivirtdService's StopVM RPC.
@@ -222,6 +224,7 @@ const (
 type PivirtdServiceClient interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error)
+	ApplyVM(context.Context, *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StartVM(context.Context, *connect.Request[v1.StartVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StopVM(context.Context, *connect.Request[v1.StopVMRequest]) (*connect.Response[v1.VMResponse], error)
 	PauseVM(context.Context, *connect.Request[v1.PauseVMRequest]) (*connect.Response[v1.VMResponse], error)
@@ -320,6 +323,12 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+PivirtdServiceCreateVMProcedure,
 			connect.WithSchema(pivirtdServiceMethods.ByName("CreateVM")),
+			connect.WithClientOptions(opts...),
+		),
+		applyVM: connect.NewClient[v1.ApplyVMRequest, v1.VMResponse](
+			httpClient,
+			baseURL+PivirtdServiceApplyVMProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ApplyVM")),
 			connect.WithClientOptions(opts...),
 		),
 		startVM: connect.NewClient[v1.StartVMRequest, v1.VMResponse](
@@ -712,6 +721,7 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 // pivirtdServiceClient implements PivirtdServiceClient.
 type pivirtdServiceClient struct {
 	createVM            *connect.Client[v1.CreateVMRequest, v1.VMResponse]
+	applyVM             *connect.Client[v1.ApplyVMRequest, v1.VMResponse]
 	startVM             *connect.Client[v1.StartVMRequest, v1.VMResponse]
 	stopVM              *connect.Client[v1.StopVMRequest, v1.VMResponse]
 	pauseVM             *connect.Client[v1.PauseVMRequest, v1.VMResponse]
@@ -781,6 +791,11 @@ type pivirtdServiceClient struct {
 // CreateVM calls pilab.virtualization.v1.PivirtdService.CreateVM.
 func (c *pivirtdServiceClient) CreateVM(ctx context.Context, req *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.createVM.CallUnary(ctx, req)
+}
+
+// ApplyVM calls pilab.virtualization.v1.PivirtdService.ApplyVM.
+func (c *pivirtdServiceClient) ApplyVM(ctx context.Context, req *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error) {
+	return c.applyVM.CallUnary(ctx, req)
 }
 
 // StartVM calls pilab.virtualization.v1.PivirtdService.StartVM.
@@ -1107,6 +1122,7 @@ func (c *pivirtdServiceClient) GetHostResource(ctx context.Context, req *connect
 type PivirtdServiceHandler interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error)
+	ApplyVM(context.Context, *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StartVM(context.Context, *connect.Request[v1.StartVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StopVM(context.Context, *connect.Request[v1.StopVMRequest]) (*connect.Response[v1.VMResponse], error)
 	PauseVM(context.Context, *connect.Request[v1.PauseVMRequest]) (*connect.Response[v1.VMResponse], error)
@@ -1201,6 +1217,12 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		PivirtdServiceCreateVMProcedure,
 		svc.CreateVM,
 		connect.WithSchema(pivirtdServiceMethods.ByName("CreateVM")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceApplyVMHandler := connect.NewUnaryHandler(
+		PivirtdServiceApplyVMProcedure,
+		svc.ApplyVM,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ApplyVM")),
 		connect.WithHandlerOptions(opts...),
 	)
 	pivirtdServiceStartVMHandler := connect.NewUnaryHandler(
@@ -1591,6 +1613,8 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case PivirtdServiceCreateVMProcedure:
 			pivirtdServiceCreateVMHandler.ServeHTTP(w, r)
+		case PivirtdServiceApplyVMProcedure:
+			pivirtdServiceApplyVMHandler.ServeHTTP(w, r)
 		case PivirtdServiceStartVMProcedure:
 			pivirtdServiceStartVMHandler.ServeHTTP(w, r)
 		case PivirtdServiceStopVMProcedure:
@@ -1730,6 +1754,10 @@ type UnimplementedPivirtdServiceHandler struct{}
 
 func (UnimplementedPivirtdServiceHandler) CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.CreateVM is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ApplyVM(context.Context, *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.virtualization.v1.PivirtdService.ApplyVM is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) StartVM(context.Context, *connect.Request[v1.StartVMRequest]) (*connect.Response[v1.VMResponse], error) {
