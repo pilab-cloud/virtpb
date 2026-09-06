@@ -1,0 +1,150 @@
+// Package pilab.resource.v1 defines the storage-agnostic resource envelope
+// used across all tiers (pivirtd, agent, director). It is a field-for-field
+// mirror of pibase/pkg/resource.ObjectMeta and the shared apply types.
+//
+// This package is deliberately NOT under pivirtd/ — the agent and the
+// director use the same messages.
+
+syntax = "proto3";
+
+package pilab.resource.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/pilab/resource/v1;resourcev1";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// OwnerRef is a structural, validated reference from one resource to the
+// resource that owns it — what cascade delete follows. See
+// resource-model-and-tasks.md §4.3.
+message OwnerRef {
+  // Kind is the owner's resource kind, e.g. "VirtualMachine".
+  string kind = 1;
+  // UID is the owner's immutable identifier.
+  string uid = 2;
+  // Controller marks this as the managing owner (as opposed to a
+  // non-controlling reference); cascade delete follows Controller references.
+  bool controller = 3;
+  // BlockOwnerDeletion, when true, makes the owner's deletion wait for
+  // this resource to be gone first rather than deleting concurrently.
+  bool block_owner_deletion = 4;
+}
+
+// ObjectMeta is the metadata envelope every RDS resource carries, per
+// resource-model-and-tasks.md §3.1. Field-for-field mirror of
+// pibase/pkg/resource.ObjectMeta.
+message ObjectMeta {
+  // UID is immutable for the resource's life, minted once, never reused.
+  string uid = 1;
+  // Name is mutable and unique within Namespace.
+  string name = 2;
+  // Namespace is the tenancy scope: "org/project" (resource-model-and-
+  // tasks.md §8.1). Structural and immutable after create.
+  string namespace = 3;
+  // Generation is bumped by the director iff spec changes (D4).
+  uint64 generation = 4;
+  // Labels are selectable and indexed. Keys under ReservedLabelPrefix
+  // are writable only by the director and agent.
+  map<string, string> labels = 5;
+  // Annotations are not selectable or indexed, but are subject to the
+  // same reserved-namespace rule as Labels.
+  map<string, string> annotations = 6;
+  // OwnerRefs drives cascade delete. See CascadeDelete.
+  repeated OwnerRef owner_refs = 7;
+  // CreatedAt is the creation timestamp.
+  google.protobuf.Timestamp created_at = 8;
+  // UpdatedAt is the last modification timestamp.
+  google.protobuf.Timestamp updated_at = 9;
+  // DeletedAt is the deletion timestamp. A null/absent value means the
+  // resource has not been soft-deleted.
+  google.protobuf.Timestamp deleted_at = 10;
+}
+
+// Condition represents a single condition of a resource.
+message Condition {
+  // Type is the condition type, e.g. "Ready", "Provisioning".
+  string type = 1;
+  // Status is the condition status: "True", "False", or "Unknown".
+  string status = 2;
+  // LastTransitionTime is the time the condition last transitioned.
+  google.protobuf.Timestamp last_transition_time = 3;
+  // Reason is a machine-readable one-word CamelCase reason for the condition.
+  string reason = 4;
+  // Message is a human-readable detail about the condition.
+  string message = 5;
+}
+
+// ResourceStatus holds the observed state of a resource after reconciliation.
+message ResourceStatus {
+  // Phase is the high-level lifecycle phase (e.g. "Pending", "Running").
+  string phase = 1;
+  // ObservedGeneration is the generation that was last successfully
+  // reconciled. The resource is settled when observed_generation ==
+  // metadata.generation.
+  uint64 observed_generation = 2;
+  // NodeUID identifies the node that last reconciled this resource.
+  string node_uid = 3;
+  // Conditions is the set of current conditions.
+  repeated Condition conditions = 4;
+}
+
+// Resource is the universal envelope for any kind of resource across all
+// tiers. The spec is intentionally untyped (google.protobuf.Struct) so that
+// the kind set can evolve without wire changes; admission does the
+// validation (see resource-model-and-tasks.md §2.4).
+message Resource {
+  // APIVersion is the group/version, e.g. "pivirt.hu/v1".
+  string api_version = 1;
+  // Kind is the resource kind, e.g. "VirtualMachine", "NetworkSegment".
+  string kind = 2;
+  // Metadata carries the standard envelope fields.
+  ObjectMeta metadata = 3;
+  // Spec is the kind-specific configuration. Untyped on the wire;
+  // admission decodes and validates it strictly.
+  google.protobuf.Struct spec = 4;
+  // Status holds the observed state after reconciliation.
+  ResourceStatus status = 5;
+  // SpecYAML preserves the original YAML document for round-trip fidelity
+  // (comments, key order, anchors). Where both spec and spec_yaml are set,
+  // spec wins and spec_yaml is advisory.
+  bytes spec_yaml = 6;
+}
+
+// ApplyOptions controls how an ApplyResource RPC is processed.
+message ApplyOptions {
+  // DryRun, when true, runs admission and validation but stops before
+  // persisting — no side effects.
+  bool dry_run = 1;
+  // IfMatchGeneration is a compare-and-swap guard. The apply is refused
+  // if metadata.generation != this value. 0 = unconditional.
+  uint64 if_match_generation = 2;
+  // ClientToken is an idempotency key for replay deduplication.
+  // See resource-model-and-tasks.md §5.6.
+  string client_token = 3;
+  // FieldManager identifies the writer: "pivirtctl", "agent", or "director".
+  string field_manager = 4;
+}
+
+// ApplyResult reports the outcome of a single ApplyResource call.
+message ApplyResult {
+  // Outcome is what actually happened.
+  enum Outcome {
+    // OUTCOME_UNSPECIFIED is the zero value; never a valid result.
+    OUTCOME_UNSPECIFIED = 0;
+    // OUTCOME_CREATED — a new resource was persisted.
+    OUTCOME_CREATED = 1;
+    // OUTCOME_UPDATED — the spec or metadata changed.
+    OUTCOME_UPDATED = 2;
+    // OUTCOME_UNCHANGED — admission ran, nothing was different.
+    OUTCOME_UNCHANGED = 3;
+    // OUTCOME_DELETED — the resource was soft-deleted.
+    OUTCOME_DELETED = 4;
+  }
+  // Outcome is what happened.
+  Outcome outcome = 1;
+  // Resource is the resource after the apply (or the existing resource
+  // when unchanged). Omitted on dry-run.
+  Resource resource = 2;
+  // Warnings are non-fatal advisory messages surfaced by admission.
+  repeated string warnings = 3;
+}
