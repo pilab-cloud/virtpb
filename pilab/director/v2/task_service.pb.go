@@ -48,6 +48,11 @@ const (
 	TaskType_TASK_TYPE_VM_ATTACH_NETWORK   TaskType = 16
 	TaskType_TASK_TYPE_VM_DETACH_NETWORK   TaskType = 17
 	TaskType_TASK_TYPE_VM_CLONE            TaskType = 18
+	// TASK_TYPE_VM_DISK_MOVE drives pivirtd's live disk-move (block-job
+	// drive-mirror) — resource-model-and-tasks.md §5.8: the agent runs it as
+	// a Task like any other, reporting progress upward via UpdateTaskStatus
+	// instead of the director having to poll for it.
+	TaskType_TASK_TYPE_VM_DISK_MOVE TaskType = 19
 )
 
 // Enum value maps for TaskType.
@@ -72,6 +77,7 @@ var (
 		16: "TASK_TYPE_VM_ATTACH_NETWORK",
 		17: "TASK_TYPE_VM_DETACH_NETWORK",
 		18: "TASK_TYPE_VM_CLONE",
+		19: "TASK_TYPE_VM_DISK_MOVE",
 	}
 	TaskType_value = map[string]int32{
 		"TASK_TYPE_UNSPECIFIED":         0,
@@ -93,6 +99,7 @@ var (
 		"TASK_TYPE_VM_ATTACH_NETWORK":   16,
 		"TASK_TYPE_VM_DETACH_NETWORK":   17,
 		"TASK_TYPE_VM_CLONE":            18,
+		"TASK_TYPE_VM_DISK_MOVE":        19,
 	}
 )
 
@@ -1615,7 +1622,7 @@ const file_pilab_director_v2_task_service_proto_rawDesc = "" +
 	" \x01(\tR\n" +
 	"snapshotId\x12'\n" +
 	"\x0ftimeout_seconds\x18\v \x01(\x03R\x0etimeoutSeconds\x12\x14\n" +
-	"\x05force\x18\f \x01(\bR\x05force*\x99\x04\n" +
+	"\x05force\x18\f \x01(\bR\x05force*\xb5\x04\n" +
 	"\bTaskType\x12\x19\n" +
 	"\x15TASK_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13TASK_TYPE_VM_CREATE\x10\x01\x12\x16\n" +
@@ -1636,7 +1643,8 @@ const file_pilab_director_v2_task_service_proto_rawDesc = "" +
 	"\x17TASK_TYPE_VM_IMPORT_OVA\x10\x0f\x12\x1f\n" +
 	"\x1bTASK_TYPE_VM_ATTACH_NETWORK\x10\x10\x12\x1f\n" +
 	"\x1bTASK_TYPE_VM_DETACH_NETWORK\x10\x11\x12\x16\n" +
-	"\x12TASK_TYPE_VM_CLONE\x10\x12*\xc9\x01\n" +
+	"\x12TASK_TYPE_VM_CLONE\x10\x12\x12\x1a\n" +
+	"\x16TASK_TYPE_VM_DISK_MOVE\x10\x13*\xc9\x01\n" +
 	"\n" +
 	"TaskStatus\x12\x1b\n" +
 	"\x17TASK_STATUS_UNSPECIFIED\x10\x00\x12\x17\n" +
