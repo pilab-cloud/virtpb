@@ -8023,10 +8023,10 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\busername\x18\x01 \x01(\tR\busername\"?\n" +
 	"\x13CustomizeOSResponse\x12\x0e\n" +
 	"\x02ok\x18\x01 \x01(\bR\x02ok\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\xf5.\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xfa.\n" +
 	"\x0ePivirtdService\x12K\n" +
-	"\bCreateVM\x12!.pilab.pivirtd.v1.CreateVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\x12I\n" +
-	"\aApplyVM\x12 .pilab.pivirtd.v1.ApplyVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\x12I\n" +
+	"\bCreateVM\x12!.pilab.pivirtd.v1.CreateVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\x12N\n" +
+	"\aApplyVM\x12 .pilab.pivirtd.v1.ApplyVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\"\x03\x88\x02\x01\x12I\n" +
 	"\aStartVM\x12 .pilab.pivirtd.v1.StartVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\x12G\n" +
 	"\x06StopVM\x12\x1f.pilab.pivirtd.v1.StopVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\x12I\n" +
 	"\aPauseVM\x12 .pilab.pivirtd.v1.PauseVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\x12K\n" +

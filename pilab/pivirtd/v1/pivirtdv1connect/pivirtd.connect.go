@@ -224,6 +224,7 @@ const (
 type PivirtdServiceClient interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error)
+	// Deprecated: do not use.
 	ApplyVM(context.Context, *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StartVM(context.Context, *connect.Request[v1.StartVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StopVM(context.Context, *connect.Request[v1.StopVMRequest]) (*connect.Response[v1.VMResponse], error)
@@ -794,6 +795,8 @@ func (c *pivirtdServiceClient) CreateVM(ctx context.Context, req *connect.Reques
 }
 
 // ApplyVM calls pilab.pivirtd.v1.PivirtdService.ApplyVM.
+//
+// Deprecated: do not use.
 func (c *pivirtdServiceClient) ApplyVM(ctx context.Context, req *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error) {
 	return c.applyVM.CallUnary(ctx, req)
 }
@@ -1122,6 +1125,7 @@ func (c *pivirtdServiceClient) GetHostResource(ctx context.Context, req *connect
 type PivirtdServiceHandler interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v1.VMResponse], error)
+	// Deprecated: do not use.
 	ApplyVM(context.Context, *connect.Request[v1.ApplyVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StartVM(context.Context, *connect.Request[v1.StartVMRequest]) (*connect.Response[v1.VMResponse], error)
 	StopVM(context.Context, *connect.Request[v1.StopVMRequest]) (*connect.Response[v1.VMResponse], error)

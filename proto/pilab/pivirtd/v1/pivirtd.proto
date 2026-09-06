@@ -13,7 +13,9 @@ import "pilab/pivirtd/v1/host_resource.proto";
 service PivirtdService {
   // VM Lifecycle Management
   rpc CreateVM(CreateVMRequest) returns (VMResponse);
-  rpc ApplyVM(ApplyVMRequest) returns (VMResponse);
+  rpc ApplyVM(ApplyVMRequest) returns (VMResponse) {
+    option deprecated = true;
+  }
   rpc StartVM(StartVMRequest) returns (VMResponse);
   rpc StopVM(StopVMRequest) returns (VMResponse);
   rpc PauseVM(PauseVMRequest) returns (VMResponse);

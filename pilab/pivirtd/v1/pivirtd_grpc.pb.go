@@ -95,6 +95,7 @@ const (
 type PivirtdServiceClient interface {
 	// VM Lifecycle Management
 	CreateVM(ctx context.Context, in *CreateVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
+	// Deprecated: Do not use.
 	ApplyVM(ctx context.Context, in *ApplyVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
 	StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
 	StopVM(ctx context.Context, in *StopVMRequest, opts ...grpc.CallOption) (*VMResponse, error)
@@ -197,6 +198,7 @@ func (c *pivirtdServiceClient) CreateVM(ctx context.Context, in *CreateVMRequest
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *pivirtdServiceClient) ApplyVM(ctx context.Context, in *ApplyVMRequest, opts ...grpc.CallOption) (*VMResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VMResponse)
@@ -873,6 +875,7 @@ func (c *pivirtdServiceClient) GetHostResource(ctx context.Context, in *Subscrib
 type PivirtdServiceServer interface {
 	// VM Lifecycle Management
 	CreateVM(context.Context, *CreateVMRequest) (*VMResponse, error)
+	// Deprecated: Do not use.
 	ApplyVM(context.Context, *ApplyVMRequest) (*VMResponse, error)
 	StartVM(context.Context, *StartVMRequest) (*VMResponse, error)
 	StopVM(context.Context, *StopVMRequest) (*VMResponse, error)

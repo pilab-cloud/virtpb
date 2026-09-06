@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package pilab.pivirtd.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/pilab/pivirtd/v1;pivirtdv1";
+
+import "pilab/resource/v1/resource.proto";
+
+// PivirtdResourceService is the generic, kind-agnostic resource surface for
+// pivirtd. Every registered kind can be applied, fetched, listed and deleted
+// through these RPCs, removing the need for per-kind CLI code or agent
+// reimplementations.
+//
+// The same RPC surface is exposed on the agent and the director — the tiers
+// differ only in which kinds are registered. See
+// node-resource-apply.md §2.3.
+service PivirtdResourceService {
+  // ApplyResource runs the full admission chain (decode, admit, validate,
+  // interlock, diff, persist) for a single resource. The response carries
+  // an ApplyResult with the outcome (created, updated, unchanged) and the
+  // post-apply resource.
+  rpc ApplyResource(ApplyResourceRequest) returns (ApplyResourceResponse);
+
+  // ApplyResources applies multiple resources in kind-dependency order.
+  // One failing object does not abort the rest; every object gets a
+  // per-object outcome in the response. Dry-run on the batch applies
+  // the same flag to every object.
+  rpc ApplyResources(ApplyResourcesRequest) returns (ApplyResourcesResponse);
+
+  // GetResource retrieves a single resource by kind and name.
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse);
+
+  // ListResources returns all resources of a given kind, filtered
+  // by an optional label selector matching pkg/resource.Selector
+  // semantics (equality, set membership, existence).
+  rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
+
+  // DeleteResource removes a resource by kind and name. If the resource
+  // owns other resources via ownerRefs, the owned resources are deleted
+  // first (cascade). Deletion is refused when a child sets
+  // blockOwnerDeletion.
+  rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse);
+
+  // ListKinds returns the set of resource kinds this tier has registered.
+  // This makes the per-tier kind set introspectable, allowing a single
+  // CLI binary to talk to either pivirtd or the agent without a
+  // build-time table.
+  rpc ListKinds(ListKindsRequest) returns (ListKindsResponse);
+}
+
+// ==================== Request / Response Messages ====================
+
+message ApplyResourceRequest {
+  // Resource is the resource to apply. The kind field determines which
+  // admission hooks are invoked.
+  pilab.resource.v1.Resource resource = 1;
+  // Options controls dry_run, if_match_generation, and client_token.
+  pilab.resource.v1.ApplyOptions options = 2;
+}
+
+message ApplyResourceResponse {
+  pilab.resource.v1.ApplyResult result = 1;
+}
+
+message ApplyResourcesRequest {
+  // Resources are the resources to apply. They are sorted into
+  // kind-dependency order before admission.
+  repeated pilab.resource.v1.Resource resources = 1;
+  // Options controls dry_run, if_match_generation, and client_token
+  // for every resource in the batch.
+  pilab.resource.v1.ApplyOptions options = 2;
+}
+
+message ApplyResourcesResponse {
+  // Results is one entry per input resource, in the same order as
+  // the input after sorting. Each entry carries the per-object outcome.
+  repeated pilab.resource.v1.ApplyResult results = 1;
+}
+
+message GetResourceRequest {
+  // Kind is the resource kind, e.g. "VirtualMachine".
+  string kind = 1;
+  // Name is the resource name, unique within the kind.
+  string name = 2;
+}
+
+message GetResourceResponse {
+  pilab.resource.v1.Resource resource = 1;
+}
+
+message ListResourcesRequest {
+  // Kind is the resource kind to list.
+  string kind = 1;
+  // Selector is an optional label selector. An empty or absent selector
+  // matches everything. Uses pkg/resource.Selector semantics: equality,
+  // set membership (in, notin), and existence (!exists).
+  string selector = 2;
+}
+
+message ListResourcesResponse {
+  repeated pilab.resource.v1.Resource resources = 1;
+}
+
+message DeleteResourceRequest {
+  // Kind is the resource kind to delete.
+  string kind = 1;
+  // Name is the resource name to delete.
+  string name = 2;
+}
+
+message DeleteResourceResponse {}
+
+message ListKindsRequest {}
+
+message ListKindsResponse {
+  // Kinds is the set of resource kinds this tier has registered,
+  // sorted alphabetically.
+  repeated string kinds = 1;
+}
