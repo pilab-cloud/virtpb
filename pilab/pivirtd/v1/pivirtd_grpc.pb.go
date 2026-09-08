@@ -62,17 +62,8 @@ const (
 	PivirtdService_AddOVSPort_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/AddOVSPort"
 	PivirtdService_RemoveOVSPort_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/RemoveOVSPort"
 	PivirtdService_ListOVSPorts_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
-	PivirtdService_ApplyNetwork_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ApplyNetwork"
-	PivirtdService_DeleteNetwork_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/DeleteNetwork"
-	PivirtdService_ListNetworks_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ListNetworks"
-	PivirtdService_GetNetwork_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/GetNetwork"
-	PivirtdService_ApplyOverlayNetwork_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/ApplyOverlayNetwork"
-	PivirtdService_DeleteOverlayNetwork_FullMethodName  = "/pilab.pivirtd.v1.PivirtdService/DeleteOverlayNetwork"
-	PivirtdService_ListOverlayNetworks_FullMethodName   = "/pilab.pivirtd.v1.PivirtdService/ListOverlayNetworks"
-	PivirtdService_BindExternalIP_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/BindExternalIP"
-	PivirtdService_UnbindExternalIP_FullMethodName      = "/pilab.pivirtd.v1.PivirtdService/UnbindExternalIP"
-	PivirtdService_ListExternalIPs_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/ListExternalIPs"
 	PivirtdService_ListNetworkNamespaces_FullMethodName = "/pilab.pivirtd.v1.PivirtdService/ListNetworkNamespaces"
+	PivirtdService_ListAdoptableDevices_FullMethodName  = "/pilab.pivirtd.v1.PivirtdService/ListAdoptableDevices"
 	PivirtdService_SetLabels_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/SetLabels"
 	PivirtdService_GetLabels_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/GetLabels"
 	PivirtdService_DeleteLabel_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/DeleteLabel"
@@ -160,21 +151,10 @@ type PivirtdServiceClient interface {
 	AddOVSPort(ctx context.Context, in *AddOVSPortRequest, opts ...grpc.CallOption) (*NetworkResponse, error)
 	RemoveOVSPort(ctx context.Context, in *RemoveOVSPortRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
 	ListOVSPorts(ctx context.Context, in *ListOVSPortsRequest, opts ...grpc.CallOption) (*ListOVSPortsResponse, error)
-	// Host Networks (isolated / NAT / routed / bridged bridges)
-	ApplyNetwork(ctx context.Context, in *ApplyNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error)
-	DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest2, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
-	ListNetworks(ctx context.Context, in *ListNetworksRequest, opts ...grpc.CallOption) (*ListNetworksResponse, error)
-	GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error)
-	// OVS Overlay Networks
-	ApplyOverlayNetwork(ctx context.Context, in *ApplyOverlayNetworkRequest, opts ...grpc.CallOption) (*OverlayNetworkResponse, error)
-	DeleteOverlayNetwork(ctx context.Context, in *DeleteOverlayNetworkRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
-	ListOverlayNetworks(ctx context.Context, in *ListOverlayNetworksRequest, opts ...grpc.CallOption) (*ListOverlayNetworksResponse, error)
-	// External IP Bindings
-	BindExternalIP(ctx context.Context, in *BindExternalIPRequest, opts ...grpc.CallOption) (*ExternalIPResponse, error)
-	UnbindExternalIP(ctx context.Context, in *UnbindExternalIPRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
-	ListExternalIPs(ctx context.Context, in *ListExternalIPsRequest, opts ...grpc.CallOption) (*ListExternalIPsResponse, error)
 	// Network Namespaces
 	ListNetworkNamespaces(ctx context.Context, in *ListNetworkNamespacesRequest, opts ...grpc.CallOption) (*ListNetworkNamespacesResponse, error)
+	// Adoption reporting — host devices pivirtd found but does not manage.
+	ListAdoptableDevices(ctx context.Context, in *ListAdoptableDevicesRequest, opts ...grpc.CallOption) (*ListAdoptableDevicesResponse, error)
 	// VM Metadata Labels
 	SetLabels(ctx context.Context, in *SetLabelsRequest, opts ...grpc.CallOption) (*SetLabelsResponse, error)
 	GetLabels(ctx context.Context, in *GetLabelsRequest, opts ...grpc.CallOption) (*GetLabelsResponse, error)
@@ -660,110 +640,20 @@ func (c *pivirtdServiceClient) ListOVSPorts(ctx context.Context, in *ListOVSPort
 	return out, nil
 }
 
-func (c *pivirtdServiceClient) ApplyNetwork(ctx context.Context, in *ApplyNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(NetworkStatusResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_ApplyNetwork_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest2, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteNetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_DeleteNetwork_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) ListNetworks(ctx context.Context, in *ListNetworksRequest, opts ...grpc.CallOption) (*ListNetworksResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListNetworksResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_ListNetworks_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*NetworkStatusResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(NetworkStatusResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_GetNetwork_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) ApplyOverlayNetwork(ctx context.Context, in *ApplyOverlayNetworkRequest, opts ...grpc.CallOption) (*OverlayNetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OverlayNetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_ApplyOverlayNetwork_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) DeleteOverlayNetwork(ctx context.Context, in *DeleteOverlayNetworkRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteNetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_DeleteOverlayNetwork_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) ListOverlayNetworks(ctx context.Context, in *ListOverlayNetworksRequest, opts ...grpc.CallOption) (*ListOverlayNetworksResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListOverlayNetworksResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_ListOverlayNetworks_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) BindExternalIP(ctx context.Context, in *BindExternalIPRequest, opts ...grpc.CallOption) (*ExternalIPResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ExternalIPResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_BindExternalIP_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) UnbindExternalIP(ctx context.Context, in *UnbindExternalIPRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteNetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_UnbindExternalIP_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) ListExternalIPs(ctx context.Context, in *ListExternalIPsRequest, opts ...grpc.CallOption) (*ListExternalIPsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListExternalIPsResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_ListExternalIPs_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *pivirtdServiceClient) ListNetworkNamespaces(ctx context.Context, in *ListNetworkNamespacesRequest, opts ...grpc.CallOption) (*ListNetworkNamespacesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListNetworkNamespacesResponse)
 	err := c.cc.Invoke(ctx, PivirtdService_ListNetworkNamespaces_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pivirtdServiceClient) ListAdoptableDevices(ctx context.Context, in *ListAdoptableDevicesRequest, opts ...grpc.CallOption) (*ListAdoptableDevicesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListAdoptableDevicesResponse)
+	err := c.cc.Invoke(ctx, PivirtdService_ListAdoptableDevices_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1098,21 +988,10 @@ type PivirtdServiceServer interface {
 	AddOVSPort(context.Context, *AddOVSPortRequest) (*NetworkResponse, error)
 	RemoveOVSPort(context.Context, *RemoveOVSPortRequest) (*DeleteNetworkResponse, error)
 	ListOVSPorts(context.Context, *ListOVSPortsRequest) (*ListOVSPortsResponse, error)
-	// Host Networks (isolated / NAT / routed / bridged bridges)
-	ApplyNetwork(context.Context, *ApplyNetworkRequest) (*NetworkStatusResponse, error)
-	DeleteNetwork(context.Context, *DeleteNetworkRequest2) (*DeleteNetworkResponse, error)
-	ListNetworks(context.Context, *ListNetworksRequest) (*ListNetworksResponse, error)
-	GetNetwork(context.Context, *GetNetworkRequest) (*NetworkStatusResponse, error)
-	// OVS Overlay Networks
-	ApplyOverlayNetwork(context.Context, *ApplyOverlayNetworkRequest) (*OverlayNetworkResponse, error)
-	DeleteOverlayNetwork(context.Context, *DeleteOverlayNetworkRequest) (*DeleteNetworkResponse, error)
-	ListOverlayNetworks(context.Context, *ListOverlayNetworksRequest) (*ListOverlayNetworksResponse, error)
-	// External IP Bindings
-	BindExternalIP(context.Context, *BindExternalIPRequest) (*ExternalIPResponse, error)
-	UnbindExternalIP(context.Context, *UnbindExternalIPRequest) (*DeleteNetworkResponse, error)
-	ListExternalIPs(context.Context, *ListExternalIPsRequest) (*ListExternalIPsResponse, error)
 	// Network Namespaces
 	ListNetworkNamespaces(context.Context, *ListNetworkNamespacesRequest) (*ListNetworkNamespacesResponse, error)
+	// Adoption reporting — host devices pivirtd found but does not manage.
+	ListAdoptableDevices(context.Context, *ListAdoptableDevicesRequest) (*ListAdoptableDevicesResponse, error)
 	// VM Metadata Labels
 	SetLabels(context.Context, *SetLabelsRequest) (*SetLabelsResponse, error)
 	GetLabels(context.Context, *GetLabelsRequest) (*GetLabelsResponse, error)
@@ -1287,38 +1166,11 @@ func (UnimplementedPivirtdServiceServer) RemoveOVSPort(context.Context, *RemoveO
 func (UnimplementedPivirtdServiceServer) ListOVSPorts(context.Context, *ListOVSPortsRequest) (*ListOVSPortsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListOVSPorts not implemented")
 }
-func (UnimplementedPivirtdServiceServer) ApplyNetwork(context.Context, *ApplyNetworkRequest) (*NetworkStatusResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ApplyNetwork not implemented")
-}
-func (UnimplementedPivirtdServiceServer) DeleteNetwork(context.Context, *DeleteNetworkRequest2) (*DeleteNetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteNetwork not implemented")
-}
-func (UnimplementedPivirtdServiceServer) ListNetworks(context.Context, *ListNetworksRequest) (*ListNetworksResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListNetworks not implemented")
-}
-func (UnimplementedPivirtdServiceServer) GetNetwork(context.Context, *GetNetworkRequest) (*NetworkStatusResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetNetwork not implemented")
-}
-func (UnimplementedPivirtdServiceServer) ApplyOverlayNetwork(context.Context, *ApplyOverlayNetworkRequest) (*OverlayNetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ApplyOverlayNetwork not implemented")
-}
-func (UnimplementedPivirtdServiceServer) DeleteOverlayNetwork(context.Context, *DeleteOverlayNetworkRequest) (*DeleteNetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteOverlayNetwork not implemented")
-}
-func (UnimplementedPivirtdServiceServer) ListOverlayNetworks(context.Context, *ListOverlayNetworksRequest) (*ListOverlayNetworksResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListOverlayNetworks not implemented")
-}
-func (UnimplementedPivirtdServiceServer) BindExternalIP(context.Context, *BindExternalIPRequest) (*ExternalIPResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method BindExternalIP not implemented")
-}
-func (UnimplementedPivirtdServiceServer) UnbindExternalIP(context.Context, *UnbindExternalIPRequest) (*DeleteNetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UnbindExternalIP not implemented")
-}
-func (UnimplementedPivirtdServiceServer) ListExternalIPs(context.Context, *ListExternalIPsRequest) (*ListExternalIPsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListExternalIPs not implemented")
-}
 func (UnimplementedPivirtdServiceServer) ListNetworkNamespaces(context.Context, *ListNetworkNamespacesRequest) (*ListNetworkNamespacesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListNetworkNamespaces not implemented")
+}
+func (UnimplementedPivirtdServiceServer) ListAdoptableDevices(context.Context, *ListAdoptableDevicesRequest) (*ListAdoptableDevicesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListAdoptableDevices not implemented")
 }
 func (UnimplementedPivirtdServiceServer) SetLabels(context.Context, *SetLabelsRequest) (*SetLabelsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetLabels not implemented")
@@ -2186,186 +2038,6 @@ func _PivirtdService_ListOVSPorts_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PivirtdService_ApplyNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ApplyNetworkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).ApplyNetwork(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_ApplyNetwork_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).ApplyNetwork(ctx, req.(*ApplyNetworkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_DeleteNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteNetworkRequest2)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).DeleteNetwork(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_DeleteNetwork_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).DeleteNetwork(ctx, req.(*DeleteNetworkRequest2))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_ListNetworks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListNetworksRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).ListNetworks(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_ListNetworks_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).ListNetworks(ctx, req.(*ListNetworksRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_GetNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetNetworkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).GetNetwork(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_GetNetwork_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).GetNetwork(ctx, req.(*GetNetworkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_ApplyOverlayNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ApplyOverlayNetworkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).ApplyOverlayNetwork(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_ApplyOverlayNetwork_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).ApplyOverlayNetwork(ctx, req.(*ApplyOverlayNetworkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_DeleteOverlayNetwork_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteOverlayNetworkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).DeleteOverlayNetwork(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_DeleteOverlayNetwork_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).DeleteOverlayNetwork(ctx, req.(*DeleteOverlayNetworkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_ListOverlayNetworks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListOverlayNetworksRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).ListOverlayNetworks(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_ListOverlayNetworks_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).ListOverlayNetworks(ctx, req.(*ListOverlayNetworksRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_BindExternalIP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BindExternalIPRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).BindExternalIP(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_BindExternalIP_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).BindExternalIP(ctx, req.(*BindExternalIPRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_UnbindExternalIP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnbindExternalIPRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).UnbindExternalIP(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_UnbindExternalIP_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).UnbindExternalIP(ctx, req.(*UnbindExternalIPRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_ListExternalIPs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListExternalIPsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).ListExternalIPs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_ListExternalIPs_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).ListExternalIPs(ctx, req.(*ListExternalIPsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PivirtdService_ListNetworkNamespaces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListNetworkNamespacesRequest)
 	if err := dec(in); err != nil {
@@ -2380,6 +2052,24 @@ func _PivirtdService_ListNetworkNamespaces_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PivirtdServiceServer).ListNetworkNamespaces(ctx, req.(*ListNetworkNamespacesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PivirtdService_ListAdoptableDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAdoptableDevicesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PivirtdServiceServer).ListAdoptableDevices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PivirtdService_ListAdoptableDevices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PivirtdServiceServer).ListAdoptableDevices(ctx, req.(*ListAdoptableDevicesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3021,48 +2711,12 @@ var PivirtdService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PivirtdService_ListOVSPorts_Handler,
 		},
 		{
-			MethodName: "ApplyNetwork",
-			Handler:    _PivirtdService_ApplyNetwork_Handler,
-		},
-		{
-			MethodName: "DeleteNetwork",
-			Handler:    _PivirtdService_DeleteNetwork_Handler,
-		},
-		{
-			MethodName: "ListNetworks",
-			Handler:    _PivirtdService_ListNetworks_Handler,
-		},
-		{
-			MethodName: "GetNetwork",
-			Handler:    _PivirtdService_GetNetwork_Handler,
-		},
-		{
-			MethodName: "ApplyOverlayNetwork",
-			Handler:    _PivirtdService_ApplyOverlayNetwork_Handler,
-		},
-		{
-			MethodName: "DeleteOverlayNetwork",
-			Handler:    _PivirtdService_DeleteOverlayNetwork_Handler,
-		},
-		{
-			MethodName: "ListOverlayNetworks",
-			Handler:    _PivirtdService_ListOverlayNetworks_Handler,
-		},
-		{
-			MethodName: "BindExternalIP",
-			Handler:    _PivirtdService_BindExternalIP_Handler,
-		},
-		{
-			MethodName: "UnbindExternalIP",
-			Handler:    _PivirtdService_UnbindExternalIP_Handler,
-		},
-		{
-			MethodName: "ListExternalIPs",
-			Handler:    _PivirtdService_ListExternalIPs_Handler,
-		},
-		{
 			MethodName: "ListNetworkNamespaces",
 			Handler:    _PivirtdService_ListNetworkNamespaces_Handler,
+		},
+		{
+			MethodName: "ListAdoptableDevices",
+			Handler:    _PivirtdService_ListAdoptableDevices_Handler,
 		},
 		{
 			MethodName: "SetLabels",

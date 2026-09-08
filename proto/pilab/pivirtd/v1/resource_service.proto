@@ -75,6 +75,9 @@ message ApplyResourcesResponse {
   // Results is one entry per input resource, in the same order as
   // the input after sorting. Each entry carries the per-object outcome.
   repeated pilab.resource.v1.ApplyResult results = 1;
+  // Pruned lists the objects prune removed, or would remove under dry_run.
+  // Empty unless ApplyOptions.prune was set.
+  repeated pilab.resource.v1.PruneResult pruned = 2;
 }
 
 message GetResourceRequest {

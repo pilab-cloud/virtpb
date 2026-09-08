@@ -86,6 +86,11 @@ message ResourceStatus {
   string node_uid = 3;
   // Conditions is the set of current conditions.
   repeated Condition conditions = 4;
+  // Fields carries the kind-specific status a reconciler recorded — the
+  // bridge a segment realized, the device an iSCSI pool resolved, the host
+  // command that failed. Without it a caller can see that a resource was
+  // applied but not what applying it actually did.
+  google.protobuf.Struct fields = 5;
 }
 
 // Resource is the universal envelope for any kind of resource across all
@@ -123,6 +128,22 @@ message ApplyOptions {
   string client_token = 3;
   // FieldManager identifies the writer: "pivirtctl", "agent", or "director".
   string field_manager = 4;
+  // Prune removes objects of the applied kinds that this manifest set does
+  // not declare. It is never implicit, and it only ever removes objects
+  // marked pivirt.hu/managed-by: pivirtd — a device pivirtd did not create is
+  // never deleted, prune or not.
+  bool prune = 5;
+}
+
+// PruneResult describes one object prune removed, or would remove under
+// dry_run.
+message PruneResult {
+  string kind = 1;
+  string name = 2;
+  // Message states what happened, or what would happen.
+  string message = 3;
+  // Removed is false under dry_run, where nothing is deleted.
+  bool removed = 4;
 }
 
 // ApplyResult reports the outcome of a single ApplyResource call.

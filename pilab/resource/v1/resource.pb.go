@@ -88,7 +88,7 @@ func (x ApplyResult_Outcome) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ApplyResult_Outcome.Descriptor instead.
 func (ApplyResult_Outcome) EnumDescriptor() ([]byte, []int) {
-	return file_pilab_resource_v1_resource_proto_rawDescGZIP(), []int{6, 0}
+	return file_pilab_resource_v1_resource_proto_rawDescGZIP(), []int{7, 0}
 }
 
 // OwnerRef is a structural, validated reference from one resource to the
@@ -395,7 +395,12 @@ type ResourceStatus struct {
 	// NodeUID identifies the node that last reconciled this resource.
 	NodeUid string `protobuf:"bytes,3,opt,name=node_uid,json=nodeUid,proto3" json:"node_uid,omitempty"`
 	// Conditions is the set of current conditions.
-	Conditions    []*Condition `protobuf:"bytes,4,rep,name=conditions,proto3" json:"conditions,omitempty"`
+	Conditions []*Condition `protobuf:"bytes,4,rep,name=conditions,proto3" json:"conditions,omitempty"`
+	// Fields carries the kind-specific status a reconciler recorded — the
+	// bridge a segment realized, the device an iSCSI pool resolved, the host
+	// command that failed. Without it a caller can see that a resource was
+	// applied but not what applying it actually did.
+	Fields        *structpb.Struct `protobuf:"bytes,5,opt,name=fields,proto3" json:"fields,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -454,6 +459,13 @@ func (x *ResourceStatus) GetNodeUid() string {
 func (x *ResourceStatus) GetConditions() []*Condition {
 	if x != nil {
 		return x.Conditions
+	}
+	return nil
+}
+
+func (x *ResourceStatus) GetFields() *structpb.Struct {
+	if x != nil {
+		return x.Fields
 	}
 	return nil
 }
@@ -568,7 +580,12 @@ type ApplyOptions struct {
 	// See resource-model-and-tasks.md §5.6.
 	ClientToken string `protobuf:"bytes,3,opt,name=client_token,json=clientToken,proto3" json:"client_token,omitempty"`
 	// FieldManager identifies the writer: "pivirtctl", "agent", or "director".
-	FieldManager  string `protobuf:"bytes,4,opt,name=field_manager,json=fieldManager,proto3" json:"field_manager,omitempty"`
+	FieldManager string `protobuf:"bytes,4,opt,name=field_manager,json=fieldManager,proto3" json:"field_manager,omitempty"`
+	// Prune removes objects of the applied kinds that this manifest set does
+	// not declare. It is never implicit, and it only ever removes objects
+	// marked pivirt.hu/managed-by: pivirtd — a device pivirtd did not create is
+	// never deleted, prune or not.
+	Prune         bool `protobuf:"varint,5,opt,name=prune,proto3" json:"prune,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -631,6 +648,85 @@ func (x *ApplyOptions) GetFieldManager() string {
 	return ""
 }
 
+func (x *ApplyOptions) GetPrune() bool {
+	if x != nil {
+		return x.Prune
+	}
+	return false
+}
+
+// PruneResult describes one object prune removed, or would remove under
+// dry_run.
+type PruneResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Kind  string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	Name  string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Message states what happened, or what would happen.
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// Removed is false under dry_run, where nothing is deleted.
+	Removed       bool `protobuf:"varint,4,opt,name=removed,proto3" json:"removed,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PruneResult) Reset() {
+	*x = PruneResult{}
+	mi := &file_pilab_resource_v1_resource_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PruneResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PruneResult) ProtoMessage() {}
+
+func (x *PruneResult) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_resource_v1_resource_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PruneResult.ProtoReflect.Descriptor instead.
+func (*PruneResult) Descriptor() ([]byte, []int) {
+	return file_pilab_resource_v1_resource_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *PruneResult) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *PruneResult) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *PruneResult) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *PruneResult) GetRemoved() bool {
+	if x != nil {
+		return x.Removed
+	}
+	return false
+}
+
 // ApplyResult reports the outcome of a single ApplyResource call.
 type ApplyResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -647,7 +743,7 @@ type ApplyResult struct {
 
 func (x *ApplyResult) Reset() {
 	*x = ApplyResult{}
-	mi := &file_pilab_resource_v1_resource_proto_msgTypes[6]
+	mi := &file_pilab_resource_v1_resource_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -659,7 +755,7 @@ func (x *ApplyResult) String() string {
 func (*ApplyResult) ProtoMessage() {}
 
 func (x *ApplyResult) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_resource_v1_resource_proto_msgTypes[6]
+	mi := &file_pilab_resource_v1_resource_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -672,7 +768,7 @@ func (x *ApplyResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyResult.ProtoReflect.Descriptor instead.
 func (*ApplyResult) Descriptor() ([]byte, []int) {
-	return file_pilab_resource_v1_resource_proto_rawDescGZIP(), []int{6}
+	return file_pilab_resource_v1_resource_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ApplyResult) GetOutcome() ApplyResult_Outcome {
@@ -738,14 +834,15 @@ const file_pilab_resource_v1_resource_proto_rawDesc = "" +
 	"\x06status\x18\x02 \x01(\tR\x06status\x12L\n" +
 	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x12lastTransitionTime\x12\x16\n" +
 	"\x06reason\x18\x04 \x01(\tR\x06reason\x12\x18\n" +
-	"\amessage\x18\x05 \x01(\tR\amessage\"\xb0\x01\n" +
+	"\amessage\x18\x05 \x01(\tR\amessage\"\xe1\x01\n" +
 	"\x0eResourceStatus\x12\x14\n" +
 	"\x05phase\x18\x01 \x01(\tR\x05phase\x12/\n" +
 	"\x13observed_generation\x18\x02 \x01(\x04R\x12observedGeneration\x12\x19\n" +
 	"\bnode_uid\x18\x03 \x01(\tR\anodeUid\x12<\n" +
 	"\n" +
 	"conditions\x18\x04 \x03(\v2\x1c.pilab.resource.v1.ConditionR\n" +
-	"conditions\"\xff\x01\n" +
+	"conditions\x12/\n" +
+	"\x06fields\x18\x05 \x01(\v2\x17.google.protobuf.StructR\x06fields\"\xff\x01\n" +
 	"\bResource\x12\x1f\n" +
 	"\vapi_version\x18\x01 \x01(\tR\n" +
 	"apiVersion\x12\x12\n" +
@@ -753,12 +850,18 @@ const file_pilab_resource_v1_resource_proto_rawDesc = "" +
 	"\bmetadata\x18\x03 \x01(\v2\x1d.pilab.resource.v1.ObjectMetaR\bmetadata\x12+\n" +
 	"\x04spec\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x04spec\x129\n" +
 	"\x06status\x18\x05 \x01(\v2!.pilab.resource.v1.ResourceStatusR\x06status\x12\x1b\n" +
-	"\tspec_yaml\x18\x06 \x01(\fR\bspecYaml\"\x9f\x01\n" +
+	"\tspec_yaml\x18\x06 \x01(\fR\bspecYaml\"\xb5\x01\n" +
 	"\fApplyOptions\x12\x17\n" +
 	"\adry_run\x18\x01 \x01(\bR\x06dryRun\x12.\n" +
 	"\x13if_match_generation\x18\x02 \x01(\x04R\x11ifMatchGeneration\x12!\n" +
 	"\fclient_token\x18\x03 \x01(\tR\vclientToken\x12#\n" +
-	"\rfield_manager\x18\x04 \x01(\tR\ffieldManager\"\x9e\x02\n" +
+	"\rfield_manager\x18\x04 \x01(\tR\ffieldManager\x12\x14\n" +
+	"\x05prune\x18\x05 \x01(\bR\x05prune\"i\n" +
+	"\vPruneResult\x12\x12\n" +
+	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x12\x18\n" +
+	"\aremoved\x18\x04 \x01(\bR\aremoved\"\x9e\x02\n" +
 	"\vApplyResult\x12@\n" +
 	"\aoutcome\x18\x01 \x01(\x0e2&.pilab.resource.v1.ApplyResult.OutcomeR\aoutcome\x127\n" +
 	"\bresource\x18\x02 \x01(\v2\x1b.pilab.resource.v1.ResourceR\bresource\x12\x1a\n" +
@@ -783,7 +886,7 @@ func file_pilab_resource_v1_resource_proto_rawDescGZIP() []byte {
 }
 
 var file_pilab_resource_v1_resource_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pilab_resource_v1_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_pilab_resource_v1_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_pilab_resource_v1_resource_proto_goTypes = []any{
 	(ApplyResult_Outcome)(0),      // 0: pilab.resource.v1.ApplyResult.Outcome
 	(*OwnerRef)(nil),              // 1: pilab.resource.v1.OwnerRef
@@ -792,31 +895,33 @@ var file_pilab_resource_v1_resource_proto_goTypes = []any{
 	(*ResourceStatus)(nil),        // 4: pilab.resource.v1.ResourceStatus
 	(*Resource)(nil),              // 5: pilab.resource.v1.Resource
 	(*ApplyOptions)(nil),          // 6: pilab.resource.v1.ApplyOptions
-	(*ApplyResult)(nil),           // 7: pilab.resource.v1.ApplyResult
-	nil,                           // 8: pilab.resource.v1.ObjectMeta.LabelsEntry
-	nil,                           // 9: pilab.resource.v1.ObjectMeta.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),       // 11: google.protobuf.Struct
+	(*PruneResult)(nil),           // 7: pilab.resource.v1.PruneResult
+	(*ApplyResult)(nil),           // 8: pilab.resource.v1.ApplyResult
+	nil,                           // 9: pilab.resource.v1.ObjectMeta.LabelsEntry
+	nil,                           // 10: pilab.resource.v1.ObjectMeta.AnnotationsEntry
+	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),       // 12: google.protobuf.Struct
 }
 var file_pilab_resource_v1_resource_proto_depIdxs = []int32{
-	8,  // 0: pilab.resource.v1.ObjectMeta.labels:type_name -> pilab.resource.v1.ObjectMeta.LabelsEntry
-	9,  // 1: pilab.resource.v1.ObjectMeta.annotations:type_name -> pilab.resource.v1.ObjectMeta.AnnotationsEntry
+	9,  // 0: pilab.resource.v1.ObjectMeta.labels:type_name -> pilab.resource.v1.ObjectMeta.LabelsEntry
+	10, // 1: pilab.resource.v1.ObjectMeta.annotations:type_name -> pilab.resource.v1.ObjectMeta.AnnotationsEntry
 	1,  // 2: pilab.resource.v1.ObjectMeta.owner_refs:type_name -> pilab.resource.v1.OwnerRef
-	10, // 3: pilab.resource.v1.ObjectMeta.created_at:type_name -> google.protobuf.Timestamp
-	10, // 4: pilab.resource.v1.ObjectMeta.updated_at:type_name -> google.protobuf.Timestamp
-	10, // 5: pilab.resource.v1.ObjectMeta.deleted_at:type_name -> google.protobuf.Timestamp
-	10, // 6: pilab.resource.v1.Condition.last_transition_time:type_name -> google.protobuf.Timestamp
+	11, // 3: pilab.resource.v1.ObjectMeta.created_at:type_name -> google.protobuf.Timestamp
+	11, // 4: pilab.resource.v1.ObjectMeta.updated_at:type_name -> google.protobuf.Timestamp
+	11, // 5: pilab.resource.v1.ObjectMeta.deleted_at:type_name -> google.protobuf.Timestamp
+	11, // 6: pilab.resource.v1.Condition.last_transition_time:type_name -> google.protobuf.Timestamp
 	3,  // 7: pilab.resource.v1.ResourceStatus.conditions:type_name -> pilab.resource.v1.Condition
-	2,  // 8: pilab.resource.v1.Resource.metadata:type_name -> pilab.resource.v1.ObjectMeta
-	11, // 9: pilab.resource.v1.Resource.spec:type_name -> google.protobuf.Struct
-	4,  // 10: pilab.resource.v1.Resource.status:type_name -> pilab.resource.v1.ResourceStatus
-	0,  // 11: pilab.resource.v1.ApplyResult.outcome:type_name -> pilab.resource.v1.ApplyResult.Outcome
-	5,  // 12: pilab.resource.v1.ApplyResult.resource:type_name -> pilab.resource.v1.Resource
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	12, // 8: pilab.resource.v1.ResourceStatus.fields:type_name -> google.protobuf.Struct
+	2,  // 9: pilab.resource.v1.Resource.metadata:type_name -> pilab.resource.v1.ObjectMeta
+	12, // 10: pilab.resource.v1.Resource.spec:type_name -> google.protobuf.Struct
+	4,  // 11: pilab.resource.v1.Resource.status:type_name -> pilab.resource.v1.ResourceStatus
+	0,  // 12: pilab.resource.v1.ApplyResult.outcome:type_name -> pilab.resource.v1.ApplyResult.Outcome
+	5,  // 13: pilab.resource.v1.ApplyResult.resource:type_name -> pilab.resource.v1.Resource
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_pilab_resource_v1_resource_proto_init() }
@@ -830,7 +935,7 @@ func file_pilab_resource_v1_resource_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_resource_v1_resource_proto_rawDesc), len(file_pilab_resource_v1_resource_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

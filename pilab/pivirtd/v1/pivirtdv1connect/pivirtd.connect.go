@@ -151,39 +151,12 @@ const (
 	// PivirtdServiceListOVSPortsProcedure is the fully-qualified name of the PivirtdService's
 	// ListOVSPorts RPC.
 	PivirtdServiceListOVSPortsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
-	// PivirtdServiceApplyNetworkProcedure is the fully-qualified name of the PivirtdService's
-	// ApplyNetwork RPC.
-	PivirtdServiceApplyNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/ApplyNetwork"
-	// PivirtdServiceDeleteNetworkProcedure is the fully-qualified name of the PivirtdService's
-	// DeleteNetwork RPC.
-	PivirtdServiceDeleteNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteNetwork"
-	// PivirtdServiceListNetworksProcedure is the fully-qualified name of the PivirtdService's
-	// ListNetworks RPC.
-	PivirtdServiceListNetworksProcedure = "/pilab.pivirtd.v1.PivirtdService/ListNetworks"
-	// PivirtdServiceGetNetworkProcedure is the fully-qualified name of the PivirtdService's GetNetwork
-	// RPC.
-	PivirtdServiceGetNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/GetNetwork"
-	// PivirtdServiceApplyOverlayNetworkProcedure is the fully-qualified name of the PivirtdService's
-	// ApplyOverlayNetwork RPC.
-	PivirtdServiceApplyOverlayNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/ApplyOverlayNetwork"
-	// PivirtdServiceDeleteOverlayNetworkProcedure is the fully-qualified name of the PivirtdService's
-	// DeleteOverlayNetwork RPC.
-	PivirtdServiceDeleteOverlayNetworkProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteOverlayNetwork"
-	// PivirtdServiceListOverlayNetworksProcedure is the fully-qualified name of the PivirtdService's
-	// ListOverlayNetworks RPC.
-	PivirtdServiceListOverlayNetworksProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOverlayNetworks"
-	// PivirtdServiceBindExternalIPProcedure is the fully-qualified name of the PivirtdService's
-	// BindExternalIP RPC.
-	PivirtdServiceBindExternalIPProcedure = "/pilab.pivirtd.v1.PivirtdService/BindExternalIP"
-	// PivirtdServiceUnbindExternalIPProcedure is the fully-qualified name of the PivirtdService's
-	// UnbindExternalIP RPC.
-	PivirtdServiceUnbindExternalIPProcedure = "/pilab.pivirtd.v1.PivirtdService/UnbindExternalIP"
-	// PivirtdServiceListExternalIPsProcedure is the fully-qualified name of the PivirtdService's
-	// ListExternalIPs RPC.
-	PivirtdServiceListExternalIPsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListExternalIPs"
 	// PivirtdServiceListNetworkNamespacesProcedure is the fully-qualified name of the PivirtdService's
 	// ListNetworkNamespaces RPC.
 	PivirtdServiceListNetworkNamespacesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListNetworkNamespaces"
+	// PivirtdServiceListAdoptableDevicesProcedure is the fully-qualified name of the PivirtdService's
+	// ListAdoptableDevices RPC.
+	PivirtdServiceListAdoptableDevicesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListAdoptableDevices"
 	// PivirtdServiceSetLabelsProcedure is the fully-qualified name of the PivirtdService's SetLabels
 	// RPC.
 	PivirtdServiceSetLabelsProcedure = "/pilab.pivirtd.v1.PivirtdService/SetLabels"
@@ -317,21 +290,10 @@ type PivirtdServiceClient interface {
 	AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error)
 	RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
 	ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error)
-	// Host Networks (isolated / NAT / routed / bridged bridges)
-	ApplyNetwork(context.Context, *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
-	DeleteNetwork(context.Context, *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListNetworks(context.Context, *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error)
-	GetNetwork(context.Context, *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
-	// OVS Overlay Networks
-	ApplyOverlayNetwork(context.Context, *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error)
-	DeleteOverlayNetwork(context.Context, *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListOverlayNetworks(context.Context, *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error)
-	// External IP Bindings
-	BindExternalIP(context.Context, *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error)
-	UnbindExternalIP(context.Context, *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListExternalIPs(context.Context, *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error)
 	// Network Namespaces
 	ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error)
+	// Adoption reporting — host devices pivirtd found but does not manage.
+	ListAdoptableDevices(context.Context, *connect.Request[v1.ListAdoptableDevicesRequest]) (*connect.Response[v1.ListAdoptableDevicesResponse], error)
 	// VM Metadata Labels
 	SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error)
 	GetLabels(context.Context, *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error)
@@ -638,70 +600,16 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSPorts")),
 			connect.WithClientOptions(opts...),
 		),
-		applyNetwork: connect.NewClient[v1.ApplyNetworkRequest, v1.NetworkStatusResponse](
-			httpClient,
-			baseURL+PivirtdServiceApplyNetworkProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("ApplyNetwork")),
-			connect.WithClientOptions(opts...),
-		),
-		deleteNetwork: connect.NewClient[v1.DeleteNetworkRequest2, v1.DeleteNetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceDeleteNetworkProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("DeleteNetwork")),
-			connect.WithClientOptions(opts...),
-		),
-		listNetworks: connect.NewClient[v1.ListNetworksRequest, v1.ListNetworksResponse](
-			httpClient,
-			baseURL+PivirtdServiceListNetworksProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworks")),
-			connect.WithClientOptions(opts...),
-		),
-		getNetwork: connect.NewClient[v1.GetNetworkRequest, v1.NetworkStatusResponse](
-			httpClient,
-			baseURL+PivirtdServiceGetNetworkProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("GetNetwork")),
-			connect.WithClientOptions(opts...),
-		),
-		applyOverlayNetwork: connect.NewClient[v1.ApplyOverlayNetworkRequest, v1.OverlayNetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceApplyOverlayNetworkProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("ApplyOverlayNetwork")),
-			connect.WithClientOptions(opts...),
-		),
-		deleteOverlayNetwork: connect.NewClient[v1.DeleteOverlayNetworkRequest, v1.DeleteNetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceDeleteOverlayNetworkProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("DeleteOverlayNetwork")),
-			connect.WithClientOptions(opts...),
-		),
-		listOverlayNetworks: connect.NewClient[v1.ListOverlayNetworksRequest, v1.ListOverlayNetworksResponse](
-			httpClient,
-			baseURL+PivirtdServiceListOverlayNetworksProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("ListOverlayNetworks")),
-			connect.WithClientOptions(opts...),
-		),
-		bindExternalIP: connect.NewClient[v1.BindExternalIPRequest, v1.ExternalIPResponse](
-			httpClient,
-			baseURL+PivirtdServiceBindExternalIPProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("BindExternalIP")),
-			connect.WithClientOptions(opts...),
-		),
-		unbindExternalIP: connect.NewClient[v1.UnbindExternalIPRequest, v1.DeleteNetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceUnbindExternalIPProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("UnbindExternalIP")),
-			connect.WithClientOptions(opts...),
-		),
-		listExternalIPs: connect.NewClient[v1.ListExternalIPsRequest, v1.ListExternalIPsResponse](
-			httpClient,
-			baseURL+PivirtdServiceListExternalIPsProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("ListExternalIPs")),
-			connect.WithClientOptions(opts...),
-		),
 		listNetworkNamespaces: connect.NewClient[v1.ListNetworkNamespacesRequest, v1.ListNetworkNamespacesResponse](
 			httpClient,
 			baseURL+PivirtdServiceListNetworkNamespacesProcedure,
 			connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworkNamespaces")),
+			connect.WithClientOptions(opts...),
+		),
+		listAdoptableDevices: connect.NewClient[v1.ListAdoptableDevicesRequest, v1.ListAdoptableDevicesResponse](
+			httpClient,
+			baseURL+PivirtdServiceListAdoptableDevicesProcedure,
+			connect.WithSchema(pivirtdServiceMethods.ByName("ListAdoptableDevices")),
 			connect.WithClientOptions(opts...),
 		),
 		setLabels: connect.NewClient[v1.SetLabelsRequest, v1.SetLabelsResponse](
@@ -908,17 +816,8 @@ type pivirtdServiceClient struct {
 	addOVSPort            *connect.Client[v1.AddOVSPortRequest, v1.NetworkResponse]
 	removeOVSPort         *connect.Client[v1.RemoveOVSPortRequest, v1.DeleteNetworkResponse]
 	listOVSPorts          *connect.Client[v1.ListOVSPortsRequest, v1.ListOVSPortsResponse]
-	applyNetwork          *connect.Client[v1.ApplyNetworkRequest, v1.NetworkStatusResponse]
-	deleteNetwork         *connect.Client[v1.DeleteNetworkRequest2, v1.DeleteNetworkResponse]
-	listNetworks          *connect.Client[v1.ListNetworksRequest, v1.ListNetworksResponse]
-	getNetwork            *connect.Client[v1.GetNetworkRequest, v1.NetworkStatusResponse]
-	applyOverlayNetwork   *connect.Client[v1.ApplyOverlayNetworkRequest, v1.OverlayNetworkResponse]
-	deleteOverlayNetwork  *connect.Client[v1.DeleteOverlayNetworkRequest, v1.DeleteNetworkResponse]
-	listOverlayNetworks   *connect.Client[v1.ListOverlayNetworksRequest, v1.ListOverlayNetworksResponse]
-	bindExternalIP        *connect.Client[v1.BindExternalIPRequest, v1.ExternalIPResponse]
-	unbindExternalIP      *connect.Client[v1.UnbindExternalIPRequest, v1.DeleteNetworkResponse]
-	listExternalIPs       *connect.Client[v1.ListExternalIPsRequest, v1.ListExternalIPsResponse]
 	listNetworkNamespaces *connect.Client[v1.ListNetworkNamespacesRequest, v1.ListNetworkNamespacesResponse]
+	listAdoptableDevices  *connect.Client[v1.ListAdoptableDevicesRequest, v1.ListAdoptableDevicesResponse]
 	setLabels             *connect.Client[v1.SetLabelsRequest, v1.SetLabelsResponse]
 	getLabels             *connect.Client[v1.GetLabelsRequest, v1.GetLabelsResponse]
 	deleteLabel           *connect.Client[v1.DeleteLabelRequest, v1.DeleteLabelResponse]
@@ -1164,59 +1063,14 @@ func (c *pivirtdServiceClient) ListOVSPorts(ctx context.Context, req *connect.Re
 	return c.listOVSPorts.CallUnary(ctx, req)
 }
 
-// ApplyNetwork calls pilab.pivirtd.v1.PivirtdService.ApplyNetwork.
-func (c *pivirtdServiceClient) ApplyNetwork(ctx context.Context, req *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
-	return c.applyNetwork.CallUnary(ctx, req)
-}
-
-// DeleteNetwork calls pilab.pivirtd.v1.PivirtdService.DeleteNetwork.
-func (c *pivirtdServiceClient) DeleteNetwork(ctx context.Context, req *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return c.deleteNetwork.CallUnary(ctx, req)
-}
-
-// ListNetworks calls pilab.pivirtd.v1.PivirtdService.ListNetworks.
-func (c *pivirtdServiceClient) ListNetworks(ctx context.Context, req *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error) {
-	return c.listNetworks.CallUnary(ctx, req)
-}
-
-// GetNetwork calls pilab.pivirtd.v1.PivirtdService.GetNetwork.
-func (c *pivirtdServiceClient) GetNetwork(ctx context.Context, req *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
-	return c.getNetwork.CallUnary(ctx, req)
-}
-
-// ApplyOverlayNetwork calls pilab.pivirtd.v1.PivirtdService.ApplyOverlayNetwork.
-func (c *pivirtdServiceClient) ApplyOverlayNetwork(ctx context.Context, req *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error) {
-	return c.applyOverlayNetwork.CallUnary(ctx, req)
-}
-
-// DeleteOverlayNetwork calls pilab.pivirtd.v1.PivirtdService.DeleteOverlayNetwork.
-func (c *pivirtdServiceClient) DeleteOverlayNetwork(ctx context.Context, req *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return c.deleteOverlayNetwork.CallUnary(ctx, req)
-}
-
-// ListOverlayNetworks calls pilab.pivirtd.v1.PivirtdService.ListOverlayNetworks.
-func (c *pivirtdServiceClient) ListOverlayNetworks(ctx context.Context, req *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error) {
-	return c.listOverlayNetworks.CallUnary(ctx, req)
-}
-
-// BindExternalIP calls pilab.pivirtd.v1.PivirtdService.BindExternalIP.
-func (c *pivirtdServiceClient) BindExternalIP(ctx context.Context, req *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error) {
-	return c.bindExternalIP.CallUnary(ctx, req)
-}
-
-// UnbindExternalIP calls pilab.pivirtd.v1.PivirtdService.UnbindExternalIP.
-func (c *pivirtdServiceClient) UnbindExternalIP(ctx context.Context, req *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return c.unbindExternalIP.CallUnary(ctx, req)
-}
-
-// ListExternalIPs calls pilab.pivirtd.v1.PivirtdService.ListExternalIPs.
-func (c *pivirtdServiceClient) ListExternalIPs(ctx context.Context, req *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error) {
-	return c.listExternalIPs.CallUnary(ctx, req)
-}
-
 // ListNetworkNamespaces calls pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces.
 func (c *pivirtdServiceClient) ListNetworkNamespaces(ctx context.Context, req *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error) {
 	return c.listNetworkNamespaces.CallUnary(ctx, req)
+}
+
+// ListAdoptableDevices calls pilab.pivirtd.v1.PivirtdService.ListAdoptableDevices.
+func (c *pivirtdServiceClient) ListAdoptableDevices(ctx context.Context, req *connect.Request[v1.ListAdoptableDevicesRequest]) (*connect.Response[v1.ListAdoptableDevicesResponse], error) {
+	return c.listAdoptableDevices.CallUnary(ctx, req)
 }
 
 // SetLabels calls pilab.pivirtd.v1.PivirtdService.SetLabels.
@@ -1404,21 +1258,10 @@ type PivirtdServiceHandler interface {
 	AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error)
 	RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
 	ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error)
-	// Host Networks (isolated / NAT / routed / bridged bridges)
-	ApplyNetwork(context.Context, *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
-	DeleteNetwork(context.Context, *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListNetworks(context.Context, *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error)
-	GetNetwork(context.Context, *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error)
-	// OVS Overlay Networks
-	ApplyOverlayNetwork(context.Context, *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error)
-	DeleteOverlayNetwork(context.Context, *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListOverlayNetworks(context.Context, *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error)
-	// External IP Bindings
-	BindExternalIP(context.Context, *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error)
-	UnbindExternalIP(context.Context, *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListExternalIPs(context.Context, *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error)
 	// Network Namespaces
 	ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error)
+	// Adoption reporting — host devices pivirtd found but does not manage.
+	ListAdoptableDevices(context.Context, *connect.Request[v1.ListAdoptableDevicesRequest]) (*connect.Response[v1.ListAdoptableDevicesResponse], error)
 	// VM Metadata Labels
 	SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error)
 	GetLabels(context.Context, *connect.Request[v1.GetLabelsRequest]) (*connect.Response[v1.GetLabelsResponse], error)
@@ -1721,70 +1564,16 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSPorts")),
 		connect.WithHandlerOptions(opts...),
 	)
-	pivirtdServiceApplyNetworkHandler := connect.NewUnaryHandler(
-		PivirtdServiceApplyNetworkProcedure,
-		svc.ApplyNetwork,
-		connect.WithSchema(pivirtdServiceMethods.ByName("ApplyNetwork")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceDeleteNetworkHandler := connect.NewUnaryHandler(
-		PivirtdServiceDeleteNetworkProcedure,
-		svc.DeleteNetwork,
-		connect.WithSchema(pivirtdServiceMethods.ByName("DeleteNetwork")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceListNetworksHandler := connect.NewUnaryHandler(
-		PivirtdServiceListNetworksProcedure,
-		svc.ListNetworks,
-		connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworks")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceGetNetworkHandler := connect.NewUnaryHandler(
-		PivirtdServiceGetNetworkProcedure,
-		svc.GetNetwork,
-		connect.WithSchema(pivirtdServiceMethods.ByName("GetNetwork")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceApplyOverlayNetworkHandler := connect.NewUnaryHandler(
-		PivirtdServiceApplyOverlayNetworkProcedure,
-		svc.ApplyOverlayNetwork,
-		connect.WithSchema(pivirtdServiceMethods.ByName("ApplyOverlayNetwork")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceDeleteOverlayNetworkHandler := connect.NewUnaryHandler(
-		PivirtdServiceDeleteOverlayNetworkProcedure,
-		svc.DeleteOverlayNetwork,
-		connect.WithSchema(pivirtdServiceMethods.ByName("DeleteOverlayNetwork")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceListOverlayNetworksHandler := connect.NewUnaryHandler(
-		PivirtdServiceListOverlayNetworksProcedure,
-		svc.ListOverlayNetworks,
-		connect.WithSchema(pivirtdServiceMethods.ByName("ListOverlayNetworks")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceBindExternalIPHandler := connect.NewUnaryHandler(
-		PivirtdServiceBindExternalIPProcedure,
-		svc.BindExternalIP,
-		connect.WithSchema(pivirtdServiceMethods.ByName("BindExternalIP")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceUnbindExternalIPHandler := connect.NewUnaryHandler(
-		PivirtdServiceUnbindExternalIPProcedure,
-		svc.UnbindExternalIP,
-		connect.WithSchema(pivirtdServiceMethods.ByName("UnbindExternalIP")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceListExternalIPsHandler := connect.NewUnaryHandler(
-		PivirtdServiceListExternalIPsProcedure,
-		svc.ListExternalIPs,
-		connect.WithSchema(pivirtdServiceMethods.ByName("ListExternalIPs")),
-		connect.WithHandlerOptions(opts...),
-	)
 	pivirtdServiceListNetworkNamespacesHandler := connect.NewUnaryHandler(
 		PivirtdServiceListNetworkNamespacesProcedure,
 		svc.ListNetworkNamespaces,
 		connect.WithSchema(pivirtdServiceMethods.ByName("ListNetworkNamespaces")),
+		connect.WithHandlerOptions(opts...),
+	)
+	pivirtdServiceListAdoptableDevicesHandler := connect.NewUnaryHandler(
+		PivirtdServiceListAdoptableDevicesProcedure,
+		svc.ListAdoptableDevices,
+		connect.WithSchema(pivirtdServiceMethods.ByName("ListAdoptableDevices")),
 		connect.WithHandlerOptions(opts...),
 	)
 	pivirtdServiceSetLabelsHandler := connect.NewUnaryHandler(
@@ -2031,28 +1820,10 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 			pivirtdServiceRemoveOVSPortHandler.ServeHTTP(w, r)
 		case PivirtdServiceListOVSPortsProcedure:
 			pivirtdServiceListOVSPortsHandler.ServeHTTP(w, r)
-		case PivirtdServiceApplyNetworkProcedure:
-			pivirtdServiceApplyNetworkHandler.ServeHTTP(w, r)
-		case PivirtdServiceDeleteNetworkProcedure:
-			pivirtdServiceDeleteNetworkHandler.ServeHTTP(w, r)
-		case PivirtdServiceListNetworksProcedure:
-			pivirtdServiceListNetworksHandler.ServeHTTP(w, r)
-		case PivirtdServiceGetNetworkProcedure:
-			pivirtdServiceGetNetworkHandler.ServeHTTP(w, r)
-		case PivirtdServiceApplyOverlayNetworkProcedure:
-			pivirtdServiceApplyOverlayNetworkHandler.ServeHTTP(w, r)
-		case PivirtdServiceDeleteOverlayNetworkProcedure:
-			pivirtdServiceDeleteOverlayNetworkHandler.ServeHTTP(w, r)
-		case PivirtdServiceListOverlayNetworksProcedure:
-			pivirtdServiceListOverlayNetworksHandler.ServeHTTP(w, r)
-		case PivirtdServiceBindExternalIPProcedure:
-			pivirtdServiceBindExternalIPHandler.ServeHTTP(w, r)
-		case PivirtdServiceUnbindExternalIPProcedure:
-			pivirtdServiceUnbindExternalIPHandler.ServeHTTP(w, r)
-		case PivirtdServiceListExternalIPsProcedure:
-			pivirtdServiceListExternalIPsHandler.ServeHTTP(w, r)
 		case PivirtdServiceListNetworkNamespacesProcedure:
 			pivirtdServiceListNetworkNamespacesHandler.ServeHTTP(w, r)
+		case PivirtdServiceListAdoptableDevicesProcedure:
+			pivirtdServiceListAdoptableDevicesHandler.ServeHTTP(w, r)
 		case PivirtdServiceSetLabelsProcedure:
 			pivirtdServiceSetLabelsHandler.ServeHTTP(w, r)
 		case PivirtdServiceGetLabelsProcedure:
@@ -2286,48 +2057,12 @@ func (UnimplementedPivirtdServiceHandler) ListOVSPorts(context.Context, *connect
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOVSPorts is not implemented"))
 }
 
-func (UnimplementedPivirtdServiceHandler) ApplyNetwork(context.Context, *connect.Request[v1.ApplyNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ApplyNetwork is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) DeleteNetwork(context.Context, *connect.Request[v1.DeleteNetworkRequest2]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteNetwork is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) ListNetworks(context.Context, *connect.Request[v1.ListNetworksRequest]) (*connect.Response[v1.ListNetworksResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListNetworks is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) GetNetwork(context.Context, *connect.Request[v1.GetNetworkRequest]) (*connect.Response[v1.NetworkStatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.GetNetwork is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) ApplyOverlayNetwork(context.Context, *connect.Request[v1.ApplyOverlayNetworkRequest]) (*connect.Response[v1.OverlayNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ApplyOverlayNetwork is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) DeleteOverlayNetwork(context.Context, *connect.Request[v1.DeleteOverlayNetworkRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteOverlayNetwork is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) ListOverlayNetworks(context.Context, *connect.Request[v1.ListOverlayNetworksRequest]) (*connect.Response[v1.ListOverlayNetworksResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOverlayNetworks is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) BindExternalIP(context.Context, *connect.Request[v1.BindExternalIPRequest]) (*connect.Response[v1.ExternalIPResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.BindExternalIP is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) UnbindExternalIP(context.Context, *connect.Request[v1.UnbindExternalIPRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.UnbindExternalIP is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) ListExternalIPs(context.Context, *connect.Request[v1.ListExternalIPsRequest]) (*connect.Response[v1.ListExternalIPsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListExternalIPs is not implemented"))
-}
-
 func (UnimplementedPivirtdServiceHandler) ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces is not implemented"))
+}
+
+func (UnimplementedPivirtdServiceHandler) ListAdoptableDevices(context.Context, *connect.Request[v1.ListAdoptableDevicesRequest]) (*connect.Response[v1.ListAdoptableDevicesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListAdoptableDevices is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) SetLabels(context.Context, *connect.Request[v1.SetLabelsRequest]) (*connect.Response[v1.SetLabelsResponse], error) {
