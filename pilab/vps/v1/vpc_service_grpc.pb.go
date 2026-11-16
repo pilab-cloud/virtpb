@@ -25,12 +25,15 @@ const (
 	VpcService_DeleteVpc_FullMethodName           = "/pilab.cloud.vps.v1.VpcService/DeleteVpc"
 	VpcService_CreateSubnet_FullMethodName        = "/pilab.cloud.vps.v1.VpcService/CreateSubnet"
 	VpcService_ListSubnets_FullMethodName         = "/pilab.cloud.vps.v1.VpcService/ListSubnets"
+	VpcService_DeleteSubnet_FullMethodName        = "/pilab.cloud.vps.v1.VpcService/DeleteSubnet"
 	VpcService_CreateSecurityGroup_FullMethodName = "/pilab.cloud.vps.v1.VpcService/CreateSecurityGroup"
 	VpcService_ListSecurityGroups_FullMethodName  = "/pilab.cloud.vps.v1.VpcService/ListSecurityGroups"
+	VpcService_DeleteSecurityGroup_FullMethodName = "/pilab.cloud.vps.v1.VpcService/DeleteSecurityGroup"
 	VpcService_AllocateFloatingIp_FullMethodName  = "/pilab.cloud.vps.v1.VpcService/AllocateFloatingIp"
 	VpcService_ListFloatingIps_FullMethodName     = "/pilab.cloud.vps.v1.VpcService/ListFloatingIps"
 	VpcService_AttachFloatingIp_FullMethodName    = "/pilab.cloud.vps.v1.VpcService/AttachFloatingIp"
 	VpcService_DetachFloatingIp_FullMethodName    = "/pilab.cloud.vps.v1.VpcService/DetachFloatingIp"
+	VpcService_ReleaseFloatingIp_FullMethodName   = "/pilab.cloud.vps.v1.VpcService/ReleaseFloatingIp"
 )
 
 // VpcServiceClient is the client API for VpcService service.
@@ -47,12 +50,15 @@ type VpcServiceClient interface {
 	DeleteVpc(ctx context.Context, in *DeleteVpcRequest, opts ...grpc.CallOption) (*DeleteVpcResponse, error)
 	CreateSubnet(ctx context.Context, in *CreateSubnetRequest, opts ...grpc.CallOption) (*CreateSubnetResponse, error)
 	ListSubnets(ctx context.Context, in *ListSubnetsRequest, opts ...grpc.CallOption) (*ListSubnetsResponse, error)
+	DeleteSubnet(ctx context.Context, in *DeleteSubnetRequest, opts ...grpc.CallOption) (*DeleteSubnetResponse, error)
 	CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*CreateSecurityGroupResponse, error)
 	ListSecurityGroups(ctx context.Context, in *ListSecurityGroupsRequest, opts ...grpc.CallOption) (*ListSecurityGroupsResponse, error)
+	DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*DeleteSecurityGroupResponse, error)
 	AllocateFloatingIp(ctx context.Context, in *AllocateFloatingIpRequest, opts ...grpc.CallOption) (*AllocateFloatingIpResponse, error)
 	ListFloatingIps(ctx context.Context, in *ListFloatingIpsRequest, opts ...grpc.CallOption) (*ListFloatingIpsResponse, error)
 	AttachFloatingIp(ctx context.Context, in *AttachFloatingIpRequest, opts ...grpc.CallOption) (*AttachFloatingIpResponse, error)
 	DetachFloatingIp(ctx context.Context, in *DetachFloatingIpRequest, opts ...grpc.CallOption) (*DetachFloatingIpResponse, error)
+	ReleaseFloatingIp(ctx context.Context, in *ReleaseFloatingIpRequest, opts ...grpc.CallOption) (*ReleaseFloatingIpResponse, error)
 }
 
 type vpcServiceClient struct {
@@ -123,6 +129,16 @@ func (c *vpcServiceClient) ListSubnets(ctx context.Context, in *ListSubnetsReque
 	return out, nil
 }
 
+func (c *vpcServiceClient) DeleteSubnet(ctx context.Context, in *DeleteSubnetRequest, opts ...grpc.CallOption) (*DeleteSubnetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteSubnetResponse)
+	err := c.cc.Invoke(ctx, VpcService_DeleteSubnet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *vpcServiceClient) CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*CreateSecurityGroupResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateSecurityGroupResponse)
@@ -137,6 +153,16 @@ func (c *vpcServiceClient) ListSecurityGroups(ctx context.Context, in *ListSecur
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListSecurityGroupsResponse)
 	err := c.cc.Invoke(ctx, VpcService_ListSecurityGroups_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vpcServiceClient) DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*DeleteSecurityGroupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteSecurityGroupResponse)
+	err := c.cc.Invoke(ctx, VpcService_DeleteSecurityGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -183,6 +209,16 @@ func (c *vpcServiceClient) DetachFloatingIp(ctx context.Context, in *DetachFloat
 	return out, nil
 }
 
+func (c *vpcServiceClient) ReleaseFloatingIp(ctx context.Context, in *ReleaseFloatingIpRequest, opts ...grpc.CallOption) (*ReleaseFloatingIpResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReleaseFloatingIpResponse)
+	err := c.cc.Invoke(ctx, VpcService_ReleaseFloatingIp_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VpcServiceServer is the server API for VpcService service.
 // All implementations must embed UnimplementedVpcServiceServer
 // for forward compatibility.
@@ -197,12 +233,15 @@ type VpcServiceServer interface {
 	DeleteVpc(context.Context, *DeleteVpcRequest) (*DeleteVpcResponse, error)
 	CreateSubnet(context.Context, *CreateSubnetRequest) (*CreateSubnetResponse, error)
 	ListSubnets(context.Context, *ListSubnetsRequest) (*ListSubnetsResponse, error)
+	DeleteSubnet(context.Context, *DeleteSubnetRequest) (*DeleteSubnetResponse, error)
 	CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*CreateSecurityGroupResponse, error)
 	ListSecurityGroups(context.Context, *ListSecurityGroupsRequest) (*ListSecurityGroupsResponse, error)
+	DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*DeleteSecurityGroupResponse, error)
 	AllocateFloatingIp(context.Context, *AllocateFloatingIpRequest) (*AllocateFloatingIpResponse, error)
 	ListFloatingIps(context.Context, *ListFloatingIpsRequest) (*ListFloatingIpsResponse, error)
 	AttachFloatingIp(context.Context, *AttachFloatingIpRequest) (*AttachFloatingIpResponse, error)
 	DetachFloatingIp(context.Context, *DetachFloatingIpRequest) (*DetachFloatingIpResponse, error)
+	ReleaseFloatingIp(context.Context, *ReleaseFloatingIpRequest) (*ReleaseFloatingIpResponse, error)
 	mustEmbedUnimplementedVpcServiceServer()
 }
 
@@ -231,11 +270,17 @@ func (UnimplementedVpcServiceServer) CreateSubnet(context.Context, *CreateSubnet
 func (UnimplementedVpcServiceServer) ListSubnets(context.Context, *ListSubnetsRequest) (*ListSubnetsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSubnets not implemented")
 }
+func (UnimplementedVpcServiceServer) DeleteSubnet(context.Context, *DeleteSubnetRequest) (*DeleteSubnetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteSubnet not implemented")
+}
 func (UnimplementedVpcServiceServer) CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*CreateSecurityGroupResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateSecurityGroup not implemented")
 }
 func (UnimplementedVpcServiceServer) ListSecurityGroups(context.Context, *ListSecurityGroupsRequest) (*ListSecurityGroupsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSecurityGroups not implemented")
+}
+func (UnimplementedVpcServiceServer) DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*DeleteSecurityGroupResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteSecurityGroup not implemented")
 }
 func (UnimplementedVpcServiceServer) AllocateFloatingIp(context.Context, *AllocateFloatingIpRequest) (*AllocateFloatingIpResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AllocateFloatingIp not implemented")
@@ -248,6 +293,9 @@ func (UnimplementedVpcServiceServer) AttachFloatingIp(context.Context, *AttachFl
 }
 func (UnimplementedVpcServiceServer) DetachFloatingIp(context.Context, *DetachFloatingIpRequest) (*DetachFloatingIpResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DetachFloatingIp not implemented")
+}
+func (UnimplementedVpcServiceServer) ReleaseFloatingIp(context.Context, *ReleaseFloatingIpRequest) (*ReleaseFloatingIpResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReleaseFloatingIp not implemented")
 }
 func (UnimplementedVpcServiceServer) mustEmbedUnimplementedVpcServiceServer() {}
 func (UnimplementedVpcServiceServer) testEmbeddedByValue()                    {}
@@ -378,6 +426,24 @@ func _VpcService_ListSubnets_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VpcService_DeleteSubnet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSubnetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VpcServiceServer).DeleteSubnet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VpcService_DeleteSubnet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VpcServiceServer).DeleteSubnet(ctx, req.(*DeleteSubnetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _VpcService_CreateSecurityGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateSecurityGroupRequest)
 	if err := dec(in); err != nil {
@@ -410,6 +476,24 @@ func _VpcService_ListSecurityGroups_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VpcServiceServer).ListSecurityGroups(ctx, req.(*ListSecurityGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VpcService_DeleteSecurityGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSecurityGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VpcServiceServer).DeleteSecurityGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VpcService_DeleteSecurityGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VpcServiceServer).DeleteSecurityGroup(ctx, req.(*DeleteSecurityGroupRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -486,6 +570,24 @@ func _VpcService_DetachFloatingIp_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VpcService_ReleaseFloatingIp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReleaseFloatingIpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VpcServiceServer).ReleaseFloatingIp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VpcService_ReleaseFloatingIp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VpcServiceServer).ReleaseFloatingIp(ctx, req.(*ReleaseFloatingIpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VpcService_ServiceDesc is the grpc.ServiceDesc for VpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -518,12 +620,20 @@ var VpcService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _VpcService_ListSubnets_Handler,
 		},
 		{
+			MethodName: "DeleteSubnet",
+			Handler:    _VpcService_DeleteSubnet_Handler,
+		},
+		{
 			MethodName: "CreateSecurityGroup",
 			Handler:    _VpcService_CreateSecurityGroup_Handler,
 		},
 		{
 			MethodName: "ListSecurityGroups",
 			Handler:    _VpcService_ListSecurityGroups_Handler,
+		},
+		{
+			MethodName: "DeleteSecurityGroup",
+			Handler:    _VpcService_DeleteSecurityGroup_Handler,
 		},
 		{
 			MethodName: "AllocateFloatingIp",
@@ -540,6 +650,10 @@ var VpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DetachFloatingIp",
 			Handler:    _VpcService_DetachFloatingIp_Handler,
+		},
+		{
+			MethodName: "ReleaseFloatingIp",
+			Handler:    _VpcService_ReleaseFloatingIp_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

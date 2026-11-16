@@ -45,12 +45,17 @@ const (
 	VpcServiceCreateSubnetProcedure = "/pilab.cloud.vps.v1.VpcService/CreateSubnet"
 	// VpcServiceListSubnetsProcedure is the fully-qualified name of the VpcService's ListSubnets RPC.
 	VpcServiceListSubnetsProcedure = "/pilab.cloud.vps.v1.VpcService/ListSubnets"
+	// VpcServiceDeleteSubnetProcedure is the fully-qualified name of the VpcService's DeleteSubnet RPC.
+	VpcServiceDeleteSubnetProcedure = "/pilab.cloud.vps.v1.VpcService/DeleteSubnet"
 	// VpcServiceCreateSecurityGroupProcedure is the fully-qualified name of the VpcService's
 	// CreateSecurityGroup RPC.
 	VpcServiceCreateSecurityGroupProcedure = "/pilab.cloud.vps.v1.VpcService/CreateSecurityGroup"
 	// VpcServiceListSecurityGroupsProcedure is the fully-qualified name of the VpcService's
 	// ListSecurityGroups RPC.
 	VpcServiceListSecurityGroupsProcedure = "/pilab.cloud.vps.v1.VpcService/ListSecurityGroups"
+	// VpcServiceDeleteSecurityGroupProcedure is the fully-qualified name of the VpcService's
+	// DeleteSecurityGroup RPC.
+	VpcServiceDeleteSecurityGroupProcedure = "/pilab.cloud.vps.v1.VpcService/DeleteSecurityGroup"
 	// VpcServiceAllocateFloatingIpProcedure is the fully-qualified name of the VpcService's
 	// AllocateFloatingIp RPC.
 	VpcServiceAllocateFloatingIpProcedure = "/pilab.cloud.vps.v1.VpcService/AllocateFloatingIp"
@@ -63,6 +68,9 @@ const (
 	// VpcServiceDetachFloatingIpProcedure is the fully-qualified name of the VpcService's
 	// DetachFloatingIp RPC.
 	VpcServiceDetachFloatingIpProcedure = "/pilab.cloud.vps.v1.VpcService/DetachFloatingIp"
+	// VpcServiceReleaseFloatingIpProcedure is the fully-qualified name of the VpcService's
+	// ReleaseFloatingIp RPC.
+	VpcServiceReleaseFloatingIpProcedure = "/pilab.cloud.vps.v1.VpcService/ReleaseFloatingIp"
 )
 
 // VpcServiceClient is a client for the pilab.cloud.vps.v1.VpcService service.
@@ -73,12 +81,15 @@ type VpcServiceClient interface {
 	DeleteVpc(context.Context, *connect.Request[v1.DeleteVpcRequest]) (*connect.Response[v1.DeleteVpcResponse], error)
 	CreateSubnet(context.Context, *connect.Request[v1.CreateSubnetRequest]) (*connect.Response[v1.CreateSubnetResponse], error)
 	ListSubnets(context.Context, *connect.Request[v1.ListSubnetsRequest]) (*connect.Response[v1.ListSubnetsResponse], error)
+	DeleteSubnet(context.Context, *connect.Request[v1.DeleteSubnetRequest]) (*connect.Response[v1.DeleteSubnetResponse], error)
 	CreateSecurityGroup(context.Context, *connect.Request[v1.CreateSecurityGroupRequest]) (*connect.Response[v1.CreateSecurityGroupResponse], error)
 	ListSecurityGroups(context.Context, *connect.Request[v1.ListSecurityGroupsRequest]) (*connect.Response[v1.ListSecurityGroupsResponse], error)
+	DeleteSecurityGroup(context.Context, *connect.Request[v1.DeleteSecurityGroupRequest]) (*connect.Response[v1.DeleteSecurityGroupResponse], error)
 	AllocateFloatingIp(context.Context, *connect.Request[v1.AllocateFloatingIpRequest]) (*connect.Response[v1.AllocateFloatingIpResponse], error)
 	ListFloatingIps(context.Context, *connect.Request[v1.ListFloatingIpsRequest]) (*connect.Response[v1.ListFloatingIpsResponse], error)
 	AttachFloatingIp(context.Context, *connect.Request[v1.AttachFloatingIpRequest]) (*connect.Response[v1.AttachFloatingIpResponse], error)
 	DetachFloatingIp(context.Context, *connect.Request[v1.DetachFloatingIpRequest]) (*connect.Response[v1.DetachFloatingIpResponse], error)
+	ReleaseFloatingIp(context.Context, *connect.Request[v1.ReleaseFloatingIpRequest]) (*connect.Response[v1.ReleaseFloatingIpResponse], error)
 }
 
 // NewVpcServiceClient constructs a client for the pilab.cloud.vps.v1.VpcService service. By
@@ -128,6 +139,12 @@ func NewVpcServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			connect.WithSchema(vpcServiceMethods.ByName("ListSubnets")),
 			connect.WithClientOptions(opts...),
 		),
+		deleteSubnet: connect.NewClient[v1.DeleteSubnetRequest, v1.DeleteSubnetResponse](
+			httpClient,
+			baseURL+VpcServiceDeleteSubnetProcedure,
+			connect.WithSchema(vpcServiceMethods.ByName("DeleteSubnet")),
+			connect.WithClientOptions(opts...),
+		),
 		createSecurityGroup: connect.NewClient[v1.CreateSecurityGroupRequest, v1.CreateSecurityGroupResponse](
 			httpClient,
 			baseURL+VpcServiceCreateSecurityGroupProcedure,
@@ -138,6 +155,12 @@ func NewVpcServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			httpClient,
 			baseURL+VpcServiceListSecurityGroupsProcedure,
 			connect.WithSchema(vpcServiceMethods.ByName("ListSecurityGroups")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteSecurityGroup: connect.NewClient[v1.DeleteSecurityGroupRequest, v1.DeleteSecurityGroupResponse](
+			httpClient,
+			baseURL+VpcServiceDeleteSecurityGroupProcedure,
+			connect.WithSchema(vpcServiceMethods.ByName("DeleteSecurityGroup")),
 			connect.WithClientOptions(opts...),
 		),
 		allocateFloatingIp: connect.NewClient[v1.AllocateFloatingIpRequest, v1.AllocateFloatingIpResponse](
@@ -164,6 +187,12 @@ func NewVpcServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			connect.WithSchema(vpcServiceMethods.ByName("DetachFloatingIp")),
 			connect.WithClientOptions(opts...),
 		),
+		releaseFloatingIp: connect.NewClient[v1.ReleaseFloatingIpRequest, v1.ReleaseFloatingIpResponse](
+			httpClient,
+			baseURL+VpcServiceReleaseFloatingIpProcedure,
+			connect.WithSchema(vpcServiceMethods.ByName("ReleaseFloatingIp")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -175,12 +204,15 @@ type vpcServiceClient struct {
 	deleteVpc           *connect.Client[v1.DeleteVpcRequest, v1.DeleteVpcResponse]
 	createSubnet        *connect.Client[v1.CreateSubnetRequest, v1.CreateSubnetResponse]
 	listSubnets         *connect.Client[v1.ListSubnetsRequest, v1.ListSubnetsResponse]
+	deleteSubnet        *connect.Client[v1.DeleteSubnetRequest, v1.DeleteSubnetResponse]
 	createSecurityGroup *connect.Client[v1.CreateSecurityGroupRequest, v1.CreateSecurityGroupResponse]
 	listSecurityGroups  *connect.Client[v1.ListSecurityGroupsRequest, v1.ListSecurityGroupsResponse]
+	deleteSecurityGroup *connect.Client[v1.DeleteSecurityGroupRequest, v1.DeleteSecurityGroupResponse]
 	allocateFloatingIp  *connect.Client[v1.AllocateFloatingIpRequest, v1.AllocateFloatingIpResponse]
 	listFloatingIps     *connect.Client[v1.ListFloatingIpsRequest, v1.ListFloatingIpsResponse]
 	attachFloatingIp    *connect.Client[v1.AttachFloatingIpRequest, v1.AttachFloatingIpResponse]
 	detachFloatingIp    *connect.Client[v1.DetachFloatingIpRequest, v1.DetachFloatingIpResponse]
+	releaseFloatingIp   *connect.Client[v1.ReleaseFloatingIpRequest, v1.ReleaseFloatingIpResponse]
 }
 
 // CreateVpc calls pilab.cloud.vps.v1.VpcService.CreateVpc.
@@ -213,6 +245,11 @@ func (c *vpcServiceClient) ListSubnets(ctx context.Context, req *connect.Request
 	return c.listSubnets.CallUnary(ctx, req)
 }
 
+// DeleteSubnet calls pilab.cloud.vps.v1.VpcService.DeleteSubnet.
+func (c *vpcServiceClient) DeleteSubnet(ctx context.Context, req *connect.Request[v1.DeleteSubnetRequest]) (*connect.Response[v1.DeleteSubnetResponse], error) {
+	return c.deleteSubnet.CallUnary(ctx, req)
+}
+
 // CreateSecurityGroup calls pilab.cloud.vps.v1.VpcService.CreateSecurityGroup.
 func (c *vpcServiceClient) CreateSecurityGroup(ctx context.Context, req *connect.Request[v1.CreateSecurityGroupRequest]) (*connect.Response[v1.CreateSecurityGroupResponse], error) {
 	return c.createSecurityGroup.CallUnary(ctx, req)
@@ -221,6 +258,11 @@ func (c *vpcServiceClient) CreateSecurityGroup(ctx context.Context, req *connect
 // ListSecurityGroups calls pilab.cloud.vps.v1.VpcService.ListSecurityGroups.
 func (c *vpcServiceClient) ListSecurityGroups(ctx context.Context, req *connect.Request[v1.ListSecurityGroupsRequest]) (*connect.Response[v1.ListSecurityGroupsResponse], error) {
 	return c.listSecurityGroups.CallUnary(ctx, req)
+}
+
+// DeleteSecurityGroup calls pilab.cloud.vps.v1.VpcService.DeleteSecurityGroup.
+func (c *vpcServiceClient) DeleteSecurityGroup(ctx context.Context, req *connect.Request[v1.DeleteSecurityGroupRequest]) (*connect.Response[v1.DeleteSecurityGroupResponse], error) {
+	return c.deleteSecurityGroup.CallUnary(ctx, req)
 }
 
 // AllocateFloatingIp calls pilab.cloud.vps.v1.VpcService.AllocateFloatingIp.
@@ -243,6 +285,11 @@ func (c *vpcServiceClient) DetachFloatingIp(ctx context.Context, req *connect.Re
 	return c.detachFloatingIp.CallUnary(ctx, req)
 }
 
+// ReleaseFloatingIp calls pilab.cloud.vps.v1.VpcService.ReleaseFloatingIp.
+func (c *vpcServiceClient) ReleaseFloatingIp(ctx context.Context, req *connect.Request[v1.ReleaseFloatingIpRequest]) (*connect.Response[v1.ReleaseFloatingIpResponse], error) {
+	return c.releaseFloatingIp.CallUnary(ctx, req)
+}
+
 // VpcServiceHandler is an implementation of the pilab.cloud.vps.v1.VpcService service.
 type VpcServiceHandler interface {
 	CreateVpc(context.Context, *connect.Request[v1.CreateVpcRequest]) (*connect.Response[v1.CreateVpcResponse], error)
@@ -251,12 +298,15 @@ type VpcServiceHandler interface {
 	DeleteVpc(context.Context, *connect.Request[v1.DeleteVpcRequest]) (*connect.Response[v1.DeleteVpcResponse], error)
 	CreateSubnet(context.Context, *connect.Request[v1.CreateSubnetRequest]) (*connect.Response[v1.CreateSubnetResponse], error)
 	ListSubnets(context.Context, *connect.Request[v1.ListSubnetsRequest]) (*connect.Response[v1.ListSubnetsResponse], error)
+	DeleteSubnet(context.Context, *connect.Request[v1.DeleteSubnetRequest]) (*connect.Response[v1.DeleteSubnetResponse], error)
 	CreateSecurityGroup(context.Context, *connect.Request[v1.CreateSecurityGroupRequest]) (*connect.Response[v1.CreateSecurityGroupResponse], error)
 	ListSecurityGroups(context.Context, *connect.Request[v1.ListSecurityGroupsRequest]) (*connect.Response[v1.ListSecurityGroupsResponse], error)
+	DeleteSecurityGroup(context.Context, *connect.Request[v1.DeleteSecurityGroupRequest]) (*connect.Response[v1.DeleteSecurityGroupResponse], error)
 	AllocateFloatingIp(context.Context, *connect.Request[v1.AllocateFloatingIpRequest]) (*connect.Response[v1.AllocateFloatingIpResponse], error)
 	ListFloatingIps(context.Context, *connect.Request[v1.ListFloatingIpsRequest]) (*connect.Response[v1.ListFloatingIpsResponse], error)
 	AttachFloatingIp(context.Context, *connect.Request[v1.AttachFloatingIpRequest]) (*connect.Response[v1.AttachFloatingIpResponse], error)
 	DetachFloatingIp(context.Context, *connect.Request[v1.DetachFloatingIpRequest]) (*connect.Response[v1.DetachFloatingIpResponse], error)
+	ReleaseFloatingIp(context.Context, *connect.Request[v1.ReleaseFloatingIpRequest]) (*connect.Response[v1.ReleaseFloatingIpResponse], error)
 }
 
 // NewVpcServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -302,6 +352,12 @@ func NewVpcServiceHandler(svc VpcServiceHandler, opts ...connect.HandlerOption) 
 		connect.WithSchema(vpcServiceMethods.ByName("ListSubnets")),
 		connect.WithHandlerOptions(opts...),
 	)
+	vpcServiceDeleteSubnetHandler := connect.NewUnaryHandler(
+		VpcServiceDeleteSubnetProcedure,
+		svc.DeleteSubnet,
+		connect.WithSchema(vpcServiceMethods.ByName("DeleteSubnet")),
+		connect.WithHandlerOptions(opts...),
+	)
 	vpcServiceCreateSecurityGroupHandler := connect.NewUnaryHandler(
 		VpcServiceCreateSecurityGroupProcedure,
 		svc.CreateSecurityGroup,
@@ -312,6 +368,12 @@ func NewVpcServiceHandler(svc VpcServiceHandler, opts ...connect.HandlerOption) 
 		VpcServiceListSecurityGroupsProcedure,
 		svc.ListSecurityGroups,
 		connect.WithSchema(vpcServiceMethods.ByName("ListSecurityGroups")),
+		connect.WithHandlerOptions(opts...),
+	)
+	vpcServiceDeleteSecurityGroupHandler := connect.NewUnaryHandler(
+		VpcServiceDeleteSecurityGroupProcedure,
+		svc.DeleteSecurityGroup,
+		connect.WithSchema(vpcServiceMethods.ByName("DeleteSecurityGroup")),
 		connect.WithHandlerOptions(opts...),
 	)
 	vpcServiceAllocateFloatingIpHandler := connect.NewUnaryHandler(
@@ -338,6 +400,12 @@ func NewVpcServiceHandler(svc VpcServiceHandler, opts ...connect.HandlerOption) 
 		connect.WithSchema(vpcServiceMethods.ByName("DetachFloatingIp")),
 		connect.WithHandlerOptions(opts...),
 	)
+	vpcServiceReleaseFloatingIpHandler := connect.NewUnaryHandler(
+		VpcServiceReleaseFloatingIpProcedure,
+		svc.ReleaseFloatingIp,
+		connect.WithSchema(vpcServiceMethods.ByName("ReleaseFloatingIp")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pilab.cloud.vps.v1.VpcService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case VpcServiceCreateVpcProcedure:
@@ -352,10 +420,14 @@ func NewVpcServiceHandler(svc VpcServiceHandler, opts ...connect.HandlerOption) 
 			vpcServiceCreateSubnetHandler.ServeHTTP(w, r)
 		case VpcServiceListSubnetsProcedure:
 			vpcServiceListSubnetsHandler.ServeHTTP(w, r)
+		case VpcServiceDeleteSubnetProcedure:
+			vpcServiceDeleteSubnetHandler.ServeHTTP(w, r)
 		case VpcServiceCreateSecurityGroupProcedure:
 			vpcServiceCreateSecurityGroupHandler.ServeHTTP(w, r)
 		case VpcServiceListSecurityGroupsProcedure:
 			vpcServiceListSecurityGroupsHandler.ServeHTTP(w, r)
+		case VpcServiceDeleteSecurityGroupProcedure:
+			vpcServiceDeleteSecurityGroupHandler.ServeHTTP(w, r)
 		case VpcServiceAllocateFloatingIpProcedure:
 			vpcServiceAllocateFloatingIpHandler.ServeHTTP(w, r)
 		case VpcServiceListFloatingIpsProcedure:
@@ -364,6 +436,8 @@ func NewVpcServiceHandler(svc VpcServiceHandler, opts ...connect.HandlerOption) 
 			vpcServiceAttachFloatingIpHandler.ServeHTTP(w, r)
 		case VpcServiceDetachFloatingIpProcedure:
 			vpcServiceDetachFloatingIpHandler.ServeHTTP(w, r)
+		case VpcServiceReleaseFloatingIpProcedure:
+			vpcServiceReleaseFloatingIpHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -397,12 +471,20 @@ func (UnimplementedVpcServiceHandler) ListSubnets(context.Context, *connect.Requ
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.vps.v1.VpcService.ListSubnets is not implemented"))
 }
 
+func (UnimplementedVpcServiceHandler) DeleteSubnet(context.Context, *connect.Request[v1.DeleteSubnetRequest]) (*connect.Response[v1.DeleteSubnetResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.vps.v1.VpcService.DeleteSubnet is not implemented"))
+}
+
 func (UnimplementedVpcServiceHandler) CreateSecurityGroup(context.Context, *connect.Request[v1.CreateSecurityGroupRequest]) (*connect.Response[v1.CreateSecurityGroupResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.vps.v1.VpcService.CreateSecurityGroup is not implemented"))
 }
 
 func (UnimplementedVpcServiceHandler) ListSecurityGroups(context.Context, *connect.Request[v1.ListSecurityGroupsRequest]) (*connect.Response[v1.ListSecurityGroupsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.vps.v1.VpcService.ListSecurityGroups is not implemented"))
+}
+
+func (UnimplementedVpcServiceHandler) DeleteSecurityGroup(context.Context, *connect.Request[v1.DeleteSecurityGroupRequest]) (*connect.Response[v1.DeleteSecurityGroupResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.vps.v1.VpcService.DeleteSecurityGroup is not implemented"))
 }
 
 func (UnimplementedVpcServiceHandler) AllocateFloatingIp(context.Context, *connect.Request[v1.AllocateFloatingIpRequest]) (*connect.Response[v1.AllocateFloatingIpResponse], error) {
@@ -419,4 +501,8 @@ func (UnimplementedVpcServiceHandler) AttachFloatingIp(context.Context, *connect
 
 func (UnimplementedVpcServiceHandler) DetachFloatingIp(context.Context, *connect.Request[v1.DetachFloatingIpRequest]) (*connect.Response[v1.DetachFloatingIpResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.vps.v1.VpcService.DetachFloatingIp is not implemented"))
+}
+
+func (UnimplementedVpcServiceHandler) ReleaseFloatingIp(context.Context, *connect.Request[v1.ReleaseFloatingIpRequest]) (*connect.Response[v1.ReleaseFloatingIpResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.vps.v1.VpcService.ReleaseFloatingIp is not implemented"))
 }

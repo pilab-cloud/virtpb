@@ -1690,6 +1690,294 @@ func (x *DetachFloatingIpResponse) GetSuccess() bool {
 	return false
 }
 
+type DeleteSubnetRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSubnetRequest) Reset() {
+	*x = DeleteSubnetRequest{}
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSubnetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSubnetRequest) ProtoMessage() {}
+
+func (x *DeleteSubnetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSubnetRequest.ProtoReflect.Descriptor instead.
+func (*DeleteSubnetRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_vps_v1_vpc_service_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *DeleteSubnetRequest) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
+}
+
+func (x *DeleteSubnetRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type DeleteSubnetResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSubnetResponse) Reset() {
+	*x = DeleteSubnetResponse{}
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSubnetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSubnetResponse) ProtoMessage() {}
+
+func (x *DeleteSubnetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSubnetResponse.ProtoReflect.Descriptor instead.
+func (*DeleteSubnetResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_vps_v1_vpc_service_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *DeleteSubnetResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+type DeleteSecurityGroupRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSecurityGroupRequest) Reset() {
+	*x = DeleteSecurityGroupRequest{}
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSecurityGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSecurityGroupRequest) ProtoMessage() {}
+
+func (x *DeleteSecurityGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSecurityGroupRequest.ProtoReflect.Descriptor instead.
+func (*DeleteSecurityGroupRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_vps_v1_vpc_service_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *DeleteSecurityGroupRequest) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
+}
+
+func (x *DeleteSecurityGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type DeleteSecurityGroupResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSecurityGroupResponse) Reset() {
+	*x = DeleteSecurityGroupResponse{}
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSecurityGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSecurityGroupResponse) ProtoMessage() {}
+
+func (x *DeleteSecurityGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSecurityGroupResponse.ProtoReflect.Descriptor instead.
+func (*DeleteSecurityGroupResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_vps_v1_vpc_service_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *DeleteSecurityGroupResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+type ReleaseFloatingIpRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseFloatingIpRequest) Reset() {
+	*x = ReleaseFloatingIpRequest{}
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseFloatingIpRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseFloatingIpRequest) ProtoMessage() {}
+
+func (x *ReleaseFloatingIpRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseFloatingIpRequest.ProtoReflect.Descriptor instead.
+func (*ReleaseFloatingIpRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_vps_v1_vpc_service_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *ReleaseFloatingIpRequest) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
+}
+
+func (x *ReleaseFloatingIpRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type ReleaseFloatingIpResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseFloatingIpResponse) Reset() {
+	*x = ReleaseFloatingIpResponse{}
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseFloatingIpResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseFloatingIpResponse) ProtoMessage() {}
+
+func (x *ReleaseFloatingIpResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_vps_v1_vpc_service_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseFloatingIpResponse.ProtoReflect.Descriptor instead.
+func (*ReleaseFloatingIpResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_vps_v1_vpc_service_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *ReleaseFloatingIpResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
 var File_pilab_vps_v1_vpc_service_proto protoreflect.FileDescriptor
 
 const file_pilab_vps_v1_vpc_service_proto_rawDesc = "" +
@@ -1811,7 +2099,22 @@ const file_pilab_vps_v1_vpc_service_proto_rawDesc = "" +
 	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\"4\n" +
 	"\x18DetachFloatingIpResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xd7\t\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"G\n" +
+	"\x13DeleteSubnetRequest\x12\x1c\n" +
+	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"0\n" +
+	"\x14DeleteSubnetResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"N\n" +
+	"\x1aDeleteSecurityGroupRequest\x12\x1c\n" +
+	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"7\n" +
+	"\x1bDeleteSecurityGroupResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"L\n" +
+	"\x18ReleaseFloatingIpRequest\x12\x1c\n" +
+	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"5\n" +
+	"\x19ReleaseFloatingIpResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess2\xa4\f\n" +
 	"\n" +
 	"VpcService\x12X\n" +
 	"\tCreateVpc\x12$.pilab.cloud.vps.v1.CreateVpcRequest\x1a%.pilab.cloud.vps.v1.CreateVpcResponse\x12O\n" +
@@ -1819,13 +2122,16 @@ const file_pilab_vps_v1_vpc_service_proto_rawDesc = "" +
 	"\bListVpcs\x12#.pilab.cloud.vps.v1.ListVpcsRequest\x1a$.pilab.cloud.vps.v1.ListVpcsResponse\x12X\n" +
 	"\tDeleteVpc\x12$.pilab.cloud.vps.v1.DeleteVpcRequest\x1a%.pilab.cloud.vps.v1.DeleteVpcResponse\x12a\n" +
 	"\fCreateSubnet\x12'.pilab.cloud.vps.v1.CreateSubnetRequest\x1a(.pilab.cloud.vps.v1.CreateSubnetResponse\x12^\n" +
-	"\vListSubnets\x12&.pilab.cloud.vps.v1.ListSubnetsRequest\x1a'.pilab.cloud.vps.v1.ListSubnetsResponse\x12v\n" +
+	"\vListSubnets\x12&.pilab.cloud.vps.v1.ListSubnetsRequest\x1a'.pilab.cloud.vps.v1.ListSubnetsResponse\x12a\n" +
+	"\fDeleteSubnet\x12'.pilab.cloud.vps.v1.DeleteSubnetRequest\x1a(.pilab.cloud.vps.v1.DeleteSubnetResponse\x12v\n" +
 	"\x13CreateSecurityGroup\x12..pilab.cloud.vps.v1.CreateSecurityGroupRequest\x1a/.pilab.cloud.vps.v1.CreateSecurityGroupResponse\x12s\n" +
-	"\x12ListSecurityGroups\x12-.pilab.cloud.vps.v1.ListSecurityGroupsRequest\x1a..pilab.cloud.vps.v1.ListSecurityGroupsResponse\x12s\n" +
+	"\x12ListSecurityGroups\x12-.pilab.cloud.vps.v1.ListSecurityGroupsRequest\x1a..pilab.cloud.vps.v1.ListSecurityGroupsResponse\x12v\n" +
+	"\x13DeleteSecurityGroup\x12..pilab.cloud.vps.v1.DeleteSecurityGroupRequest\x1a/.pilab.cloud.vps.v1.DeleteSecurityGroupResponse\x12s\n" +
 	"\x12AllocateFloatingIp\x12-.pilab.cloud.vps.v1.AllocateFloatingIpRequest\x1a..pilab.cloud.vps.v1.AllocateFloatingIpResponse\x12j\n" +
 	"\x0fListFloatingIps\x12*.pilab.cloud.vps.v1.ListFloatingIpsRequest\x1a+.pilab.cloud.vps.v1.ListFloatingIpsResponse\x12m\n" +
 	"\x10AttachFloatingIp\x12+.pilab.cloud.vps.v1.AttachFloatingIpRequest\x1a,.pilab.cloud.vps.v1.AttachFloatingIpResponse\x12m\n" +
-	"\x10DetachFloatingIp\x12+.pilab.cloud.vps.v1.DetachFloatingIpRequest\x1a,.pilab.cloud.vps.v1.DetachFloatingIpResponseB0Z.go.pilab.hu/cloud/virtpb/v3/pilab/vps/v1;vpsv1b\x06proto3"
+	"\x10DetachFloatingIp\x12+.pilab.cloud.vps.v1.DetachFloatingIpRequest\x1a,.pilab.cloud.vps.v1.DetachFloatingIpResponse\x12p\n" +
+	"\x11ReleaseFloatingIp\x12,.pilab.cloud.vps.v1.ReleaseFloatingIpRequest\x1a-.pilab.cloud.vps.v1.ReleaseFloatingIpResponseB0Z.go.pilab.hu/cloud/virtpb/v3/pilab/vps/v1;vpsv1b\x06proto3"
 
 var (
 	file_pilab_vps_v1_vpc_service_proto_rawDescOnce sync.Once
@@ -1839,7 +2145,7 @@ func file_pilab_vps_v1_vpc_service_proto_rawDescGZIP() []byte {
 	return file_pilab_vps_v1_vpc_service_proto_rawDescData
 }
 
-var file_pilab_vps_v1_vpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_pilab_vps_v1_vpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_pilab_vps_v1_vpc_service_proto_goTypes = []any{
 	(*Vpc)(nil),                         // 0: pilab.cloud.vps.v1.Vpc
 	(*Subnet)(nil),                      // 1: pilab.cloud.vps.v1.Subnet
@@ -1870,10 +2176,16 @@ var file_pilab_vps_v1_vpc_service_proto_goTypes = []any{
 	(*AttachFloatingIpResponse)(nil),    // 26: pilab.cloud.vps.v1.AttachFloatingIpResponse
 	(*DetachFloatingIpRequest)(nil),     // 27: pilab.cloud.vps.v1.DetachFloatingIpRequest
 	(*DetachFloatingIpResponse)(nil),    // 28: pilab.cloud.vps.v1.DetachFloatingIpResponse
-	(*timestamppb.Timestamp)(nil),       // 29: google.protobuf.Timestamp
+	(*DeleteSubnetRequest)(nil),         // 29: pilab.cloud.vps.v1.DeleteSubnetRequest
+	(*DeleteSubnetResponse)(nil),        // 30: pilab.cloud.vps.v1.DeleteSubnetResponse
+	(*DeleteSecurityGroupRequest)(nil),  // 31: pilab.cloud.vps.v1.DeleteSecurityGroupRequest
+	(*DeleteSecurityGroupResponse)(nil), // 32: pilab.cloud.vps.v1.DeleteSecurityGroupResponse
+	(*ReleaseFloatingIpRequest)(nil),    // 33: pilab.cloud.vps.v1.ReleaseFloatingIpRequest
+	(*ReleaseFloatingIpResponse)(nil),   // 34: pilab.cloud.vps.v1.ReleaseFloatingIpResponse
+	(*timestamppb.Timestamp)(nil),       // 35: google.protobuf.Timestamp
 }
 var file_pilab_vps_v1_vpc_service_proto_depIdxs = []int32{
-	29, // 0: pilab.cloud.vps.v1.Vpc.created_at:type_name -> google.protobuf.Timestamp
+	35, // 0: pilab.cloud.vps.v1.Vpc.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 1: pilab.cloud.vps.v1.SecurityGroup.ingress_rules:type_name -> pilab.cloud.vps.v1.SecurityGroupRule
 	2,  // 2: pilab.cloud.vps.v1.SecurityGroup.egress_rules:type_name -> pilab.cloud.vps.v1.SecurityGroupRule
 	0,  // 3: pilab.cloud.vps.v1.CreateVpcResponse.vpc:type_name -> pilab.cloud.vps.v1.Vpc
@@ -1894,26 +2206,32 @@ var file_pilab_vps_v1_vpc_service_proto_depIdxs = []int32{
 	11, // 18: pilab.cloud.vps.v1.VpcService.DeleteVpc:input_type -> pilab.cloud.vps.v1.DeleteVpcRequest
 	13, // 19: pilab.cloud.vps.v1.VpcService.CreateSubnet:input_type -> pilab.cloud.vps.v1.CreateSubnetRequest
 	15, // 20: pilab.cloud.vps.v1.VpcService.ListSubnets:input_type -> pilab.cloud.vps.v1.ListSubnetsRequest
-	17, // 21: pilab.cloud.vps.v1.VpcService.CreateSecurityGroup:input_type -> pilab.cloud.vps.v1.CreateSecurityGroupRequest
-	19, // 22: pilab.cloud.vps.v1.VpcService.ListSecurityGroups:input_type -> pilab.cloud.vps.v1.ListSecurityGroupsRequest
-	21, // 23: pilab.cloud.vps.v1.VpcService.AllocateFloatingIp:input_type -> pilab.cloud.vps.v1.AllocateFloatingIpRequest
-	23, // 24: pilab.cloud.vps.v1.VpcService.ListFloatingIps:input_type -> pilab.cloud.vps.v1.ListFloatingIpsRequest
-	25, // 25: pilab.cloud.vps.v1.VpcService.AttachFloatingIp:input_type -> pilab.cloud.vps.v1.AttachFloatingIpRequest
-	27, // 26: pilab.cloud.vps.v1.VpcService.DetachFloatingIp:input_type -> pilab.cloud.vps.v1.DetachFloatingIpRequest
-	6,  // 27: pilab.cloud.vps.v1.VpcService.CreateVpc:output_type -> pilab.cloud.vps.v1.CreateVpcResponse
-	8,  // 28: pilab.cloud.vps.v1.VpcService.GetVpc:output_type -> pilab.cloud.vps.v1.GetVpcResponse
-	10, // 29: pilab.cloud.vps.v1.VpcService.ListVpcs:output_type -> pilab.cloud.vps.v1.ListVpcsResponse
-	12, // 30: pilab.cloud.vps.v1.VpcService.DeleteVpc:output_type -> pilab.cloud.vps.v1.DeleteVpcResponse
-	14, // 31: pilab.cloud.vps.v1.VpcService.CreateSubnet:output_type -> pilab.cloud.vps.v1.CreateSubnetResponse
-	16, // 32: pilab.cloud.vps.v1.VpcService.ListSubnets:output_type -> pilab.cloud.vps.v1.ListSubnetsResponse
-	18, // 33: pilab.cloud.vps.v1.VpcService.CreateSecurityGroup:output_type -> pilab.cloud.vps.v1.CreateSecurityGroupResponse
-	20, // 34: pilab.cloud.vps.v1.VpcService.ListSecurityGroups:output_type -> pilab.cloud.vps.v1.ListSecurityGroupsResponse
-	22, // 35: pilab.cloud.vps.v1.VpcService.AllocateFloatingIp:output_type -> pilab.cloud.vps.v1.AllocateFloatingIpResponse
-	24, // 36: pilab.cloud.vps.v1.VpcService.ListFloatingIps:output_type -> pilab.cloud.vps.v1.ListFloatingIpsResponse
-	26, // 37: pilab.cloud.vps.v1.VpcService.AttachFloatingIp:output_type -> pilab.cloud.vps.v1.AttachFloatingIpResponse
-	28, // 38: pilab.cloud.vps.v1.VpcService.DetachFloatingIp:output_type -> pilab.cloud.vps.v1.DetachFloatingIpResponse
-	27, // [27:39] is the sub-list for method output_type
-	15, // [15:27] is the sub-list for method input_type
+	29, // 21: pilab.cloud.vps.v1.VpcService.DeleteSubnet:input_type -> pilab.cloud.vps.v1.DeleteSubnetRequest
+	17, // 22: pilab.cloud.vps.v1.VpcService.CreateSecurityGroup:input_type -> pilab.cloud.vps.v1.CreateSecurityGroupRequest
+	19, // 23: pilab.cloud.vps.v1.VpcService.ListSecurityGroups:input_type -> pilab.cloud.vps.v1.ListSecurityGroupsRequest
+	31, // 24: pilab.cloud.vps.v1.VpcService.DeleteSecurityGroup:input_type -> pilab.cloud.vps.v1.DeleteSecurityGroupRequest
+	21, // 25: pilab.cloud.vps.v1.VpcService.AllocateFloatingIp:input_type -> pilab.cloud.vps.v1.AllocateFloatingIpRequest
+	23, // 26: pilab.cloud.vps.v1.VpcService.ListFloatingIps:input_type -> pilab.cloud.vps.v1.ListFloatingIpsRequest
+	25, // 27: pilab.cloud.vps.v1.VpcService.AttachFloatingIp:input_type -> pilab.cloud.vps.v1.AttachFloatingIpRequest
+	27, // 28: pilab.cloud.vps.v1.VpcService.DetachFloatingIp:input_type -> pilab.cloud.vps.v1.DetachFloatingIpRequest
+	33, // 29: pilab.cloud.vps.v1.VpcService.ReleaseFloatingIp:input_type -> pilab.cloud.vps.v1.ReleaseFloatingIpRequest
+	6,  // 30: pilab.cloud.vps.v1.VpcService.CreateVpc:output_type -> pilab.cloud.vps.v1.CreateVpcResponse
+	8,  // 31: pilab.cloud.vps.v1.VpcService.GetVpc:output_type -> pilab.cloud.vps.v1.GetVpcResponse
+	10, // 32: pilab.cloud.vps.v1.VpcService.ListVpcs:output_type -> pilab.cloud.vps.v1.ListVpcsResponse
+	12, // 33: pilab.cloud.vps.v1.VpcService.DeleteVpc:output_type -> pilab.cloud.vps.v1.DeleteVpcResponse
+	14, // 34: pilab.cloud.vps.v1.VpcService.CreateSubnet:output_type -> pilab.cloud.vps.v1.CreateSubnetResponse
+	16, // 35: pilab.cloud.vps.v1.VpcService.ListSubnets:output_type -> pilab.cloud.vps.v1.ListSubnetsResponse
+	30, // 36: pilab.cloud.vps.v1.VpcService.DeleteSubnet:output_type -> pilab.cloud.vps.v1.DeleteSubnetResponse
+	18, // 37: pilab.cloud.vps.v1.VpcService.CreateSecurityGroup:output_type -> pilab.cloud.vps.v1.CreateSecurityGroupResponse
+	20, // 38: pilab.cloud.vps.v1.VpcService.ListSecurityGroups:output_type -> pilab.cloud.vps.v1.ListSecurityGroupsResponse
+	32, // 39: pilab.cloud.vps.v1.VpcService.DeleteSecurityGroup:output_type -> pilab.cloud.vps.v1.DeleteSecurityGroupResponse
+	22, // 40: pilab.cloud.vps.v1.VpcService.AllocateFloatingIp:output_type -> pilab.cloud.vps.v1.AllocateFloatingIpResponse
+	24, // 41: pilab.cloud.vps.v1.VpcService.ListFloatingIps:output_type -> pilab.cloud.vps.v1.ListFloatingIpsResponse
+	26, // 42: pilab.cloud.vps.v1.VpcService.AttachFloatingIp:output_type -> pilab.cloud.vps.v1.AttachFloatingIpResponse
+	28, // 43: pilab.cloud.vps.v1.VpcService.DetachFloatingIp:output_type -> pilab.cloud.vps.v1.DetachFloatingIpResponse
+	34, // 44: pilab.cloud.vps.v1.VpcService.ReleaseFloatingIp:output_type -> pilab.cloud.vps.v1.ReleaseFloatingIpResponse
+	30, // [30:45] is the sub-list for method output_type
+	15, // [15:30] is the sub-list for method input_type
 	15, // [15:15] is the sub-list for extension type_name
 	15, // [15:15] is the sub-list for extension extendee
 	0,  // [0:15] is the sub-list for field type_name
@@ -1930,7 +2248,7 @@ func file_pilab_vps_v1_vpc_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_vps_v1_vpc_service_proto_rawDesc), len(file_pilab_vps_v1_vpc_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   29,
+			NumMessages:   35,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

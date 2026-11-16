@@ -17,14 +17,17 @@ service VpcService {
 
   rpc CreateSubnet(CreateSubnetRequest) returns (CreateSubnetResponse);
   rpc ListSubnets(ListSubnetsRequest) returns (ListSubnetsResponse);
+  rpc DeleteSubnet(DeleteSubnetRequest) returns (DeleteSubnetResponse);
 
   rpc CreateSecurityGroup(CreateSecurityGroupRequest) returns (CreateSecurityGroupResponse);
   rpc ListSecurityGroups(ListSecurityGroupsRequest) returns (ListSecurityGroupsResponse);
+  rpc DeleteSecurityGroup(DeleteSecurityGroupRequest) returns (DeleteSecurityGroupResponse);
 
   rpc AllocateFloatingIp(AllocateFloatingIpRequest) returns (AllocateFloatingIpResponse);
   rpc ListFloatingIps(ListFloatingIpsRequest) returns (ListFloatingIpsResponse);
   rpc AttachFloatingIp(AttachFloatingIpRequest) returns (AttachFloatingIpResponse);
   rpc DetachFloatingIp(DetachFloatingIpRequest) returns (DetachFloatingIpResponse);
+  rpc ReleaseFloatingIp(ReleaseFloatingIpRequest) returns (ReleaseFloatingIpResponse);
 }
 
 message Vpc {
@@ -137,3 +140,12 @@ message AttachFloatingIpResponse { FloatingIp floating_ip = 1; }
 
 message DetachFloatingIpRequest { string namespace = 1; string name = 2; }
 message DetachFloatingIpResponse { bool success = 1; }
+
+message DeleteSubnetRequest { string namespace = 1; string name = 2; }
+message DeleteSubnetResponse { bool success = 1; }
+
+message DeleteSecurityGroupRequest { string namespace = 1; string name = 2; }
+message DeleteSecurityGroupResponse { bool success = 1; }
+
+message ReleaseFloatingIpRequest { string namespace = 1; string name = 2; }
+message ReleaseFloatingIpResponse { bool success = 1; }
