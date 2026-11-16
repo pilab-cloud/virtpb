@@ -276,6 +276,8 @@ type CreateDropletRequest struct {
 	EnableBackups    bool                   `protobuf:"varint,9,opt,name=enable_backups,json=enableBackups,proto3" json:"enable_backups,omitempty"`
 	AllocatePublicIp bool                   `protobuf:"varint,10,opt,name=allocate_public_ip,json=allocatePublicIp,proto3" json:"allocate_public_ip,omitempty"`
 	Tags             []string               `protobuf:"bytes,11,rep,name=tags,proto3" json:"tags,omitempty"`
+	VpcId            string                 `protobuf:"bytes,12,opt,name=vpc_id,json=vpcId,proto3" json:"vpc_id,omitempty"`
+	SubnetId         string                 `protobuf:"bytes,13,opt,name=subnet_id,json=subnetId,proto3" json:"subnet_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -385,6 +387,20 @@ func (x *CreateDropletRequest) GetTags() []string {
 		return x.Tags
 	}
 	return nil
+}
+
+func (x *CreateDropletRequest) GetVpcId() string {
+	if x != nil {
+		return x.VpcId
+	}
+	return ""
+}
+
+func (x *CreateDropletRequest) GetSubnetId() string {
+	if x != nil {
+		return x.SubnetId
+	}
+	return ""
 }
 
 type CreateDropletResponse struct {
@@ -1822,7 +1838,7 @@ const file_pilab_cloud_vps_v1_vps_service_proto_rawDesc = "" +
 	"\x04tags\x18\x10 \x03(\tR\x04tags\x12\x1e\n" +
 	"\vssh_key_ids\x18\x11 \x03(\tR\tsshKeyIds\x129\n" +
 	"\n" +
-	"created_at\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xef\x02\n" +
+	"created_at\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xa3\x03\n" +
 	"\x14CreateDropletRequest\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x12\n" +
@@ -1837,7 +1853,9 @@ const file_pilab_cloud_vps_v1_vps_service_proto_rawDesc = "" +
 	"\x0eenable_backups\x18\t \x01(\bR\renableBackups\x12,\n" +
 	"\x12allocate_public_ip\x18\n" +
 	" \x01(\bR\x10allocatePublicIp\x12\x12\n" +
-	"\x04tags\x18\v \x03(\tR\x04tags\"g\n" +
+	"\x04tags\x18\v \x03(\tR\x04tags\x12\x15\n" +
+	"\x06vpc_id\x18\f \x01(\tR\x05vpcId\x12\x1b\n" +
+	"\tsubnet_id\x18\r \x01(\tR\bsubnetId\"g\n" +
 	"\x15CreateDropletResponse\x125\n" +
 	"\adroplet\x18\x01 \x01(\v2\x1b.pilab.cloud.vps.v1.DropletR\adroplet\x12\x17\n" +
 	"\atask_id\x18\x02 \x01(\tR\x06taskId\"\xda\x01\n" +
