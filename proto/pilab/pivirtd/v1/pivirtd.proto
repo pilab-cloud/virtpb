@@ -239,12 +239,39 @@ message VMInfo {
   int32 max_vcpus = 17;
   bytes yaml_spec = 18;  // Raw hades.VirtualMachine YAML specification
   map<string, string> labels = 19;  // VM metadata labels (key=value pairs)
+  repeated HostPCIDevice host_devices = 20;  // PCI / VFIO passthrough devices
+}
+
+message CPUPinning {
+  int32 vcpu = 1;
+  string cpuset = 2;  // e.g., "0-3", "4,5"
+}
+
+message NUMACellConfig {
+  int32 cell_id = 1;
+  string cpus = 2;  // e.g. "0-1"
+  int64 memory_mb = 3;
+}
+
+message HugePagesConfig {
+  bool enabled = 1;
+  int32 page_size_mb = 2;  // 2 or 1024
+}
+
+message HostPCIDevice {
+  string pci_address = 1;  // "0000:01:00.0"
+  string driver = 2;       // "vfio-pci"
+  string name = 3;         // "NVIDIA A100-PCIE-40GB"
+  bool multifunction = 4;
 }
 
 message CPUConfig {
   string model = 1;  // e.g., "host", "qemu64"
   string topology = 2;  // e.g., "sockets=1,cores=2,threads=1"
   bool nested_virtualization = 3;
+  repeated CPUPinning pinning = 4;
+  repeated NUMACellConfig numa = 5;
+  HugePagesConfig hugepages = 6;
 }
 
 message DiskConfig {

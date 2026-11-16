@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package pilab.cloud.core.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+import "google/protobuf/timestamp.proto";
+
+// ==========================================
+// High Availability (HA) Service (vSphere HA)
+// ==========================================
+service HaService {
+  rpc GetHaConfig(GetHaConfigRequest) returns (GetHaConfigResponse);
+  rpc UpdateHaConfig(UpdateHaConfigRequest) returns (UpdateHaConfigResponse);
+  rpc GetHaClusterStatus(GetHaClusterStatusRequest) returns (GetHaClusterStatusResponse);
+  rpc TriggerHostFailover(TriggerHostFailoverRequest) returns (TriggerHostFailoverResponse);
+  rpc ListFailoverEvents(ListFailoverEventsRequest) returns (ListFailoverEventsResponse);
+}
+
+enum HaRestartPriority {
+  HA_RESTART_PRIORITY_UNSPECIFIED = 0;
+  DISABLED = 1;
+  LOW = 2;
+  MEDIUM = 3;
+  HIGH = 4;
+}
+
+enum FencingMethod {
+  FENCING_METHOD_UNSPECIFIED = 0;
+  STORAGE_LEASE_REVOCATION = 1; // Revoke storage lease (e.g. Ceph RBD exclusive lock)
+  IPMI_POWER_OFF = 2;           // Hardware IPMI power-off or chassis reset
+  OPTIMISTIC = 3;               // Fencing assumed acquired after lease expiration timeout
+}
+
+message HaConfig {
+  string cluster_id = 1;
+  bool enabled = 2;
+  bool host_monitoring = 3;
+  bool admission_control_enabled = 4;
+  uint32 failover_timeout_seconds = 5; // e.g. 15s to 60s
+  HaRestartPriority default_restart_priority = 6;
+  FencingMethod fencing_method = 7;
+  uint32 max_restart_retries = 8;
+}
+
+message FailoverEvent {
+  string id = 1;
+  string cluster_id = 2;
+  string failed_host_id = 3;
+  string target_host_id = 4;
+  string vm_id = 5;
+  string vm_name = 6;
+  string status = 7; // "IN_PROGRESS", "SUCCEEDED", "FAILED"
+  string reason = 8;
+  google.protobuf.Timestamp timestamp = 9;
+}
+
+message HaClusterStatus {
+  string cluster_id = 1;
+  bool enabled = 2;
+  uint32 total_hosts = 3;
+  uint32 healthy_hosts = 4;
+  uint32 degraded_or_dead_hosts = 5;
+  uint32 protected_vms = 6;
+  repeated string dead_hosts = 7;
+  repeated FailoverEvent recent_events = 8;
+}
+
+message GetHaConfigRequest {
+  string cluster_id = 1;
+}
+
+message GetHaConfigResponse {
+  HaConfig config = 1;
+}
+
+message UpdateHaConfigRequest {
+  HaConfig config = 1;
+}
+
+message UpdateHaConfigResponse {
+  HaConfig config = 1;
+}
+
+message GetHaClusterStatusRequest {
+  string cluster_id = 1;
+}
+
+message GetHaClusterStatusResponse {
+  HaClusterStatus status = 1;
+}
+
+message TriggerHostFailoverRequest {
+  string cluster_id = 1;
+  string failed_host_id = 2;
+  bool force = 3;
+}
+
+message TriggerHostFailoverResponse {
+  uint32 vms_evacuated = 1;
+  repeated string failover_task_ids = 2;
+}
+
+message ListFailoverEventsRequest {
+  string cluster_id = 1;
+  uint32 limit = 2;
+}
+
+message ListFailoverEventsResponse {
+  repeated FailoverEvent events = 1;
+}
