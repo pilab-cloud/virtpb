@@ -1,0 +1,369 @@
+syntax = "proto3";
+
+package pilab.core.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+import "google/protobuf/timestamp.proto";
+
+// ==========================================
+// Storage Provisioning Service
+// Manage physical disks, partition tables,
+// LVM (PV/VG/LV), and ZFS (pools/datasets/zvols)
+// ==========================================
+
+enum PartitionTableType {
+  PARTITION_TABLE_TYPE_UNSPECIFIED = 0;
+  PARTITION_TABLE_TYPE_GPT = 1;
+  PARTITION_TABLE_TYPE_MBR = 2;
+}
+
+enum PartitionType {
+  PARTITION_TYPE_UNSPECIFIED = 0;
+  PARTITION_TYPE_LINUX_FS = 1; // 8300 / ext4, xfs
+  PARTITION_TYPE_LINUX_LVM = 2; // 8e00
+  PARTITION_TYPE_LINUX_ZFS = 3; // bf00
+  PARTITION_TYPE_LINUX_SWAP = 4; // 8200
+}
+
+enum FileSystemType {
+  FILE_SYSTEM_TYPE_UNSPECIFIED = 0;
+  FILE_SYSTEM_TYPE_EXT4 = 1;
+  FILE_SYSTEM_TYPE_XFS = 2;
+  FILE_SYSTEM_TYPE_SWAP = 3;
+}
+
+enum ZfsRaidType {
+  ZFS_RAID_TYPE_UNSPECIFIED = 0;
+  ZFS_RAID_TYPE_STRIPE = 1;
+  ZFS_RAID_TYPE_MIRROR = 2;
+  ZFS_RAID_TYPE_RAIDZ1 = 3;
+  ZFS_RAID_TYPE_RAIDZ2 = 4;
+  ZFS_RAID_TYPE_RAIDZ3 = 5;
+}
+
+// ---------------- Block Devices / Disks ----------------
+
+message BlockDevice {
+  string name = 1;              // e.g. "sda", "nvme0n1"
+  string path = 2;              // e.g. "/dev/sda", "/dev/nvme0n1"
+  int64 size_bytes = 3;
+  string size_human = 4;        // e.g. "14.6T", "476.9G"
+  string type = 5;              // "disk", "part", "loop", "lvm", "zfs"
+  string fstype = 6;            // e.g. "ext4", "zfs_member", "LVM2_member"
+  string label = 7;
+  string uuid = 8;
+  repeated string mountpoints = 9;
+  string model = 10;
+  string serial = 11;
+  bool read_only = 12;
+  string partition_table_type = 13; // "gpt", "dos", "unknown"
+  bool is_system_disk = 14;     // true if carries root (/), /boot, or swap
+  repeated BlockDevice children = 15;
+}
+
+message ListDevicesRequest {
+  string node_id = 1;           // Optional: target node ID/hostname. Empty = aggregate all nodes
+}
+
+message ListDevicesResponse {
+  string node_id = 1;
+  string hostname = 2;
+  repeated BlockDevice devices = 3;
+}
+
+message InitializeDiskRequest {
+  string node_id = 1;
+  string device = 2;            // e.g. "/dev/sda"
+  PartitionTableType table_type = 3; // GPT or MBR
+  bool wipe_existing = 4;       // run wipefs first
+}
+
+message InitializeDiskResponse {
+  bool success = 1;
+  string message = 2;
+  string device = 3;
+}
+
+message WipeDiskRequest {
+  string node_id = 1;
+  string device = 2;            // e.g. "/dev/sda"
+}
+
+message WipeDiskResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ---------------- Partitions ----------------
+
+message CreatePartitionRequest {
+  string node_id = 1;
+  string device = 2;            // e.g. "/dev/sda"
+  PartitionType partition_type = 3;
+  int64 size_mb = 4;            // 0 = allocate all remaining free space
+  string name = 5;              // partition label/name
+}
+
+message CreatePartitionResponse {
+  bool success = 1;
+  string message = 2;
+  string partition_device = 3;  // e.g. "/dev/sda1"
+  uint32 partition_number = 4;
+}
+
+message DeletePartitionRequest {
+  string node_id = 1;
+  string device = 2;            // disk e.g. "/dev/sda" or partition "/dev/sda1"
+  uint32 partition_number = 3;  // optional if partition device provided
+}
+
+message DeletePartitionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message FormatPartitionRequest {
+  string node_id = 1;
+  string device = 2;            // e.g. "/dev/sda1"
+  FileSystemType fs_type = 3;   // EXT4, XFS
+  string label = 4;
+}
+
+message FormatPartitionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ---------------- LVM ----------------
+
+message LvmPv {
+  string name = 1;              // e.g. "/dev/sda2"
+  string vg_name = 2;
+  int64 size_bytes = 3;
+  int64 free_bytes = 4;
+}
+
+message LvmVg {
+  string name = 1;              // e.g. "vg_data"
+  int64 size_bytes = 2;
+  int64 free_bytes = 3;
+  uint32 pv_count = 4;
+  uint32 lv_count = 5;
+}
+
+message LvmLv {
+  string name = 1;              // e.g. "lv_vms"
+  string vg_name = 2;
+  string path = 3;              // e.g. "/dev/vg_data/lv_vms"
+  int64 size_bytes = 4;
+  string pool_name = 5;
+  bool is_thin = 6;
+}
+
+message ListLvmRequest {
+  string node_id = 1;
+}
+
+message ListLvmResponse {
+  string node_id = 1;
+  repeated LvmPv pvs = 2;
+  repeated LvmVg vgs = 3;
+  repeated LvmLv lvs = 4;
+}
+
+message CreateLvmPvRequest {
+  string node_id = 1;
+  string device = 2;            // e.g. "/dev/sda2"
+}
+
+message CreateLvmPvResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RemoveLvmPvRequest {
+  string node_id = 1;
+  string device = 2;
+}
+
+message RemoveLvmPvResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CreateLvmVgRequest {
+  string node_id = 1;
+  string vg_name = 2;
+  repeated string devices = 3;  // PV devices e.g. ["/dev/sda2"]
+}
+
+message CreateLvmVgResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RemoveLvmVgRequest {
+  string node_id = 1;
+  string vg_name = 2;
+}
+
+message RemoveLvmVgResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CreateLvmLvRequest {
+  string node_id = 1;
+  string vg_name = 2;
+  string lv_name = 3;
+  int64 size_mb = 4;
+  bool is_thin = 5;
+  string thin_pool_name = 6;
+}
+
+message CreateLvmLvResponse {
+  bool success = 1;
+  string message = 2;
+  string lv_path = 3;
+}
+
+message RemoveLvmLvRequest {
+  string node_id = 1;
+  string vg_name = 2;
+  string lv_name = 3;
+}
+
+message RemoveLvmLvResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ---------------- ZFS ----------------
+
+message ZfsPool {
+  string name = 1;              // e.g. "tank", "bulk"
+  string state = 2;             // ONLINE, DEGRADED, FAULTED
+  int64 size_bytes = 3;
+  int64 alloc_bytes = 4;
+  int64 free_bytes = 5;
+  string health = 6;
+  string mountpoint = 7;
+  repeated string vdevs = 8;
+  string scan_status = 9;
+}
+
+message ZfsDataset {
+  string name = 1;              // e.g. "tank/vms", "bulk/images"
+  string pool = 2;
+  string type = 3;              // "filesystem", "volume"
+  string mountpoint = 4;
+  int64 used_bytes = 5;
+  int64 avail_bytes = 6;
+  string compression = 7;
+}
+
+message ListZfsRequest {
+  string node_id = 1;
+}
+
+message ListZfsResponse {
+  string node_id = 1;
+  repeated ZfsPool pools = 2;
+  repeated ZfsDataset datasets = 3;
+}
+
+message CreateZpoolRequest {
+  string node_id = 1;
+  string pool_name = 2;
+  ZfsRaidType raid_type = 3;    // STRIPE, MIRROR, RAIDZ1, RAIDZ2
+  repeated string devices = 4;  // e.g. ["/dev/sdb1"] or ["/dev/sda", "/dev/sdb"]
+  string mountpoint = 5;        // e.g. "/tank" or "none"
+  uint32 ashift = 6;            // default 12 (4K sectors)
+  map<string, string> properties = 7; // e.g. compression=zstd
+}
+
+message CreateZpoolResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DestroyZpoolRequest {
+  string node_id = 1;
+  string pool_name = 2;
+  bool force = 3;
+}
+
+message DestroyZpoolResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CreateZfsDatasetRequest {
+  string node_id = 1;
+  string dataset_name = 2;      // e.g. "tank/vms"
+  string mountpoint = 3;
+  map<string, string> properties = 4; // e.g. compression=zstd
+}
+
+message CreateZfsDatasetResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DestroyZfsDatasetRequest {
+  string node_id = 1;
+  string dataset_name = 2;
+  bool recursive = 3;
+}
+
+message DestroyZfsDatasetResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CreateZfsZvolRequest {
+  string node_id = 1;
+  string pool_name = 2;         // e.g. "tank"
+  string zvol_name = 3;         // e.g. "vm-disk-100"
+  int64 size_mb = 4;
+  string blocksize = 5;         // default "64k"
+  bool sparse = 6;              // thin-provisioned
+}
+
+message CreateZfsZvolResponse {
+  bool success = 1;
+  string message = 2;
+  string zvol_device = 3;       // e.g. "/dev/zvol/tank/vm-disk-100"
+}
+
+// ---------------- Service ----------------
+
+service StorageProvisioningService {
+  // Physical Devices & Disks
+  rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse);
+  rpc InitializeDisk(InitializeDiskRequest) returns (InitializeDiskResponse);
+  rpc WipeDisk(WipeDiskRequest) returns (WipeDiskResponse);
+
+  // Partitions & Filesystems
+  rpc CreatePartition(CreatePartitionRequest) returns (CreatePartitionResponse);
+  rpc DeletePartition(DeletePartitionRequest) returns (DeletePartitionResponse);
+  rpc FormatPartition(FormatPartitionRequest) returns (FormatPartitionResponse);
+
+  // LVM
+  rpc ListLvm(ListLvmRequest) returns (ListLvmResponse);
+  rpc CreateLvmPv(CreateLvmPvRequest) returns (CreateLvmPvResponse);
+  rpc RemoveLvmPv(RemoveLvmPvRequest) returns (RemoveLvmPvResponse);
+  rpc CreateLvmVg(CreateLvmVgRequest) returns (CreateLvmVgResponse);
+  rpc RemoveLvmVg(RemoveLvmVgRequest) returns (RemoveLvmVgResponse);
+  rpc CreateLvmLv(CreateLvmLvRequest) returns (CreateLvmLvResponse);
+  rpc RemoveLvmLv(RemoveLvmLvRequest) returns (RemoveLvmLvResponse);
+
+  // ZFS
+  rpc ListZfs(ListZfsRequest) returns (ListZfsResponse);
+  rpc CreateZpool(CreateZpoolRequest) returns (CreateZpoolResponse);
+  rpc DestroyZpool(DestroyZpoolRequest) returns (DestroyZpoolResponse);
+  rpc CreateZfsDataset(CreateZfsDatasetRequest) returns (CreateZfsDatasetResponse);
+  rpc DestroyZfsDataset(DestroyZfsDatasetRequest) returns (DestroyZfsDatasetResponse);
+  rpc CreateZfsZvol(CreateZfsZvolRequest) returns (CreateZfsZvolResponse);
+}
