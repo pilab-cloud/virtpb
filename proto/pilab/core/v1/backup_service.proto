@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package pilab.cloud.core.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+import "google/protobuf/timestamp.proto";
+
+// ==========================================
+// Backup & Changed Block Tracking (CBT) Service (VADP / PBS equivalent)
+// ==========================================
+service BackupService {
+  // CBT Management
+  rpc EnableCBT(EnableCBTRequest) returns (EnableCBTResponse);
+  rpc DisableCBT(DisableCBTRequest) returns (DisableCBTResponse);
+  rpc GetCBTStatus(GetCBTStatusRequest) returns (GetCBTStatusResponse);
+
+  // Backup Execution & Lifecycle
+  rpc CreateBackup(CreateBackupRequest) returns (CreateBackupResponse);
+  rpc ListBackups(ListBackupsRequest) returns (ListBackupsResponse);
+  rpc RestoreBackup(RestoreBackupRequest) returns (RestoreBackupResponse);
+  rpc DeleteBackup(DeleteBackupRequest) returns (DeleteBackupResponse);
+}
+
+enum BackupType {
+  BACKUP_TYPE_UNSPECIFIED = 0;
+  FULL = 1;
+  INCREMENTAL = 2;
+}
+
+enum BackupStorageType {
+  BACKUP_STORAGE_UNSPECIFIED = 0;
+  LOCAL_DIR = 1;
+  NFS = 2;
+  S3_MINIO = 3;
+}
+
+message CBTBitmapInfo {
+  string name = 1;
+  uint64 dirty_bytes = 2;
+  uint32 granularity_bytes = 3; // Typically 65536 (64 KiB)
+  bool persistent = 4;
+}
+
+message CBTStatus {
+  string vm_id = 1;
+  string disk_device = 2;
+  bool enabled = 3;
+  repeated CBTBitmapInfo bitmaps = 4;
+}
+
+message BackupRecord {
+  string id = 1;
+  string vm_id = 2;
+  string vm_name = 3;
+  string disk_device = 4;
+  BackupType type = 5;
+  BackupStorageType storage_type = 6;
+  string target_uri = 7;
+  string parent_backup_id = 8; // If incremental
+  uint64 total_bytes = 9;
+  uint64 backup_size_bytes = 10;
+  string status = 11; // "PENDING", "IN_PROGRESS", "COMPLETED", "FAILED"
+  string checksum = 12; // SHA-256
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp completed_at = 14;
+}
+
+message EnableCBTRequest {
+  string vm_id = 1;
+  string disk_device = 2; // e.g. "vda" or volume ID
+}
+
+message EnableCBTResponse {
+  CBTStatus status = 1;
+}
+
+message DisableCBTRequest {
+  string vm_id = 1;
+  string disk_device = 2;
+}
+
+message DisableCBTResponse {
+  bool success = 1;
+}
+
+message GetCBTStatusRequest {
+  string vm_id = 1;
+  string disk_device = 2;
+}
+
+message GetCBTStatusResponse {
+  CBTStatus status = 1;
+}
+
+message CreateBackupRequest {
+  string vm_id = 1;
+  string disk_device = 2;
+  BackupType type = 3;
+  BackupStorageType storage_type = 4;
+  string target_path = 5; // e.g. "/mnt/backups/nfs" or "s3://backups/vms"
+  bool quiesce_filesystem = 6; // Issue guest-fsfreeze before taking backup snapshot
+}
+
+message CreateBackupResponse {
+  string task_id = 1;
+  BackupRecord backup = 2;
+}
+
+message ListBackupsRequest {
+  string vm_id = 1;
+}
+
+message ListBackupsResponse {
+  repeated BackupRecord backups = 1;
+}
+
+message RestoreBackupRequest {
+  string backup_id = 1;
+  string target_vm_id = 2;
+  string target_disk_device = 3;
+}
+
+message RestoreBackupResponse {
+  string task_id = 1;
+  string status = 2;
+}
+
+message DeleteBackupRequest {
+  string backup_id = 1;
+}
+
+message DeleteBackupResponse {
+  bool success = 1;
+}
