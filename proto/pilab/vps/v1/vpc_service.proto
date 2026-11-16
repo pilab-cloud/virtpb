@@ -36,11 +36,17 @@ message Vpc {
   string namespace = 3;            // "org/project"
   string cidr = 4;                 // e.g. "10.42.0.0/16"
   repeated string dns = 5;
-  uint32 vni = 6;                  // VXLAN Network Identifier (e.g. 10042)
+  uint32 vni = 6;                  // Overlay Network Identifier (e.g. 10042)
   string router_node = 7;
   string bridge = 8;               // "br-vpc10042"
   string phase = 9;                // "Pending", "Ready", "Degraded"
   google.protobuf.Timestamp created_at = 10;
+  string segmentation_type = 11;   // "GENEVE", "VXLAN", "VLAN", "FLAT"
+  uint32 segmentation_id = 12;
+  string physical_network = 13;
+  uint32 mtu = 14;
+  bool hardware_offload_enabled = 15;
+  string sdn_driver = 16;          // "ebpf-bgp" or "ovs"
 }
 
 message Subnet {
@@ -84,6 +90,12 @@ message CreateVpcRequest {
   string name = 2;
   string cidr = 3;
   repeated string dns = 4;
+  string segmentation_type = 5;
+  uint32 segmentation_id = 6;
+  string physical_network = 7;
+  uint32 mtu = 8;
+  bool hardware_offload_enabled = 9;
+  string sdn_driver = 10;
 }
 message CreateVpcResponse { Vpc vpc = 1; }
 

@@ -1,0 +1,190 @@
+syntax = "proto3";
+
+package pilab.core.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+import "google/protobuf/timestamp.proto";
+
+// ==========================================
+// Linux Kernel GENEVE + eBPF/Netlink + BGP SDN Service
+// ==========================================
+
+enum SdnDriver {
+  SDN_DRIVER_UNSPECIFIED = 0;
+  SDN_DRIVER_LEGACY_OVS = 1;
+  SDN_DRIVER_KERNEL_EBPF_BGP = 2;
+}
+
+enum BgpSessionState {
+  BGP_SESSION_STATE_UNSPECIFIED = 0;
+  BGP_SESSION_STATE_IDLE = 1;
+  BGP_SESSION_STATE_CONNECT = 2;
+  BGP_SESSION_STATE_ACTIVE = 3;
+  BGP_SESSION_STATE_OPENSENT = 4;
+  BGP_SESSION_STATE_OPENCONFIRM = 5;
+  BGP_SESSION_STATE_ESTABLISHED = 6;
+}
+
+enum EbpfHookMode {
+  EBPF_HOOK_TC_INGRESS_EGRESS = 0;
+  EBPF_HOOK_XDP_DRIVER = 1;
+  EBPF_HOOK_XDP_GENERIC = 2;
+}
+
+enum EvpnRouteType {
+  EVPN_ROUTE_TYPE_UNSPECIFIED = 0;
+  EVPN_ROUTE_TYPE_ETHERNET_AUTO_DISCOVERY = 1;
+  EVPN_ROUTE_TYPE_MAC_IP_ADVERTISEMENT = 2; // Type-2
+  EVPN_ROUTE_TYPE_INCLUSIVE_MULTICAST = 3;   // Type-3
+  EVPN_ROUTE_TYPE_ETHERNET_SEGMENT = 4;      // Type-4
+  EVPN_ROUTE_TYPE_IP_PREFIX = 5;             // Type-5
+}
+
+message BgpNeighbor {
+  string peer_address = 1;
+  uint32 peer_asn = 2;
+  string description = 3;
+  BgpSessionState session_state = 4;
+  uint32 hold_time_seconds = 5;
+  uint32 keepalive_time_seconds = 6;
+  int64 uptime_seconds = 7;
+  uint32 routes_received = 8;
+  uint32 routes_advertised = 9;
+}
+
+message BgpSdnConfig {
+  SdnDriver sdn_driver = 1;
+  uint32 local_asn = 2;
+  string router_id = 3;
+  string geneve_device = 4; // default "geneve-ext" (external/collect_metadata mode)
+  uint32 geneve_port = 5;   // default 6081 (RFC 8926)
+  EbpfHookMode ebpf_hook_mode = 6;
+  bool hardware_offload_enabled = 7;
+  repeated BgpNeighbor peers = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message NodeVtep {
+  string node_id = 1;
+  string hostname = 2;
+  string underlay_ip = 3;
+  bool geneve_external_ready = 4;
+  repeated string ebpf_programs_loaded = 5;
+  BgpSessionState bgp_session_state = 6;
+  uint32 active_tap_hooks_count = 7;
+  google.protobuf.Timestamp last_heartbeat = 8;
+}
+
+message EvpnRoute {
+  EvpnRouteType route_type = 1;
+  uint32 vni = 2;
+  string mac_address = 3;
+  string ip_address = 4;
+  uint32 prefix_len = 5;
+  string next_hop_vtep = 6;
+  string originator_node_id = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message EbpfPortHookInfo {
+  string tap_name = 1;
+  string vm_id = 2;
+  uint32 vni = 3;
+  string mac_address = 4;
+  string ip_address = 5;
+  uint32 conntrack_entries_count = 6;
+  uint64 packets_forwarded = 7;
+  uint64 bytes_forwarded = 8;
+  uint64 packets_dropped = 9;
+}
+
+message VpcMigrationPlan {
+  string vpc_name = 1;
+  string namespace = 2;
+  SdnDriver current_sdn_driver = 3;
+  SdnDriver target_sdn_driver = 4;
+  repeated string affected_vms = 5;
+  repeated string cutover_steps = 6;
+  uint32 estimated_downtime_ms = 7;
+}
+
+// Request & Response Messages
+
+message GetConfigRequest {}
+message GetConfigResponse {
+  BgpSdnConfig config = 1;
+}
+
+message UpdateConfigRequest {
+  BgpSdnConfig config = 1;
+}
+message UpdateConfigResponse {
+  BgpSdnConfig config = 1;
+}
+
+message RegisterVtepRequest {
+  NodeVtep vtep = 1;
+}
+message RegisterVtepResponse {
+  bool success = 1;
+  string node_id = 2;
+}
+
+message ListVtepsRequest {}
+message ListVtepsResponse {
+  repeated NodeVtep vteps = 1;
+}
+
+message GetVtepRequest {
+  string node_id = 1;
+}
+message GetVtepResponse {
+  NodeVtep vtep = 1;
+}
+
+message ListEvpnRoutesRequest {
+  uint32 vni = 1;
+}
+message ListEvpnRoutesResponse {
+  repeated EvpnRoute routes = 1;
+}
+
+message GetPortHookInfoRequest {
+  string tap_name = 1;
+}
+message GetPortHookInfoResponse {
+  EbpfPortHookInfo hook_info = 1;
+}
+
+message PlanVpcMigrationRequest {
+  string namespace = 1;
+  string vpc_name = 2;
+  SdnDriver target_driver = 3;
+}
+message PlanVpcMigrationResponse {
+  VpcMigrationPlan plan = 1;
+}
+
+message ExecuteVpcMigrationRequest {
+  string namespace = 1;
+  string vpc_name = 2;
+  SdnDriver target_driver = 3;
+}
+message ExecuteVpcMigrationResponse {
+  bool success = 1;
+  string phase = 2;
+  repeated string logs = 3;
+}
+
+service BgpSdnService {
+  rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
+  rpc UpdateConfig(UpdateConfigRequest) returns (UpdateConfigResponse);
+  rpc RegisterVtep(RegisterVtepRequest) returns (RegisterVtepResponse);
+  rpc ListVteps(ListVtepsRequest) returns (ListVtepsResponse);
+  rpc GetVtep(GetVtepRequest) returns (GetVtepResponse);
+  rpc ListEvpnRoutes(ListEvpnRoutesRequest) returns (ListEvpnRoutesResponse);
+  rpc GetPortHookInfo(GetPortHookInfoRequest) returns (GetPortHookInfoResponse);
+  rpc PlanVpcMigration(PlanVpcMigrationRequest) returns (PlanVpcMigrationResponse);
+  rpc ExecuteVpcMigration(ExecuteVpcMigrationRequest) returns (ExecuteVpcMigrationResponse);
+}

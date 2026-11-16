@@ -23,19 +23,25 @@ const (
 )
 
 type Vpc struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Namespace     string                 `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"` // "org/project"
-	Cidr          string                 `protobuf:"bytes,4,opt,name=cidr,proto3" json:"cidr,omitempty"`           // e.g. "10.42.0.0/16"
-	Dns           []string               `protobuf:"bytes,5,rep,name=dns,proto3" json:"dns,omitempty"`
-	Vni           uint32                 `protobuf:"varint,6,opt,name=vni,proto3" json:"vni,omitempty"` // VXLAN Network Identifier (e.g. 10042)
-	RouterNode    string                 `protobuf:"bytes,7,opt,name=router_node,json=routerNode,proto3" json:"router_node,omitempty"`
-	Bridge        string                 `protobuf:"bytes,8,opt,name=bridge,proto3" json:"bridge,omitempty"` // "br-vpc10042"
-	Phase         string                 `protobuf:"bytes,9,opt,name=phase,proto3" json:"phase,omitempty"`   // "Pending", "Ready", "Degraded"
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	Id                     string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                   string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Namespace              string                 `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"` // "org/project"
+	Cidr                   string                 `protobuf:"bytes,4,opt,name=cidr,proto3" json:"cidr,omitempty"`           // e.g. "10.42.0.0/16"
+	Dns                    []string               `protobuf:"bytes,5,rep,name=dns,proto3" json:"dns,omitempty"`
+	Vni                    uint32                 `protobuf:"varint,6,opt,name=vni,proto3" json:"vni,omitempty"` // Overlay Network Identifier (e.g. 10042)
+	RouterNode             string                 `protobuf:"bytes,7,opt,name=router_node,json=routerNode,proto3" json:"router_node,omitempty"`
+	Bridge                 string                 `protobuf:"bytes,8,opt,name=bridge,proto3" json:"bridge,omitempty"` // "br-vpc10042"
+	Phase                  string                 `protobuf:"bytes,9,opt,name=phase,proto3" json:"phase,omitempty"`   // "Pending", "Ready", "Degraded"
+	CreatedAt              *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	SegmentationType       string                 `protobuf:"bytes,11,opt,name=segmentation_type,json=segmentationType,proto3" json:"segmentation_type,omitempty"` // "GENEVE", "VXLAN", "VLAN", "FLAT"
+	SegmentationId         uint32                 `protobuf:"varint,12,opt,name=segmentation_id,json=segmentationId,proto3" json:"segmentation_id,omitempty"`
+	PhysicalNetwork        string                 `protobuf:"bytes,13,opt,name=physical_network,json=physicalNetwork,proto3" json:"physical_network,omitempty"`
+	Mtu                    uint32                 `protobuf:"varint,14,opt,name=mtu,proto3" json:"mtu,omitempty"`
+	HardwareOffloadEnabled bool                   `protobuf:"varint,15,opt,name=hardware_offload_enabled,json=hardwareOffloadEnabled,proto3" json:"hardware_offload_enabled,omitempty"`
+	SdnDriver              string                 `protobuf:"bytes,16,opt,name=sdn_driver,json=sdnDriver,proto3" json:"sdn_driver,omitempty"` // "ebpf-bgp" or "ovs"
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Vpc) Reset() {
@@ -136,6 +142,48 @@ func (x *Vpc) GetCreatedAt() *timestamppb.Timestamp {
 		return x.CreatedAt
 	}
 	return nil
+}
+
+func (x *Vpc) GetSegmentationType() string {
+	if x != nil {
+		return x.SegmentationType
+	}
+	return ""
+}
+
+func (x *Vpc) GetSegmentationId() uint32 {
+	if x != nil {
+		return x.SegmentationId
+	}
+	return 0
+}
+
+func (x *Vpc) GetPhysicalNetwork() string {
+	if x != nil {
+		return x.PhysicalNetwork
+	}
+	return ""
+}
+
+func (x *Vpc) GetMtu() uint32 {
+	if x != nil {
+		return x.Mtu
+	}
+	return 0
+}
+
+func (x *Vpc) GetHardwareOffloadEnabled() bool {
+	if x != nil {
+		return x.HardwareOffloadEnabled
+	}
+	return false
+}
+
+func (x *Vpc) GetSdnDriver() string {
+	if x != nil {
+		return x.SdnDriver
+	}
+	return ""
 }
 
 type Subnet struct {
@@ -475,13 +523,19 @@ func (x *FloatingIp) GetPhase() string {
 }
 
 type CreateVpcRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Namespace     string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Cidr          string                 `protobuf:"bytes,3,opt,name=cidr,proto3" json:"cidr,omitempty"`
-	Dns           []string               `protobuf:"bytes,4,rep,name=dns,proto3" json:"dns,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	Namespace              string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Name                   string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Cidr                   string                 `protobuf:"bytes,3,opt,name=cidr,proto3" json:"cidr,omitempty"`
+	Dns                    []string               `protobuf:"bytes,4,rep,name=dns,proto3" json:"dns,omitempty"`
+	SegmentationType       string                 `protobuf:"bytes,5,opt,name=segmentation_type,json=segmentationType,proto3" json:"segmentation_type,omitempty"`
+	SegmentationId         uint32                 `protobuf:"varint,6,opt,name=segmentation_id,json=segmentationId,proto3" json:"segmentation_id,omitempty"`
+	PhysicalNetwork        string                 `protobuf:"bytes,7,opt,name=physical_network,json=physicalNetwork,proto3" json:"physical_network,omitempty"`
+	Mtu                    uint32                 `protobuf:"varint,8,opt,name=mtu,proto3" json:"mtu,omitempty"`
+	HardwareOffloadEnabled bool                   `protobuf:"varint,9,opt,name=hardware_offload_enabled,json=hardwareOffloadEnabled,proto3" json:"hardware_offload_enabled,omitempty"`
+	SdnDriver              string                 `protobuf:"bytes,10,opt,name=sdn_driver,json=sdnDriver,proto3" json:"sdn_driver,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CreateVpcRequest) Reset() {
@@ -540,6 +594,48 @@ func (x *CreateVpcRequest) GetDns() []string {
 		return x.Dns
 	}
 	return nil
+}
+
+func (x *CreateVpcRequest) GetSegmentationType() string {
+	if x != nil {
+		return x.SegmentationType
+	}
+	return ""
+}
+
+func (x *CreateVpcRequest) GetSegmentationId() uint32 {
+	if x != nil {
+		return x.SegmentationId
+	}
+	return 0
+}
+
+func (x *CreateVpcRequest) GetPhysicalNetwork() string {
+	if x != nil {
+		return x.PhysicalNetwork
+	}
+	return ""
+}
+
+func (x *CreateVpcRequest) GetMtu() uint32 {
+	if x != nil {
+		return x.Mtu
+	}
+	return 0
+}
+
+func (x *CreateVpcRequest) GetHardwareOffloadEnabled() bool {
+	if x != nil {
+		return x.HardwareOffloadEnabled
+	}
+	return false
+}
+
+func (x *CreateVpcRequest) GetSdnDriver() string {
+	if x != nil {
+		return x.SdnDriver
+	}
+	return ""
 }
 
 type CreateVpcResponse struct {
@@ -1982,7 +2078,7 @@ var File_pilab_vps_v1_vpc_service_proto protoreflect.FileDescriptor
 
 const file_pilab_vps_v1_vpc_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1epilab/vps/v1/vpc_service.proto\x12\x12pilab.cloud.vps.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x89\x02\n" +
+	"\x1epilab/vps/v1/vpc_service.proto\x12\x12pilab.cloud.vps.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf5\x03\n" +
 	"\x03Vpc\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1c\n" +
@@ -1996,7 +2092,14 @@ const file_pilab_vps_v1_vpc_service_proto_rawDesc = "" +
 	"\x05phase\x18\t \x01(\tR\x05phase\x129\n" +
 	"\n" +
 	"created_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xb6\x01\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12+\n" +
+	"\x11segmentation_type\x18\v \x01(\tR\x10segmentationType\x12'\n" +
+	"\x0fsegmentation_id\x18\f \x01(\rR\x0esegmentationId\x12)\n" +
+	"\x10physical_network\x18\r \x01(\tR\x0fphysicalNetwork\x12\x10\n" +
+	"\x03mtu\x18\x0e \x01(\rR\x03mtu\x128\n" +
+	"\x18hardware_offload_enabled\x18\x0f \x01(\bR\x16hardwareOffloadEnabled\x12\x1d\n" +
+	"\n" +
+	"sdn_driver\x18\x10 \x01(\tR\tsdnDriver\"\xb6\x01\n" +
 	"\x06Subnet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1c\n" +
@@ -2028,12 +2131,20 @@ const file_pilab_vps_v1_vpc_service_proto_rawDesc = "" +
 	"\x04pool\x18\x05 \x01(\tR\x04pool\x12$\n" +
 	"\x0eattached_vm_id\x18\x06 \x01(\tR\fattachedVmId\x12-\n" +
 	"\x12attached_interface\x18\a \x01(\rR\x11attachedInterface\x12\x14\n" +
-	"\x05phase\x18\b \x01(\tR\x05phase\"j\n" +
+	"\x05phase\x18\b \x01(\tR\x05phase\"\xd6\x02\n" +
 	"\x10CreateVpcRequest\x12\x1c\n" +
 	"\tnamespace\x18\x01 \x01(\tR\tnamespace\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04cidr\x18\x03 \x01(\tR\x04cidr\x12\x10\n" +
-	"\x03dns\x18\x04 \x03(\tR\x03dns\">\n" +
+	"\x03dns\x18\x04 \x03(\tR\x03dns\x12+\n" +
+	"\x11segmentation_type\x18\x05 \x01(\tR\x10segmentationType\x12'\n" +
+	"\x0fsegmentation_id\x18\x06 \x01(\rR\x0esegmentationId\x12)\n" +
+	"\x10physical_network\x18\a \x01(\tR\x0fphysicalNetwork\x12\x10\n" +
+	"\x03mtu\x18\b \x01(\rR\x03mtu\x128\n" +
+	"\x18hardware_offload_enabled\x18\t \x01(\bR\x16hardwareOffloadEnabled\x12\x1d\n" +
+	"\n" +
+	"sdn_driver\x18\n" +
+	" \x01(\tR\tsdnDriver\">\n" +
 	"\x11CreateVpcResponse\x12)\n" +
 	"\x03vpc\x18\x01 \x01(\v2\x17.pilab.cloud.vps.v1.VpcR\x03vpc\"A\n" +
 	"\rGetVpcRequest\x12\x1c\n" +
