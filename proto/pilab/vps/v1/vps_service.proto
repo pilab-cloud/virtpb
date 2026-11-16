@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package pilab.cloud.vps.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/vps/v1;vpsv1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// ==========================================
+// Droplet Management
+// ==========================================
+service DropletService {
+  rpc CreateDroplet(CreateDropletRequest) returns (CreateDropletResponse);
+  rpc GetDroplet(GetDropletRequest) returns (GetDropletResponse);
+  rpc ListDroplets(ListDropletsRequest) returns (ListDropletsResponse);
+  rpc DeleteDroplet(DeleteDropletRequest) returns (DeleteDropletResponse);
+
+  // Power actions (Start, Shutdown, PowerOff, Reboot, Reset)
+  rpc PowerAction(PowerActionRequest) returns (PowerActionResponse);
+
+  // Cloud actions
+  rpc ResizeDroplet(ResizeDropletRequest) returns (ResizeDropletResponse);
+  rpc RebuildDroplet(RebuildDropletRequest) returns (RebuildDropletResponse);
+  rpc CreateSnapshot(CreateSnapshotRequest) returns (CreateSnapshotResponse);
+  rpc RestoreSnapshot(RestoreSnapshotRequest) returns (RestoreSnapshotResponse);
+
+  // Web console access (noVNC / xterm)
+  rpc GetConsoleTicket(GetConsoleTicketRequest) returns (GetConsoleTicketResponse);
+}
+
+message Droplet {
+  string id = 1;
+  string name = 2;
+  string project_id = 3;
+  string cluster_id = 4;           // Target VPS Cluster/Region
+  string plan_id = 5;              // e.g. "s-2vcpu-4gb"
+  string image_id = 6;             // e.g. "ubuntu-24-04-x64"
+  string status = 7;               // PROVISIONING, ACTIVE, STOPPED, MIGRATING, ERROR
+  
+  // Network allocations
+  string private_ip = 8;
+  string public_ip = 9;            // Optional floating/public IP
+  string vpc_id = 10;
+  
+  // Hardware guarantees
+  uint32 vcpus = 11;
+  uint64 memory_mb = 12;
+  uint64 disk_gb = 13;
+  string iops_profile = 14;        // Enforced via QEMU throttle-group
+  string qos_profile = 15;         // Enforced via tc / OVS QoS
+
+  repeated string tags = 16;
+  repeated string ssh_key_ids = 17;
+  google.protobuf.Timestamp created_at = 18;
+}
+
+message CreateDropletRequest {
+  string project_id = 1;
+  string name = 2;
+  string cluster_id = 3;           // VPS cluster/region
+  string plan_id = 4;              // e.g. "s-2vcpu-4gb"
+  string image_id = 5;             // OS image
+  repeated string ssh_key_ids = 6;
+  string user_data = 7;            // cloud-init user-data script
+  bool enable_monitoring = 8;
+  bool enable_backups = 9;
+  bool allocate_public_ip = 10;
+  repeated string tags = 11;
+  string vpc_id = 12;
+  string subnet_id = 13;
+}
+
+message CreateDropletResponse {
+  Droplet droplet = 1;
+  string task_id = 2;              // Async operation tracking ID
+}
+
+message PowerActionRequest {
+  enum Action {
+    ACTION_UNSPECIFIED = 0;
+    START = 1;
+    SHUTDOWN = 2;      // ACPI clean shutdown
+    POWEROFF = 3;      // Hard kill
+    REBOOT = 4;        // ACPI reboot
+    RESET = 5;         // Hard reset
+  }
+  string droplet_id = 1;
+  Action action = 2;
+}
+
+message PowerActionResponse {
+  string task_id = 1;
+}
+
+message ResizeDropletRequest {
+  string droplet_id = 1;
+  string new_plan_id = 2;
+  bool resize_disk = 3;
+}
+
+message ResizeDropletResponse {
+  string task_id = 1;
+}
+
+message GetConsoleTicketRequest {
+  string droplet_id = 1;
+  string console_type = 2; // "vnc" or "serial"
+}
+
+message GetConsoleTicketResponse {
+  string ticket = 1;
+  string websocket_url = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+// ==========================================
+// Plans & Images
+// ==========================================
+service PlanService {
+  rpc ListPlans(ListPlansRequest) returns (ListPlansResponse);
+  rpc GetPlan(GetPlanRequest) returns (GetPlanResponse);
+}
+
+message Plan {
+  string id = 1;                   // "s-2vcpu-4gb"
+  string name = 2;                 // "Standard 4GB"
+  uint32 vcpus = 3;
+  uint64 memory_mb = 4;
+  uint64 disk_gb = 5;
+  uint64 bandwidth_gb_month = 6;
+  
+  // Storage & Network Guarantees
+  uint32 max_iops = 7;             // e.g. 3000 IOPS
+  uint32 max_bandwidth_mbps = 8;   // e.g. 1000 Mbps
+  string iops_profile_id = 9;
+  string qos_profile_id = 10;
+
+  double monthly_price_usd = 11;
+  double hourly_price_usd = 12;
+  repeated string available_clusters = 13;
+}
+
+service ImageService {
+  rpc ListImages(ListImagesRequest) returns (ListImagesResponse);
+}
+
+message Image {
+  string id = 1;                   // "ubuntu-24-04-x64"
+  string name = 2;                 // "Ubuntu 24.04 LTS x64"
+  string distribution = 3;         // "Ubuntu", "Debian", "Rocky", "Talos"
+  uint64 min_disk_gb = 4;
+  bool is_public = 5;
+  string status = 6;
+}
+
+// List & Get wrapper messages
+message GetDropletRequest { string droplet_id = 1; }
+message GetDropletResponse { Droplet droplet = 1; }
+message ListDropletsRequest { string project_id = 1; string tag = 2; }
+message ListDropletsResponse { repeated Droplet droplets = 1; }
+message DeleteDropletRequest { string droplet_id = 1; }
+message DeleteDropletResponse { string task_id = 1; }
+message RebuildDropletRequest { string droplet_id = 1; string image_id = 2; }
+message RebuildDropletResponse { string task_id = 1; }
+message CreateSnapshotRequest { string droplet_id = 1; string name = 2; }
+message CreateSnapshotResponse { string task_id = 1; }
+message RestoreSnapshotRequest { string droplet_id = 1; string snapshot_id = 2; }
+message RestoreSnapshotResponse { string task_id = 1; }
+message ListPlansRequest {}
+message ListPlansResponse { repeated Plan plans = 1; }
+message GetPlanRequest { string plan_id = 1; }
+message GetPlanResponse { Plan plan = 1; }
+message ListImagesRequest { string distribution = 1; }
+message ListImagesResponse { repeated Image images = 1; }

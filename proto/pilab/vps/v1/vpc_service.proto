@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package pilab.cloud.vps.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/vps/v1;vpsv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ==========================================
+// VPC & Tenant Network Management
+// ==========================================
+service VpcService {
+  rpc CreateVpc(CreateVpcRequest) returns (CreateVpcResponse);
+  rpc GetVpc(GetVpcRequest) returns (GetVpcResponse);
+  rpc ListVpcs(ListVpcsRequest) returns (ListVpcsResponse);
+  rpc DeleteVpc(DeleteVpcRequest) returns (DeleteVpcResponse);
+
+  rpc CreateSubnet(CreateSubnetRequest) returns (CreateSubnetResponse);
+  rpc ListSubnets(ListSubnetsRequest) returns (ListSubnetsResponse);
+
+  rpc CreateSecurityGroup(CreateSecurityGroupRequest) returns (CreateSecurityGroupResponse);
+  rpc ListSecurityGroups(ListSecurityGroupsRequest) returns (ListSecurityGroupsResponse);
+
+  rpc AllocateFloatingIp(AllocateFloatingIpRequest) returns (AllocateFloatingIpResponse);
+  rpc ListFloatingIps(ListFloatingIpsRequest) returns (ListFloatingIpsResponse);
+  rpc AttachFloatingIp(AttachFloatingIpRequest) returns (AttachFloatingIpResponse);
+  rpc DetachFloatingIp(DetachFloatingIpRequest) returns (DetachFloatingIpResponse);
+}
+
+message Vpc {
+  string id = 1;
+  string name = 2;
+  string namespace = 3;            // "org/project"
+  string cidr = 4;                 // e.g. "10.42.0.0/16"
+  repeated string dns = 5;
+  uint32 vni = 6;                  // VXLAN Network Identifier (e.g. 10042)
+  string router_node = 7;
+  string bridge = 8;               // "br-vpc10042"
+  string phase = 9;                // "Pending", "Ready", "Degraded"
+  google.protobuf.Timestamp created_at = 10;
+}
+
+message Subnet {
+  string id = 1;
+  string name = 2;
+  string namespace = 3;
+  string vpc_name = 4;
+  string cidr = 5;                 // e.g. "10.42.1.0/24"
+  string gateway = 6;              // e.g. "10.42.1.1"
+  bool dhcp_enabled = 7;
+}
+
+message SecurityGroupRule {
+  string protocol = 1;             // "tcp", "udp", "icmp", "any"
+  repeated uint32 ports = 2;
+  repeated string from_cidrs = 3;
+  string from_group = 4;
+}
+
+message SecurityGroup {
+  string id = 1;
+  string name = 2;
+  string namespace = 3;
+  repeated SecurityGroupRule ingress_rules = 4;
+  repeated SecurityGroupRule egress_rules = 5;
+}
+
+message FloatingIp {
+  string id = 1;
+  string name = 2;
+  string namespace = 3;
+  string ip_address = 4;           // e.g. "203.0.113.9"
+  string pool = 5;
+  string attached_vm_id = 6;
+  uint32 attached_interface = 7;
+  string phase = 8;                // "Unattached", "Attached"
+}
+
+message CreateVpcRequest {
+  string namespace = 1;
+  string name = 2;
+  string cidr = 3;
+  repeated string dns = 4;
+}
+message CreateVpcResponse { Vpc vpc = 1; }
+
+message GetVpcRequest { string namespace = 1; string name = 2; }
+message GetVpcResponse { Vpc vpc = 1; }
+
+message ListVpcsRequest { string namespace = 1; }
+message ListVpcsResponse { repeated Vpc vpcs = 1; }
+
+message DeleteVpcRequest { string namespace = 1; string name = 2; }
+message DeleteVpcResponse { bool success = 1; }
+
+message CreateSubnetRequest {
+  string namespace = 1;
+  string name = 2;
+  string vpc_name = 3;
+  string cidr = 4;
+  string gateway = 5;
+  bool enable_dhcp = 6;
+}
+message CreateSubnetResponse { Subnet subnet = 1; }
+
+message ListSubnetsRequest { string namespace = 1; string vpc_name = 2; }
+message ListSubnetsResponse { repeated Subnet subnets = 1; }
+
+message CreateSecurityGroupRequest {
+  string namespace = 1;
+  string name = 2;
+  repeated SecurityGroupRule ingress_rules = 3;
+  repeated SecurityGroupRule egress_rules = 4;
+}
+message CreateSecurityGroupResponse { SecurityGroup security_group = 1; }
+
+message ListSecurityGroupsRequest { string namespace = 1; }
+message ListSecurityGroupsResponse { repeated SecurityGroup security_groups = 1; }
+
+message AllocateFloatingIpRequest {
+  string namespace = 1;
+  string name = 2;
+  string pool = 3;
+}
+message AllocateFloatingIpResponse { FloatingIp floating_ip = 1; }
+
+message ListFloatingIpsRequest { string namespace = 1; }
+message ListFloatingIpsResponse { repeated FloatingIp floating_ips = 1; }
+
+message AttachFloatingIpRequest {
+  string namespace = 1;
+  string name = 2;
+  string vm_id = 3;
+  uint32 interface_idx = 4;
+}
+message AttachFloatingIpResponse { FloatingIp floating_ip = 1; }
+
+message DetachFloatingIpRequest { string namespace = 1; string name = 2; }
+message DetachFloatingIpResponse { bool success = 1; }

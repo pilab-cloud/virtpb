@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package pilab.cloud.core.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+import "google/protobuf/timestamp.proto";
+
+service MetricsService {
+  // Query metric history for frontend charts (CPU, RAM, IOPS, Network)
+  rpc QueryMetrics(QueryMetricsRequest) returns (QueryMetricsResponse);
+  
+  // Real-time stream for VM / Host summary dials
+  rpc StreamLiveStats(StreamLiveStatsRequest) returns (stream LiveStatsBatch);
+}
+
+message MetricDataPoint {
+  google.protobuf.Timestamp timestamp = 1;
+  double value = 2;
+}
+
+message MetricSeries {
+  string metric_name = 1; // "cpu_utilization_pct", "memory_used_mb", "disk_iops", "net_tx_bps"
+  string entity_id = 2;
+  repeated MetricDataPoint points = 3;
+}
+
+message QueryMetricsRequest {
+  string entity_id = 1;    // VM UUID or Host UUID
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+  uint32 step_seconds = 4; // e.g. 15s, 60s, 300s
+  repeated string metrics = 5;
+}
+
+message QueryMetricsResponse {
+  repeated MetricSeries series = 1;
+}
+
+message LiveStatsBatch {
+  string entity_id = 1;
+  double cpu_busy_pct = 2;
+  uint64 memory_used_mb = 3;
+  uint64 memory_total_mb = 4;
+  uint64 disk_read_iops = 5;
+  uint64 disk_write_iops = 6;
+  uint64 net_rx_bps = 7;
+  uint64 net_tx_bps = 8;
+  google.protobuf.Timestamp timestamp = 9;
+}
+
+message StreamLiveStatsRequest {
+  repeated string entity_ids = 1;
+}
+
+// ==========================================
+// Distributed Resource Scheduler (DRS)
+// ==========================================
+service DrsService {
+  rpc GetDrsConfig(GetDrsConfigRequest) returns (GetDrsConfigResponse);
+  rpc UpdateDrsConfig(UpdateDrsConfigRequest) returns (UpdateDrsConfigResponse);
+
+  // DRS Affinity & Anti-Affinity rules
+  rpc ListRules(ListRulesRequest) returns (ListRulesResponse);
+  rpc CreateRule(CreateRuleRequest) returns (CreateRuleResponse);
+  rpc DeleteRule(DeleteRuleRequest) returns (DeleteRuleResponse);
+
+  // DRS Rebalancing Proposals
+  rpc GetRebalanceRecommendations(GetRebalanceRecommendationsRequest) returns (GetRebalanceRecommendationsResponse);
+  rpc ApplyRecommendation(ApplyRecommendationRequest) returns (ApplyRecommendationResponse);
+}
+
+enum DrsAutomationLevel {
+  DRS_AUTOMATION_UNSPECIFIED = 0;
+  MANUAL = 1;              // Recommends only; operator clicks "Apply"
+  PARTIALLY_AUTOMATED = 2; // Auto-places VM on start; recommends migrations
+  FULLY_AUTOMATED = 3;     // Auto-migrates VMs when thresholds exceed
+}
+
+message DrsConfig {
+  string cluster_id = 1;
+  bool enabled = 2;
+  DrsAutomationLevel automation_level = 3;
+  uint32 migration_threshold = 4;   // 1 (conservative) to 5 (aggressive)
+  double cpu_imbalance_threshold = 5; // e.g. 75%
+  double mem_imbalance_threshold = 6; // e.g. 80%
+}
+
+message DrsRule {
+  enum RuleType {
+    AFFINITY = 0;      // VMs must run on the SAME host
+    ANTI_AFFINITY = 1; // VMs must NEVER run on the same host
+  }
+  string id = 1;
+  string cluster_id = 2;
+  string name = 3;
+  RuleType type = 4;
+  bool enabled = 5;
+  repeated string vm_ids = 6;
+}
+
+message RebalanceRecommendation {
+  string id = 1;
+  string cluster_id = 2;
+  string vm_id = 3;
+  string vm_name = 4;
+  string source_host_id = 5;
+  string target_host_id = 6;
+  string reason = 7;               // "Source host CPU 88% exceeds 75% threshold"
+  uint32 rating = 8;               // Priority 1 to 5 stars
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message GetDrsConfigRequest { string cluster_id = 1; }
+message GetDrsConfigResponse { DrsConfig config = 1; }
+message UpdateDrsConfigRequest { DrsConfig config = 1; }
+message UpdateDrsConfigResponse { DrsConfig config = 1; }
+message ListRulesRequest { string cluster_id = 1; }
+message ListRulesResponse { repeated DrsRule rules = 1; }
+message CreateRuleRequest { string cluster_id = 1; string name = 2; DrsRule.RuleType type = 3; repeated string vm_ids = 4; }
+message CreateRuleResponse { DrsRule rule = 1; }
+message DeleteRuleRequest { string rule_id = 1; }
+message DeleteRuleResponse {}
+message GetRebalanceRecommendationsRequest { string cluster_id = 1; }
+message GetRebalanceRecommendationsResponse { repeated RebalanceRecommendation recommendations = 1; }
+message ApplyRecommendationRequest { string recommendation_id = 1; }
+message ApplyRecommendationResponse { string task_id = 1; }
