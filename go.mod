@@ -1,9 +1,9 @@
 module go.pilab.hu/cloud/virtpb
 
-go 1.25.0
+go 1.26.0
 
 require (
-	connectrpc.com/connect v1.20.0
+	connectrpc.com/connect v1.21.1
 	google.golang.org/grpc v1.82.0
 	google.golang.org/protobuf v1.36.11
 )
