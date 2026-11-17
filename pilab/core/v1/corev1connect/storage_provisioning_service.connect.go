@@ -106,6 +106,18 @@ const (
 	// StorageProvisioningServiceDeleteStoragePoolProcedure is the fully-qualified name of the
 	// StorageProvisioningService's DeleteStoragePool RPC.
 	StorageProvisioningServiceDeleteStoragePoolProcedure = "/pilab.core.v1.StorageProvisioningService/DeleteStoragePool"
+	// StorageProvisioningServiceCreateVolumeProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CreateVolume RPC.
+	StorageProvisioningServiceCreateVolumeProcedure = "/pilab.core.v1.StorageProvisioningService/CreateVolume"
+	// StorageProvisioningServiceDeleteVolumeProcedure is the fully-qualified name of the
+	// StorageProvisioningService's DeleteVolume RPC.
+	StorageProvisioningServiceDeleteVolumeProcedure = "/pilab.core.v1.StorageProvisioningService/DeleteVolume"
+	// StorageProvisioningServiceResizeVolumeProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ResizeVolume RPC.
+	StorageProvisioningServiceResizeVolumeProcedure = "/pilab.core.v1.StorageProvisioningService/ResizeVolume"
+	// StorageProvisioningServiceListVolumesProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListVolumes RPC.
+	StorageProvisioningServiceListVolumesProcedure = "/pilab.core.v1.StorageProvisioningService/ListVolumes"
 	// StorageProvisioningServiceSetDiskQoSProcedure is the fully-qualified name of the
 	// StorageProvisioningService's SetDiskQoS RPC.
 	StorageProvisioningServiceSetDiskQoSProcedure = "/pilab.core.v1.StorageProvisioningService/SetDiskQoS"
@@ -149,6 +161,11 @@ type StorageProvisioningServiceClient interface {
 	CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.CreateStoragePoolResponse], error)
 	UpdateStoragePool(context.Context, *connect.Request[v1.UpdateStoragePoolRequest]) (*connect.Response[v1.UpdateStoragePoolResponse], error)
 	DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error)
+	// Volume Lifecycle on Storage Pools (Ceph RBD, ZFS, LVM, Directory)
+	CreateVolume(context.Context, *connect.Request[v1.CreateVolumeRequest]) (*connect.Response[v1.CreateVolumeResponse], error)
+	DeleteVolume(context.Context, *connect.Request[v1.DeleteVolumeRequest]) (*connect.Response[v1.DeleteVolumeResponse], error)
+	ResizeVolume(context.Context, *connect.Request[v1.ResizeVolumeRequest]) (*connect.Response[v1.ResizeVolumeResponse], error)
+	ListVolumes(context.Context, *connect.Request[v1.ListVolumesRequest]) (*connect.Response[v1.ListVolumesResponse], error)
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error)
 	GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error)
@@ -311,6 +328,30 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStoragePool")),
 			connect.WithClientOptions(opts...),
 		),
+		createVolume: connect.NewClient[v1.CreateVolumeRequest, v1.CreateVolumeResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCreateVolumeProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateVolume")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteVolume: connect.NewClient[v1.DeleteVolumeRequest, v1.DeleteVolumeResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceDeleteVolumeProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteVolume")),
+			connect.WithClientOptions(opts...),
+		),
+		resizeVolume: connect.NewClient[v1.ResizeVolumeRequest, v1.ResizeVolumeResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceResizeVolumeProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ResizeVolume")),
+			connect.WithClientOptions(opts...),
+		),
+		listVolumes: connect.NewClient[v1.ListVolumesRequest, v1.ListVolumesResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListVolumesProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListVolumes")),
+			connect.WithClientOptions(opts...),
+		),
 		setDiskQoS: connect.NewClient[v1.SetDiskQoSRequest, v1.SetDiskQoSResponse](
 			httpClient,
 			baseURL+StorageProvisioningServiceSetDiskQoSProcedure,
@@ -358,6 +399,10 @@ type storageProvisioningServiceClient struct {
 	createStoragePool     *connect.Client[v1.CreateStoragePoolRequest, v1.CreateStoragePoolResponse]
 	updateStoragePool     *connect.Client[v1.UpdateStoragePoolRequest, v1.UpdateStoragePoolResponse]
 	deleteStoragePool     *connect.Client[v1.DeleteStoragePoolRequest, v1.DeleteStoragePoolResponse]
+	createVolume          *connect.Client[v1.CreateVolumeRequest, v1.CreateVolumeResponse]
+	deleteVolume          *connect.Client[v1.DeleteVolumeRequest, v1.DeleteVolumeResponse]
+	resizeVolume          *connect.Client[v1.ResizeVolumeRequest, v1.ResizeVolumeResponse]
+	listVolumes           *connect.Client[v1.ListVolumesRequest, v1.ListVolumesResponse]
 	setDiskQoS            *connect.Client[v1.SetDiskQoSRequest, v1.SetDiskQoSResponse]
 	getDiskQoS            *connect.Client[v1.GetDiskQoSRequest, v1.GetDiskQoSResponse]
 	checkMigrationStorage *connect.Client[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse]
@@ -483,6 +528,26 @@ func (c *storageProvisioningServiceClient) DeleteStoragePool(ctx context.Context
 	return c.deleteStoragePool.CallUnary(ctx, req)
 }
 
+// CreateVolume calls pilab.core.v1.StorageProvisioningService.CreateVolume.
+func (c *storageProvisioningServiceClient) CreateVolume(ctx context.Context, req *connect.Request[v1.CreateVolumeRequest]) (*connect.Response[v1.CreateVolumeResponse], error) {
+	return c.createVolume.CallUnary(ctx, req)
+}
+
+// DeleteVolume calls pilab.core.v1.StorageProvisioningService.DeleteVolume.
+func (c *storageProvisioningServiceClient) DeleteVolume(ctx context.Context, req *connect.Request[v1.DeleteVolumeRequest]) (*connect.Response[v1.DeleteVolumeResponse], error) {
+	return c.deleteVolume.CallUnary(ctx, req)
+}
+
+// ResizeVolume calls pilab.core.v1.StorageProvisioningService.ResizeVolume.
+func (c *storageProvisioningServiceClient) ResizeVolume(ctx context.Context, req *connect.Request[v1.ResizeVolumeRequest]) (*connect.Response[v1.ResizeVolumeResponse], error) {
+	return c.resizeVolume.CallUnary(ctx, req)
+}
+
+// ListVolumes calls pilab.core.v1.StorageProvisioningService.ListVolumes.
+func (c *storageProvisioningServiceClient) ListVolumes(ctx context.Context, req *connect.Request[v1.ListVolumesRequest]) (*connect.Response[v1.ListVolumesResponse], error) {
+	return c.listVolumes.CallUnary(ctx, req)
+}
+
 // SetDiskQoS calls pilab.core.v1.StorageProvisioningService.SetDiskQoS.
 func (c *storageProvisioningServiceClient) SetDiskQoS(ctx context.Context, req *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error) {
 	return c.setDiskQoS.CallUnary(ctx, req)
@@ -530,6 +595,11 @@ type StorageProvisioningServiceHandler interface {
 	CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.CreateStoragePoolResponse], error)
 	UpdateStoragePool(context.Context, *connect.Request[v1.UpdateStoragePoolRequest]) (*connect.Response[v1.UpdateStoragePoolResponse], error)
 	DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error)
+	// Volume Lifecycle on Storage Pools (Ceph RBD, ZFS, LVM, Directory)
+	CreateVolume(context.Context, *connect.Request[v1.CreateVolumeRequest]) (*connect.Response[v1.CreateVolumeResponse], error)
+	DeleteVolume(context.Context, *connect.Request[v1.DeleteVolumeRequest]) (*connect.Response[v1.DeleteVolumeResponse], error)
+	ResizeVolume(context.Context, *connect.Request[v1.ResizeVolumeRequest]) (*connect.Response[v1.ResizeVolumeResponse], error)
+	ListVolumes(context.Context, *connect.Request[v1.ListVolumesRequest]) (*connect.Response[v1.ListVolumesResponse], error)
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error)
 	GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error)
@@ -688,6 +758,30 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStoragePool")),
 		connect.WithHandlerOptions(opts...),
 	)
+	storageProvisioningServiceCreateVolumeHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCreateVolumeProcedure,
+		svc.CreateVolume,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateVolume")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceDeleteVolumeHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceDeleteVolumeProcedure,
+		svc.DeleteVolume,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteVolume")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceResizeVolumeHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceResizeVolumeProcedure,
+		svc.ResizeVolume,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ResizeVolume")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceListVolumesHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListVolumesProcedure,
+		svc.ListVolumes,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListVolumes")),
+		connect.WithHandlerOptions(opts...),
+	)
 	storageProvisioningServiceSetDiskQoSHandler := connect.NewUnaryHandler(
 		StorageProvisioningServiceSetDiskQoSProcedure,
 		svc.SetDiskQoS,
@@ -756,6 +850,14 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 			storageProvisioningServiceUpdateStoragePoolHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceDeleteStoragePoolProcedure:
 			storageProvisioningServiceDeleteStoragePoolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCreateVolumeProcedure:
+			storageProvisioningServiceCreateVolumeHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceDeleteVolumeProcedure:
+			storageProvisioningServiceDeleteVolumeHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceResizeVolumeProcedure:
+			storageProvisioningServiceResizeVolumeHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListVolumesProcedure:
+			storageProvisioningServiceListVolumesHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceSetDiskQoSProcedure:
 			storageProvisioningServiceSetDiskQoSHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceGetDiskQoSProcedure:
@@ -865,6 +967,22 @@ func (UnimplementedStorageProvisioningServiceHandler) UpdateStoragePool(context.
 
 func (UnimplementedStorageProvisioningServiceHandler) DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DeleteStoragePool is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CreateVolume(context.Context, *connect.Request[v1.CreateVolumeRequest]) (*connect.Response[v1.CreateVolumeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CreateVolume is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) DeleteVolume(context.Context, *connect.Request[v1.DeleteVolumeRequest]) (*connect.Response[v1.DeleteVolumeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DeleteVolume is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ResizeVolume(context.Context, *connect.Request[v1.ResizeVolumeRequest]) (*connect.Response[v1.ResizeVolumeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ResizeVolume is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListVolumes(context.Context, *connect.Request[v1.ListVolumesRequest]) (*connect.Response[v1.ListVolumesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListVolumes is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error) {

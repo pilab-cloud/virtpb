@@ -9,7 +9,7 @@ package corev1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -4362,6 +4362,626 @@ func (x *DeleteStoragePoolResponse) GetMessage() string {
 	return ""
 }
 
+type StorageVolume struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                         // e.g. "vm-prod-100-disk0"
+	PoolName      string                 `protobuf:"bytes,3,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"` // e.g. "ceph-shared" or "local-tank"
+	PoolId        string                 `protobuf:"bytes,4,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty"`
+	Driver        StoragePoolDriver      `protobuf:"varint,5,opt,name=driver,proto3,enum=pilab.core.v1.StoragePoolDriver" json:"driver,omitempty"` // CEPH_RBD, ZFS, LVM_THIN, DIR
+	VolumePath    string                 `protobuf:"bytes,6,opt,name=volume_path,json=volumePath,proto3" json:"volume_path,omitempty"`             // e.g. "rbd:rbd-vms/vm-prod-100-disk0" or "/dev/zvol/tank/vms/vm-100"
+	SizeBytes     int64                  `protobuf:"varint,7,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	SizeHuman     string                 `protobuf:"bytes,8,opt,name=size_human,json=sizeHuman,proto3" json:"size_human,omitempty"`
+	Format        string                 `protobuf:"bytes,9,opt,name=format,proto3" json:"format,omitempty"` // "raw", "qcow2"
+	IsShared      bool                   `protobuf:"varint,10,opt,name=is_shared,json=isShared,proto3" json:"is_shared,omitempty"`
+	Qos           *DiskQoSConfig         `protobuf:"bytes,11,opt,name=qos,proto3" json:"qos,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StorageVolume) Reset() {
+	*x = StorageVolume{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StorageVolume) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StorageVolume) ProtoMessage() {}
+
+func (x *StorageVolume) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StorageVolume.ProtoReflect.Descriptor instead.
+func (*StorageVolume) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *StorageVolume) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *StorageVolume) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StorageVolume) GetPoolName() string {
+	if x != nil {
+		return x.PoolName
+	}
+	return ""
+}
+
+func (x *StorageVolume) GetPoolId() string {
+	if x != nil {
+		return x.PoolId
+	}
+	return ""
+}
+
+func (x *StorageVolume) GetDriver() StoragePoolDriver {
+	if x != nil {
+		return x.Driver
+	}
+	return StoragePoolDriver_STORAGE_POOL_DRIVER_UNSPECIFIED
+}
+
+func (x *StorageVolume) GetVolumePath() string {
+	if x != nil {
+		return x.VolumePath
+	}
+	return ""
+}
+
+func (x *StorageVolume) GetSizeBytes() int64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
+func (x *StorageVolume) GetSizeHuman() string {
+	if x != nil {
+		return x.SizeHuman
+	}
+	return ""
+}
+
+func (x *StorageVolume) GetFormat() string {
+	if x != nil {
+		return x.Format
+	}
+	return ""
+}
+
+func (x *StorageVolume) GetIsShared() bool {
+	if x != nil {
+		return x.IsShared
+	}
+	return false
+}
+
+func (x *StorageVolume) GetQos() *DiskQoSConfig {
+	if x != nil {
+		return x.Qos
+	}
+	return nil
+}
+
+func (x *StorageVolume) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type CreateVolumeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`             // Target node if node-local pool, or empty for cluster-shared
+	PoolName      string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`       // e.g. "ceph-shared"
+	VolumeName    string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"` // e.g. "vm-test-disk0"
+	SizeMb        int64                  `protobuf:"varint,4,opt,name=size_mb,json=sizeMb,proto3" json:"size_mb,omitempty"`
+	Format        string                 `protobuf:"bytes,5,opt,name=format,proto3" json:"format,omitempty"` // "raw", "qcow2" (default: "raw" for Ceph, "qcow2" for Dir)
+	Qos           *DiskQoSConfig         `protobuf:"bytes,6,opt,name=qos,proto3" json:"qos,omitempty"`       // Optional QoS overrides; if nil/zero, inherits pool.default_qos
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateVolumeRequest) Reset() {
+	*x = CreateVolumeRequest{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateVolumeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateVolumeRequest) ProtoMessage() {}
+
+func (x *CreateVolumeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateVolumeRequest.ProtoReflect.Descriptor instead.
+func (*CreateVolumeRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *CreateVolumeRequest) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *CreateVolumeRequest) GetPoolName() string {
+	if x != nil {
+		return x.PoolName
+	}
+	return ""
+}
+
+func (x *CreateVolumeRequest) GetVolumeName() string {
+	if x != nil {
+		return x.VolumeName
+	}
+	return ""
+}
+
+func (x *CreateVolumeRequest) GetSizeMb() int64 {
+	if x != nil {
+		return x.SizeMb
+	}
+	return 0
+}
+
+func (x *CreateVolumeRequest) GetFormat() string {
+	if x != nil {
+		return x.Format
+	}
+	return ""
+}
+
+func (x *CreateVolumeRequest) GetQos() *DiskQoSConfig {
+	if x != nil {
+		return x.Qos
+	}
+	return nil
+}
+
+type CreateVolumeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Volume        *StorageVolume         `protobuf:"bytes,3,opt,name=volume,proto3" json:"volume,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateVolumeResponse) Reset() {
+	*x = CreateVolumeResponse{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateVolumeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateVolumeResponse) ProtoMessage() {}
+
+func (x *CreateVolumeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateVolumeResponse.ProtoReflect.Descriptor instead.
+func (*CreateVolumeResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{63}
+}
+
+func (x *CreateVolumeResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CreateVolumeResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *CreateVolumeResponse) GetVolume() *StorageVolume {
+	if x != nil {
+		return x.Volume
+	}
+	return nil
+}
+
+type DeleteVolumeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	PoolName      string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`
+	VolumeName    string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"`
+	Force         bool                   `protobuf:"varint,4,opt,name=force,proto3" json:"force,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteVolumeRequest) Reset() {
+	*x = DeleteVolumeRequest{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteVolumeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteVolumeRequest) ProtoMessage() {}
+
+func (x *DeleteVolumeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteVolumeRequest.ProtoReflect.Descriptor instead.
+func (*DeleteVolumeRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{64}
+}
+
+func (x *DeleteVolumeRequest) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *DeleteVolumeRequest) GetPoolName() string {
+	if x != nil {
+		return x.PoolName
+	}
+	return ""
+}
+
+func (x *DeleteVolumeRequest) GetVolumeName() string {
+	if x != nil {
+		return x.VolumeName
+	}
+	return ""
+}
+
+func (x *DeleteVolumeRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
+}
+
+type DeleteVolumeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteVolumeResponse) Reset() {
+	*x = DeleteVolumeResponse{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteVolumeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteVolumeResponse) ProtoMessage() {}
+
+func (x *DeleteVolumeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteVolumeResponse.ProtoReflect.Descriptor instead.
+func (*DeleteVolumeResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{65}
+}
+
+func (x *DeleteVolumeResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DeleteVolumeResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type ResizeVolumeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	PoolName      string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`
+	VolumeName    string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"`
+	NewSizeMb     int64                  `protobuf:"varint,4,opt,name=new_size_mb,json=newSizeMb,proto3" json:"new_size_mb,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResizeVolumeRequest) Reset() {
+	*x = ResizeVolumeRequest{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResizeVolumeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResizeVolumeRequest) ProtoMessage() {}
+
+func (x *ResizeVolumeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResizeVolumeRequest.ProtoReflect.Descriptor instead.
+func (*ResizeVolumeRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{66}
+}
+
+func (x *ResizeVolumeRequest) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *ResizeVolumeRequest) GetPoolName() string {
+	if x != nil {
+		return x.PoolName
+	}
+	return ""
+}
+
+func (x *ResizeVolumeRequest) GetVolumeName() string {
+	if x != nil {
+		return x.VolumeName
+	}
+	return ""
+}
+
+func (x *ResizeVolumeRequest) GetNewSizeMb() int64 {
+	if x != nil {
+		return x.NewSizeMb
+	}
+	return 0
+}
+
+type ResizeVolumeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Volume        *StorageVolume         `protobuf:"bytes,3,opt,name=volume,proto3" json:"volume,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResizeVolumeResponse) Reset() {
+	*x = ResizeVolumeResponse{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[67]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResizeVolumeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResizeVolumeResponse) ProtoMessage() {}
+
+func (x *ResizeVolumeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[67]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResizeVolumeResponse.ProtoReflect.Descriptor instead.
+func (*ResizeVolumeResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{67}
+}
+
+func (x *ResizeVolumeResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *ResizeVolumeResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ResizeVolumeResponse) GetVolume() *StorageVolume {
+	if x != nil {
+		return x.Volume
+	}
+	return nil
+}
+
+type ListVolumesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	PoolName      string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"` // e.g. "ceph-shared"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListVolumesRequest) Reset() {
+	*x = ListVolumesRequest{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListVolumesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListVolumesRequest) ProtoMessage() {}
+
+func (x *ListVolumesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListVolumesRequest.ProtoReflect.Descriptor instead.
+func (*ListVolumesRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *ListVolumesRequest) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *ListVolumesRequest) GetPoolName() string {
+	if x != nil {
+		return x.PoolName
+	}
+	return ""
+}
+
+type ListVolumesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Volumes       []*StorageVolume       `protobuf:"bytes,1,rep,name=volumes,proto3" json:"volumes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListVolumesResponse) Reset() {
+	*x = ListVolumesResponse{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListVolumesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListVolumesResponse) ProtoMessage() {}
+
+func (x *ListVolumesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListVolumesResponse.ProtoReflect.Descriptor instead.
+func (*ListVolumesResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *ListVolumesResponse) GetVolumes() []*StorageVolume {
+	if x != nil {
+		return x.Volumes
+	}
+	return nil
+}
+
 // Live Dynamic Disk QoS Throttling RPC Messages
 type SetDiskQoSRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
@@ -4375,7 +4995,7 @@ type SetDiskQoSRequest struct {
 
 func (x *SetDiskQoSRequest) Reset() {
 	*x = SetDiskQoSRequest{}
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[61]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4387,7 +5007,7 @@ func (x *SetDiskQoSRequest) String() string {
 func (*SetDiskQoSRequest) ProtoMessage() {}
 
 func (x *SetDiskQoSRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[61]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4400,7 +5020,7 @@ func (x *SetDiskQoSRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetDiskQoSRequest.ProtoReflect.Descriptor instead.
 func (*SetDiskQoSRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{61}
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *SetDiskQoSRequest) GetNodeId() string {
@@ -4442,7 +5062,7 @@ type SetDiskQoSResponse struct {
 
 func (x *SetDiskQoSResponse) Reset() {
 	*x = SetDiskQoSResponse{}
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[62]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4454,7 +5074,7 @@ func (x *SetDiskQoSResponse) String() string {
 func (*SetDiskQoSResponse) ProtoMessage() {}
 
 func (x *SetDiskQoSResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[62]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4467,7 +5087,7 @@ func (x *SetDiskQoSResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetDiskQoSResponse.ProtoReflect.Descriptor instead.
 func (*SetDiskQoSResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{62}
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *SetDiskQoSResponse) GetSuccess() bool {
@@ -4502,7 +5122,7 @@ type GetDiskQoSRequest struct {
 
 func (x *GetDiskQoSRequest) Reset() {
 	*x = GetDiskQoSRequest{}
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[63]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4514,7 +5134,7 @@ func (x *GetDiskQoSRequest) String() string {
 func (*GetDiskQoSRequest) ProtoMessage() {}
 
 func (x *GetDiskQoSRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[63]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4527,7 +5147,7 @@ func (x *GetDiskQoSRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDiskQoSRequest.ProtoReflect.Descriptor instead.
 func (*GetDiskQoSRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{63}
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *GetDiskQoSRequest) GetNodeId() string {
@@ -4560,7 +5180,7 @@ type GetDiskQoSResponse struct {
 
 func (x *GetDiskQoSResponse) Reset() {
 	*x = GetDiskQoSResponse{}
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[64]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4572,7 +5192,7 @@ func (x *GetDiskQoSResponse) String() string {
 func (*GetDiskQoSResponse) ProtoMessage() {}
 
 func (x *GetDiskQoSResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[64]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4585,7 +5205,7 @@ func (x *GetDiskQoSResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDiskQoSResponse.ProtoReflect.Descriptor instead.
 func (*GetDiskQoSResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{64}
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *GetDiskQoSResponse) GetQos() *DiskQoSConfig {
@@ -4609,7 +5229,7 @@ type NonSharedDiskInfo struct {
 
 func (x *NonSharedDiskInfo) Reset() {
 	*x = NonSharedDiskInfo{}
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[65]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4621,7 +5241,7 @@ func (x *NonSharedDiskInfo) String() string {
 func (*NonSharedDiskInfo) ProtoMessage() {}
 
 func (x *NonSharedDiskInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[65]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4634,7 +5254,7 @@ func (x *NonSharedDiskInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NonSharedDiskInfo.ProtoReflect.Descriptor instead.
 func (*NonSharedDiskInfo) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{65}
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *NonSharedDiskInfo) GetDiskId() string {
@@ -4691,7 +5311,7 @@ type CheckMigrationStorageRequest struct {
 
 func (x *CheckMigrationStorageRequest) Reset() {
 	*x = CheckMigrationStorageRequest{}
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[66]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4703,7 +5323,7 @@ func (x *CheckMigrationStorageRequest) String() string {
 func (*CheckMigrationStorageRequest) ProtoMessage() {}
 
 func (x *CheckMigrationStorageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[66]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4716,7 +5336,7 @@ func (x *CheckMigrationStorageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckMigrationStorageRequest.ProtoReflect.Descriptor instead.
 func (*CheckMigrationStorageRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{66}
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *CheckMigrationStorageRequest) GetVmId() string {
@@ -4759,7 +5379,7 @@ type CheckMigrationStorageResponse struct {
 
 func (x *CheckMigrationStorageResponse) Reset() {
 	*x = CheckMigrationStorageResponse{}
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[67]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4771,7 +5391,7 @@ func (x *CheckMigrationStorageResponse) String() string {
 func (*CheckMigrationStorageResponse) ProtoMessage() {}
 
 func (x *CheckMigrationStorageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[67]
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4784,7 +5404,7 @@ func (x *CheckMigrationStorageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckMigrationStorageResponse.ProtoReflect.Descriptor instead.
 func (*CheckMigrationStorageResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{67}
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *CheckMigrationStorageResponse) GetMode() MigrationStorageMode {
@@ -5142,7 +5762,61 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x05force\x18\x02 \x01(\bR\x05force\"O\n" +
 	"\x19DeleteStoragePoolResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\x9e\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xa2\x03\n" +
+	"\rStorageVolume\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1b\n" +
+	"\tpool_name\x18\x03 \x01(\tR\bpoolName\x12\x17\n" +
+	"\apool_id\x18\x04 \x01(\tR\x06poolId\x128\n" +
+	"\x06driver\x18\x05 \x01(\x0e2 .pilab.core.v1.StoragePoolDriverR\x06driver\x12\x1f\n" +
+	"\vvolume_path\x18\x06 \x01(\tR\n" +
+	"volumePath\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\a \x01(\x03R\tsizeBytes\x12\x1d\n" +
+	"\n" +
+	"size_human\x18\b \x01(\tR\tsizeHuman\x12\x16\n" +
+	"\x06format\x18\t \x01(\tR\x06format\x12\x1b\n" +
+	"\tis_shared\x18\n" +
+	" \x01(\bR\bisShared\x12.\n" +
+	"\x03qos\x18\v \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x129\n" +
+	"\n" +
+	"created_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xcd\x01\n" +
+	"\x13CreateVolumeRequest\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
+	"\tpool_name\x18\x02 \x01(\tR\bpoolName\x12\x1f\n" +
+	"\vvolume_name\x18\x03 \x01(\tR\n" +
+	"volumeName\x12\x17\n" +
+	"\asize_mb\x18\x04 \x01(\x03R\x06sizeMb\x12\x16\n" +
+	"\x06format\x18\x05 \x01(\tR\x06format\x12.\n" +
+	"\x03qos\x18\x06 \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\"\x80\x01\n" +
+	"\x14CreateVolumeResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x124\n" +
+	"\x06volume\x18\x03 \x01(\v2\x1c.pilab.core.v1.StorageVolumeR\x06volume\"\x82\x01\n" +
+	"\x13DeleteVolumeRequest\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
+	"\tpool_name\x18\x02 \x01(\tR\bpoolName\x12\x1f\n" +
+	"\vvolume_name\x18\x03 \x01(\tR\n" +
+	"volumeName\x12\x14\n" +
+	"\x05force\x18\x04 \x01(\bR\x05force\"J\n" +
+	"\x14DeleteVolumeResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\x8c\x01\n" +
+	"\x13ResizeVolumeRequest\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
+	"\tpool_name\x18\x02 \x01(\tR\bpoolName\x12\x1f\n" +
+	"\vvolume_name\x18\x03 \x01(\tR\n" +
+	"volumeName\x12\x1e\n" +
+	"\vnew_size_mb\x18\x04 \x01(\x03R\tnewSizeMb\"\x80\x01\n" +
+	"\x14ResizeVolumeResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x124\n" +
+	"\x06volume\x18\x03 \x01(\v2\x1c.pilab.core.v1.StorageVolumeR\x06volume\"J\n" +
+	"\x12ListVolumesRequest\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
+	"\tpool_name\x18\x02 \x01(\tR\bpoolName\"M\n" +
+	"\x13ListVolumesResponse\x126\n" +
+	"\avolumes\x18\x01 \x03(\v2\x1c.pilab.core.v1.StorageVolumeR\avolumes\"\x9e\x01\n" +
 	"\x11SetDiskQoSRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x13\n" +
 	"\x05vm_id\x18\x02 \x01(\tR\x04vmId\x12+\n" +
@@ -5214,7 +5888,7 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x14MigrationStorageMode\x12&\n" +
 	"\"MIGRATION_STORAGE_MODE_UNSPECIFIED\x10\x00\x12+\n" +
 	"'MIGRATION_STORAGE_MODE_SHARED_ZERO_COPY\x10\x01\x12'\n" +
-	"#MIGRATION_STORAGE_MODE_STORAGE_COPY\x10\x022\xca\x13\n" +
+	"#MIGRATION_STORAGE_MODE_STORAGE_COPY\x10\x022\xab\x16\n" +
 	"\x1aStorageProvisioningService\x12T\n" +
 	"\vListDevices\x12!.pilab.core.v1.ListDevicesRequest\x1a\".pilab.core.v1.ListDevicesResponse\x12]\n" +
 	"\x0eInitializeDisk\x12$.pilab.core.v1.InitializeDiskRequest\x1a%.pilab.core.v1.InitializeDiskResponse\x12K\n" +
@@ -5239,7 +5913,11 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x0eGetStoragePool\x12$.pilab.core.v1.GetStoragePoolRequest\x1a%.pilab.core.v1.GetStoragePoolResponse\x12f\n" +
 	"\x11CreateStoragePool\x12'.pilab.core.v1.CreateStoragePoolRequest\x1a(.pilab.core.v1.CreateStoragePoolResponse\x12f\n" +
 	"\x11UpdateStoragePool\x12'.pilab.core.v1.UpdateStoragePoolRequest\x1a(.pilab.core.v1.UpdateStoragePoolResponse\x12f\n" +
-	"\x11DeleteStoragePool\x12'.pilab.core.v1.DeleteStoragePoolRequest\x1a(.pilab.core.v1.DeleteStoragePoolResponse\x12Q\n" +
+	"\x11DeleteStoragePool\x12'.pilab.core.v1.DeleteStoragePoolRequest\x1a(.pilab.core.v1.DeleteStoragePoolResponse\x12W\n" +
+	"\fCreateVolume\x12\".pilab.core.v1.CreateVolumeRequest\x1a#.pilab.core.v1.CreateVolumeResponse\x12W\n" +
+	"\fDeleteVolume\x12\".pilab.core.v1.DeleteVolumeRequest\x1a#.pilab.core.v1.DeleteVolumeResponse\x12W\n" +
+	"\fResizeVolume\x12\".pilab.core.v1.ResizeVolumeRequest\x1a#.pilab.core.v1.ResizeVolumeResponse\x12T\n" +
+	"\vListVolumes\x12!.pilab.core.v1.ListVolumesRequest\x1a\".pilab.core.v1.ListVolumesResponse\x12Q\n" +
 	"\n" +
 	"SetDiskQoS\x12 .pilab.core.v1.SetDiskQoSRequest\x1a!.pilab.core.v1.SetDiskQoSResponse\x12Q\n" +
 	"\n" +
@@ -5259,7 +5937,7 @@ func file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP() []byte 
 }
 
 var file_pilab_core_v1_storage_provisioning_service_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_pilab_core_v1_storage_provisioning_service_proto_msgTypes = make([]protoimpl.MessageInfo, 70)
+var file_pilab_core_v1_storage_provisioning_service_proto_msgTypes = make([]protoimpl.MessageInfo, 79)
 var file_pilab_core_v1_storage_provisioning_service_proto_goTypes = []any{
 	(PartitionTableType)(0),               // 0: pilab.core.v1.PartitionTableType
 	(PartitionType)(0),                    // 1: pilab.core.v1.PartitionType
@@ -5329,15 +6007,25 @@ var file_pilab_core_v1_storage_provisioning_service_proto_goTypes = []any{
 	(*UpdateStoragePoolResponse)(nil),     // 65: pilab.core.v1.UpdateStoragePoolResponse
 	(*DeleteStoragePoolRequest)(nil),      // 66: pilab.core.v1.DeleteStoragePoolRequest
 	(*DeleteStoragePoolResponse)(nil),     // 67: pilab.core.v1.DeleteStoragePoolResponse
-	(*SetDiskQoSRequest)(nil),             // 68: pilab.core.v1.SetDiskQoSRequest
-	(*SetDiskQoSResponse)(nil),            // 69: pilab.core.v1.SetDiskQoSResponse
-	(*GetDiskQoSRequest)(nil),             // 70: pilab.core.v1.GetDiskQoSRequest
-	(*GetDiskQoSResponse)(nil),            // 71: pilab.core.v1.GetDiskQoSResponse
-	(*NonSharedDiskInfo)(nil),             // 72: pilab.core.v1.NonSharedDiskInfo
-	(*CheckMigrationStorageRequest)(nil),  // 73: pilab.core.v1.CheckMigrationStorageRequest
-	(*CheckMigrationStorageResponse)(nil), // 74: pilab.core.v1.CheckMigrationStorageResponse
-	nil,                                   // 75: pilab.core.v1.CreateZpoolRequest.PropertiesEntry
-	nil,                                   // 76: pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
+	(*StorageVolume)(nil),                 // 68: pilab.core.v1.StorageVolume
+	(*CreateVolumeRequest)(nil),           // 69: pilab.core.v1.CreateVolumeRequest
+	(*CreateVolumeResponse)(nil),          // 70: pilab.core.v1.CreateVolumeResponse
+	(*DeleteVolumeRequest)(nil),           // 71: pilab.core.v1.DeleteVolumeRequest
+	(*DeleteVolumeResponse)(nil),          // 72: pilab.core.v1.DeleteVolumeResponse
+	(*ResizeVolumeRequest)(nil),           // 73: pilab.core.v1.ResizeVolumeRequest
+	(*ResizeVolumeResponse)(nil),          // 74: pilab.core.v1.ResizeVolumeResponse
+	(*ListVolumesRequest)(nil),            // 75: pilab.core.v1.ListVolumesRequest
+	(*ListVolumesResponse)(nil),           // 76: pilab.core.v1.ListVolumesResponse
+	(*SetDiskQoSRequest)(nil),             // 77: pilab.core.v1.SetDiskQoSRequest
+	(*SetDiskQoSResponse)(nil),            // 78: pilab.core.v1.SetDiskQoSResponse
+	(*GetDiskQoSRequest)(nil),             // 79: pilab.core.v1.GetDiskQoSRequest
+	(*GetDiskQoSResponse)(nil),            // 80: pilab.core.v1.GetDiskQoSResponse
+	(*NonSharedDiskInfo)(nil),             // 81: pilab.core.v1.NonSharedDiskInfo
+	(*CheckMigrationStorageRequest)(nil),  // 82: pilab.core.v1.CheckMigrationStorageRequest
+	(*CheckMigrationStorageResponse)(nil), // 83: pilab.core.v1.CheckMigrationStorageResponse
+	nil,                                   // 84: pilab.core.v1.CreateZpoolRequest.PropertiesEntry
+	nil,                                   // 85: pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
+	(*timestamppb.Timestamp)(nil),         // 86: google.protobuf.Timestamp
 }
 var file_pilab_core_v1_storage_provisioning_service_proto_depIdxs = []int32{
 	7,  // 0: pilab.core.v1.BlockDevice.children:type_name -> pilab.core.v1.BlockDevice
@@ -5351,8 +6039,8 @@ var file_pilab_core_v1_storage_provisioning_service_proto_depIdxs = []int32{
 	37, // 8: pilab.core.v1.ListZfsResponse.pools:type_name -> pilab.core.v1.ZfsPool
 	38, // 9: pilab.core.v1.ListZfsResponse.datasets:type_name -> pilab.core.v1.ZfsDataset
 	3,  // 10: pilab.core.v1.CreateZpoolRequest.raid_type:type_name -> pilab.core.v1.ZfsRaidType
-	75, // 11: pilab.core.v1.CreateZpoolRequest.properties:type_name -> pilab.core.v1.CreateZpoolRequest.PropertiesEntry
-	76, // 12: pilab.core.v1.CreateZfsDatasetRequest.properties:type_name -> pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
+	84, // 11: pilab.core.v1.CreateZpoolRequest.properties:type_name -> pilab.core.v1.CreateZpoolRequest.PropertiesEntry
+	85, // 12: pilab.core.v1.CreateZfsDatasetRequest.properties:type_name -> pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
 	4,  // 13: pilab.core.v1.StoragePoolDescriptor.scope:type_name -> pilab.core.v1.StoragePoolScope
 	5,  // 14: pilab.core.v1.StoragePoolDescriptor.driver:type_name -> pilab.core.v1.StoragePoolDriver
 	51, // 15: pilab.core.v1.StoragePoolDescriptor.default_qos:type_name -> pilab.core.v1.DiskQoSConfig
@@ -5367,71 +6055,86 @@ var file_pilab_core_v1_storage_provisioning_service_proto_depIdxs = []int32{
 	57, // 24: pilab.core.v1.CreateStoragePoolResponse.pool:type_name -> pilab.core.v1.StoragePoolDescriptor
 	57, // 25: pilab.core.v1.UpdateStoragePoolRequest.pool:type_name -> pilab.core.v1.StoragePoolDescriptor
 	57, // 26: pilab.core.v1.UpdateStoragePoolResponse.pool:type_name -> pilab.core.v1.StoragePoolDescriptor
-	51, // 27: pilab.core.v1.SetDiskQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	51, // 28: pilab.core.v1.SetDiskQoSResponse.applied_qos:type_name -> pilab.core.v1.DiskQoSConfig
-	51, // 29: pilab.core.v1.GetDiskQoSResponse.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	7,  // 30: pilab.core.v1.CheckMigrationStorageRequest.disks:type_name -> pilab.core.v1.BlockDevice
-	6,  // 31: pilab.core.v1.CheckMigrationStorageResponse.mode:type_name -> pilab.core.v1.MigrationStorageMode
-	72, // 32: pilab.core.v1.CheckMigrationStorageResponse.non_shared_disks:type_name -> pilab.core.v1.NonSharedDiskInfo
-	8,  // 33: pilab.core.v1.StorageProvisioningService.ListDevices:input_type -> pilab.core.v1.ListDevicesRequest
-	10, // 34: pilab.core.v1.StorageProvisioningService.InitializeDisk:input_type -> pilab.core.v1.InitializeDiskRequest
-	12, // 35: pilab.core.v1.StorageProvisioningService.WipeDisk:input_type -> pilab.core.v1.WipeDiskRequest
-	14, // 36: pilab.core.v1.StorageProvisioningService.CreatePartition:input_type -> pilab.core.v1.CreatePartitionRequest
-	16, // 37: pilab.core.v1.StorageProvisioningService.DeletePartition:input_type -> pilab.core.v1.DeletePartitionRequest
-	18, // 38: pilab.core.v1.StorageProvisioningService.FormatPartition:input_type -> pilab.core.v1.FormatPartitionRequest
-	23, // 39: pilab.core.v1.StorageProvisioningService.ListLvm:input_type -> pilab.core.v1.ListLvmRequest
-	25, // 40: pilab.core.v1.StorageProvisioningService.CreateLvmPv:input_type -> pilab.core.v1.CreateLvmPvRequest
-	27, // 41: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:input_type -> pilab.core.v1.RemoveLvmPvRequest
-	29, // 42: pilab.core.v1.StorageProvisioningService.CreateLvmVg:input_type -> pilab.core.v1.CreateLvmVgRequest
-	31, // 43: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:input_type -> pilab.core.v1.RemoveLvmVgRequest
-	33, // 44: pilab.core.v1.StorageProvisioningService.CreateLvmLv:input_type -> pilab.core.v1.CreateLvmLvRequest
-	35, // 45: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:input_type -> pilab.core.v1.RemoveLvmLvRequest
-	39, // 46: pilab.core.v1.StorageProvisioningService.ListZfs:input_type -> pilab.core.v1.ListZfsRequest
-	41, // 47: pilab.core.v1.StorageProvisioningService.CreateZpool:input_type -> pilab.core.v1.CreateZpoolRequest
-	43, // 48: pilab.core.v1.StorageProvisioningService.DestroyZpool:input_type -> pilab.core.v1.DestroyZpoolRequest
-	45, // 49: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:input_type -> pilab.core.v1.CreateZfsDatasetRequest
-	47, // 50: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:input_type -> pilab.core.v1.DestroyZfsDatasetRequest
-	49, // 51: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:input_type -> pilab.core.v1.CreateZfsZvolRequest
-	58, // 52: pilab.core.v1.StorageProvisioningService.ListStoragePools:input_type -> pilab.core.v1.ListStoragePoolsRequest
-	60, // 53: pilab.core.v1.StorageProvisioningService.GetStoragePool:input_type -> pilab.core.v1.GetStoragePoolRequest
-	62, // 54: pilab.core.v1.StorageProvisioningService.CreateStoragePool:input_type -> pilab.core.v1.CreateStoragePoolRequest
-	64, // 55: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:input_type -> pilab.core.v1.UpdateStoragePoolRequest
-	66, // 56: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:input_type -> pilab.core.v1.DeleteStoragePoolRequest
-	68, // 57: pilab.core.v1.StorageProvisioningService.SetDiskQoS:input_type -> pilab.core.v1.SetDiskQoSRequest
-	70, // 58: pilab.core.v1.StorageProvisioningService.GetDiskQoS:input_type -> pilab.core.v1.GetDiskQoSRequest
-	73, // 59: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:input_type -> pilab.core.v1.CheckMigrationStorageRequest
-	9,  // 60: pilab.core.v1.StorageProvisioningService.ListDevices:output_type -> pilab.core.v1.ListDevicesResponse
-	11, // 61: pilab.core.v1.StorageProvisioningService.InitializeDisk:output_type -> pilab.core.v1.InitializeDiskResponse
-	13, // 62: pilab.core.v1.StorageProvisioningService.WipeDisk:output_type -> pilab.core.v1.WipeDiskResponse
-	15, // 63: pilab.core.v1.StorageProvisioningService.CreatePartition:output_type -> pilab.core.v1.CreatePartitionResponse
-	17, // 64: pilab.core.v1.StorageProvisioningService.DeletePartition:output_type -> pilab.core.v1.DeletePartitionResponse
-	19, // 65: pilab.core.v1.StorageProvisioningService.FormatPartition:output_type -> pilab.core.v1.FormatPartitionResponse
-	24, // 66: pilab.core.v1.StorageProvisioningService.ListLvm:output_type -> pilab.core.v1.ListLvmResponse
-	26, // 67: pilab.core.v1.StorageProvisioningService.CreateLvmPv:output_type -> pilab.core.v1.CreateLvmPvResponse
-	28, // 68: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:output_type -> pilab.core.v1.RemoveLvmPvResponse
-	30, // 69: pilab.core.v1.StorageProvisioningService.CreateLvmVg:output_type -> pilab.core.v1.CreateLvmVgResponse
-	32, // 70: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:output_type -> pilab.core.v1.RemoveLvmVgResponse
-	34, // 71: pilab.core.v1.StorageProvisioningService.CreateLvmLv:output_type -> pilab.core.v1.CreateLvmLvResponse
-	36, // 72: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:output_type -> pilab.core.v1.RemoveLvmLvResponse
-	40, // 73: pilab.core.v1.StorageProvisioningService.ListZfs:output_type -> pilab.core.v1.ListZfsResponse
-	42, // 74: pilab.core.v1.StorageProvisioningService.CreateZpool:output_type -> pilab.core.v1.CreateZpoolResponse
-	44, // 75: pilab.core.v1.StorageProvisioningService.DestroyZpool:output_type -> pilab.core.v1.DestroyZpoolResponse
-	46, // 76: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:output_type -> pilab.core.v1.CreateZfsDatasetResponse
-	48, // 77: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:output_type -> pilab.core.v1.DestroyZfsDatasetResponse
-	50, // 78: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:output_type -> pilab.core.v1.CreateZfsZvolResponse
-	59, // 79: pilab.core.v1.StorageProvisioningService.ListStoragePools:output_type -> pilab.core.v1.ListStoragePoolsResponse
-	61, // 80: pilab.core.v1.StorageProvisioningService.GetStoragePool:output_type -> pilab.core.v1.GetStoragePoolResponse
-	63, // 81: pilab.core.v1.StorageProvisioningService.CreateStoragePool:output_type -> pilab.core.v1.CreateStoragePoolResponse
-	65, // 82: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:output_type -> pilab.core.v1.UpdateStoragePoolResponse
-	67, // 83: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:output_type -> pilab.core.v1.DeleteStoragePoolResponse
-	69, // 84: pilab.core.v1.StorageProvisioningService.SetDiskQoS:output_type -> pilab.core.v1.SetDiskQoSResponse
-	71, // 85: pilab.core.v1.StorageProvisioningService.GetDiskQoS:output_type -> pilab.core.v1.GetDiskQoSResponse
-	74, // 86: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:output_type -> pilab.core.v1.CheckMigrationStorageResponse
-	60, // [60:87] is the sub-list for method output_type
-	33, // [33:60] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	5,  // 27: pilab.core.v1.StorageVolume.driver:type_name -> pilab.core.v1.StoragePoolDriver
+	51, // 28: pilab.core.v1.StorageVolume.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	86, // 29: pilab.core.v1.StorageVolume.created_at:type_name -> google.protobuf.Timestamp
+	51, // 30: pilab.core.v1.CreateVolumeRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	68, // 31: pilab.core.v1.CreateVolumeResponse.volume:type_name -> pilab.core.v1.StorageVolume
+	68, // 32: pilab.core.v1.ResizeVolumeResponse.volume:type_name -> pilab.core.v1.StorageVolume
+	68, // 33: pilab.core.v1.ListVolumesResponse.volumes:type_name -> pilab.core.v1.StorageVolume
+	51, // 34: pilab.core.v1.SetDiskQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	51, // 35: pilab.core.v1.SetDiskQoSResponse.applied_qos:type_name -> pilab.core.v1.DiskQoSConfig
+	51, // 36: pilab.core.v1.GetDiskQoSResponse.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	7,  // 37: pilab.core.v1.CheckMigrationStorageRequest.disks:type_name -> pilab.core.v1.BlockDevice
+	6,  // 38: pilab.core.v1.CheckMigrationStorageResponse.mode:type_name -> pilab.core.v1.MigrationStorageMode
+	81, // 39: pilab.core.v1.CheckMigrationStorageResponse.non_shared_disks:type_name -> pilab.core.v1.NonSharedDiskInfo
+	8,  // 40: pilab.core.v1.StorageProvisioningService.ListDevices:input_type -> pilab.core.v1.ListDevicesRequest
+	10, // 41: pilab.core.v1.StorageProvisioningService.InitializeDisk:input_type -> pilab.core.v1.InitializeDiskRequest
+	12, // 42: pilab.core.v1.StorageProvisioningService.WipeDisk:input_type -> pilab.core.v1.WipeDiskRequest
+	14, // 43: pilab.core.v1.StorageProvisioningService.CreatePartition:input_type -> pilab.core.v1.CreatePartitionRequest
+	16, // 44: pilab.core.v1.StorageProvisioningService.DeletePartition:input_type -> pilab.core.v1.DeletePartitionRequest
+	18, // 45: pilab.core.v1.StorageProvisioningService.FormatPartition:input_type -> pilab.core.v1.FormatPartitionRequest
+	23, // 46: pilab.core.v1.StorageProvisioningService.ListLvm:input_type -> pilab.core.v1.ListLvmRequest
+	25, // 47: pilab.core.v1.StorageProvisioningService.CreateLvmPv:input_type -> pilab.core.v1.CreateLvmPvRequest
+	27, // 48: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:input_type -> pilab.core.v1.RemoveLvmPvRequest
+	29, // 49: pilab.core.v1.StorageProvisioningService.CreateLvmVg:input_type -> pilab.core.v1.CreateLvmVgRequest
+	31, // 50: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:input_type -> pilab.core.v1.RemoveLvmVgRequest
+	33, // 51: pilab.core.v1.StorageProvisioningService.CreateLvmLv:input_type -> pilab.core.v1.CreateLvmLvRequest
+	35, // 52: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:input_type -> pilab.core.v1.RemoveLvmLvRequest
+	39, // 53: pilab.core.v1.StorageProvisioningService.ListZfs:input_type -> pilab.core.v1.ListZfsRequest
+	41, // 54: pilab.core.v1.StorageProvisioningService.CreateZpool:input_type -> pilab.core.v1.CreateZpoolRequest
+	43, // 55: pilab.core.v1.StorageProvisioningService.DestroyZpool:input_type -> pilab.core.v1.DestroyZpoolRequest
+	45, // 56: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:input_type -> pilab.core.v1.CreateZfsDatasetRequest
+	47, // 57: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:input_type -> pilab.core.v1.DestroyZfsDatasetRequest
+	49, // 58: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:input_type -> pilab.core.v1.CreateZfsZvolRequest
+	58, // 59: pilab.core.v1.StorageProvisioningService.ListStoragePools:input_type -> pilab.core.v1.ListStoragePoolsRequest
+	60, // 60: pilab.core.v1.StorageProvisioningService.GetStoragePool:input_type -> pilab.core.v1.GetStoragePoolRequest
+	62, // 61: pilab.core.v1.StorageProvisioningService.CreateStoragePool:input_type -> pilab.core.v1.CreateStoragePoolRequest
+	64, // 62: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:input_type -> pilab.core.v1.UpdateStoragePoolRequest
+	66, // 63: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:input_type -> pilab.core.v1.DeleteStoragePoolRequest
+	69, // 64: pilab.core.v1.StorageProvisioningService.CreateVolume:input_type -> pilab.core.v1.CreateVolumeRequest
+	71, // 65: pilab.core.v1.StorageProvisioningService.DeleteVolume:input_type -> pilab.core.v1.DeleteVolumeRequest
+	73, // 66: pilab.core.v1.StorageProvisioningService.ResizeVolume:input_type -> pilab.core.v1.ResizeVolumeRequest
+	75, // 67: pilab.core.v1.StorageProvisioningService.ListVolumes:input_type -> pilab.core.v1.ListVolumesRequest
+	77, // 68: pilab.core.v1.StorageProvisioningService.SetDiskQoS:input_type -> pilab.core.v1.SetDiskQoSRequest
+	79, // 69: pilab.core.v1.StorageProvisioningService.GetDiskQoS:input_type -> pilab.core.v1.GetDiskQoSRequest
+	82, // 70: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:input_type -> pilab.core.v1.CheckMigrationStorageRequest
+	9,  // 71: pilab.core.v1.StorageProvisioningService.ListDevices:output_type -> pilab.core.v1.ListDevicesResponse
+	11, // 72: pilab.core.v1.StorageProvisioningService.InitializeDisk:output_type -> pilab.core.v1.InitializeDiskResponse
+	13, // 73: pilab.core.v1.StorageProvisioningService.WipeDisk:output_type -> pilab.core.v1.WipeDiskResponse
+	15, // 74: pilab.core.v1.StorageProvisioningService.CreatePartition:output_type -> pilab.core.v1.CreatePartitionResponse
+	17, // 75: pilab.core.v1.StorageProvisioningService.DeletePartition:output_type -> pilab.core.v1.DeletePartitionResponse
+	19, // 76: pilab.core.v1.StorageProvisioningService.FormatPartition:output_type -> pilab.core.v1.FormatPartitionResponse
+	24, // 77: pilab.core.v1.StorageProvisioningService.ListLvm:output_type -> pilab.core.v1.ListLvmResponse
+	26, // 78: pilab.core.v1.StorageProvisioningService.CreateLvmPv:output_type -> pilab.core.v1.CreateLvmPvResponse
+	28, // 79: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:output_type -> pilab.core.v1.RemoveLvmPvResponse
+	30, // 80: pilab.core.v1.StorageProvisioningService.CreateLvmVg:output_type -> pilab.core.v1.CreateLvmVgResponse
+	32, // 81: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:output_type -> pilab.core.v1.RemoveLvmVgResponse
+	34, // 82: pilab.core.v1.StorageProvisioningService.CreateLvmLv:output_type -> pilab.core.v1.CreateLvmLvResponse
+	36, // 83: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:output_type -> pilab.core.v1.RemoveLvmLvResponse
+	40, // 84: pilab.core.v1.StorageProvisioningService.ListZfs:output_type -> pilab.core.v1.ListZfsResponse
+	42, // 85: pilab.core.v1.StorageProvisioningService.CreateZpool:output_type -> pilab.core.v1.CreateZpoolResponse
+	44, // 86: pilab.core.v1.StorageProvisioningService.DestroyZpool:output_type -> pilab.core.v1.DestroyZpoolResponse
+	46, // 87: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:output_type -> pilab.core.v1.CreateZfsDatasetResponse
+	48, // 88: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:output_type -> pilab.core.v1.DestroyZfsDatasetResponse
+	50, // 89: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:output_type -> pilab.core.v1.CreateZfsZvolResponse
+	59, // 90: pilab.core.v1.StorageProvisioningService.ListStoragePools:output_type -> pilab.core.v1.ListStoragePoolsResponse
+	61, // 91: pilab.core.v1.StorageProvisioningService.GetStoragePool:output_type -> pilab.core.v1.GetStoragePoolResponse
+	63, // 92: pilab.core.v1.StorageProvisioningService.CreateStoragePool:output_type -> pilab.core.v1.CreateStoragePoolResponse
+	65, // 93: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:output_type -> pilab.core.v1.UpdateStoragePoolResponse
+	67, // 94: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:output_type -> pilab.core.v1.DeleteStoragePoolResponse
+	70, // 95: pilab.core.v1.StorageProvisioningService.CreateVolume:output_type -> pilab.core.v1.CreateVolumeResponse
+	72, // 96: pilab.core.v1.StorageProvisioningService.DeleteVolume:output_type -> pilab.core.v1.DeleteVolumeResponse
+	74, // 97: pilab.core.v1.StorageProvisioningService.ResizeVolume:output_type -> pilab.core.v1.ResizeVolumeResponse
+	76, // 98: pilab.core.v1.StorageProvisioningService.ListVolumes:output_type -> pilab.core.v1.ListVolumesResponse
+	78, // 99: pilab.core.v1.StorageProvisioningService.SetDiskQoS:output_type -> pilab.core.v1.SetDiskQoSResponse
+	80, // 100: pilab.core.v1.StorageProvisioningService.GetDiskQoS:output_type -> pilab.core.v1.GetDiskQoSResponse
+	83, // 101: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:output_type -> pilab.core.v1.CheckMigrationStorageResponse
+	71, // [71:102] is the sub-list for method output_type
+	40, // [40:71] is the sub-list for method input_type
+	40, // [40:40] is the sub-list for extension type_name
+	40, // [40:40] is the sub-list for extension extendee
+	0,  // [0:40] is the sub-list for field type_name
 }
 
 func init() { file_pilab_core_v1_storage_provisioning_service_proto_init() }
@@ -5452,7 +6155,7 @@ func file_pilab_core_v1_storage_provisioning_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_core_v1_storage_provisioning_service_proto_rawDesc), len(file_pilab_core_v1_storage_provisioning_service_proto_rawDesc)),
 			NumEnums:      7,
-			NumMessages:   70,
+			NumMessages:   79,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

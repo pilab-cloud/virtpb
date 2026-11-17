@@ -486,6 +486,72 @@ message DeleteStoragePoolResponse {
   string message = 2;
 }
 
+// ---------------- Volume Lifecycle on Storage Pools ----------------
+
+message StorageVolume {
+  string id = 1;
+  string name = 2;              // e.g. "vm-prod-100-disk0"
+  string pool_name = 3;         // e.g. "ceph-shared" or "local-tank"
+  string pool_id = 4;
+  StoragePoolDriver driver = 5; // CEPH_RBD, ZFS, LVM_THIN, DIR
+  string volume_path = 6;       // e.g. "rbd:rbd-vms/vm-prod-100-disk0" or "/dev/zvol/tank/vms/vm-100"
+  int64 size_bytes = 7;
+  string size_human = 8;
+  string format = 9;            // "raw", "qcow2"
+  bool is_shared = 10;
+  DiskQoSConfig qos = 11;
+  google.protobuf.Timestamp created_at = 12;
+}
+
+message CreateVolumeRequest {
+  string node_id = 1;           // Target node if node-local pool, or empty for cluster-shared
+  string pool_name = 2;         // e.g. "ceph-shared"
+  string volume_name = 3;       // e.g. "vm-test-disk0"
+  int64 size_mb = 4;
+  string format = 5;            // "raw", "qcow2" (default: "raw" for Ceph, "qcow2" for Dir)
+  DiskQoSConfig qos = 6;        // Optional QoS overrides; if nil/zero, inherits pool.default_qos
+}
+
+message CreateVolumeResponse {
+  bool success = 1;
+  string message = 2;
+  StorageVolume volume = 3;
+}
+
+message DeleteVolumeRequest {
+  string node_id = 1;
+  string pool_name = 2;
+  string volume_name = 3;
+  bool force = 4;
+}
+
+message DeleteVolumeResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ResizeVolumeRequest {
+  string node_id = 1;
+  string pool_name = 2;
+  string volume_name = 3;
+  int64 new_size_mb = 4;
+}
+
+message ResizeVolumeResponse {
+  bool success = 1;
+  string message = 2;
+  StorageVolume volume = 3;
+}
+
+message ListVolumesRequest {
+  string node_id = 1;
+  string pool_name = 2;         // e.g. "ceph-shared"
+}
+
+message ListVolumesResponse {
+  repeated StorageVolume volumes = 1;
+}
+
 // Live Dynamic Disk QoS Throttling RPC Messages
 message SetDiskQoSRequest {
   string node_id = 1;
@@ -576,6 +642,12 @@ service StorageProvisioningService {
   rpc CreateStoragePool(CreateStoragePoolRequest) returns (CreateStoragePoolResponse);
   rpc UpdateStoragePool(UpdateStoragePoolRequest) returns (UpdateStoragePoolResponse);
   rpc DeleteStoragePool(DeleteStoragePoolRequest) returns (DeleteStoragePoolResponse);
+
+  // Volume Lifecycle on Storage Pools (Ceph RBD, ZFS, LVM, Directory)
+  rpc CreateVolume(CreateVolumeRequest) returns (CreateVolumeResponse);
+  rpc DeleteVolume(DeleteVolumeRequest) returns (DeleteVolumeResponse);
+  rpc ResizeVolume(ResizeVolumeRequest) returns (ResizeVolumeResponse);
+  rpc ListVolumes(ListVolumesRequest) returns (ListVolumesResponse);
 
   // Inheritable QoS & Live Throttling (QEMU iotune)
   rpc SetDiskQoS(SetDiskQoSRequest) returns (SetDiskQoSResponse);

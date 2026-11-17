@@ -43,6 +43,10 @@ const (
 	StorageProvisioningService_CreateStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/CreateStoragePool"
 	StorageProvisioningService_UpdateStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/UpdateStoragePool"
 	StorageProvisioningService_DeleteStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/DeleteStoragePool"
+	StorageProvisioningService_CreateVolume_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/CreateVolume"
+	StorageProvisioningService_DeleteVolume_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/DeleteVolume"
+	StorageProvisioningService_ResizeVolume_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/ResizeVolume"
+	StorageProvisioningService_ListVolumes_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListVolumes"
 	StorageProvisioningService_SetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/SetDiskQoS"
 	StorageProvisioningService_GetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/GetDiskQoS"
 	StorageProvisioningService_CheckMigrationStorage_FullMethodName = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
@@ -81,6 +85,11 @@ type StorageProvisioningServiceClient interface {
 	CreateStoragePool(ctx context.Context, in *CreateStoragePoolRequest, opts ...grpc.CallOption) (*CreateStoragePoolResponse, error)
 	UpdateStoragePool(ctx context.Context, in *UpdateStoragePoolRequest, opts ...grpc.CallOption) (*UpdateStoragePoolResponse, error)
 	DeleteStoragePool(ctx context.Context, in *DeleteStoragePoolRequest, opts ...grpc.CallOption) (*DeleteStoragePoolResponse, error)
+	// Volume Lifecycle on Storage Pools (Ceph RBD, ZFS, LVM, Directory)
+	CreateVolume(ctx context.Context, in *CreateVolumeRequest, opts ...grpc.CallOption) (*CreateVolumeResponse, error)
+	DeleteVolume(ctx context.Context, in *DeleteVolumeRequest, opts ...grpc.CallOption) (*DeleteVolumeResponse, error)
+	ResizeVolume(ctx context.Context, in *ResizeVolumeRequest, opts ...grpc.CallOption) (*ResizeVolumeResponse, error)
+	ListVolumes(ctx context.Context, in *ListVolumesRequest, opts ...grpc.CallOption) (*ListVolumesResponse, error)
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(ctx context.Context, in *SetDiskQoSRequest, opts ...grpc.CallOption) (*SetDiskQoSResponse, error)
 	GetDiskQoS(ctx context.Context, in *GetDiskQoSRequest, opts ...grpc.CallOption) (*GetDiskQoSResponse, error)
@@ -336,6 +345,46 @@ func (c *storageProvisioningServiceClient) DeleteStoragePool(ctx context.Context
 	return out, nil
 }
 
+func (c *storageProvisioningServiceClient) CreateVolume(ctx context.Context, in *CreateVolumeRequest, opts ...grpc.CallOption) (*CreateVolumeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateVolumeResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CreateVolume_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) DeleteVolume(ctx context.Context, in *DeleteVolumeRequest, opts ...grpc.CallOption) (*DeleteVolumeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteVolumeResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_DeleteVolume_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ResizeVolume(ctx context.Context, in *ResizeVolumeRequest, opts ...grpc.CallOption) (*ResizeVolumeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResizeVolumeResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ResizeVolume_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ListVolumes(ctx context.Context, in *ListVolumesRequest, opts ...grpc.CallOption) (*ListVolumesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListVolumesResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListVolumes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageProvisioningServiceClient) SetDiskQoS(ctx context.Context, in *SetDiskQoSRequest, opts ...grpc.CallOption) (*SetDiskQoSResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SetDiskQoSResponse)
@@ -399,6 +448,11 @@ type StorageProvisioningServiceServer interface {
 	CreateStoragePool(context.Context, *CreateStoragePoolRequest) (*CreateStoragePoolResponse, error)
 	UpdateStoragePool(context.Context, *UpdateStoragePoolRequest) (*UpdateStoragePoolResponse, error)
 	DeleteStoragePool(context.Context, *DeleteStoragePoolRequest) (*DeleteStoragePoolResponse, error)
+	// Volume Lifecycle on Storage Pools (Ceph RBD, ZFS, LVM, Directory)
+	CreateVolume(context.Context, *CreateVolumeRequest) (*CreateVolumeResponse, error)
+	DeleteVolume(context.Context, *DeleteVolumeRequest) (*DeleteVolumeResponse, error)
+	ResizeVolume(context.Context, *ResizeVolumeRequest) (*ResizeVolumeResponse, error)
+	ListVolumes(context.Context, *ListVolumesRequest) (*ListVolumesResponse, error)
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(context.Context, *SetDiskQoSRequest) (*SetDiskQoSResponse, error)
 	GetDiskQoS(context.Context, *GetDiskQoSRequest) (*GetDiskQoSResponse, error)
@@ -485,6 +539,18 @@ func (UnimplementedStorageProvisioningServiceServer) UpdateStoragePool(context.C
 }
 func (UnimplementedStorageProvisioningServiceServer) DeleteStoragePool(context.Context, *DeleteStoragePoolRequest) (*DeleteStoragePoolResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteStoragePool not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CreateVolume(context.Context, *CreateVolumeRequest) (*CreateVolumeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateVolume not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) DeleteVolume(context.Context, *DeleteVolumeRequest) (*DeleteVolumeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteVolume not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ResizeVolume(context.Context, *ResizeVolumeRequest) (*ResizeVolumeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResizeVolume not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListVolumes(context.Context, *ListVolumesRequest) (*ListVolumesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListVolumes not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) SetDiskQoS(context.Context, *SetDiskQoSRequest) (*SetDiskQoSResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetDiskQoS not implemented")
@@ -949,6 +1015,78 @@ func _StorageProvisioningService_DeleteStoragePool_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageProvisioningService_CreateVolume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateVolumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CreateVolume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CreateVolume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CreateVolume(ctx, req.(*CreateVolumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_DeleteVolume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteVolumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).DeleteVolume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_DeleteVolume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).DeleteVolume(ctx, req.(*DeleteVolumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ResizeVolume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResizeVolumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ResizeVolume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ResizeVolume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ResizeVolume(ctx, req.(*ResizeVolumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ListVolumes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListVolumesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListVolumes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListVolumes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListVolumes(ctx, req.(*ListVolumesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageProvisioningService_SetDiskQoS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetDiskQoSRequest)
 	if err := dec(in); err != nil {
@@ -1105,6 +1243,22 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteStoragePool",
 			Handler:    _StorageProvisioningService_DeleteStoragePool_Handler,
+		},
+		{
+			MethodName: "CreateVolume",
+			Handler:    _StorageProvisioningService_CreateVolume_Handler,
+		},
+		{
+			MethodName: "DeleteVolume",
+			Handler:    _StorageProvisioningService_DeleteVolume_Handler,
+		},
+		{
+			MethodName: "ResizeVolume",
+			Handler:    _StorageProvisioningService_ResizeVolume_Handler,
+		},
+		{
+			MethodName: "ListVolumes",
+			Handler:    _StorageProvisioningService_ListVolumes_Handler,
 		},
 		{
 			MethodName: "SetDiskQoS",
