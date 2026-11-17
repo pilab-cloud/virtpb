@@ -1,0 +1,216 @@
+syntax = "proto3";
+
+package pilab.core.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+// OverlayNetworkService provides distributed hypervisor-local DHCP, Link-Local
+// Cloud-Init Metadata (169.254.169.254), and network event auditing for GENEVE overlays.
+service OverlayNetworkService {
+  // DHCP Subnet & Static Lease Management
+  rpc ConfigureSubnet(ConfigureSubnetRequest) returns (ConfigureSubnetResponse);
+  rpc RemoveSubnet(RemoveSubnetRequest) returns (RemoveSubnetResponse);
+  rpc ListSubnets(ListSubnetsRequest) returns (ListSubnetsResponse);
+
+  rpc SetStaticLease(SetStaticLeaseRequest) returns (SetStaticLeaseResponse);
+  rpc RevokeLease(RevokeLeaseRequest) returns (RevokeLeaseResponse);
+  rpc ListLeases(ListLeasesRequest) returns (ListLeasesResponse);
+
+  // Cloud-Init & Guest Metadata Configuration
+  rpc SetVMMetadata(SetVMMetadataRequest) returns (SetVMMetadataResponse);
+  rpc GetVMMetadata(GetVMMetadataRequest) returns (GetVMMetadataResponse);
+  rpc DeleteVMMetadata(DeleteVMMetadataRequest) returns (DeleteVMMetadataResponse);
+
+  // Overlay Network Status & Active Hooks
+  rpc GetOverlayStatus(GetOverlayStatusRequest) returns (GetOverlayStatusResponse);
+
+  // Real-time Event Streaming (Bi-directional telemetry & lease events)
+  rpc StreamNetworkEvents(StreamNetworkEventsRequest) returns (stream NetworkEvent);
+}
+
+// SubnetConfig represents an overlay tenant subnet with DHCP options.
+message SubnetConfig {
+  string vpc_id = 1;
+  string subnet_id = 2;
+  uint32 vni = 3;                       // Virtual Network Instance ID (GENEVE VNI)
+  string cidr = 4;                      // e.g. "10.10.1.0/24"
+  string gateway_ip = 5;                 // e.g. "10.10.1.1"
+  repeated string dns_servers = 6;      // e.g. ["1.1.1.1", "8.8.8.8"]
+  uint32 mtu = 7;                       // Standard 1450 for GENEVE over WireGuard
+  uint32 lease_duration_sec = 8;        // e.g. 86400 (24h)
+  string domain_name = 9;               // e.g. "cloud.pilab.lan"
+  bool dhcp_enabled = 10;
+}
+
+message ConfigureSubnetRequest {
+  string node_id = 1;                   // Target hypervisor node (empty for local)
+  SubnetConfig subnet = 2;
+}
+
+message ConfigureSubnetResponse {
+  bool success = 1;
+  string message = 2;
+  SubnetConfig subnet = 3;
+}
+
+message RemoveSubnetRequest {
+  string node_id = 1;
+  uint32 vni = 2;
+}
+
+message RemoveSubnetResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListSubnetsRequest {
+  string node_id = 1;
+  string vpc_id = 2;
+}
+
+message ListSubnetsResponse {
+  repeated SubnetConfig subnets = 1;
+}
+
+// StaticLease represents an IP reservation bound to a guest MAC on a specific VNI.
+message StaticLease {
+  uint32 vni = 1;
+  string mac_address = 2;               // Normalized lowercase "52:54:00:xx:yy:zz"
+  string ip_address = 3;                // e.g. "10.10.1.15"
+  string hostname = 4;                  // e.g. "web-01"
+  string vm_uuid = 5;
+  string tap_device = 6;                // e.g. "tapc2cf7590"
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp expires_at = 8;
+  bool is_bound = 9;                    // Whether client has completed DHCP handshake
+  google.protobuf.Timestamp last_bound_at = 10;
+}
+
+message SetStaticLeaseRequest {
+  string node_id = 1;
+  StaticLease lease = 2;
+}
+
+message SetStaticLeaseResponse {
+  bool success = 1;
+  string message = 2;
+  StaticLease lease = 3;
+}
+
+message RevokeLeaseRequest {
+  string node_id = 1;
+  uint32 vni = 2;
+  string mac_address = 3;
+}
+
+message RevokeLeaseResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListLeasesRequest {
+  string node_id = 1;
+  uint32 vni = 2;                       // 0 for all VNIs
+  string vm_uuid = 3;                   // optional filter
+}
+
+message ListLeasesResponse {
+  repeated StaticLease leases = 1;
+}
+
+// VMMetadataConfig contains cloud-init and bootstrap configuration for a guest VM.
+message VMMetadataConfig {
+  string vm_uuid = 1;
+  string hostname = 2;
+  string instance_id = 3;
+  repeated string ssh_public_keys = 4;
+  string user_data = 5;                 // Raw cloud-config YAML, script, or Talos config
+  string network_config = 6;             // Cloud-init network v2 spec
+  map<string, string> tags = 7;
+  repeated string ip_addresses = 8;     // Allocated IPs used for O(1) resolution
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message SetVMMetadataRequest {
+  string node_id = 1;
+  VMMetadataConfig metadata = 2;
+}
+
+message SetVMMetadataResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetVMMetadataRequest {
+  string node_id = 1;
+  string vm_uuid = 2;
+  string client_ip = 3;                 // Optional: lookup by guest IP
+}
+
+message GetVMMetadataResponse {
+  VMMetadataConfig metadata = 1;
+}
+
+message DeleteVMMetadataRequest {
+  string node_id = 1;
+  string vm_uuid = 2;
+}
+
+message DeleteVMMetadataResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetOverlayStatusRequest {
+  string node_id = 1;
+}
+
+message GetOverlayStatusResponse {
+  string node_id = 1;
+  string hostname = 2;
+  bool dhcp_server_active = 3;
+  bool metadata_proxy_active = 4;
+  string metadata_listen_address = 5;   // e.g. "127.0.0.1:8088" or "169.254.169.254:80"
+  uint32 active_subnets_count = 6;
+  uint32 active_leases_count = 7;
+  uint32 primed_vms_count = 8;
+  int64 total_dhcp_requests = 9;
+  int64 total_dhcp_acks = 10;
+  int64 total_metadata_queries = 11;
+  google.protobuf.Timestamp started_at = 12;
+}
+
+// NetworkEventType classifies events emitted by hypervisor overlay network components.
+enum NetworkEventType {
+  NETWORK_EVENT_TYPE_UNSPECIFIED = 0;
+  NETWORK_EVENT_TYPE_DHCP_DISCOVER = 1;
+  NETWORK_EVENT_TYPE_DHCP_OFFER = 2;
+  NETWORK_EVENT_TYPE_DHCP_REQUEST = 3;
+  NETWORK_EVENT_TYPE_DHCP_ACK = 4;
+  NETWORK_EVENT_TYPE_DHCP_RELEASE = 5;
+  NETWORK_EVENT_TYPE_METADATA_ACCESSED = 6;
+  NETWORK_EVENT_TYPE_PORT_SECURITY_VIOLATION = 7;
+}
+
+// NetworkEvent represents a telemetry, lease, or security event on the overlay.
+message NetworkEvent {
+  string event_id = 1;
+  NetworkEventType event_type = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  string node_id = 4;
+  string vm_uuid = 5;
+  uint32 vni = 6;
+  string mac_address = 7;
+  string ip_address = 8;
+  string tap_device = 9;
+  string details = 10;
+  map<string, string> metadata = 11;
+}
+
+message StreamNetworkEventsRequest {
+  string node_id = 1;
+  uint32 vni = 2;                       // 0 for all VNIs
+  string vm_uuid = 3;                   // optional filter
+}
