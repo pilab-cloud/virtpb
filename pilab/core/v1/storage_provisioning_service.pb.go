@@ -4684,6 +4684,7 @@ type CheckMigrationStorageRequest struct {
 	VmId          string                 `protobuf:"bytes,1,opt,name=vm_id,json=vmId,proto3" json:"vm_id,omitempty"`
 	SourceNodeId  string                 `protobuf:"bytes,2,opt,name=source_node_id,json=sourceNodeId,proto3" json:"source_node_id,omitempty"`
 	TargetNodeId  string                 `protobuf:"bytes,3,opt,name=target_node_id,json=targetNodeId,proto3" json:"target_node_id,omitempty"`
+	Disks         []*BlockDevice         `protobuf:"bytes,4,rep,name=disks,proto3" json:"disks,omitempty"` // Optional: specific disks to check if known by caller
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4737,6 +4738,13 @@ func (x *CheckMigrationStorageRequest) GetTargetNodeId() string {
 		return x.TargetNodeId
 	}
 	return ""
+}
+
+func (x *CheckMigrationStorageRequest) GetDisks() []*BlockDevice {
+	if x != nil {
+		return x.Disks
+	}
+	return nil
 }
 
 type CheckMigrationStorageResponse struct {
@@ -5158,11 +5166,12 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\fstorage_pool\x18\x04 \x01(\tR\vstoragePool\x12\x1d\n" +
 	"\n" +
 	"size_bytes\x18\x05 \x01(\x03R\tsizeBytes\x12\x16\n" +
-	"\x06reason\x18\x06 \x01(\tR\x06reason\"\x7f\n" +
+	"\x06reason\x18\x06 \x01(\tR\x06reason\"\xb1\x01\n" +
 	"\x1cCheckMigrationStorageRequest\x12\x13\n" +
 	"\x05vm_id\x18\x01 \x01(\tR\x04vmId\x12$\n" +
 	"\x0esource_node_id\x18\x02 \x01(\tR\fsourceNodeId\x12$\n" +
-	"\x0etarget_node_id\x18\x03 \x01(\tR\ftargetNodeId\"\xf0\x01\n" +
+	"\x0etarget_node_id\x18\x03 \x01(\tR\ftargetNodeId\x120\n" +
+	"\x05disks\x18\x04 \x03(\v2\x1a.pilab.core.v1.BlockDeviceR\x05disks\"\xf0\x01\n" +
 	"\x1dCheckMigrationStorageResponse\x127\n" +
 	"\x04mode\x18\x01 \x01(\x0e2#.pilab.core.v1.MigrationStorageModeR\x04mode\x12\"\n" +
 	"\rcan_zero_copy\x18\x02 \x01(\bR\vcanZeroCopy\x12J\n" +
@@ -5361,67 +5370,68 @@ var file_pilab_core_v1_storage_provisioning_service_proto_depIdxs = []int32{
 	51, // 27: pilab.core.v1.SetDiskQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
 	51, // 28: pilab.core.v1.SetDiskQoSResponse.applied_qos:type_name -> pilab.core.v1.DiskQoSConfig
 	51, // 29: pilab.core.v1.GetDiskQoSResponse.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	6,  // 30: pilab.core.v1.CheckMigrationStorageResponse.mode:type_name -> pilab.core.v1.MigrationStorageMode
-	72, // 31: pilab.core.v1.CheckMigrationStorageResponse.non_shared_disks:type_name -> pilab.core.v1.NonSharedDiskInfo
-	8,  // 32: pilab.core.v1.StorageProvisioningService.ListDevices:input_type -> pilab.core.v1.ListDevicesRequest
-	10, // 33: pilab.core.v1.StorageProvisioningService.InitializeDisk:input_type -> pilab.core.v1.InitializeDiskRequest
-	12, // 34: pilab.core.v1.StorageProvisioningService.WipeDisk:input_type -> pilab.core.v1.WipeDiskRequest
-	14, // 35: pilab.core.v1.StorageProvisioningService.CreatePartition:input_type -> pilab.core.v1.CreatePartitionRequest
-	16, // 36: pilab.core.v1.StorageProvisioningService.DeletePartition:input_type -> pilab.core.v1.DeletePartitionRequest
-	18, // 37: pilab.core.v1.StorageProvisioningService.FormatPartition:input_type -> pilab.core.v1.FormatPartitionRequest
-	23, // 38: pilab.core.v1.StorageProvisioningService.ListLvm:input_type -> pilab.core.v1.ListLvmRequest
-	25, // 39: pilab.core.v1.StorageProvisioningService.CreateLvmPv:input_type -> pilab.core.v1.CreateLvmPvRequest
-	27, // 40: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:input_type -> pilab.core.v1.RemoveLvmPvRequest
-	29, // 41: pilab.core.v1.StorageProvisioningService.CreateLvmVg:input_type -> pilab.core.v1.CreateLvmVgRequest
-	31, // 42: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:input_type -> pilab.core.v1.RemoveLvmVgRequest
-	33, // 43: pilab.core.v1.StorageProvisioningService.CreateLvmLv:input_type -> pilab.core.v1.CreateLvmLvRequest
-	35, // 44: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:input_type -> pilab.core.v1.RemoveLvmLvRequest
-	39, // 45: pilab.core.v1.StorageProvisioningService.ListZfs:input_type -> pilab.core.v1.ListZfsRequest
-	41, // 46: pilab.core.v1.StorageProvisioningService.CreateZpool:input_type -> pilab.core.v1.CreateZpoolRequest
-	43, // 47: pilab.core.v1.StorageProvisioningService.DestroyZpool:input_type -> pilab.core.v1.DestroyZpoolRequest
-	45, // 48: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:input_type -> pilab.core.v1.CreateZfsDatasetRequest
-	47, // 49: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:input_type -> pilab.core.v1.DestroyZfsDatasetRequest
-	49, // 50: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:input_type -> pilab.core.v1.CreateZfsZvolRequest
-	58, // 51: pilab.core.v1.StorageProvisioningService.ListStoragePools:input_type -> pilab.core.v1.ListStoragePoolsRequest
-	60, // 52: pilab.core.v1.StorageProvisioningService.GetStoragePool:input_type -> pilab.core.v1.GetStoragePoolRequest
-	62, // 53: pilab.core.v1.StorageProvisioningService.CreateStoragePool:input_type -> pilab.core.v1.CreateStoragePoolRequest
-	64, // 54: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:input_type -> pilab.core.v1.UpdateStoragePoolRequest
-	66, // 55: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:input_type -> pilab.core.v1.DeleteStoragePoolRequest
-	68, // 56: pilab.core.v1.StorageProvisioningService.SetDiskQoS:input_type -> pilab.core.v1.SetDiskQoSRequest
-	70, // 57: pilab.core.v1.StorageProvisioningService.GetDiskQoS:input_type -> pilab.core.v1.GetDiskQoSRequest
-	73, // 58: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:input_type -> pilab.core.v1.CheckMigrationStorageRequest
-	9,  // 59: pilab.core.v1.StorageProvisioningService.ListDevices:output_type -> pilab.core.v1.ListDevicesResponse
-	11, // 60: pilab.core.v1.StorageProvisioningService.InitializeDisk:output_type -> pilab.core.v1.InitializeDiskResponse
-	13, // 61: pilab.core.v1.StorageProvisioningService.WipeDisk:output_type -> pilab.core.v1.WipeDiskResponse
-	15, // 62: pilab.core.v1.StorageProvisioningService.CreatePartition:output_type -> pilab.core.v1.CreatePartitionResponse
-	17, // 63: pilab.core.v1.StorageProvisioningService.DeletePartition:output_type -> pilab.core.v1.DeletePartitionResponse
-	19, // 64: pilab.core.v1.StorageProvisioningService.FormatPartition:output_type -> pilab.core.v1.FormatPartitionResponse
-	24, // 65: pilab.core.v1.StorageProvisioningService.ListLvm:output_type -> pilab.core.v1.ListLvmResponse
-	26, // 66: pilab.core.v1.StorageProvisioningService.CreateLvmPv:output_type -> pilab.core.v1.CreateLvmPvResponse
-	28, // 67: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:output_type -> pilab.core.v1.RemoveLvmPvResponse
-	30, // 68: pilab.core.v1.StorageProvisioningService.CreateLvmVg:output_type -> pilab.core.v1.CreateLvmVgResponse
-	32, // 69: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:output_type -> pilab.core.v1.RemoveLvmVgResponse
-	34, // 70: pilab.core.v1.StorageProvisioningService.CreateLvmLv:output_type -> pilab.core.v1.CreateLvmLvResponse
-	36, // 71: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:output_type -> pilab.core.v1.RemoveLvmLvResponse
-	40, // 72: pilab.core.v1.StorageProvisioningService.ListZfs:output_type -> pilab.core.v1.ListZfsResponse
-	42, // 73: pilab.core.v1.StorageProvisioningService.CreateZpool:output_type -> pilab.core.v1.CreateZpoolResponse
-	44, // 74: pilab.core.v1.StorageProvisioningService.DestroyZpool:output_type -> pilab.core.v1.DestroyZpoolResponse
-	46, // 75: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:output_type -> pilab.core.v1.CreateZfsDatasetResponse
-	48, // 76: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:output_type -> pilab.core.v1.DestroyZfsDatasetResponse
-	50, // 77: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:output_type -> pilab.core.v1.CreateZfsZvolResponse
-	59, // 78: pilab.core.v1.StorageProvisioningService.ListStoragePools:output_type -> pilab.core.v1.ListStoragePoolsResponse
-	61, // 79: pilab.core.v1.StorageProvisioningService.GetStoragePool:output_type -> pilab.core.v1.GetStoragePoolResponse
-	63, // 80: pilab.core.v1.StorageProvisioningService.CreateStoragePool:output_type -> pilab.core.v1.CreateStoragePoolResponse
-	65, // 81: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:output_type -> pilab.core.v1.UpdateStoragePoolResponse
-	67, // 82: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:output_type -> pilab.core.v1.DeleteStoragePoolResponse
-	69, // 83: pilab.core.v1.StorageProvisioningService.SetDiskQoS:output_type -> pilab.core.v1.SetDiskQoSResponse
-	71, // 84: pilab.core.v1.StorageProvisioningService.GetDiskQoS:output_type -> pilab.core.v1.GetDiskQoSResponse
-	74, // 85: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:output_type -> pilab.core.v1.CheckMigrationStorageResponse
-	59, // [59:86] is the sub-list for method output_type
-	32, // [32:59] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	7,  // 30: pilab.core.v1.CheckMigrationStorageRequest.disks:type_name -> pilab.core.v1.BlockDevice
+	6,  // 31: pilab.core.v1.CheckMigrationStorageResponse.mode:type_name -> pilab.core.v1.MigrationStorageMode
+	72, // 32: pilab.core.v1.CheckMigrationStorageResponse.non_shared_disks:type_name -> pilab.core.v1.NonSharedDiskInfo
+	8,  // 33: pilab.core.v1.StorageProvisioningService.ListDevices:input_type -> pilab.core.v1.ListDevicesRequest
+	10, // 34: pilab.core.v1.StorageProvisioningService.InitializeDisk:input_type -> pilab.core.v1.InitializeDiskRequest
+	12, // 35: pilab.core.v1.StorageProvisioningService.WipeDisk:input_type -> pilab.core.v1.WipeDiskRequest
+	14, // 36: pilab.core.v1.StorageProvisioningService.CreatePartition:input_type -> pilab.core.v1.CreatePartitionRequest
+	16, // 37: pilab.core.v1.StorageProvisioningService.DeletePartition:input_type -> pilab.core.v1.DeletePartitionRequest
+	18, // 38: pilab.core.v1.StorageProvisioningService.FormatPartition:input_type -> pilab.core.v1.FormatPartitionRequest
+	23, // 39: pilab.core.v1.StorageProvisioningService.ListLvm:input_type -> pilab.core.v1.ListLvmRequest
+	25, // 40: pilab.core.v1.StorageProvisioningService.CreateLvmPv:input_type -> pilab.core.v1.CreateLvmPvRequest
+	27, // 41: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:input_type -> pilab.core.v1.RemoveLvmPvRequest
+	29, // 42: pilab.core.v1.StorageProvisioningService.CreateLvmVg:input_type -> pilab.core.v1.CreateLvmVgRequest
+	31, // 43: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:input_type -> pilab.core.v1.RemoveLvmVgRequest
+	33, // 44: pilab.core.v1.StorageProvisioningService.CreateLvmLv:input_type -> pilab.core.v1.CreateLvmLvRequest
+	35, // 45: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:input_type -> pilab.core.v1.RemoveLvmLvRequest
+	39, // 46: pilab.core.v1.StorageProvisioningService.ListZfs:input_type -> pilab.core.v1.ListZfsRequest
+	41, // 47: pilab.core.v1.StorageProvisioningService.CreateZpool:input_type -> pilab.core.v1.CreateZpoolRequest
+	43, // 48: pilab.core.v1.StorageProvisioningService.DestroyZpool:input_type -> pilab.core.v1.DestroyZpoolRequest
+	45, // 49: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:input_type -> pilab.core.v1.CreateZfsDatasetRequest
+	47, // 50: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:input_type -> pilab.core.v1.DestroyZfsDatasetRequest
+	49, // 51: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:input_type -> pilab.core.v1.CreateZfsZvolRequest
+	58, // 52: pilab.core.v1.StorageProvisioningService.ListStoragePools:input_type -> pilab.core.v1.ListStoragePoolsRequest
+	60, // 53: pilab.core.v1.StorageProvisioningService.GetStoragePool:input_type -> pilab.core.v1.GetStoragePoolRequest
+	62, // 54: pilab.core.v1.StorageProvisioningService.CreateStoragePool:input_type -> pilab.core.v1.CreateStoragePoolRequest
+	64, // 55: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:input_type -> pilab.core.v1.UpdateStoragePoolRequest
+	66, // 56: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:input_type -> pilab.core.v1.DeleteStoragePoolRequest
+	68, // 57: pilab.core.v1.StorageProvisioningService.SetDiskQoS:input_type -> pilab.core.v1.SetDiskQoSRequest
+	70, // 58: pilab.core.v1.StorageProvisioningService.GetDiskQoS:input_type -> pilab.core.v1.GetDiskQoSRequest
+	73, // 59: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:input_type -> pilab.core.v1.CheckMigrationStorageRequest
+	9,  // 60: pilab.core.v1.StorageProvisioningService.ListDevices:output_type -> pilab.core.v1.ListDevicesResponse
+	11, // 61: pilab.core.v1.StorageProvisioningService.InitializeDisk:output_type -> pilab.core.v1.InitializeDiskResponse
+	13, // 62: pilab.core.v1.StorageProvisioningService.WipeDisk:output_type -> pilab.core.v1.WipeDiskResponse
+	15, // 63: pilab.core.v1.StorageProvisioningService.CreatePartition:output_type -> pilab.core.v1.CreatePartitionResponse
+	17, // 64: pilab.core.v1.StorageProvisioningService.DeletePartition:output_type -> pilab.core.v1.DeletePartitionResponse
+	19, // 65: pilab.core.v1.StorageProvisioningService.FormatPartition:output_type -> pilab.core.v1.FormatPartitionResponse
+	24, // 66: pilab.core.v1.StorageProvisioningService.ListLvm:output_type -> pilab.core.v1.ListLvmResponse
+	26, // 67: pilab.core.v1.StorageProvisioningService.CreateLvmPv:output_type -> pilab.core.v1.CreateLvmPvResponse
+	28, // 68: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:output_type -> pilab.core.v1.RemoveLvmPvResponse
+	30, // 69: pilab.core.v1.StorageProvisioningService.CreateLvmVg:output_type -> pilab.core.v1.CreateLvmVgResponse
+	32, // 70: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:output_type -> pilab.core.v1.RemoveLvmVgResponse
+	34, // 71: pilab.core.v1.StorageProvisioningService.CreateLvmLv:output_type -> pilab.core.v1.CreateLvmLvResponse
+	36, // 72: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:output_type -> pilab.core.v1.RemoveLvmLvResponse
+	40, // 73: pilab.core.v1.StorageProvisioningService.ListZfs:output_type -> pilab.core.v1.ListZfsResponse
+	42, // 74: pilab.core.v1.StorageProvisioningService.CreateZpool:output_type -> pilab.core.v1.CreateZpoolResponse
+	44, // 75: pilab.core.v1.StorageProvisioningService.DestroyZpool:output_type -> pilab.core.v1.DestroyZpoolResponse
+	46, // 76: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:output_type -> pilab.core.v1.CreateZfsDatasetResponse
+	48, // 77: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:output_type -> pilab.core.v1.DestroyZfsDatasetResponse
+	50, // 78: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:output_type -> pilab.core.v1.CreateZfsZvolResponse
+	59, // 79: pilab.core.v1.StorageProvisioningService.ListStoragePools:output_type -> pilab.core.v1.ListStoragePoolsResponse
+	61, // 80: pilab.core.v1.StorageProvisioningService.GetStoragePool:output_type -> pilab.core.v1.GetStoragePoolResponse
+	63, // 81: pilab.core.v1.StorageProvisioningService.CreateStoragePool:output_type -> pilab.core.v1.CreateStoragePoolResponse
+	65, // 82: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:output_type -> pilab.core.v1.UpdateStoragePoolResponse
+	67, // 83: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:output_type -> pilab.core.v1.DeleteStoragePoolResponse
+	69, // 84: pilab.core.v1.StorageProvisioningService.SetDiskQoS:output_type -> pilab.core.v1.SetDiskQoSResponse
+	71, // 85: pilab.core.v1.StorageProvisioningService.GetDiskQoS:output_type -> pilab.core.v1.GetDiskQoSResponse
+	74, // 86: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:output_type -> pilab.core.v1.CheckMigrationStorageResponse
+	60, // [60:87] is the sub-list for method output_type
+	33, // [33:60] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_pilab_core_v1_storage_provisioning_service_proto_init() }

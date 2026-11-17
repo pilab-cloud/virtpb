@@ -530,6 +530,7 @@ message CheckMigrationStorageRequest {
   string vm_id = 1;
   string source_node_id = 2;
   string target_node_id = 3;
+  repeated BlockDevice disks = 4; // Optional: specific disks to check if known by caller
 }
 
 message CheckMigrationStorageResponse {
