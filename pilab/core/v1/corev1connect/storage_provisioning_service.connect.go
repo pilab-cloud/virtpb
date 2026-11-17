@@ -91,6 +91,30 @@ const (
 	// StorageProvisioningServiceCreateZfsZvolProcedure is the fully-qualified name of the
 	// StorageProvisioningService's CreateZfsZvol RPC.
 	StorageProvisioningServiceCreateZfsZvolProcedure = "/pilab.core.v1.StorageProvisioningService/CreateZfsZvol"
+	// StorageProvisioningServiceListStoragePoolsProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListStoragePools RPC.
+	StorageProvisioningServiceListStoragePoolsProcedure = "/pilab.core.v1.StorageProvisioningService/ListStoragePools"
+	// StorageProvisioningServiceGetStoragePoolProcedure is the fully-qualified name of the
+	// StorageProvisioningService's GetStoragePool RPC.
+	StorageProvisioningServiceGetStoragePoolProcedure = "/pilab.core.v1.StorageProvisioningService/GetStoragePool"
+	// StorageProvisioningServiceCreateStoragePoolProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CreateStoragePool RPC.
+	StorageProvisioningServiceCreateStoragePoolProcedure = "/pilab.core.v1.StorageProvisioningService/CreateStoragePool"
+	// StorageProvisioningServiceUpdateStoragePoolProcedure is the fully-qualified name of the
+	// StorageProvisioningService's UpdateStoragePool RPC.
+	StorageProvisioningServiceUpdateStoragePoolProcedure = "/pilab.core.v1.StorageProvisioningService/UpdateStoragePool"
+	// StorageProvisioningServiceDeleteStoragePoolProcedure is the fully-qualified name of the
+	// StorageProvisioningService's DeleteStoragePool RPC.
+	StorageProvisioningServiceDeleteStoragePoolProcedure = "/pilab.core.v1.StorageProvisioningService/DeleteStoragePool"
+	// StorageProvisioningServiceSetDiskQoSProcedure is the fully-qualified name of the
+	// StorageProvisioningService's SetDiskQoS RPC.
+	StorageProvisioningServiceSetDiskQoSProcedure = "/pilab.core.v1.StorageProvisioningService/SetDiskQoS"
+	// StorageProvisioningServiceGetDiskQoSProcedure is the fully-qualified name of the
+	// StorageProvisioningService's GetDiskQoS RPC.
+	StorageProvisioningServiceGetDiskQoSProcedure = "/pilab.core.v1.StorageProvisioningService/GetDiskQoS"
+	// StorageProvisioningServiceCheckMigrationStorageProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CheckMigrationStorage RPC.
+	StorageProvisioningServiceCheckMigrationStorageProcedure = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
 )
 
 // StorageProvisioningServiceClient is a client for the pilab.core.v1.StorageProvisioningService
@@ -119,6 +143,17 @@ type StorageProvisioningServiceClient interface {
 	CreateZfsDataset(context.Context, *connect.Request[v1.CreateZfsDatasetRequest]) (*connect.Response[v1.CreateZfsDatasetResponse], error)
 	DestroyZfsDataset(context.Context, *connect.Request[v1.DestroyZfsDatasetRequest]) (*connect.Response[v1.DestroyZfsDatasetResponse], error)
 	CreateZfsZvol(context.Context, *connect.Request[v1.CreateZfsZvolRequest]) (*connect.Response[v1.CreateZfsZvolResponse], error)
+	// Storage Pools (Declarative Ceph RBD, ZFS, LVM, NFS, Dir)
+	ListStoragePools(context.Context, *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error)
+	GetStoragePool(context.Context, *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.GetStoragePoolResponse], error)
+	CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.CreateStoragePoolResponse], error)
+	UpdateStoragePool(context.Context, *connect.Request[v1.UpdateStoragePoolRequest]) (*connect.Response[v1.UpdateStoragePoolResponse], error)
+	DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error)
+	// Inheritable QoS & Live Throttling (QEMU iotune)
+	SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error)
+	GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error)
+	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
+	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
 
 // NewStorageProvisioningServiceClient constructs a client for the
@@ -246,30 +281,86 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateZfsZvol")),
 			connect.WithClientOptions(opts...),
 		),
+		listStoragePools: connect.NewClient[v1.ListStoragePoolsRequest, v1.ListStoragePoolsResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListStoragePoolsProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStoragePools")),
+			connect.WithClientOptions(opts...),
+		),
+		getStoragePool: connect.NewClient[v1.GetStoragePoolRequest, v1.GetStoragePoolResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceGetStoragePoolProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		createStoragePool: connect.NewClient[v1.CreateStoragePoolRequest, v1.CreateStoragePoolResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCreateStoragePoolProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		updateStoragePool: connect.NewClient[v1.UpdateStoragePoolRequest, v1.UpdateStoragePoolResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceUpdateStoragePoolProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("UpdateStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteStoragePool: connect.NewClient[v1.DeleteStoragePoolRequest, v1.DeleteStoragePoolResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceDeleteStoragePoolProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		setDiskQoS: connect.NewClient[v1.SetDiskQoSRequest, v1.SetDiskQoSResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceSetDiskQoSProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("SetDiskQoS")),
+			connect.WithClientOptions(opts...),
+		),
+		getDiskQoS: connect.NewClient[v1.GetDiskQoSRequest, v1.GetDiskQoSResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceGetDiskQoSProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("GetDiskQoS")),
+			connect.WithClientOptions(opts...),
+		),
+		checkMigrationStorage: connect.NewClient[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCheckMigrationStorageProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CheckMigrationStorage")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // storageProvisioningServiceClient implements StorageProvisioningServiceClient.
 type storageProvisioningServiceClient struct {
-	listDevices       *connect.Client[v1.ListDevicesRequest, v1.ListDevicesResponse]
-	initializeDisk    *connect.Client[v1.InitializeDiskRequest, v1.InitializeDiskResponse]
-	wipeDisk          *connect.Client[v1.WipeDiskRequest, v1.WipeDiskResponse]
-	createPartition   *connect.Client[v1.CreatePartitionRequest, v1.CreatePartitionResponse]
-	deletePartition   *connect.Client[v1.DeletePartitionRequest, v1.DeletePartitionResponse]
-	formatPartition   *connect.Client[v1.FormatPartitionRequest, v1.FormatPartitionResponse]
-	listLvm           *connect.Client[v1.ListLvmRequest, v1.ListLvmResponse]
-	createLvmPv       *connect.Client[v1.CreateLvmPvRequest, v1.CreateLvmPvResponse]
-	removeLvmPv       *connect.Client[v1.RemoveLvmPvRequest, v1.RemoveLvmPvResponse]
-	createLvmVg       *connect.Client[v1.CreateLvmVgRequest, v1.CreateLvmVgResponse]
-	removeLvmVg       *connect.Client[v1.RemoveLvmVgRequest, v1.RemoveLvmVgResponse]
-	createLvmLv       *connect.Client[v1.CreateLvmLvRequest, v1.CreateLvmLvResponse]
-	removeLvmLv       *connect.Client[v1.RemoveLvmLvRequest, v1.RemoveLvmLvResponse]
-	listZfs           *connect.Client[v1.ListZfsRequest, v1.ListZfsResponse]
-	createZpool       *connect.Client[v1.CreateZpoolRequest, v1.CreateZpoolResponse]
-	destroyZpool      *connect.Client[v1.DestroyZpoolRequest, v1.DestroyZpoolResponse]
-	createZfsDataset  *connect.Client[v1.CreateZfsDatasetRequest, v1.CreateZfsDatasetResponse]
-	destroyZfsDataset *connect.Client[v1.DestroyZfsDatasetRequest, v1.DestroyZfsDatasetResponse]
-	createZfsZvol     *connect.Client[v1.CreateZfsZvolRequest, v1.CreateZfsZvolResponse]
+	listDevices           *connect.Client[v1.ListDevicesRequest, v1.ListDevicesResponse]
+	initializeDisk        *connect.Client[v1.InitializeDiskRequest, v1.InitializeDiskResponse]
+	wipeDisk              *connect.Client[v1.WipeDiskRequest, v1.WipeDiskResponse]
+	createPartition       *connect.Client[v1.CreatePartitionRequest, v1.CreatePartitionResponse]
+	deletePartition       *connect.Client[v1.DeletePartitionRequest, v1.DeletePartitionResponse]
+	formatPartition       *connect.Client[v1.FormatPartitionRequest, v1.FormatPartitionResponse]
+	listLvm               *connect.Client[v1.ListLvmRequest, v1.ListLvmResponse]
+	createLvmPv           *connect.Client[v1.CreateLvmPvRequest, v1.CreateLvmPvResponse]
+	removeLvmPv           *connect.Client[v1.RemoveLvmPvRequest, v1.RemoveLvmPvResponse]
+	createLvmVg           *connect.Client[v1.CreateLvmVgRequest, v1.CreateLvmVgResponse]
+	removeLvmVg           *connect.Client[v1.RemoveLvmVgRequest, v1.RemoveLvmVgResponse]
+	createLvmLv           *connect.Client[v1.CreateLvmLvRequest, v1.CreateLvmLvResponse]
+	removeLvmLv           *connect.Client[v1.RemoveLvmLvRequest, v1.RemoveLvmLvResponse]
+	listZfs               *connect.Client[v1.ListZfsRequest, v1.ListZfsResponse]
+	createZpool           *connect.Client[v1.CreateZpoolRequest, v1.CreateZpoolResponse]
+	destroyZpool          *connect.Client[v1.DestroyZpoolRequest, v1.DestroyZpoolResponse]
+	createZfsDataset      *connect.Client[v1.CreateZfsDatasetRequest, v1.CreateZfsDatasetResponse]
+	destroyZfsDataset     *connect.Client[v1.DestroyZfsDatasetRequest, v1.DestroyZfsDatasetResponse]
+	createZfsZvol         *connect.Client[v1.CreateZfsZvolRequest, v1.CreateZfsZvolResponse]
+	listStoragePools      *connect.Client[v1.ListStoragePoolsRequest, v1.ListStoragePoolsResponse]
+	getStoragePool        *connect.Client[v1.GetStoragePoolRequest, v1.GetStoragePoolResponse]
+	createStoragePool     *connect.Client[v1.CreateStoragePoolRequest, v1.CreateStoragePoolResponse]
+	updateStoragePool     *connect.Client[v1.UpdateStoragePoolRequest, v1.UpdateStoragePoolResponse]
+	deleteStoragePool     *connect.Client[v1.DeleteStoragePoolRequest, v1.DeleteStoragePoolResponse]
+	setDiskQoS            *connect.Client[v1.SetDiskQoSRequest, v1.SetDiskQoSResponse]
+	getDiskQoS            *connect.Client[v1.GetDiskQoSRequest, v1.GetDiskQoSResponse]
+	checkMigrationStorage *connect.Client[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse]
 }
 
 // ListDevices calls pilab.core.v1.StorageProvisioningService.ListDevices.
@@ -367,6 +458,46 @@ func (c *storageProvisioningServiceClient) CreateZfsZvol(ctx context.Context, re
 	return c.createZfsZvol.CallUnary(ctx, req)
 }
 
+// ListStoragePools calls pilab.core.v1.StorageProvisioningService.ListStoragePools.
+func (c *storageProvisioningServiceClient) ListStoragePools(ctx context.Context, req *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error) {
+	return c.listStoragePools.CallUnary(ctx, req)
+}
+
+// GetStoragePool calls pilab.core.v1.StorageProvisioningService.GetStoragePool.
+func (c *storageProvisioningServiceClient) GetStoragePool(ctx context.Context, req *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.GetStoragePoolResponse], error) {
+	return c.getStoragePool.CallUnary(ctx, req)
+}
+
+// CreateStoragePool calls pilab.core.v1.StorageProvisioningService.CreateStoragePool.
+func (c *storageProvisioningServiceClient) CreateStoragePool(ctx context.Context, req *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.CreateStoragePoolResponse], error) {
+	return c.createStoragePool.CallUnary(ctx, req)
+}
+
+// UpdateStoragePool calls pilab.core.v1.StorageProvisioningService.UpdateStoragePool.
+func (c *storageProvisioningServiceClient) UpdateStoragePool(ctx context.Context, req *connect.Request[v1.UpdateStoragePoolRequest]) (*connect.Response[v1.UpdateStoragePoolResponse], error) {
+	return c.updateStoragePool.CallUnary(ctx, req)
+}
+
+// DeleteStoragePool calls pilab.core.v1.StorageProvisioningService.DeleteStoragePool.
+func (c *storageProvisioningServiceClient) DeleteStoragePool(ctx context.Context, req *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error) {
+	return c.deleteStoragePool.CallUnary(ctx, req)
+}
+
+// SetDiskQoS calls pilab.core.v1.StorageProvisioningService.SetDiskQoS.
+func (c *storageProvisioningServiceClient) SetDiskQoS(ctx context.Context, req *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error) {
+	return c.setDiskQoS.CallUnary(ctx, req)
+}
+
+// GetDiskQoS calls pilab.core.v1.StorageProvisioningService.GetDiskQoS.
+func (c *storageProvisioningServiceClient) GetDiskQoS(ctx context.Context, req *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error) {
+	return c.getDiskQoS.CallUnary(ctx, req)
+}
+
+// CheckMigrationStorage calls pilab.core.v1.StorageProvisioningService.CheckMigrationStorage.
+func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, req *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
+	return c.checkMigrationStorage.CallUnary(ctx, req)
+}
+
 // StorageProvisioningServiceHandler is an implementation of the
 // pilab.core.v1.StorageProvisioningService service.
 type StorageProvisioningServiceHandler interface {
@@ -393,6 +524,17 @@ type StorageProvisioningServiceHandler interface {
 	CreateZfsDataset(context.Context, *connect.Request[v1.CreateZfsDatasetRequest]) (*connect.Response[v1.CreateZfsDatasetResponse], error)
 	DestroyZfsDataset(context.Context, *connect.Request[v1.DestroyZfsDatasetRequest]) (*connect.Response[v1.DestroyZfsDatasetResponse], error)
 	CreateZfsZvol(context.Context, *connect.Request[v1.CreateZfsZvolRequest]) (*connect.Response[v1.CreateZfsZvolResponse], error)
+	// Storage Pools (Declarative Ceph RBD, ZFS, LVM, NFS, Dir)
+	ListStoragePools(context.Context, *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error)
+	GetStoragePool(context.Context, *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.GetStoragePoolResponse], error)
+	CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.CreateStoragePoolResponse], error)
+	UpdateStoragePool(context.Context, *connect.Request[v1.UpdateStoragePoolRequest]) (*connect.Response[v1.UpdateStoragePoolResponse], error)
+	DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error)
+	// Inheritable QoS & Live Throttling (QEMU iotune)
+	SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error)
+	GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error)
+	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
+	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
 
 // NewStorageProvisioningServiceHandler builds an HTTP handler from the service implementation. It
@@ -516,6 +658,54 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateZfsZvol")),
 		connect.WithHandlerOptions(opts...),
 	)
+	storageProvisioningServiceListStoragePoolsHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListStoragePoolsProcedure,
+		svc.ListStoragePools,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStoragePools")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceGetStoragePoolHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceGetStoragePoolProcedure,
+		svc.GetStoragePool,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceCreateStoragePoolHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCreateStoragePoolProcedure,
+		svc.CreateStoragePool,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceUpdateStoragePoolHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceUpdateStoragePoolProcedure,
+		svc.UpdateStoragePool,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("UpdateStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceDeleteStoragePoolHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceDeleteStoragePoolProcedure,
+		svc.DeleteStoragePool,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceSetDiskQoSHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceSetDiskQoSProcedure,
+		svc.SetDiskQoS,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("SetDiskQoS")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceGetDiskQoSHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceGetDiskQoSProcedure,
+		svc.GetDiskQoS,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("GetDiskQoS")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceCheckMigrationStorageHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCheckMigrationStorageProcedure,
+		svc.CheckMigrationStorage,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CheckMigrationStorage")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pilab.core.v1.StorageProvisioningService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StorageProvisioningServiceListDevicesProcedure:
@@ -556,6 +746,22 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 			storageProvisioningServiceDestroyZfsDatasetHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceCreateZfsZvolProcedure:
 			storageProvisioningServiceCreateZfsZvolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListStoragePoolsProcedure:
+			storageProvisioningServiceListStoragePoolsHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceGetStoragePoolProcedure:
+			storageProvisioningServiceGetStoragePoolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCreateStoragePoolProcedure:
+			storageProvisioningServiceCreateStoragePoolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceUpdateStoragePoolProcedure:
+			storageProvisioningServiceUpdateStoragePoolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceDeleteStoragePoolProcedure:
+			storageProvisioningServiceDeleteStoragePoolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceSetDiskQoSProcedure:
+			storageProvisioningServiceSetDiskQoSHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceGetDiskQoSProcedure:
+			storageProvisioningServiceGetDiskQoSHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCheckMigrationStorageProcedure:
+			storageProvisioningServiceCheckMigrationStorageHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -639,4 +845,36 @@ func (UnimplementedStorageProvisioningServiceHandler) DestroyZfsDataset(context.
 
 func (UnimplementedStorageProvisioningServiceHandler) CreateZfsZvol(context.Context, *connect.Request[v1.CreateZfsZvolRequest]) (*connect.Response[v1.CreateZfsZvolResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CreateZfsZvol is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListStoragePools(context.Context, *connect.Request[v1.ListStoragePoolsRequest]) (*connect.Response[v1.ListStoragePoolsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListStoragePools is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) GetStoragePool(context.Context, *connect.Request[v1.GetStoragePoolRequest]) (*connect.Response[v1.GetStoragePoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GetStoragePool is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CreateStoragePool(context.Context, *connect.Request[v1.CreateStoragePoolRequest]) (*connect.Response[v1.CreateStoragePoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CreateStoragePool is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) UpdateStoragePool(context.Context, *connect.Request[v1.UpdateStoragePoolRequest]) (*connect.Response[v1.UpdateStoragePoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.UpdateStoragePool is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) DeleteStoragePool(context.Context, *connect.Request[v1.DeleteStoragePoolRequest]) (*connect.Response[v1.DeleteStoragePoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DeleteStoragePool is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.SetDiskQoS is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GetDiskQoS is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CheckMigrationStorage is not implemented"))
 }

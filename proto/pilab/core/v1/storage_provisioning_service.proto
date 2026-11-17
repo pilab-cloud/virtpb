@@ -337,6 +337,208 @@ message CreateZfsZvolResponse {
   string zvol_device = 3;       // e.g. "/dev/zvol/tank/vm-disk-100"
 }
 
+// ---------------- Storage Pools & QoS Architecture ----------------
+
+enum StoragePoolScope {
+  STORAGE_POOL_SCOPE_UNSPECIFIED = 0;
+  STORAGE_POOL_SCOPE_NODE_LOCAL = 1;     // Bound to a single hypervisor (local NVMe, SSD, local ZFS)
+  STORAGE_POOL_SCOPE_CLUSTER_SHARED = 2;  // Accessible across all hypervisors (Ceph RBD, NFS, shared iSCSI)
+}
+
+enum StoragePoolDriver {
+  STORAGE_POOL_DRIVER_UNSPECIFIED = 0;
+  STORAGE_POOL_DRIVER_CEPH_RBD = 1;       // Native QEMU librbd
+  STORAGE_POOL_DRIVER_DIR = 2;            // Filesystem directory (qcow2/raw)
+  STORAGE_POOL_DRIVER_ZFS = 3;            // ZFS dataset or zvol
+  STORAGE_POOL_DRIVER_LVM_THIN = 4;       // LVM Thin pool
+  STORAGE_POOL_DRIVER_NFS = 5;            // NFSv4 mount
+  STORAGE_POOL_DRIVER_ISCSI = 6;          // iSCSI target/LUN
+}
+
+// Inheritable Disk QoS Configuration
+message DiskQoSConfig {
+  // IOPS Limits (Mandatory default: 2500, burst: 5000)
+  int64 total_iops = 1;
+  int64 read_iops = 2;
+  int64 write_iops = 3;
+  int64 iops_burst = 4;
+  int64 iops_burst_duration_sec = 5; // seconds
+
+  // Bandwidth Limits in bytes/sec (Mandatory default: 157286400 = 150MB/s, burst: 314572800 = 300MB/s)
+  int64 total_bytes_sec = 6;
+  int64 read_bytes_sec = 7;
+  int64 write_bytes_sec = 8;
+  int64 bytes_burst = 9;
+
+  // Cgroups v2 blkio weight (100 - 1000, default: 500)
+  int32 io_weight = 10;
+  
+  // When true, tracks the backing StoragePool's default_qos dynamically
+  bool inherit_from_pool = 11;
+}
+
+// Ceph RBD Backing Specification
+message CephPoolBacking {
+  repeated string monitors = 1;      // e.g. ["10.99.0.10:6789", "10.99.0.3:6789"]
+  string pool_name = 2;              // e.g. "rbd-vms"
+  string user = 3;                   // e.g. "pivirt" or "admin"
+  string keyring_path = 4;           // e.g. "/etc/ceph/ceph.client.pivirt.keyring"
+  string conf_path = 5;              // e.g. "/etc/ceph/ceph.conf"
+}
+
+// ZFS Pool Backing Specification
+message ZfsPoolBacking {
+  string zpool_name = 1;             // e.g. "tank"
+  string dataset_name = 2;           // e.g. "tank/vms"
+}
+
+// LVM Thin Pool Backing Specification
+message LvmPoolBacking {
+  string vg_name = 1;                // e.g. "vg_fast"
+  string thin_pool_name = 2;         // e.g. "pool_vms"
+}
+
+// NFS Pool Backing Specification
+message NfsPoolBacking {
+  string server = 1;                 // e.g. "10.99.0.100"
+  string export_path = 2;            // e.g. "/srv/nfs/vms"
+  string mount_options = 3;          // e.g. "rw,noatime,hard,intr,vers=4.2"
+}
+
+// Directory Pool Backing Specification
+message DirPoolBacking {
+  string path = 1;                   // e.g. "/var/lib/pivirt/storage"
+}
+
+// Full StoragePool representation
+message StoragePoolDescriptor {
+  string id = 1;
+  string name = 2;
+  StoragePoolScope scope = 3;
+  StoragePoolDriver driver = 4;
+  string mount_point = 5;            // Host mount point if applicable
+
+  bool is_shared = 6;                // True if cluster-shared (e.g. Ceph RBD, NFS)
+  bool thin_provisioning = 7;        // Supports thin allocation
+  repeated string supported_formats = 8; // ["raw", "qcow2", "zvol"]
+
+  DiskQoSConfig default_qos = 9;     // Default QoS inherited by all disks
+
+  int64 total_bytes = 10;
+  int64 available_bytes = 11;
+  int64 allocated_bytes = 12;
+
+  repeated string mounted_node_ids = 13; // Nodes currently connected / mounting
+
+  oneof backing {
+    CephPoolBacking ceph = 20;
+    ZfsPoolBacking zfs = 21;
+    LvmPoolBacking lvm = 22;
+    NfsPoolBacking nfs = 23;
+    DirPoolBacking dir = 24;
+  }
+}
+
+// Storage Pool RPC Messages
+message ListStoragePoolsRequest {
+  string node_id = 1; // Optional: filter by node accessibility
+}
+
+message ListStoragePoolsResponse {
+  repeated StoragePoolDescriptor pools = 1;
+}
+
+message GetStoragePoolRequest {
+  string id_or_name = 1;
+}
+
+message GetStoragePoolResponse {
+  StoragePoolDescriptor pool = 1;
+}
+
+message CreateStoragePoolRequest {
+  StoragePoolDescriptor pool = 1;
+}
+
+message CreateStoragePoolResponse {
+  bool success = 1;
+  string message = 2;
+  StoragePoolDescriptor pool = 3;
+}
+
+message UpdateStoragePoolRequest {
+  StoragePoolDescriptor pool = 1;
+}
+
+message UpdateStoragePoolResponse {
+  bool success = 1;
+  string message = 2;
+  StoragePoolDescriptor pool = 3;
+}
+
+message DeleteStoragePoolRequest {
+  string id_or_name = 1;
+  bool force = 2;
+}
+
+message DeleteStoragePoolResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Live Dynamic Disk QoS Throttling RPC Messages
+message SetDiskQoSRequest {
+  string node_id = 1;
+  string vm_id = 2;
+  string device_or_drive_id = 3;     // e.g. "drive-virtio-disk0" or "vda"
+  DiskQoSConfig qos = 4;
+}
+
+message SetDiskQoSResponse {
+  bool success = 1;
+  string message = 2;
+  DiskQoSConfig applied_qos = 3;
+}
+
+message GetDiskQoSRequest {
+  string node_id = 1;
+  string vm_id = 2;
+  string device_or_drive_id = 3;
+}
+
+message GetDiskQoSResponse {
+  DiskQoSConfig qos = 1;
+}
+
+// Migration Storage Pre-flight Check
+enum MigrationStorageMode {
+  MIGRATION_STORAGE_MODE_UNSPECIFIED = 0;
+  MIGRATION_STORAGE_MODE_SHARED_ZERO_COPY = 1; // All disks are on shared storage (Ceph/NFS); zero disk copy needed
+  MIGRATION_STORAGE_MODE_STORAGE_COPY = 2;      // At least one disk is local; requires QEMU block mirroring
+}
+
+message NonSharedDiskInfo {
+  string disk_id = 1;
+  string device = 2;
+  string path = 3;
+  string storage_pool = 4;
+  int64 size_bytes = 5;
+  string reason = 6; // e.g. "Pool 'local-nvme' is NodeLocal to Hades"
+}
+
+message CheckMigrationStorageRequest {
+  string vm_id = 1;
+  string source_node_id = 2;
+  string target_node_id = 3;
+}
+
+message CheckMigrationStorageResponse {
+  MigrationStorageMode mode = 1;
+  bool can_zero_copy = 2;
+  repeated NonSharedDiskInfo non_shared_disks = 3;
+  string recommendation = 4;
+}
+
 // ---------------- Service ----------------
 
 service StorageProvisioningService {
@@ -366,4 +568,18 @@ service StorageProvisioningService {
   rpc CreateZfsDataset(CreateZfsDatasetRequest) returns (CreateZfsDatasetResponse);
   rpc DestroyZfsDataset(DestroyZfsDatasetRequest) returns (DestroyZfsDatasetResponse);
   rpc CreateZfsZvol(CreateZfsZvolRequest) returns (CreateZfsZvolResponse);
+
+  // Storage Pools (Declarative Ceph RBD, ZFS, LVM, NFS, Dir)
+  rpc ListStoragePools(ListStoragePoolsRequest) returns (ListStoragePoolsResponse);
+  rpc GetStoragePool(GetStoragePoolRequest) returns (GetStoragePoolResponse);
+  rpc CreateStoragePool(CreateStoragePoolRequest) returns (CreateStoragePoolResponse);
+  rpc UpdateStoragePool(UpdateStoragePoolRequest) returns (UpdateStoragePoolResponse);
+  rpc DeleteStoragePool(DeleteStoragePoolRequest) returns (DeleteStoragePoolResponse);
+
+  // Inheritable QoS & Live Throttling (QEMU iotune)
+  rpc SetDiskQoS(SetDiskQoSRequest) returns (SetDiskQoSResponse);
+  rpc GetDiskQoS(GetDiskQoSRequest) returns (GetDiskQoSResponse);
+
+  // Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
+  rpc CheckMigrationStorage(CheckMigrationStorageRequest) returns (CheckMigrationStorageResponse);
 }

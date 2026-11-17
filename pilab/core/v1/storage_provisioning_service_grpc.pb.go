@@ -19,25 +19,33 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	StorageProvisioningService_ListDevices_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/ListDevices"
-	StorageProvisioningService_InitializeDisk_FullMethodName    = "/pilab.core.v1.StorageProvisioningService/InitializeDisk"
-	StorageProvisioningService_WipeDisk_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/WipeDisk"
-	StorageProvisioningService_CreatePartition_FullMethodName   = "/pilab.core.v1.StorageProvisioningService/CreatePartition"
-	StorageProvisioningService_DeletePartition_FullMethodName   = "/pilab.core.v1.StorageProvisioningService/DeletePartition"
-	StorageProvisioningService_FormatPartition_FullMethodName   = "/pilab.core.v1.StorageProvisioningService/FormatPartition"
-	StorageProvisioningService_ListLvm_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListLvm"
-	StorageProvisioningService_CreateLvmPv_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreateLvmPv"
-	StorageProvisioningService_RemoveLvmPv_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/RemoveLvmPv"
-	StorageProvisioningService_CreateLvmVg_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreateLvmVg"
-	StorageProvisioningService_RemoveLvmVg_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/RemoveLvmVg"
-	StorageProvisioningService_CreateLvmLv_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreateLvmLv"
-	StorageProvisioningService_RemoveLvmLv_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/RemoveLvmLv"
-	StorageProvisioningService_ListZfs_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListZfs"
-	StorageProvisioningService_CreateZpool_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreateZpool"
-	StorageProvisioningService_DestroyZpool_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/DestroyZpool"
-	StorageProvisioningService_CreateZfsDataset_FullMethodName  = "/pilab.core.v1.StorageProvisioningService/CreateZfsDataset"
-	StorageProvisioningService_DestroyZfsDataset_FullMethodName = "/pilab.core.v1.StorageProvisioningService/DestroyZfsDataset"
-	StorageProvisioningService_CreateZfsZvol_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/CreateZfsZvol"
+	StorageProvisioningService_ListDevices_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListDevices"
+	StorageProvisioningService_InitializeDisk_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/InitializeDisk"
+	StorageProvisioningService_WipeDisk_FullMethodName              = "/pilab.core.v1.StorageProvisioningService/WipeDisk"
+	StorageProvisioningService_CreatePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreatePartition"
+	StorageProvisioningService_DeletePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/DeletePartition"
+	StorageProvisioningService_FormatPartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/FormatPartition"
+	StorageProvisioningService_ListLvm_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/ListLvm"
+	StorageProvisioningService_CreateLvmPv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmPv"
+	StorageProvisioningService_RemoveLvmPv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmPv"
+	StorageProvisioningService_CreateLvmVg_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmVg"
+	StorageProvisioningService_RemoveLvmVg_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmVg"
+	StorageProvisioningService_CreateLvmLv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmLv"
+	StorageProvisioningService_RemoveLvmLv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmLv"
+	StorageProvisioningService_ListZfs_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/ListZfs"
+	StorageProvisioningService_CreateZpool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateZpool"
+	StorageProvisioningService_DestroyZpool_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/DestroyZpool"
+	StorageProvisioningService_CreateZfsDataset_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/CreateZfsDataset"
+	StorageProvisioningService_DestroyZfsDataset_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/DestroyZfsDataset"
+	StorageProvisioningService_CreateZfsZvol_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/CreateZfsZvol"
+	StorageProvisioningService_ListStoragePools_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/ListStoragePools"
+	StorageProvisioningService_GetStoragePool_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/GetStoragePool"
+	StorageProvisioningService_CreateStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/CreateStoragePool"
+	StorageProvisioningService_UpdateStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/UpdateStoragePool"
+	StorageProvisioningService_DeleteStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/DeleteStoragePool"
+	StorageProvisioningService_SetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/SetDiskQoS"
+	StorageProvisioningService_GetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/GetDiskQoS"
+	StorageProvisioningService_CheckMigrationStorage_FullMethodName = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
 )
 
 // StorageProvisioningServiceClient is the client API for StorageProvisioningService service.
@@ -67,6 +75,17 @@ type StorageProvisioningServiceClient interface {
 	CreateZfsDataset(ctx context.Context, in *CreateZfsDatasetRequest, opts ...grpc.CallOption) (*CreateZfsDatasetResponse, error)
 	DestroyZfsDataset(ctx context.Context, in *DestroyZfsDatasetRequest, opts ...grpc.CallOption) (*DestroyZfsDatasetResponse, error)
 	CreateZfsZvol(ctx context.Context, in *CreateZfsZvolRequest, opts ...grpc.CallOption) (*CreateZfsZvolResponse, error)
+	// Storage Pools (Declarative Ceph RBD, ZFS, LVM, NFS, Dir)
+	ListStoragePools(ctx context.Context, in *ListStoragePoolsRequest, opts ...grpc.CallOption) (*ListStoragePoolsResponse, error)
+	GetStoragePool(ctx context.Context, in *GetStoragePoolRequest, opts ...grpc.CallOption) (*GetStoragePoolResponse, error)
+	CreateStoragePool(ctx context.Context, in *CreateStoragePoolRequest, opts ...grpc.CallOption) (*CreateStoragePoolResponse, error)
+	UpdateStoragePool(ctx context.Context, in *UpdateStoragePoolRequest, opts ...grpc.CallOption) (*UpdateStoragePoolResponse, error)
+	DeleteStoragePool(ctx context.Context, in *DeleteStoragePoolRequest, opts ...grpc.CallOption) (*DeleteStoragePoolResponse, error)
+	// Inheritable QoS & Live Throttling (QEMU iotune)
+	SetDiskQoS(ctx context.Context, in *SetDiskQoSRequest, opts ...grpc.CallOption) (*SetDiskQoSResponse, error)
+	GetDiskQoS(ctx context.Context, in *GetDiskQoSRequest, opts ...grpc.CallOption) (*GetDiskQoSResponse, error)
+	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
+	CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error)
 }
 
 type storageProvisioningServiceClient struct {
@@ -267,6 +286,86 @@ func (c *storageProvisioningServiceClient) CreateZfsZvol(ctx context.Context, in
 	return out, nil
 }
 
+func (c *storageProvisioningServiceClient) ListStoragePools(ctx context.Context, in *ListStoragePoolsRequest, opts ...grpc.CallOption) (*ListStoragePoolsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStoragePoolsResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListStoragePools_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) GetStoragePool(ctx context.Context, in *GetStoragePoolRequest, opts ...grpc.CallOption) (*GetStoragePoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetStoragePoolResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_GetStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) CreateStoragePool(ctx context.Context, in *CreateStoragePoolRequest, opts ...grpc.CallOption) (*CreateStoragePoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateStoragePoolResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CreateStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) UpdateStoragePool(ctx context.Context, in *UpdateStoragePoolRequest, opts ...grpc.CallOption) (*UpdateStoragePoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateStoragePoolResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_UpdateStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) DeleteStoragePool(ctx context.Context, in *DeleteStoragePoolRequest, opts ...grpc.CallOption) (*DeleteStoragePoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteStoragePoolResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_DeleteStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) SetDiskQoS(ctx context.Context, in *SetDiskQoSRequest, opts ...grpc.CallOption) (*SetDiskQoSResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetDiskQoSResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_SetDiskQoS_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) GetDiskQoS(ctx context.Context, in *GetDiskQoSRequest, opts ...grpc.CallOption) (*GetDiskQoSResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDiskQoSResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_GetDiskQoS_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckMigrationStorageResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CheckMigrationStorage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageProvisioningServiceServer is the server API for StorageProvisioningService service.
 // All implementations must embed UnimplementedStorageProvisioningServiceServer
 // for forward compatibility.
@@ -294,6 +393,17 @@ type StorageProvisioningServiceServer interface {
 	CreateZfsDataset(context.Context, *CreateZfsDatasetRequest) (*CreateZfsDatasetResponse, error)
 	DestroyZfsDataset(context.Context, *DestroyZfsDatasetRequest) (*DestroyZfsDatasetResponse, error)
 	CreateZfsZvol(context.Context, *CreateZfsZvolRequest) (*CreateZfsZvolResponse, error)
+	// Storage Pools (Declarative Ceph RBD, ZFS, LVM, NFS, Dir)
+	ListStoragePools(context.Context, *ListStoragePoolsRequest) (*ListStoragePoolsResponse, error)
+	GetStoragePool(context.Context, *GetStoragePoolRequest) (*GetStoragePoolResponse, error)
+	CreateStoragePool(context.Context, *CreateStoragePoolRequest) (*CreateStoragePoolResponse, error)
+	UpdateStoragePool(context.Context, *UpdateStoragePoolRequest) (*UpdateStoragePoolResponse, error)
+	DeleteStoragePool(context.Context, *DeleteStoragePoolRequest) (*DeleteStoragePoolResponse, error)
+	// Inheritable QoS & Live Throttling (QEMU iotune)
+	SetDiskQoS(context.Context, *SetDiskQoSRequest) (*SetDiskQoSResponse, error)
+	GetDiskQoS(context.Context, *GetDiskQoSRequest) (*GetDiskQoSResponse, error)
+	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
+	CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error)
 	mustEmbedUnimplementedStorageProvisioningServiceServer()
 }
 
@@ -360,6 +470,30 @@ func (UnimplementedStorageProvisioningServiceServer) DestroyZfsDataset(context.C
 }
 func (UnimplementedStorageProvisioningServiceServer) CreateZfsZvol(context.Context, *CreateZfsZvolRequest) (*CreateZfsZvolResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateZfsZvol not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListStoragePools(context.Context, *ListStoragePoolsRequest) (*ListStoragePoolsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStoragePools not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) GetStoragePool(context.Context, *GetStoragePoolRequest) (*GetStoragePoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetStoragePool not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CreateStoragePool(context.Context, *CreateStoragePoolRequest) (*CreateStoragePoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateStoragePool not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) UpdateStoragePool(context.Context, *UpdateStoragePoolRequest) (*UpdateStoragePoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateStoragePool not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) DeleteStoragePool(context.Context, *DeleteStoragePoolRequest) (*DeleteStoragePoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteStoragePool not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) SetDiskQoS(context.Context, *SetDiskQoSRequest) (*SetDiskQoSResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetDiskQoS not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) GetDiskQoS(context.Context, *GetDiskQoSRequest) (*GetDiskQoSResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetDiskQoS not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CheckMigrationStorage not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) mustEmbedUnimplementedStorageProvisioningServiceServer() {
 }
@@ -725,6 +859,150 @@ func _StorageProvisioningService_CreateZfsZvol_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageProvisioningService_ListStoragePools_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStoragePoolsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListStoragePools(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListStoragePools_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListStoragePools(ctx, req.(*ListStoragePoolsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_GetStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStoragePoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).GetStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_GetStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).GetStoragePool(ctx, req.(*GetStoragePoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_CreateStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateStoragePoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CreateStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CreateStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CreateStoragePool(ctx, req.(*CreateStoragePoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_UpdateStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateStoragePoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).UpdateStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_UpdateStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).UpdateStoragePool(ctx, req.(*UpdateStoragePoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_DeleteStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteStoragePoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).DeleteStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_DeleteStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).DeleteStoragePool(ctx, req.(*DeleteStoragePoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_SetDiskQoS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDiskQoSRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).SetDiskQoS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_SetDiskQoS_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).SetDiskQoS(ctx, req.(*SetDiskQoSRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_GetDiskQoS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDiskQoSRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).GetDiskQoS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_GetDiskQoS_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).GetDiskQoS(ctx, req.(*GetDiskQoSRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_CheckMigrationStorage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckMigrationStorageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CheckMigrationStorage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CheckMigrationStorage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CheckMigrationStorage(ctx, req.(*CheckMigrationStorageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StorageProvisioningService_ServiceDesc is the grpc.ServiceDesc for StorageProvisioningService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -807,6 +1085,38 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateZfsZvol",
 			Handler:    _StorageProvisioningService_CreateZfsZvol_Handler,
+		},
+		{
+			MethodName: "ListStoragePools",
+			Handler:    _StorageProvisioningService_ListStoragePools_Handler,
+		},
+		{
+			MethodName: "GetStoragePool",
+			Handler:    _StorageProvisioningService_GetStoragePool_Handler,
+		},
+		{
+			MethodName: "CreateStoragePool",
+			Handler:    _StorageProvisioningService_CreateStoragePool_Handler,
+		},
+		{
+			MethodName: "UpdateStoragePool",
+			Handler:    _StorageProvisioningService_UpdateStoragePool_Handler,
+		},
+		{
+			MethodName: "DeleteStoragePool",
+			Handler:    _StorageProvisioningService_DeleteStoragePool_Handler,
+		},
+		{
+			MethodName: "SetDiskQoS",
+			Handler:    _StorageProvisioningService_SetDiskQoS_Handler,
+		},
+		{
+			MethodName: "GetDiskQoS",
+			Handler:    _StorageProvisioningService_GetDiskQoS_Handler,
+		},
+		{
+			MethodName: "CheckMigrationStorage",
+			Handler:    _StorageProvisioningService_CheckMigrationStorage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
