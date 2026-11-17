@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package pilab.core.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+// TrafficClassType identifies the system traffic categories analogous to VMware vSphere NIOC.
+enum TrafficClassType {
+  TRAFFIC_CLASS_TYPE_UNSPECIFIED = 0;
+  TRAFFIC_CLASS_TYPE_STORAGE = 1;        // Ceph RBD (3300), iSCSI (3260), NBD mirror (10809)
+  TRAFFIC_CLASS_TYPE_MANAGEMENT = 2;     // Director gRPC (50051), Agent (50061), BGP (179), etcd (2379)
+  TRAFFIC_CLASS_TYPE_LIVE_MIGRATION = 3; // QEMU vMotion memory streaming (49152-49252)
+  TRAFFIC_CLASS_TYPE_VM_TRAFFIC = 4;     // Tenant GENEVE overlays (UDP 6081)
+  TRAFFIC_CLASS_TYPE_BACKUP = 5;         // Snapshot export, CBT streaming, S3 (9000)
+}
+
+// TrafficClassConfig defines bandwidth reservations, ceilings, and priorities for a single traffic class.
+message TrafficClassConfig {
+  TrafficClassType type = 1;
+  string name = 2;                     // "storage", "management", "live-migration", "vm-traffic", "backup"
+  uint32 class_id = 3;                 // e.g. 10, 20, 30, 40, 50 (classid 1:<class_id>)
+  uint32 rate_mbps = 4;                // Minimum guaranteed bandwidth reservation in Mbps
+  uint32 ceil_mbps = 5;                // Maximum bandwidth limit/ceiling in Mbps
+  uint32 priority = 6;                 // Priority: 0 is highest, 7 is lowest
+  repeated uint32 ports = 7;           // Matched destination and source TCP/UDP ports
+  uint32 shares = 8;                   // Relative weight (e.g. 100 for storage, 50 for migration)
+  string dscp = 9;                     // DSCP mark e.g. "CS5", "CS6", "AF41"
+}
+
+// NetworkQoSConfig defines the complete NIOC traffic shaping configuration for a network interface.
+message NetworkQoSConfig {
+  string interface_name = 1;           // Interface e.g. "wg0" or "enp0s31f6"
+  uint32 link_rate_mbps = 2;           // Total link rate in Mbps (e.g. 1000)
+  bool enabled = 3;                    // Whether NIOC shaping is active
+  repeated TrafficClassConfig classes = 4;
+  string default_class_name = 5;       // Default class for unclassified packets (e.g. "vm-traffic")
+}
+
+// TrafficClassStats reports real-time packet, byte, and drop counters per traffic class.
+message TrafficClassStats {
+  TrafficClassType type = 1;
+  string name = 2;
+  uint32 class_id = 3;
+  int64 bytes_sent = 4;
+  int64 packets_sent = 5;
+  int64 dropped_packets = 6;
+  int64 overlimit_events = 7;
+  int64 current_rate_bps = 8;
+  int64 current_rate_pps = 9;
+}
+
+message GetNetworkQoSRequest {
+  string node_id = 1;
+  string interface_name = 2;           // Default "wg0" if omitted
+}
+
+message GetNetworkQoSResponse {
+  NetworkQoSConfig config = 1;
+  bool is_active = 2;
+  string qdisc_type = 3;
+}
+
+message ApplyNetworkQoSRequest {
+  string node_id = 1;
+  NetworkQoSConfig config = 2;
+}
+
+message ApplyNetworkQoSResponse {
+  bool success = 1;
+  string message = 2;
+  NetworkQoSConfig applied_config = 3;
+}
+
+message ResetNetworkQoSRequest {
+  string node_id = 1;
+  string interface_name = 2;
+}
+
+message ResetNetworkQoSResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetTrafficStatsRequest {
+  string node_id = 1;
+  string interface_name = 2;           // Default "wg0" if omitted
+}
+
+message GetTrafficStatsResponse {
+  string interface_name = 1;
+  repeated TrafficClassStats classes = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message SetVifRateLimitRequest {
+  string node_id = 1;
+  string tap_device = 2;               // e.g. "tapc2cf7590"
+  uint32 bandwidth_mbps = 3;           // Sustained rate limit
+  uint32 burst_mbps = 4;               // Peak burst allowance
+}
+
+message SetVifRateLimitResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// NetworkQoSService provides cluster-wide VMware vSphere NIOC-equivalent traffic shaping and bandwidth reservation.
+service NetworkQoSService {
+  rpc GetNetworkQoS(GetNetworkQoSRequest) returns (GetNetworkQoSResponse);
+  rpc ApplyNetworkQoS(ApplyNetworkQoSRequest) returns (ApplyNetworkQoSResponse);
+  rpc ResetNetworkQoS(ResetNetworkQoSRequest) returns (ResetNetworkQoSResponse);
+  rpc GetTrafficStats(GetTrafficStatsRequest) returns (GetTrafficStatsResponse);
+  rpc SetVifRateLimit(SetVifRateLimitRequest) returns (SetVifRateLimitResponse);
+}
