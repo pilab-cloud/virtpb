@@ -6,17 +6,23 @@ syntax = "proto3";
 
 package pilab.director.v2;
 
-option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/director/v2;directorv2";
-
 import "pilab/director/v2/node_service.proto";
 import "pilab/resource/v1/resource.proto";
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/director/v2;directorv2";
 
 service HostAdminService {
   rpc ListHosts(ListHostsRequest) returns (ListHostsResponse);
   rpc GetHost(GetHostRequest) returns (GetHostResponse);
   // SetMaintenance toggles maintenance mode. A host in maintenance is
-  // skipped by VM placement; running VMs are not touched.
+  // skipped by VM placement. With evacuate set, entering maintenance also
+  // live-migrates every running VM off the host; each VM's outcome is
+  // reported in evacuations.
   rpc SetMaintenance(SetMaintenanceRequest) returns (SetMaintenanceResponse);
+  // MigrateVM live-migrates a running VM to another host (vMotion). An
+  // empty target_host_id lets placement pick the best eligible host in
+  // the VM's cluster. The migration runs as a task; its id is returned.
+  rpc MigrateVM(MigrateVMRequest) returns (MigrateVMResponse);
   // ApplyHostResources ships host objects to the host's agent and returns the
   // per-object outcome once the agent answers (or the timeout elapses).
   rpc ApplyHostResources(ApplyHostResourcesRequest) returns (ApplyHostResourcesResponse);
@@ -66,12 +72,45 @@ message GetHostResponse {
 
 message SetMaintenanceResponse {
   Host host = 1;
+  repeated Evacuation evacuations = 2;
 }
 
 message SetMaintenanceRequest {
   string id = 1;
   bool enabled = 2;
   string reason = 3;
+  // evacuate live-migrates the host's running VMs away when entering
+  // maintenance. Ignored when leaving maintenance.
+  bool evacuate = 4;
+}
+
+// Evacuation is one VM's outcome while a host enters maintenance.
+message Evacuation {
+  string vm_id = 1;
+  string vm_name = 2;
+  string target_host_id = 3;
+  // task_id is set when the migration was dispatched.
+  string task_id = 4;
+  // error is set when the VM could not be moved.
+  string error = 5;
+}
+
+message MigrateVMRequest {
+  string vm_id = 1;
+  // target_host_id is optional; empty picks a host by placement.
+  string target_host_id = 2;
+  // max_bandwidth_bytes_sec caps the memory stream; 0 uses the default.
+  int64 max_bandwidth_bytes_sec = 3;
+  // max_downtime_ms bounds the final switchover pause; 0 uses the default.
+  int64 max_downtime_ms = 4;
+}
+
+message MigrateVMResponse {
+  string task_id = 1;
+  string source_host_id = 2;
+  string target_host_id = 3;
+  // storage_mode is SHARED_ZERO_COPY or STORAGE_COPY.
+  string storage_mode = 4;
 }
 
 message ApplyHostResourcesRequest {

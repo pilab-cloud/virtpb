@@ -26,6 +26,7 @@ const (
 	HostAdminService_ListHosts_FullMethodName          = "/pilab.director.v2.HostAdminService/ListHosts"
 	HostAdminService_GetHost_FullMethodName            = "/pilab.director.v2.HostAdminService/GetHost"
 	HostAdminService_SetMaintenance_FullMethodName     = "/pilab.director.v2.HostAdminService/SetMaintenance"
+	HostAdminService_MigrateVM_FullMethodName          = "/pilab.director.v2.HostAdminService/MigrateVM"
 	HostAdminService_ApplyHostResources_FullMethodName = "/pilab.director.v2.HostAdminService/ApplyHostResources"
 	HostAdminService_CreateDisk_FullMethodName         = "/pilab.director.v2.HostAdminService/CreateDisk"
 	HostAdminService_DeleteDisk_FullMethodName         = "/pilab.director.v2.HostAdminService/DeleteDisk"
@@ -38,8 +39,14 @@ type HostAdminServiceClient interface {
 	ListHosts(ctx context.Context, in *ListHostsRequest, opts ...grpc.CallOption) (*ListHostsResponse, error)
 	GetHost(ctx context.Context, in *GetHostRequest, opts ...grpc.CallOption) (*GetHostResponse, error)
 	// SetMaintenance toggles maintenance mode. A host in maintenance is
-	// skipped by VM placement; running VMs are not touched.
+	// skipped by VM placement. With evacuate set, entering maintenance also
+	// live-migrates every running VM off the host; each VM's outcome is
+	// reported in evacuations.
 	SetMaintenance(ctx context.Context, in *SetMaintenanceRequest, opts ...grpc.CallOption) (*SetMaintenanceResponse, error)
+	// MigrateVM live-migrates a running VM to another host (vMotion). An
+	// empty target_host_id lets placement pick the best eligible host in
+	// the VM's cluster. The migration runs as a task; its id is returned.
+	MigrateVM(ctx context.Context, in *MigrateVMRequest, opts ...grpc.CallOption) (*MigrateVMResponse, error)
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(ctx context.Context, in *ApplyHostResourcesRequest, opts ...grpc.CallOption) (*ApplyHostResourcesResponse, error)
@@ -88,6 +95,16 @@ func (c *hostAdminServiceClient) SetMaintenance(ctx context.Context, in *SetMain
 	return out, nil
 }
 
+func (c *hostAdminServiceClient) MigrateVM(ctx context.Context, in *MigrateVMRequest, opts ...grpc.CallOption) (*MigrateVMResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MigrateVMResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_MigrateVM_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *hostAdminServiceClient) ApplyHostResources(ctx context.Context, in *ApplyHostResourcesRequest, opts ...grpc.CallOption) (*ApplyHostResourcesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ApplyHostResourcesResponse)
@@ -125,8 +142,14 @@ type HostAdminServiceServer interface {
 	ListHosts(context.Context, *ListHostsRequest) (*ListHostsResponse, error)
 	GetHost(context.Context, *GetHostRequest) (*GetHostResponse, error)
 	// SetMaintenance toggles maintenance mode. A host in maintenance is
-	// skipped by VM placement; running VMs are not touched.
+	// skipped by VM placement. With evacuate set, entering maintenance also
+	// live-migrates every running VM off the host; each VM's outcome is
+	// reported in evacuations.
 	SetMaintenance(context.Context, *SetMaintenanceRequest) (*SetMaintenanceResponse, error)
+	// MigrateVM live-migrates a running VM to another host (vMotion). An
+	// empty target_host_id lets placement pick the best eligible host in
+	// the VM's cluster. The migration runs as a task; its id is returned.
+	MigrateVM(context.Context, *MigrateVMRequest) (*MigrateVMResponse, error)
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(context.Context, *ApplyHostResourcesRequest) (*ApplyHostResourcesResponse, error)
@@ -153,6 +176,9 @@ func (UnimplementedHostAdminServiceServer) GetHost(context.Context, *GetHostRequ
 }
 func (UnimplementedHostAdminServiceServer) SetMaintenance(context.Context, *SetMaintenanceRequest) (*SetMaintenanceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetMaintenance not implemented")
+}
+func (UnimplementedHostAdminServiceServer) MigrateVM(context.Context, *MigrateVMRequest) (*MigrateVMResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MigrateVM not implemented")
 }
 func (UnimplementedHostAdminServiceServer) ApplyHostResources(context.Context, *ApplyHostResourcesRequest) (*ApplyHostResourcesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ApplyHostResources not implemented")
@@ -238,6 +264,24 @@ func _HostAdminService_SetMaintenance_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HostAdminService_MigrateVM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MigrateVMRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).MigrateVM(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_MigrateVM_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).MigrateVM(ctx, req.(*MigrateVMRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _HostAdminService_ApplyHostResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ApplyHostResourcesRequest)
 	if err := dec(in); err != nil {
@@ -310,6 +354,10 @@ var HostAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetMaintenance",
 			Handler:    _HostAdminService_SetMaintenance_Handler,
+		},
+		{
+			MethodName: "MigrateVM",
+			Handler:    _HostAdminService_MigrateVM_Handler,
 		},
 		{
 			MethodName: "ApplyHostResources",

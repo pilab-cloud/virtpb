@@ -46,6 +46,9 @@ const (
 	// HostAdminServiceSetMaintenanceProcedure is the fully-qualified name of the HostAdminService's
 	// SetMaintenance RPC.
 	HostAdminServiceSetMaintenanceProcedure = "/pilab.director.v2.HostAdminService/SetMaintenance"
+	// HostAdminServiceMigrateVMProcedure is the fully-qualified name of the HostAdminService's
+	// MigrateVM RPC.
+	HostAdminServiceMigrateVMProcedure = "/pilab.director.v2.HostAdminService/MigrateVM"
 	// HostAdminServiceApplyHostResourcesProcedure is the fully-qualified name of the HostAdminService's
 	// ApplyHostResources RPC.
 	HostAdminServiceApplyHostResourcesProcedure = "/pilab.director.v2.HostAdminService/ApplyHostResources"
@@ -62,8 +65,14 @@ type HostAdminServiceClient interface {
 	ListHosts(context.Context, *connect.Request[v2.ListHostsRequest]) (*connect.Response[v2.ListHostsResponse], error)
 	GetHost(context.Context, *connect.Request[v2.GetHostRequest]) (*connect.Response[v2.GetHostResponse], error)
 	// SetMaintenance toggles maintenance mode. A host in maintenance is
-	// skipped by VM placement; running VMs are not touched.
+	// skipped by VM placement. With evacuate set, entering maintenance also
+	// live-migrates every running VM off the host; each VM's outcome is
+	// reported in evacuations.
 	SetMaintenance(context.Context, *connect.Request[v2.SetMaintenanceRequest]) (*connect.Response[v2.SetMaintenanceResponse], error)
+	// MigrateVM live-migrates a running VM to another host (vMotion). An
+	// empty target_host_id lets placement pick the best eligible host in
+	// the VM's cluster. The migration runs as a task; its id is returned.
+	MigrateVM(context.Context, *connect.Request[v2.MigrateVMRequest]) (*connect.Response[v2.MigrateVMResponse], error)
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(context.Context, *connect.Request[v2.ApplyHostResourcesRequest]) (*connect.Response[v2.ApplyHostResourcesResponse], error)
@@ -103,6 +112,12 @@ func NewHostAdminServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(hostAdminServiceMethods.ByName("SetMaintenance")),
 			connect.WithClientOptions(opts...),
 		),
+		migrateVM: connect.NewClient[v2.MigrateVMRequest, v2.MigrateVMResponse](
+			httpClient,
+			baseURL+HostAdminServiceMigrateVMProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("MigrateVM")),
+			connect.WithClientOptions(opts...),
+		),
 		applyHostResources: connect.NewClient[v2.ApplyHostResourcesRequest, v2.ApplyHostResourcesResponse](
 			httpClient,
 			baseURL+HostAdminServiceApplyHostResourcesProcedure,
@@ -129,6 +144,7 @@ type hostAdminServiceClient struct {
 	listHosts          *connect.Client[v2.ListHostsRequest, v2.ListHostsResponse]
 	getHost            *connect.Client[v2.GetHostRequest, v2.GetHostResponse]
 	setMaintenance     *connect.Client[v2.SetMaintenanceRequest, v2.SetMaintenanceResponse]
+	migrateVM          *connect.Client[v2.MigrateVMRequest, v2.MigrateVMResponse]
 	applyHostResources *connect.Client[v2.ApplyHostResourcesRequest, v2.ApplyHostResourcesResponse]
 	createDisk         *connect.Client[v2.CreateDiskRequest, v2.CreateDiskResponse]
 	deleteDisk         *connect.Client[v2.DeleteDiskRequest, v2.DeleteDiskResponse]
@@ -147,6 +163,11 @@ func (c *hostAdminServiceClient) GetHost(ctx context.Context, req *connect.Reque
 // SetMaintenance calls pilab.director.v2.HostAdminService.SetMaintenance.
 func (c *hostAdminServiceClient) SetMaintenance(ctx context.Context, req *connect.Request[v2.SetMaintenanceRequest]) (*connect.Response[v2.SetMaintenanceResponse], error) {
 	return c.setMaintenance.CallUnary(ctx, req)
+}
+
+// MigrateVM calls pilab.director.v2.HostAdminService.MigrateVM.
+func (c *hostAdminServiceClient) MigrateVM(ctx context.Context, req *connect.Request[v2.MigrateVMRequest]) (*connect.Response[v2.MigrateVMResponse], error) {
+	return c.migrateVM.CallUnary(ctx, req)
 }
 
 // ApplyHostResources calls pilab.director.v2.HostAdminService.ApplyHostResources.
@@ -169,8 +190,14 @@ type HostAdminServiceHandler interface {
 	ListHosts(context.Context, *connect.Request[v2.ListHostsRequest]) (*connect.Response[v2.ListHostsResponse], error)
 	GetHost(context.Context, *connect.Request[v2.GetHostRequest]) (*connect.Response[v2.GetHostResponse], error)
 	// SetMaintenance toggles maintenance mode. A host in maintenance is
-	// skipped by VM placement; running VMs are not touched.
+	// skipped by VM placement. With evacuate set, entering maintenance also
+	// live-migrates every running VM off the host; each VM's outcome is
+	// reported in evacuations.
 	SetMaintenance(context.Context, *connect.Request[v2.SetMaintenanceRequest]) (*connect.Response[v2.SetMaintenanceResponse], error)
+	// MigrateVM live-migrates a running VM to another host (vMotion). An
+	// empty target_host_id lets placement pick the best eligible host in
+	// the VM's cluster. The migration runs as a task; its id is returned.
+	MigrateVM(context.Context, *connect.Request[v2.MigrateVMRequest]) (*connect.Response[v2.MigrateVMResponse], error)
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(context.Context, *connect.Request[v2.ApplyHostResourcesRequest]) (*connect.Response[v2.ApplyHostResourcesResponse], error)
@@ -206,6 +233,12 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 		connect.WithSchema(hostAdminServiceMethods.ByName("SetMaintenance")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostAdminServiceMigrateVMHandler := connect.NewUnaryHandler(
+		HostAdminServiceMigrateVMProcedure,
+		svc.MigrateVM,
+		connect.WithSchema(hostAdminServiceMethods.ByName("MigrateVM")),
+		connect.WithHandlerOptions(opts...),
+	)
 	hostAdminServiceApplyHostResourcesHandler := connect.NewUnaryHandler(
 		HostAdminServiceApplyHostResourcesProcedure,
 		svc.ApplyHostResources,
@@ -232,6 +265,8 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 			hostAdminServiceGetHostHandler.ServeHTTP(w, r)
 		case HostAdminServiceSetMaintenanceProcedure:
 			hostAdminServiceSetMaintenanceHandler.ServeHTTP(w, r)
+		case HostAdminServiceMigrateVMProcedure:
+			hostAdminServiceMigrateVMHandler.ServeHTTP(w, r)
 		case HostAdminServiceApplyHostResourcesProcedure:
 			hostAdminServiceApplyHostResourcesHandler.ServeHTTP(w, r)
 		case HostAdminServiceCreateDiskProcedure:
@@ -257,6 +292,10 @@ func (UnimplementedHostAdminServiceHandler) GetHost(context.Context, *connect.Re
 
 func (UnimplementedHostAdminServiceHandler) SetMaintenance(context.Context, *connect.Request[v2.SetMaintenanceRequest]) (*connect.Response[v2.SetMaintenanceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.SetMaintenance is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) MigrateVM(context.Context, *connect.Request[v2.MigrateVMRequest]) (*connect.Response[v2.MigrateVMResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.MigrateVM is not implemented"))
 }
 
 func (UnimplementedHostAdminServiceHandler) ApplyHostResources(context.Context, *connect.Request[v2.ApplyHostResourcesRequest]) (*connect.Response[v2.ApplyHostResourcesResponse], error) {
