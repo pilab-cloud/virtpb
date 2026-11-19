@@ -1,0 +1,114 @@
+// HostAdminService is the operator-facing view of the hypervisor hosts the
+// director manages: inventory, maintenance mode, and applying host objects
+// (networks, bridges, storage pools) to a host through its agent.
+
+syntax = "proto3";
+
+package pilab.director.v2;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/director/v2;directorv2";
+
+import "pilab/director/v2/node_service.proto";
+import "pilab/resource/v1/resource.proto";
+
+service HostAdminService {
+  rpc ListHosts(ListHostsRequest) returns (ListHostsResponse);
+  rpc GetHost(GetHostRequest) returns (GetHostResponse);
+  // SetMaintenance toggles maintenance mode. A host in maintenance is
+  // skipped by VM placement; running VMs are not touched.
+  rpc SetMaintenance(SetMaintenanceRequest) returns (SetMaintenanceResponse);
+  // ApplyHostResources ships host objects to the host's agent and returns the
+  // per-object outcome once the agent answers (or the timeout elapses).
+  rpc ApplyHostResources(ApplyHostResourcesRequest) returns (ApplyHostResourcesResponse);
+
+  // CreateDisk creates a standalone disk image on the host, optionally
+  // allocated from one of its storage pools.
+  rpc CreateDisk(CreateDiskRequest) returns (CreateDiskResponse);
+
+  // DeleteDisk removes a standalone disk image created by CreateDisk.
+  rpc DeleteDisk(DeleteDiskRequest) returns (DeleteDiskResponse);
+}
+
+message Host {
+  string id = 1;
+  string name = 2;
+  string hostname = 3;
+  string address = 4;
+  string status = 5;
+  string cluster = 6;
+  string datacenter = 7;
+  repeated string labels = 8;
+  bool maintenance = 9;
+  string maintenance_reason = 10;
+  // connected is true while the host's agent holds a live session.
+  bool connected = 11;
+  int32 machine_count = 12;
+  int32 physical_cpus = 13;
+  int64 memory_total_mb = 14;
+  bool kvm_available = 15;
+}
+
+message ListHostsRequest {
+  string cluster = 1;
+}
+
+message ListHostsResponse {
+  repeated Host hosts = 1;
+}
+
+message GetHostRequest {
+  string id = 1;
+}
+
+message GetHostResponse {
+  Host host = 1;
+}
+
+message SetMaintenanceResponse {
+  Host host = 1;
+}
+
+message SetMaintenanceRequest {
+  string id = 1;
+  bool enabled = 2;
+  string reason = 3;
+}
+
+message ApplyHostResourcesRequest {
+  string host_id = 1;
+  repeated pilab.resource.v1.Resource apply = 2;
+  repeated ResourceRef delete = 3;
+  // timeout_seconds bounds the wait for the agent's answer; 0 means 60.
+  int32 timeout_seconds = 4;
+}
+
+message ApplyHostResourcesResponse {
+  ResourceResultEvent result = 1;
+}
+
+message CreateDiskRequest {
+  string host_id = 1;
+  string name = 2;
+  // pool names a storage pool on the host; empty requires path.
+  string pool = 3;
+  // path is an explicit image path, used when pool is empty.
+  string path = 4;
+  int32 size_gb = 5;
+  // format is "qcow2" (default) or "raw".
+  string format = 6;
+  int32 timeout_seconds = 7;
+}
+
+message CreateDiskResponse {
+  ResourceOutcome outcome = 1;
+}
+
+message DeleteDiskRequest {
+  string host_id = 1;
+  string name = 2;
+  int32 timeout_seconds = 3;
+}
+
+message DeleteDiskResponse {
+  ResourceOutcome outcome = 1;
+}
