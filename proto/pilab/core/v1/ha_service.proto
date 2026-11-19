@@ -41,6 +41,12 @@ message HaConfig {
   HaRestartPriority default_restart_priority = 6;
   FencingMethod fencing_method = 7;
   uint32 max_restart_retries = 8;
+  // Admission control reserves capacity for this many simultaneous host
+  // failures; 0 means 1.
+  uint32 host_failures_to_tolerate = 9;
+  // Virtual CPUs allowed per physical thread when sizing failover capacity;
+  // 0 means 4.
+  double cpu_overcommit_ratio = 10;
 }
 
 message FailoverEvent {
@@ -64,6 +70,22 @@ message HaClusterStatus {
   uint32 protected_vms = 6;
   repeated string dead_hosts = 7;
   repeated FailoverEvent recent_events = 8;
+  HaAdmissionStatus admission = 9;
+}
+
+// HaAdmissionStatus is the cluster's failover capacity: what the running VMs
+// need versus what is left after the configured number of the largest hosts
+// fail.
+message HaAdmissionStatus {
+  // False when the running VMs no longer fit after the configured host failures.
+  bool ok = 1;
+  uint32 configured_host_failures = 2;
+  // Host failures the cluster could absorb right now.
+  uint32 tolerated_host_failures = 3;
+  int64 memory_demand_mb = 4;
+  int64 memory_capacity_mb = 5;
+  int64 vcpu_demand = 6;
+  int64 vcpu_capacity = 7;
 }
 
 message GetHaConfigRequest {

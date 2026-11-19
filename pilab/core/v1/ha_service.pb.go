@@ -139,8 +139,14 @@ type HaConfig struct {
 	DefaultRestartPriority  HaRestartPriority      `protobuf:"varint,6,opt,name=default_restart_priority,json=defaultRestartPriority,proto3,enum=pilab.cloud.core.v1.HaRestartPriority" json:"default_restart_priority,omitempty"`
 	FencingMethod           FencingMethod          `protobuf:"varint,7,opt,name=fencing_method,json=fencingMethod,proto3,enum=pilab.cloud.core.v1.FencingMethod" json:"fencing_method,omitempty"`
 	MaxRestartRetries       uint32                 `protobuf:"varint,8,opt,name=max_restart_retries,json=maxRestartRetries,proto3" json:"max_restart_retries,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Admission control reserves capacity for this many simultaneous host
+	// failures; 0 means 1.
+	HostFailuresToTolerate uint32 `protobuf:"varint,9,opt,name=host_failures_to_tolerate,json=hostFailuresToTolerate,proto3" json:"host_failures_to_tolerate,omitempty"`
+	// Virtual CPUs allowed per physical thread when sizing failover capacity;
+	// 0 means 4.
+	CpuOvercommitRatio float64 `protobuf:"fixed64,10,opt,name=cpu_overcommit_ratio,json=cpuOvercommitRatio,proto3" json:"cpu_overcommit_ratio,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *HaConfig) Reset() {
@@ -225,6 +231,20 @@ func (x *HaConfig) GetFencingMethod() FencingMethod {
 func (x *HaConfig) GetMaxRestartRetries() uint32 {
 	if x != nil {
 		return x.MaxRestartRetries
+	}
+	return 0
+}
+
+func (x *HaConfig) GetHostFailuresToTolerate() uint32 {
+	if x != nil {
+		return x.HostFailuresToTolerate
+	}
+	return 0
+}
+
+func (x *HaConfig) GetCpuOvercommitRatio() float64 {
+	if x != nil {
+		return x.CpuOvercommitRatio
 	}
 	return 0
 }
@@ -347,6 +367,7 @@ type HaClusterStatus struct {
 	ProtectedVms        uint32                 `protobuf:"varint,6,opt,name=protected_vms,json=protectedVms,proto3" json:"protected_vms,omitempty"`
 	DeadHosts           []string               `protobuf:"bytes,7,rep,name=dead_hosts,json=deadHosts,proto3" json:"dead_hosts,omitempty"`
 	RecentEvents        []*FailoverEvent       `protobuf:"bytes,8,rep,name=recent_events,json=recentEvents,proto3" json:"recent_events,omitempty"`
+	Admission           *HaAdmissionStatus     `protobuf:"bytes,9,opt,name=admission,proto3" json:"admission,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -437,6 +458,110 @@ func (x *HaClusterStatus) GetRecentEvents() []*FailoverEvent {
 	return nil
 }
 
+func (x *HaClusterStatus) GetAdmission() *HaAdmissionStatus {
+	if x != nil {
+		return x.Admission
+	}
+	return nil
+}
+
+// HaAdmissionStatus is the cluster's failover capacity: what the running VMs
+// need versus what is left after the configured number of the largest hosts
+// fail.
+type HaAdmissionStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// False when the running VMs no longer fit after the configured host failures.
+	Ok                     bool   `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
+	ConfiguredHostFailures uint32 `protobuf:"varint,2,opt,name=configured_host_failures,json=configuredHostFailures,proto3" json:"configured_host_failures,omitempty"`
+	// Host failures the cluster could absorb right now.
+	ToleratedHostFailures uint32 `protobuf:"varint,3,opt,name=tolerated_host_failures,json=toleratedHostFailures,proto3" json:"tolerated_host_failures,omitempty"`
+	MemoryDemandMb        int64  `protobuf:"varint,4,opt,name=memory_demand_mb,json=memoryDemandMb,proto3" json:"memory_demand_mb,omitempty"`
+	MemoryCapacityMb      int64  `protobuf:"varint,5,opt,name=memory_capacity_mb,json=memoryCapacityMb,proto3" json:"memory_capacity_mb,omitempty"`
+	VcpuDemand            int64  `protobuf:"varint,6,opt,name=vcpu_demand,json=vcpuDemand,proto3" json:"vcpu_demand,omitempty"`
+	VcpuCapacity          int64  `protobuf:"varint,7,opt,name=vcpu_capacity,json=vcpuCapacity,proto3" json:"vcpu_capacity,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *HaAdmissionStatus) Reset() {
+	*x = HaAdmissionStatus{}
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HaAdmissionStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HaAdmissionStatus) ProtoMessage() {}
+
+func (x *HaAdmissionStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HaAdmissionStatus.ProtoReflect.Descriptor instead.
+func (*HaAdmissionStatus) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *HaAdmissionStatus) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
+}
+
+func (x *HaAdmissionStatus) GetConfiguredHostFailures() uint32 {
+	if x != nil {
+		return x.ConfiguredHostFailures
+	}
+	return 0
+}
+
+func (x *HaAdmissionStatus) GetToleratedHostFailures() uint32 {
+	if x != nil {
+		return x.ToleratedHostFailures
+	}
+	return 0
+}
+
+func (x *HaAdmissionStatus) GetMemoryDemandMb() int64 {
+	if x != nil {
+		return x.MemoryDemandMb
+	}
+	return 0
+}
+
+func (x *HaAdmissionStatus) GetMemoryCapacityMb() int64 {
+	if x != nil {
+		return x.MemoryCapacityMb
+	}
+	return 0
+}
+
+func (x *HaAdmissionStatus) GetVcpuDemand() int64 {
+	if x != nil {
+		return x.VcpuDemand
+	}
+	return 0
+}
+
+func (x *HaAdmissionStatus) GetVcpuCapacity() int64 {
+	if x != nil {
+		return x.VcpuCapacity
+	}
+	return 0
+}
+
 type GetHaConfigRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ClusterId     string                 `protobuf:"bytes,1,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
@@ -446,7 +571,7 @@ type GetHaConfigRequest struct {
 
 func (x *GetHaConfigRequest) Reset() {
 	*x = GetHaConfigRequest{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[3]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -458,7 +583,7 @@ func (x *GetHaConfigRequest) String() string {
 func (*GetHaConfigRequest) ProtoMessage() {}
 
 func (x *GetHaConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[3]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -471,7 +596,7 @@ func (x *GetHaConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHaConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetHaConfigRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{3}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetHaConfigRequest) GetClusterId() string {
@@ -490,7 +615,7 @@ type GetHaConfigResponse struct {
 
 func (x *GetHaConfigResponse) Reset() {
 	*x = GetHaConfigResponse{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[4]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -502,7 +627,7 @@ func (x *GetHaConfigResponse) String() string {
 func (*GetHaConfigResponse) ProtoMessage() {}
 
 func (x *GetHaConfigResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[4]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -515,7 +640,7 @@ func (x *GetHaConfigResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHaConfigResponse.ProtoReflect.Descriptor instead.
 func (*GetHaConfigResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{4}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetHaConfigResponse) GetConfig() *HaConfig {
@@ -534,7 +659,7 @@ type UpdateHaConfigRequest struct {
 
 func (x *UpdateHaConfigRequest) Reset() {
 	*x = UpdateHaConfigRequest{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[5]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -546,7 +671,7 @@ func (x *UpdateHaConfigRequest) String() string {
 func (*UpdateHaConfigRequest) ProtoMessage() {}
 
 func (x *UpdateHaConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[5]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -559,7 +684,7 @@ func (x *UpdateHaConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateHaConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateHaConfigRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{5}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateHaConfigRequest) GetConfig() *HaConfig {
@@ -578,7 +703,7 @@ type UpdateHaConfigResponse struct {
 
 func (x *UpdateHaConfigResponse) Reset() {
 	*x = UpdateHaConfigResponse{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[6]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -590,7 +715,7 @@ func (x *UpdateHaConfigResponse) String() string {
 func (*UpdateHaConfigResponse) ProtoMessage() {}
 
 func (x *UpdateHaConfigResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[6]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -603,7 +728,7 @@ func (x *UpdateHaConfigResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateHaConfigResponse.ProtoReflect.Descriptor instead.
 func (*UpdateHaConfigResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{6}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UpdateHaConfigResponse) GetConfig() *HaConfig {
@@ -622,7 +747,7 @@ type GetHaClusterStatusRequest struct {
 
 func (x *GetHaClusterStatusRequest) Reset() {
 	*x = GetHaClusterStatusRequest{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[7]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -634,7 +759,7 @@ func (x *GetHaClusterStatusRequest) String() string {
 func (*GetHaClusterStatusRequest) ProtoMessage() {}
 
 func (x *GetHaClusterStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[7]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -647,7 +772,7 @@ func (x *GetHaClusterStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHaClusterStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetHaClusterStatusRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{7}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetHaClusterStatusRequest) GetClusterId() string {
@@ -666,7 +791,7 @@ type GetHaClusterStatusResponse struct {
 
 func (x *GetHaClusterStatusResponse) Reset() {
 	*x = GetHaClusterStatusResponse{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[8]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -678,7 +803,7 @@ func (x *GetHaClusterStatusResponse) String() string {
 func (*GetHaClusterStatusResponse) ProtoMessage() {}
 
 func (x *GetHaClusterStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[8]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -691,7 +816,7 @@ func (x *GetHaClusterStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHaClusterStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetHaClusterStatusResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{8}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetHaClusterStatusResponse) GetStatus() *HaClusterStatus {
@@ -712,7 +837,7 @@ type TriggerHostFailoverRequest struct {
 
 func (x *TriggerHostFailoverRequest) Reset() {
 	*x = TriggerHostFailoverRequest{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[9]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -724,7 +849,7 @@ func (x *TriggerHostFailoverRequest) String() string {
 func (*TriggerHostFailoverRequest) ProtoMessage() {}
 
 func (x *TriggerHostFailoverRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[9]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -737,7 +862,7 @@ func (x *TriggerHostFailoverRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TriggerHostFailoverRequest.ProtoReflect.Descriptor instead.
 func (*TriggerHostFailoverRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{9}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TriggerHostFailoverRequest) GetClusterId() string {
@@ -771,7 +896,7 @@ type TriggerHostFailoverResponse struct {
 
 func (x *TriggerHostFailoverResponse) Reset() {
 	*x = TriggerHostFailoverResponse{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[10]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -783,7 +908,7 @@ func (x *TriggerHostFailoverResponse) String() string {
 func (*TriggerHostFailoverResponse) ProtoMessage() {}
 
 func (x *TriggerHostFailoverResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[10]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -796,7 +921,7 @@ func (x *TriggerHostFailoverResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TriggerHostFailoverResponse.ProtoReflect.Descriptor instead.
 func (*TriggerHostFailoverResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{10}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *TriggerHostFailoverResponse) GetVmsEvacuated() uint32 {
@@ -823,7 +948,7 @@ type ListFailoverEventsRequest struct {
 
 func (x *ListFailoverEventsRequest) Reset() {
 	*x = ListFailoverEventsRequest{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[11]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -835,7 +960,7 @@ func (x *ListFailoverEventsRequest) String() string {
 func (*ListFailoverEventsRequest) ProtoMessage() {}
 
 func (x *ListFailoverEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[11]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -848,7 +973,7 @@ func (x *ListFailoverEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFailoverEventsRequest.ProtoReflect.Descriptor instead.
 func (*ListFailoverEventsRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{11}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ListFailoverEventsRequest) GetClusterId() string {
@@ -874,7 +999,7 @@ type ListFailoverEventsResponse struct {
 
 func (x *ListFailoverEventsResponse) Reset() {
 	*x = ListFailoverEventsResponse{}
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[12]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -886,7 +1011,7 @@ func (x *ListFailoverEventsResponse) String() string {
 func (*ListFailoverEventsResponse) ProtoMessage() {}
 
 func (x *ListFailoverEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[12]
+	mi := &file_pilab_core_v1_ha_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -899,7 +1024,7 @@ func (x *ListFailoverEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFailoverEventsResponse.ProtoReflect.Descriptor instead.
 func (*ListFailoverEventsResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{12}
+	return file_pilab_core_v1_ha_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListFailoverEventsResponse) GetEvents() []*FailoverEvent {
@@ -913,7 +1038,7 @@ var File_pilab_core_v1_ha_service_proto protoreflect.FileDescriptor
 
 const file_pilab_core_v1_ha_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1epilab/core/v1/ha_service.proto\x12\x13pilab.cloud.core.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x03\n" +
+	"\x1epilab/core/v1/ha_service.proto\x12\x13pilab.cloud.core.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x04\n" +
 	"\bHaConfig\x12\x1d\n" +
 	"\n" +
 	"cluster_id\x18\x01 \x01(\tR\tclusterId\x12\x18\n" +
@@ -923,7 +1048,10 @@ const file_pilab_core_v1_ha_service_proto_rawDesc = "" +
 	"\x18failover_timeout_seconds\x18\x05 \x01(\rR\x16failoverTimeoutSeconds\x12`\n" +
 	"\x18default_restart_priority\x18\x06 \x01(\x0e2&.pilab.cloud.core.v1.HaRestartPriorityR\x16defaultRestartPriority\x12I\n" +
 	"\x0efencing_method\x18\a \x01(\x0e2\".pilab.cloud.core.v1.FencingMethodR\rfencingMethod\x12.\n" +
-	"\x13max_restart_retries\x18\b \x01(\rR\x11maxRestartRetries\"\xa2\x02\n" +
+	"\x13max_restart_retries\x18\b \x01(\rR\x11maxRestartRetries\x129\n" +
+	"\x19host_failures_to_tolerate\x18\t \x01(\rR\x16hostFailuresToTolerate\x120\n" +
+	"\x14cpu_overcommit_ratio\x18\n" +
+	" \x01(\x01R\x12cpuOvercommitRatio\"\xa2\x02\n" +
 	"\rFailoverEvent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -934,7 +1062,7 @@ const file_pilab_core_v1_ha_service_proto_rawDesc = "" +
 	"\avm_name\x18\x06 \x01(\tR\x06vmName\x12\x16\n" +
 	"\x06status\x18\a \x01(\tR\x06status\x12\x16\n" +
 	"\x06reason\x18\b \x01(\tR\x06reason\x128\n" +
-	"\ttimestamp\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"\xd2\x02\n" +
+	"\ttimestamp\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"\x98\x03\n" +
 	"\x0fHaClusterStatus\x12\x1d\n" +
 	"\n" +
 	"cluster_id\x18\x01 \x01(\tR\tclusterId\x12\x18\n" +
@@ -946,7 +1074,17 @@ const file_pilab_core_v1_ha_service_proto_rawDesc = "" +
 	"\rprotected_vms\x18\x06 \x01(\rR\fprotectedVms\x12\x1d\n" +
 	"\n" +
 	"dead_hosts\x18\a \x03(\tR\tdeadHosts\x12G\n" +
-	"\rrecent_events\x18\b \x03(\v2\".pilab.cloud.core.v1.FailoverEventR\frecentEvents\"3\n" +
+	"\rrecent_events\x18\b \x03(\v2\".pilab.cloud.core.v1.FailoverEventR\frecentEvents\x12D\n" +
+	"\tadmission\x18\t \x01(\v2&.pilab.cloud.core.v1.HaAdmissionStatusR\tadmission\"\xb3\x02\n" +
+	"\x11HaAdmissionStatus\x12\x0e\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok\x128\n" +
+	"\x18configured_host_failures\x18\x02 \x01(\rR\x16configuredHostFailures\x126\n" +
+	"\x17tolerated_host_failures\x18\x03 \x01(\rR\x15toleratedHostFailures\x12(\n" +
+	"\x10memory_demand_mb\x18\x04 \x01(\x03R\x0ememoryDemandMb\x12,\n" +
+	"\x12memory_capacity_mb\x18\x05 \x01(\x03R\x10memoryCapacityMb\x12\x1f\n" +
+	"\vvcpu_demand\x18\x06 \x01(\x03R\n" +
+	"vcpuDemand\x12#\n" +
+	"\rvcpu_capacity\x18\a \x01(\x03R\fvcpuCapacity\"3\n" +
 	"\x12GetHaConfigRequest\x12\x1d\n" +
 	"\n" +
 	"cluster_id\x18\x01 \x01(\tR\tclusterId\"L\n" +
@@ -1008,50 +1146,52 @@ func file_pilab_core_v1_ha_service_proto_rawDescGZIP() []byte {
 }
 
 var file_pilab_core_v1_ha_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_pilab_core_v1_ha_service_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_pilab_core_v1_ha_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_pilab_core_v1_ha_service_proto_goTypes = []any{
 	(HaRestartPriority)(0),              // 0: pilab.cloud.core.v1.HaRestartPriority
 	(FencingMethod)(0),                  // 1: pilab.cloud.core.v1.FencingMethod
 	(*HaConfig)(nil),                    // 2: pilab.cloud.core.v1.HaConfig
 	(*FailoverEvent)(nil),               // 3: pilab.cloud.core.v1.FailoverEvent
 	(*HaClusterStatus)(nil),             // 4: pilab.cloud.core.v1.HaClusterStatus
-	(*GetHaConfigRequest)(nil),          // 5: pilab.cloud.core.v1.GetHaConfigRequest
-	(*GetHaConfigResponse)(nil),         // 6: pilab.cloud.core.v1.GetHaConfigResponse
-	(*UpdateHaConfigRequest)(nil),       // 7: pilab.cloud.core.v1.UpdateHaConfigRequest
-	(*UpdateHaConfigResponse)(nil),      // 8: pilab.cloud.core.v1.UpdateHaConfigResponse
-	(*GetHaClusterStatusRequest)(nil),   // 9: pilab.cloud.core.v1.GetHaClusterStatusRequest
-	(*GetHaClusterStatusResponse)(nil),  // 10: pilab.cloud.core.v1.GetHaClusterStatusResponse
-	(*TriggerHostFailoverRequest)(nil),  // 11: pilab.cloud.core.v1.TriggerHostFailoverRequest
-	(*TriggerHostFailoverResponse)(nil), // 12: pilab.cloud.core.v1.TriggerHostFailoverResponse
-	(*ListFailoverEventsRequest)(nil),   // 13: pilab.cloud.core.v1.ListFailoverEventsRequest
-	(*ListFailoverEventsResponse)(nil),  // 14: pilab.cloud.core.v1.ListFailoverEventsResponse
-	(*timestamppb.Timestamp)(nil),       // 15: google.protobuf.Timestamp
+	(*HaAdmissionStatus)(nil),           // 5: pilab.cloud.core.v1.HaAdmissionStatus
+	(*GetHaConfigRequest)(nil),          // 6: pilab.cloud.core.v1.GetHaConfigRequest
+	(*GetHaConfigResponse)(nil),         // 7: pilab.cloud.core.v1.GetHaConfigResponse
+	(*UpdateHaConfigRequest)(nil),       // 8: pilab.cloud.core.v1.UpdateHaConfigRequest
+	(*UpdateHaConfigResponse)(nil),      // 9: pilab.cloud.core.v1.UpdateHaConfigResponse
+	(*GetHaClusterStatusRequest)(nil),   // 10: pilab.cloud.core.v1.GetHaClusterStatusRequest
+	(*GetHaClusterStatusResponse)(nil),  // 11: pilab.cloud.core.v1.GetHaClusterStatusResponse
+	(*TriggerHostFailoverRequest)(nil),  // 12: pilab.cloud.core.v1.TriggerHostFailoverRequest
+	(*TriggerHostFailoverResponse)(nil), // 13: pilab.cloud.core.v1.TriggerHostFailoverResponse
+	(*ListFailoverEventsRequest)(nil),   // 14: pilab.cloud.core.v1.ListFailoverEventsRequest
+	(*ListFailoverEventsResponse)(nil),  // 15: pilab.cloud.core.v1.ListFailoverEventsResponse
+	(*timestamppb.Timestamp)(nil),       // 16: google.protobuf.Timestamp
 }
 var file_pilab_core_v1_ha_service_proto_depIdxs = []int32{
 	0,  // 0: pilab.cloud.core.v1.HaConfig.default_restart_priority:type_name -> pilab.cloud.core.v1.HaRestartPriority
 	1,  // 1: pilab.cloud.core.v1.HaConfig.fencing_method:type_name -> pilab.cloud.core.v1.FencingMethod
-	15, // 2: pilab.cloud.core.v1.FailoverEvent.timestamp:type_name -> google.protobuf.Timestamp
+	16, // 2: pilab.cloud.core.v1.FailoverEvent.timestamp:type_name -> google.protobuf.Timestamp
 	3,  // 3: pilab.cloud.core.v1.HaClusterStatus.recent_events:type_name -> pilab.cloud.core.v1.FailoverEvent
-	2,  // 4: pilab.cloud.core.v1.GetHaConfigResponse.config:type_name -> pilab.cloud.core.v1.HaConfig
-	2,  // 5: pilab.cloud.core.v1.UpdateHaConfigRequest.config:type_name -> pilab.cloud.core.v1.HaConfig
-	2,  // 6: pilab.cloud.core.v1.UpdateHaConfigResponse.config:type_name -> pilab.cloud.core.v1.HaConfig
-	4,  // 7: pilab.cloud.core.v1.GetHaClusterStatusResponse.status:type_name -> pilab.cloud.core.v1.HaClusterStatus
-	3,  // 8: pilab.cloud.core.v1.ListFailoverEventsResponse.events:type_name -> pilab.cloud.core.v1.FailoverEvent
-	5,  // 9: pilab.cloud.core.v1.HaService.GetHaConfig:input_type -> pilab.cloud.core.v1.GetHaConfigRequest
-	7,  // 10: pilab.cloud.core.v1.HaService.UpdateHaConfig:input_type -> pilab.cloud.core.v1.UpdateHaConfigRequest
-	9,  // 11: pilab.cloud.core.v1.HaService.GetHaClusterStatus:input_type -> pilab.cloud.core.v1.GetHaClusterStatusRequest
-	11, // 12: pilab.cloud.core.v1.HaService.TriggerHostFailover:input_type -> pilab.cloud.core.v1.TriggerHostFailoverRequest
-	13, // 13: pilab.cloud.core.v1.HaService.ListFailoverEvents:input_type -> pilab.cloud.core.v1.ListFailoverEventsRequest
-	6,  // 14: pilab.cloud.core.v1.HaService.GetHaConfig:output_type -> pilab.cloud.core.v1.GetHaConfigResponse
-	8,  // 15: pilab.cloud.core.v1.HaService.UpdateHaConfig:output_type -> pilab.cloud.core.v1.UpdateHaConfigResponse
-	10, // 16: pilab.cloud.core.v1.HaService.GetHaClusterStatus:output_type -> pilab.cloud.core.v1.GetHaClusterStatusResponse
-	12, // 17: pilab.cloud.core.v1.HaService.TriggerHostFailover:output_type -> pilab.cloud.core.v1.TriggerHostFailoverResponse
-	14, // 18: pilab.cloud.core.v1.HaService.ListFailoverEvents:output_type -> pilab.cloud.core.v1.ListFailoverEventsResponse
-	14, // [14:19] is the sub-list for method output_type
-	9,  // [9:14] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	5,  // 4: pilab.cloud.core.v1.HaClusterStatus.admission:type_name -> pilab.cloud.core.v1.HaAdmissionStatus
+	2,  // 5: pilab.cloud.core.v1.GetHaConfigResponse.config:type_name -> pilab.cloud.core.v1.HaConfig
+	2,  // 6: pilab.cloud.core.v1.UpdateHaConfigRequest.config:type_name -> pilab.cloud.core.v1.HaConfig
+	2,  // 7: pilab.cloud.core.v1.UpdateHaConfigResponse.config:type_name -> pilab.cloud.core.v1.HaConfig
+	4,  // 8: pilab.cloud.core.v1.GetHaClusterStatusResponse.status:type_name -> pilab.cloud.core.v1.HaClusterStatus
+	3,  // 9: pilab.cloud.core.v1.ListFailoverEventsResponse.events:type_name -> pilab.cloud.core.v1.FailoverEvent
+	6,  // 10: pilab.cloud.core.v1.HaService.GetHaConfig:input_type -> pilab.cloud.core.v1.GetHaConfigRequest
+	8,  // 11: pilab.cloud.core.v1.HaService.UpdateHaConfig:input_type -> pilab.cloud.core.v1.UpdateHaConfigRequest
+	10, // 12: pilab.cloud.core.v1.HaService.GetHaClusterStatus:input_type -> pilab.cloud.core.v1.GetHaClusterStatusRequest
+	12, // 13: pilab.cloud.core.v1.HaService.TriggerHostFailover:input_type -> pilab.cloud.core.v1.TriggerHostFailoverRequest
+	14, // 14: pilab.cloud.core.v1.HaService.ListFailoverEvents:input_type -> pilab.cloud.core.v1.ListFailoverEventsRequest
+	7,  // 15: pilab.cloud.core.v1.HaService.GetHaConfig:output_type -> pilab.cloud.core.v1.GetHaConfigResponse
+	9,  // 16: pilab.cloud.core.v1.HaService.UpdateHaConfig:output_type -> pilab.cloud.core.v1.UpdateHaConfigResponse
+	11, // 17: pilab.cloud.core.v1.HaService.GetHaClusterStatus:output_type -> pilab.cloud.core.v1.GetHaClusterStatusResponse
+	13, // 18: pilab.cloud.core.v1.HaService.TriggerHostFailover:output_type -> pilab.cloud.core.v1.TriggerHostFailoverResponse
+	15, // 19: pilab.cloud.core.v1.HaService.ListFailoverEvents:output_type -> pilab.cloud.core.v1.ListFailoverEventsResponse
+	15, // [15:20] is the sub-list for method output_type
+	10, // [10:15] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_pilab_core_v1_ha_service_proto_init() }
@@ -1065,7 +1205,7 @@ func file_pilab_core_v1_ha_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_core_v1_ha_service_proto_rawDesc), len(file_pilab_core_v1_ha_service_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
