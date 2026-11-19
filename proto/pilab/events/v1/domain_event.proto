@@ -1,0 +1,47 @@
+// Package events defines the durable domain events the director records.
+
+syntax = "proto3";
+
+package pilab.events.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/events/v1;eventsv1";
+
+// DomainEvent is a fact the director recorded: a request it accepted, an
+// outcome a node reported, or a decision it made (failover, fencing).
+// Events are published on the JetStream subject
+// pivirt.<entity_kind>.<entity_id>.<action>, where type is
+// "<entity_kind>.<action>", e.g. pivirt.vm.<vm-id>.stop.requested.
+message DomainEvent {
+  // id is unique per event and used for JetStream de-duplication.
+  string id = 1;
+  // type is "<entity_kind>.<action>", e.g. "vm.stop.requested".
+  string type = 2;
+  google.protobuf.Timestamp time = 3;
+
+  // entity_kind is the first token of type: "vm", "host" or "cluster".
+  string entity_kind = 4;
+  string entity_id = 5;
+
+  string vm_id = 6;
+  string host_id = 7;
+  string target_host_id = 8;
+  string cluster_id = 9;
+
+  // task_id is the task this event is about, if any.
+  string task_id = 10;
+  // correlation_id groups every event of one operation, e.g. a failover.
+  string correlation_id = 11;
+  // causation_id is the id of the event that caused this one.
+  string causation_id = 12;
+
+  // actor is who asked for it: a user subject or a director component.
+  string actor = 13;
+  string reason = 14;
+  string error = 15;
+  // source is the director replica that recorded the event.
+  string source = 16;
+
+  map<string, string> attributes = 17;
+}
