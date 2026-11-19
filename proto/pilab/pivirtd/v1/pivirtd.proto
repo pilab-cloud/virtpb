@@ -333,6 +333,10 @@ message MemoryStats {
   int64 used_mb = 2;
   int64 balloon_current_mb = 3;
   int64 balloon_max_mb = 4;
+  int64 available_mb = 5;
+  int64 swap_in_bytes = 6;
+  int64 swap_out_bytes = 7;
+  int64 major_faults = 8;
 }
 
 message DiskStats {
@@ -349,6 +353,10 @@ message DiskStats {
   // per operation in milliseconds (0 when no operation completed).
   double read_latency_ms = 8;
   double write_latency_ms = 9;
+  int64 flush_ops = 10;
+  int64 flush_iops = 11;
+  int64 total_used_iops = 12;
+  double flush_latency_ms = 13;
 }
 
 message NetworkStats {
@@ -357,6 +365,10 @@ message NetworkStats {
   int64 tx_bytes = 3;
   int64 rx_packets = 4;
   int64 tx_packets = 5;
+  int64 rx_dropped = 6;
+  int64 tx_dropped = 7;
+  int64 rx_errors = 8;
+  int64 tx_errors = 9;
 }
 
 // StreamVMStatsRequest filters which VMs are included in each batch.
@@ -372,6 +384,27 @@ message VMStatsBatch {
   HostStats host_stats = 3;
 }
 
+// HostDiskStat holds physical/pool disk I/O metrics.
+message HostDiskStat {
+  string name = 1;
+  int64 read_iops = 2;
+  int64 write_iops = 3;
+  double await_ms = 4;
+  double util_percent = 5;
+  int64 in_flight = 6;
+}
+
+// HostNetStat holds host physical/tunnel interface network load.
+message HostNetStat {
+  string name = 1;
+  int64 rx_bytes = 2;
+  int64 tx_bytes = 3;
+  int64 rx_dropped = 4;
+  int64 tx_dropped = 5;
+  int64 rx_errors = 6;
+  int64 tx_errors = 7;
+}
+
 // HostStats is the per-tick host-level sample accompanying a VMStatsBatch.
 message HostStats {
   // cpu_busy_percent is 100*(user+nice+system+iowait+irq+softirq)/total from
@@ -383,6 +416,10 @@ message HostStats {
   int64 mem_available_mb = 5;
   int64 mem_total_mb = 6;
   HostPressure pressure = 7;
+  repeated HostDiskStat disks = 8;
+  repeated HostNetStat nics = 9;
+  int64 swap_used_mb = 10;
+  int64 swap_total_mb = 11;
 }
 
 // PSIPressure holds one PSI metric pair (avg10 and avg60 from

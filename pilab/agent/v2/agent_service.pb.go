@@ -11,6 +11,7 @@ package agentv2
 
 import (
 	v11 "go.pilab.hu/cloud/virtpb/v3/pilab/common/v1"
+	v12 "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1"
 	v1 "go.pilab.hu/cloud/virtpb/v3/pilab/pivirtd/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -13663,7 +13664,7 @@ var File_pilab_agent_v2_agent_service_proto protoreflect.FileDescriptor
 
 const file_pilab_agent_v2_agent_service_proto_rawDesc = "" +
 	"\n" +
-	"\"pilab/agent/v2/agent_service.proto\x12\x0epilab.agent.v2\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18pilab/common/v1/vm.proto\x1a\x1apilab/common/v1/host.proto\x1a\x1bpilab/common/v1/error.proto\x1a\x1cpilab/common/v1/stream.proto\x1a\x1apilab/common/v1/task.proto\x1a\x1epilab/pivirtd/v1/pivirtd.proto\"\xa3\x01\n" +
+	"\"pilab/agent/v2/agent_service.proto\x12\x0epilab.agent.v2\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18pilab/common/v1/vm.proto\x1a\x1apilab/common/v1/host.proto\x1a\x1bpilab/common/v1/error.proto\x1a\x1cpilab/common/v1/stream.proto\x1a\x1apilab/common/v1/task.proto\x1a\x1epilab/pivirtd/v1/pivirtd.proto\x1a\x1fpilab/core/v1/drs_service.proto\"\xa3\x01\n" +
 	"\x04Task\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\tR\x06status\x12\x1a\n" +
@@ -14706,11 +14707,12 @@ const file_pilab_agent_v2_agent_service_proto_rawDesc = "" +
 	"\x1bRECURRENCE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15RECURRENCE_TYPE_DAILY\x10\x01\x12\x1a\n" +
 	"\x16RECURRENCE_TYPE_WEEKLY\x10\x02\x12\x1b\n" +
-	"\x17RECURRENCE_TYPE_MONTHLY\x10\x032\xbbE\n" +
+	"\x17RECURRENCE_TYPE_MONTHLY\x10\x032\xa0F\n" +
 	"\fAgentService\x12Y\n" +
 	"\fRegisterHost\x12#.pilab.agent.v2.RegisterHostRequest\x1a$.pilab.agent.v2.RegisterHostResponse\x12P\n" +
 	"\tHeartbeat\x12 .pilab.agent.v2.HeartbeatRequest\x1a!.pilab.agent.v2.HeartbeatResponse\x12Q\n" +
-	"\rGetHostStatus\x12$.pilab.agent.v2.GetHostStatusRequest\x1a\x1a.pilab.agent.v2.HostStatus\x12M\n" +
+	"\rGetHostStatus\x12$.pilab.agent.v2.GetHostStatusRequest\x1a\x1a.pilab.agent.v2.HostStatus\x12c\n" +
+	"\fQueryMetrics\x12(.pilab.cloud.core.v1.QueryMetricsRequest\x1a).pilab.cloud.core.v1.QueryMetricsResponse\x12M\n" +
 	"\bCreateVM\x12\x1f.pilab.agent.v2.CreateVMRequest\x1a .pilab.agent.v2.CreateVMResponse\x12Y\n" +
 	"\fGetVMDetails\x12#.pilab.agent.v2.GetVMDetailsRequest\x1a$.pilab.agent.v2.GetVMDetailsResponse\x12M\n" +
 	"\bUpdateVM\x12\x1f.pilab.agent.v2.UpdateVMRequest\x1a .pilab.agent.v2.UpdateVMResponse\x12M\n" +
@@ -15081,8 +15083,10 @@ var file_pilab_agent_v2_agent_service_proto_goTypes = []any{
 	(*v11.VmGuestOS)(nil),                   // 256: pilab.common.v1.VmGuestOS
 	(*v11.VmGuestNetworkInterface)(nil),     // 257: pilab.common.v1.VmGuestNetworkInterface
 	(*timestamppb.Timestamp)(nil),           // 258: google.protobuf.Timestamp
-	(*v11.StreamRequest)(nil),               // 259: pilab.common.v1.StreamRequest
-	(*v11.StreamResponse)(nil),              // 260: pilab.common.v1.StreamResponse
+	(*v12.QueryMetricsRequest)(nil),         // 259: pilab.cloud.core.v1.QueryMetricsRequest
+	(*v11.StreamRequest)(nil),               // 260: pilab.common.v1.StreamRequest
+	(*v12.QueryMetricsResponse)(nil),        // 261: pilab.cloud.core.v1.QueryMetricsResponse
+	(*v11.StreamResponse)(nil),              // 262: pilab.common.v1.StreamResponse
 }
 var file_pilab_agent_v2_agent_service_proto_depIdxs = []int32{
 	4,   // 0: pilab.agent.v2.CPU.topology:type_name -> pilab.agent.v2.CPUTopology
@@ -15217,193 +15221,195 @@ var file_pilab_agent_v2_agent_service_proto_depIdxs = []int32{
 	29,  // 129: pilab.agent.v2.AgentService.RegisterHost:input_type -> pilab.agent.v2.RegisterHostRequest
 	31,  // 130: pilab.agent.v2.AgentService.Heartbeat:input_type -> pilab.agent.v2.HeartbeatRequest
 	33,  // 131: pilab.agent.v2.AgentService.GetHostStatus:input_type -> pilab.agent.v2.GetHostStatusRequest
-	34,  // 132: pilab.agent.v2.AgentService.CreateVM:input_type -> pilab.agent.v2.CreateVMRequest
-	36,  // 133: pilab.agent.v2.AgentService.GetVMDetails:input_type -> pilab.agent.v2.GetVMDetailsRequest
-	38,  // 134: pilab.agent.v2.AgentService.UpdateVM:input_type -> pilab.agent.v2.UpdateVMRequest
-	40,  // 135: pilab.agent.v2.AgentService.DeleteVM:input_type -> pilab.agent.v2.DeleteVMRequest
-	42,  // 136: pilab.agent.v2.AgentService.StartVM:input_type -> pilab.agent.v2.StartVMRequest
-	44,  // 137: pilab.agent.v2.AgentService.StopVM:input_type -> pilab.agent.v2.StopVMRequest
-	46,  // 138: pilab.agent.v2.AgentService.ForceStopVM:input_type -> pilab.agent.v2.ForceStopVMRequest
-	48,  // 139: pilab.agent.v2.AgentService.RebootVM:input_type -> pilab.agent.v2.RebootVMRequest
-	50,  // 140: pilab.agent.v2.AgentService.PauseVM:input_type -> pilab.agent.v2.PauseVMRequest
-	52,  // 141: pilab.agent.v2.AgentService.ResumeVM:input_type -> pilab.agent.v2.ResumeVMRequest
-	55,  // 142: pilab.agent.v2.AgentService.InitiateMigration:input_type -> pilab.agent.v2.InitiateMigrationRequest
-	57,  // 143: pilab.agent.v2.AgentService.PrepareForMigration:input_type -> pilab.agent.v2.PrepareForMigrationRequest
-	59,  // 144: pilab.agent.v2.AgentService.ConfirmMigration:input_type -> pilab.agent.v2.ConfirmMigrationRequest
-	60,  // 145: pilab.agent.v2.AgentService.AbortMigration:input_type -> pilab.agent.v2.AbortMigrationRequest
-	61,  // 146: pilab.agent.v2.AgentService.CreateSnapshot:input_type -> pilab.agent.v2.CreateSnapshotRequest
-	63,  // 147: pilab.agent.v2.AgentService.RevertToSnapshot:input_type -> pilab.agent.v2.RevertToSnapshotRequest
-	65,  // 148: pilab.agent.v2.AgentService.DeleteSnapshot:input_type -> pilab.agent.v2.DeleteSnapshotRequest
-	67,  // 149: pilab.agent.v2.AgentService.GetTaskStatus:input_type -> pilab.agent.v2.GetTaskStatusRequest
-	68,  // 150: pilab.agent.v2.AgentService.CancelTask:input_type -> pilab.agent.v2.CancelTaskRequest
-	70,  // 151: pilab.agent.v2.AgentService.ConfigureNetwork:input_type -> pilab.agent.v2.ConfigureNetworkRequest
-	72,  // 152: pilab.agent.v2.AgentService.ConfigureStorage:input_type -> pilab.agent.v2.ConfigureStorageRequest
-	74,  // 153: pilab.agent.v2.AgentService.ConfigureTime:input_type -> pilab.agent.v2.ConfigureTimeRequest
-	76,  // 154: pilab.agent.v2.AgentService.SetMaintenanceMode:input_type -> pilab.agent.v2.SetMaintenanceModeRequest
-	78,  // 155: pilab.agent.v2.AgentService.UpdateHost:input_type -> pilab.agent.v2.UpdateHostRequest
-	83,  // 156: pilab.agent.v2.AgentService.GetContentLibraryItems:input_type -> pilab.agent.v2.GetContentLibraryItemsRequest
-	85,  // 157: pilab.agent.v2.AgentService.UploadContentLibraryItem:input_type -> pilab.agent.v2.UploadContentLibraryItemRequest
-	149, // 158: pilab.agent.v2.AgentService.ExportOVA:input_type -> pilab.agent.v2.ExportOVARequest
-	151, // 159: pilab.agent.v2.AgentService.ImportOVA:input_type -> pilab.agent.v2.ImportOVARequest
-	88,  // 160: pilab.agent.v2.AgentService.DeleteContentLibraryItem:input_type -> pilab.agent.v2.DeleteContentLibraryItemRequest
-	90,  // 161: pilab.agent.v2.AgentService.GetDatastores:input_type -> pilab.agent.v2.GetDatastoresRequest
-	92,  // 162: pilab.agent.v2.AgentService.GetDatastore:input_type -> pilab.agent.v2.GetDatastoreRequest
-	94,  // 163: pilab.agent.v2.AgentService.CreateDatastore:input_type -> pilab.agent.v2.CreateDatastoreRequest
-	96,  // 164: pilab.agent.v2.AgentService.DeleteDatastore:input_type -> pilab.agent.v2.DeleteDatastoreRequest
-	98,  // 165: pilab.agent.v2.AgentService.GetNetworks:input_type -> pilab.agent.v2.GetNetworksRequest
-	101, // 166: pilab.agent.v2.AgentService.GetNetwork:input_type -> pilab.agent.v2.GetNetworkRequest
-	103, // 167: pilab.agent.v2.AgentService.CreateNetwork:input_type -> pilab.agent.v2.CreateNetworkRequest
-	105, // 168: pilab.agent.v2.AgentService.DeleteNetwork:input_type -> pilab.agent.v2.DeleteNetworkRequest
-	107, // 169: pilab.agent.v2.AgentService.AttachIso:input_type -> pilab.agent.v2.AttachIsoRequest
-	109, // 170: pilab.agent.v2.AgentService.DetachIso:input_type -> pilab.agent.v2.DetachIsoRequest
-	111, // 171: pilab.agent.v2.AgentService.CloneVmFromTemplate:input_type -> pilab.agent.v2.CloneVmFromTemplateRequest
-	113, // 172: pilab.agent.v2.AgentService.GetVMGuestIPs:input_type -> pilab.agent.v2.GetVMGuestIPsRequest
-	116, // 173: pilab.agent.v2.AgentService.ChangeVMUserPassword:input_type -> pilab.agent.v2.ChangeVMUserPasswordRequest
-	118, // 174: pilab.agent.v2.AgentService.AttachCloudInit:input_type -> pilab.agent.v2.AttachCloudInitRequest
-	120, // 175: pilab.agent.v2.AgentService.AttachNetworkInterface:input_type -> pilab.agent.v2.AttachNetworkInterfaceRequest
-	122, // 176: pilab.agent.v2.AgentService.DetachNetworkInterface:input_type -> pilab.agent.v2.DetachNetworkInterfaceRequest
-	259, // 177: pilab.agent.v2.AgentService.Stream:input_type -> pilab.common.v1.StreamRequest
-	124, // 178: pilab.agent.v2.AgentService.GetHardwareHealth:input_type -> pilab.agent.v2.GetHardwareHealthRequest
-	126, // 179: pilab.agent.v2.AgentService.GetSensorData:input_type -> pilab.agent.v2.GetSensorDataRequest
-	128, // 180: pilab.agent.v2.AgentService.DefineVM:input_type -> pilab.agent.v2.DefineVMRequest
-	130, // 181: pilab.agent.v2.AgentService.GetVMDefinition:input_type -> pilab.agent.v2.GetVMDefinitionRequest
-	132, // 182: pilab.agent.v2.AgentService.ControlVM:input_type -> pilab.agent.v2.ControlVMRequest
-	134, // 183: pilab.agent.v2.AgentService.GetVMStatus:input_type -> pilab.agent.v2.GetVMStatusRequest
-	136, // 184: pilab.agent.v2.AgentService.GetVMGuestInfo:input_type -> pilab.agent.v2.GetVMGuestInfoRequest
-	139, // 185: pilab.agent.v2.AgentService.CreatePowerSchedule:input_type -> pilab.agent.v2.CreatePowerScheduleRequest
-	141, // 186: pilab.agent.v2.AgentService.ListPowerSchedules:input_type -> pilab.agent.v2.ListPowerSchedulesRequest
-	143, // 187: pilab.agent.v2.AgentService.UpdatePowerSchedule:input_type -> pilab.agent.v2.UpdatePowerScheduleRequest
-	145, // 188: pilab.agent.v2.AgentService.DeletePowerSchedule:input_type -> pilab.agent.v2.DeletePowerScheduleRequest
-	147, // 189: pilab.agent.v2.AgentService.WakeOnLAN:input_type -> pilab.agent.v2.WakeOnLANRequest
-	154, // 190: pilab.agent.v2.AgentService.GetHostInfo:input_type -> pilab.agent.v2.GetHostInfoRequest
-	156, // 191: pilab.agent.v2.AgentService.GetSystemResources:input_type -> pilab.agent.v2.GetSystemResourcesRequest
-	162, // 192: pilab.agent.v2.AgentService.GetServiceStatus:input_type -> pilab.agent.v2.GetServiceStatusRequest
-	165, // 193: pilab.agent.v2.AgentService.RestartService:input_type -> pilab.agent.v2.RestartServiceRequest
-	167, // 194: pilab.agent.v2.AgentService.GetNetworkConfig:input_type -> pilab.agent.v2.GetNetworkConfigRequest
-	172, // 195: pilab.agent.v2.AgentService.ConfigureNetworkInterface:input_type -> pilab.agent.v2.ConfigureNetworkInterfaceRequest
-	174, // 196: pilab.agent.v2.AgentService.TestNetwork:input_type -> pilab.agent.v2.TestNetworkRequest
-	176, // 197: pilab.agent.v2.AgentService.GetStorageConfig:input_type -> pilab.agent.v2.GetStorageConfigRequest
-	179, // 198: pilab.agent.v2.AgentService.MountNFS:input_type -> pilab.agent.v2.MountNFSRequest
-	181, // 199: pilab.agent.v2.AgentService.UnmountNFS:input_type -> pilab.agent.v2.UnmountNFSRequest
-	183, // 200: pilab.agent.v2.AgentService.GetMaintenanceMode:input_type -> pilab.agent.v2.GetMaintenanceModeRequest
-	185, // 201: pilab.agent.v2.AgentService.GetFirewallRules:input_type -> pilab.agent.v2.GetFirewallRulesRequest
-	188, // 202: pilab.agent.v2.AgentService.AddFirewallRule:input_type -> pilab.agent.v2.AddFirewallRuleRequest
-	190, // 203: pilab.agent.v2.AgentService.RemoveFirewallRule:input_type -> pilab.agent.v2.RemoveFirewallRuleRequest
-	192, // 204: pilab.agent.v2.AgentService.GetDNSConfig:input_type -> pilab.agent.v2.GetDNSConfigRequest
-	194, // 205: pilab.agent.v2.AgentService.SetDNSConfig:input_type -> pilab.agent.v2.SetDNSConfigRequest
-	196, // 206: pilab.agent.v2.AgentService.GetNTPConfig:input_type -> pilab.agent.v2.GetNTPConfigRequest
-	199, // 207: pilab.agent.v2.AgentService.SetNTPConfig:input_type -> pilab.agent.v2.SetNTPConfigRequest
-	201, // 208: pilab.agent.v2.AgentService.GetCloudStatus:input_type -> pilab.agent.v2.GetCloudStatusRequest
-	203, // 209: pilab.agent.v2.AgentService.AdoptToCloud:input_type -> pilab.agent.v2.AdoptToCloudRequest
-	205, // 210: pilab.agent.v2.AgentService.DisconnectFromCloud:input_type -> pilab.agent.v2.DisconnectFromCloudRequest
-	207, // 211: pilab.agent.v2.AgentService.UpdateConfig:input_type -> pilab.agent.v2.UpdateConfigRequest
-	209, // 212: pilab.agent.v2.AgentService.ListSnapshots:input_type -> pilab.agent.v2.ListSnapshotsRequest
-	212, // 213: pilab.agent.v2.AgentService.ConsolidateSnapshot:input_type -> pilab.agent.v2.ConsolidateSnapshotRequest
-	214, // 214: pilab.agent.v2.AgentService.CloneSnapshot:input_type -> pilab.agent.v2.CloneSnapshotRequest
-	217, // 215: pilab.agent.v2.AgentService.CreateVolume:input_type -> pilab.agent.v2.CreateVolumeRequest
-	219, // 216: pilab.agent.v2.AgentService.DeleteVolume:input_type -> pilab.agent.v2.DeleteVolumeRequest
-	221, // 217: pilab.agent.v2.AgentService.ResizeVolume:input_type -> pilab.agent.v2.ResizeVolumeRequest
-	223, // 218: pilab.agent.v2.AgentService.ListVolumes:input_type -> pilab.agent.v2.ListVolumesRequest
-	225, // 219: pilab.agent.v2.AgentService.GetVolume:input_type -> pilab.agent.v2.GetVolumeRequest
-	227, // 220: pilab.agent.v2.AgentService.CloneVolume:input_type -> pilab.agent.v2.CloneVolumeRequest
-	229, // 221: pilab.agent.v2.AgentService.BackupSystemVolume:input_type -> pilab.agent.v2.BackupSystemVolumeRequest
-	231, // 222: pilab.agent.v2.AgentService.RestoreSystemVolume:input_type -> pilab.agent.v2.RestoreSystemVolumeRequest
-	30,  // 223: pilab.agent.v2.AgentService.RegisterHost:output_type -> pilab.agent.v2.RegisterHostResponse
-	32,  // 224: pilab.agent.v2.AgentService.Heartbeat:output_type -> pilab.agent.v2.HeartbeatResponse
-	26,  // 225: pilab.agent.v2.AgentService.GetHostStatus:output_type -> pilab.agent.v2.HostStatus
-	35,  // 226: pilab.agent.v2.AgentService.CreateVM:output_type -> pilab.agent.v2.CreateVMResponse
-	37,  // 227: pilab.agent.v2.AgentService.GetVMDetails:output_type -> pilab.agent.v2.GetVMDetailsResponse
-	39,  // 228: pilab.agent.v2.AgentService.UpdateVM:output_type -> pilab.agent.v2.UpdateVMResponse
-	41,  // 229: pilab.agent.v2.AgentService.DeleteVM:output_type -> pilab.agent.v2.DeleteVMResponse
-	43,  // 230: pilab.agent.v2.AgentService.StartVM:output_type -> pilab.agent.v2.StartVMResponse
-	45,  // 231: pilab.agent.v2.AgentService.StopVM:output_type -> pilab.agent.v2.StopVMResponse
-	47,  // 232: pilab.agent.v2.AgentService.ForceStopVM:output_type -> pilab.agent.v2.ForceStopVMResponse
-	49,  // 233: pilab.agent.v2.AgentService.RebootVM:output_type -> pilab.agent.v2.RebootVMResponse
-	51,  // 234: pilab.agent.v2.AgentService.PauseVM:output_type -> pilab.agent.v2.PauseVMResponse
-	53,  // 235: pilab.agent.v2.AgentService.ResumeVM:output_type -> pilab.agent.v2.ResumeVMResponse
-	56,  // 236: pilab.agent.v2.AgentService.InitiateMigration:output_type -> pilab.agent.v2.InitiateMigrationResponse
-	58,  // 237: pilab.agent.v2.AgentService.PrepareForMigration:output_type -> pilab.agent.v2.PrepareForMigrationResponse
-	252, // 238: pilab.agent.v2.AgentService.ConfirmMigration:output_type -> google.protobuf.Empty
-	252, // 239: pilab.agent.v2.AgentService.AbortMigration:output_type -> google.protobuf.Empty
-	62,  // 240: pilab.agent.v2.AgentService.CreateSnapshot:output_type -> pilab.agent.v2.CreateSnapshotResponse
-	64,  // 241: pilab.agent.v2.AgentService.RevertToSnapshot:output_type -> pilab.agent.v2.RevertToSnapshotResponse
-	66,  // 242: pilab.agent.v2.AgentService.DeleteSnapshot:output_type -> pilab.agent.v2.DeleteSnapshotResponse
-	3,   // 243: pilab.agent.v2.AgentService.GetTaskStatus:output_type -> pilab.agent.v2.Task
-	69,  // 244: pilab.agent.v2.AgentService.CancelTask:output_type -> pilab.agent.v2.CancelTaskResponse
-	71,  // 245: pilab.agent.v2.AgentService.ConfigureNetwork:output_type -> pilab.agent.v2.ConfigureNetworkResponse
-	73,  // 246: pilab.agent.v2.AgentService.ConfigureStorage:output_type -> pilab.agent.v2.ConfigureStorageResponse
-	75,  // 247: pilab.agent.v2.AgentService.ConfigureTime:output_type -> pilab.agent.v2.ConfigureTimeResponse
-	77,  // 248: pilab.agent.v2.AgentService.SetMaintenanceMode:output_type -> pilab.agent.v2.SetMaintenanceModeResponse
-	79,  // 249: pilab.agent.v2.AgentService.UpdateHost:output_type -> pilab.agent.v2.UpdateHostResponse
-	84,  // 250: pilab.agent.v2.AgentService.GetContentLibraryItems:output_type -> pilab.agent.v2.GetContentLibraryItemsResponse
-	87,  // 251: pilab.agent.v2.AgentService.UploadContentLibraryItem:output_type -> pilab.agent.v2.UploadContentLibraryItemResponse
-	150, // 252: pilab.agent.v2.AgentService.ExportOVA:output_type -> pilab.agent.v2.ExportOVAResponse
-	153, // 253: pilab.agent.v2.AgentService.ImportOVA:output_type -> pilab.agent.v2.ImportOVAResponse
-	89,  // 254: pilab.agent.v2.AgentService.DeleteContentLibraryItem:output_type -> pilab.agent.v2.DeleteContentLibraryItemResponse
-	91,  // 255: pilab.agent.v2.AgentService.GetDatastores:output_type -> pilab.agent.v2.GetDatastoresResponse
-	93,  // 256: pilab.agent.v2.AgentService.GetDatastore:output_type -> pilab.agent.v2.GetDatastoreResponse
-	95,  // 257: pilab.agent.v2.AgentService.CreateDatastore:output_type -> pilab.agent.v2.CreateDatastoreResponse
-	97,  // 258: pilab.agent.v2.AgentService.DeleteDatastore:output_type -> pilab.agent.v2.DeleteDatastoreResponse
-	100, // 259: pilab.agent.v2.AgentService.GetNetworks:output_type -> pilab.agent.v2.GetNetworksResponse
-	102, // 260: pilab.agent.v2.AgentService.GetNetwork:output_type -> pilab.agent.v2.GetNetworkResponse
-	104, // 261: pilab.agent.v2.AgentService.CreateNetwork:output_type -> pilab.agent.v2.CreateNetworkResponse
-	106, // 262: pilab.agent.v2.AgentService.DeleteNetwork:output_type -> pilab.agent.v2.DeleteNetworkResponse
-	108, // 263: pilab.agent.v2.AgentService.AttachIso:output_type -> pilab.agent.v2.AttachIsoResponse
-	110, // 264: pilab.agent.v2.AgentService.DetachIso:output_type -> pilab.agent.v2.DetachIsoResponse
-	112, // 265: pilab.agent.v2.AgentService.CloneVmFromTemplate:output_type -> pilab.agent.v2.CloneVmFromTemplateResponse
-	114, // 266: pilab.agent.v2.AgentService.GetVMGuestIPs:output_type -> pilab.agent.v2.GetVMGuestIPsResponse
-	117, // 267: pilab.agent.v2.AgentService.ChangeVMUserPassword:output_type -> pilab.agent.v2.ChangeVMUserPasswordResponse
-	119, // 268: pilab.agent.v2.AgentService.AttachCloudInit:output_type -> pilab.agent.v2.AttachCloudInitResponse
-	121, // 269: pilab.agent.v2.AgentService.AttachNetworkInterface:output_type -> pilab.agent.v2.AttachNetworkInterfaceResponse
-	123, // 270: pilab.agent.v2.AgentService.DetachNetworkInterface:output_type -> pilab.agent.v2.DetachNetworkInterfaceResponse
-	260, // 271: pilab.agent.v2.AgentService.Stream:output_type -> pilab.common.v1.StreamResponse
-	125, // 272: pilab.agent.v2.AgentService.GetHardwareHealth:output_type -> pilab.agent.v2.GetHardwareHealthResponse
-	127, // 273: pilab.agent.v2.AgentService.GetSensorData:output_type -> pilab.agent.v2.GetSensorDataResponse
-	129, // 274: pilab.agent.v2.AgentService.DefineVM:output_type -> pilab.agent.v2.DefineVMResponse
-	131, // 275: pilab.agent.v2.AgentService.GetVMDefinition:output_type -> pilab.agent.v2.GetVMDefinitionResponse
-	133, // 276: pilab.agent.v2.AgentService.ControlVM:output_type -> pilab.agent.v2.ControlVMResponse
-	135, // 277: pilab.agent.v2.AgentService.GetVMStatus:output_type -> pilab.agent.v2.GetVMStatusResponse
-	137, // 278: pilab.agent.v2.AgentService.GetVMGuestInfo:output_type -> pilab.agent.v2.GetVMGuestInfoResponse
-	140, // 279: pilab.agent.v2.AgentService.CreatePowerSchedule:output_type -> pilab.agent.v2.CreatePowerScheduleResponse
-	142, // 280: pilab.agent.v2.AgentService.ListPowerSchedules:output_type -> pilab.agent.v2.ListPowerSchedulesResponse
-	144, // 281: pilab.agent.v2.AgentService.UpdatePowerSchedule:output_type -> pilab.agent.v2.UpdatePowerScheduleResponse
-	146, // 282: pilab.agent.v2.AgentService.DeletePowerSchedule:output_type -> pilab.agent.v2.DeletePowerScheduleResponse
-	148, // 283: pilab.agent.v2.AgentService.WakeOnLAN:output_type -> pilab.agent.v2.WakeOnLANResponse
-	155, // 284: pilab.agent.v2.AgentService.GetHostInfo:output_type -> pilab.agent.v2.HostInfo
-	157, // 285: pilab.agent.v2.AgentService.GetSystemResources:output_type -> pilab.agent.v2.SystemResources
-	163, // 286: pilab.agent.v2.AgentService.GetServiceStatus:output_type -> pilab.agent.v2.ServiceStatusList
-	166, // 287: pilab.agent.v2.AgentService.RestartService:output_type -> pilab.agent.v2.RestartServiceResponse
-	168, // 288: pilab.agent.v2.AgentService.GetNetworkConfig:output_type -> pilab.agent.v2.NetworkConfig
-	173, // 289: pilab.agent.v2.AgentService.ConfigureNetworkInterface:output_type -> pilab.agent.v2.ConfigureNetworkInterfaceResponse
-	175, // 290: pilab.agent.v2.AgentService.TestNetwork:output_type -> pilab.agent.v2.NetworkTestResult
-	177, // 291: pilab.agent.v2.AgentService.GetStorageConfig:output_type -> pilab.agent.v2.StorageConfig
-	180, // 292: pilab.agent.v2.AgentService.MountNFS:output_type -> pilab.agent.v2.MountNFSResponse
-	182, // 293: pilab.agent.v2.AgentService.UnmountNFS:output_type -> pilab.agent.v2.UnmountNFSResponse
-	184, // 294: pilab.agent.v2.AgentService.GetMaintenanceMode:output_type -> pilab.agent.v2.MaintenanceModeStatus
-	186, // 295: pilab.agent.v2.AgentService.GetFirewallRules:output_type -> pilab.agent.v2.FirewallRuleList
-	189, // 296: pilab.agent.v2.AgentService.AddFirewallRule:output_type -> pilab.agent.v2.AddFirewallRuleResponse
-	191, // 297: pilab.agent.v2.AgentService.RemoveFirewallRule:output_type -> pilab.agent.v2.RemoveFirewallRuleResponse
-	193, // 298: pilab.agent.v2.AgentService.GetDNSConfig:output_type -> pilab.agent.v2.DNSConfig
-	195, // 299: pilab.agent.v2.AgentService.SetDNSConfig:output_type -> pilab.agent.v2.SetDNSConfigResponse
-	197, // 300: pilab.agent.v2.AgentService.GetNTPConfig:output_type -> pilab.agent.v2.NTPConfig
-	200, // 301: pilab.agent.v2.AgentService.SetNTPConfig:output_type -> pilab.agent.v2.SetNTPConfigResponse
-	202, // 302: pilab.agent.v2.AgentService.GetCloudStatus:output_type -> pilab.agent.v2.CloudStatus
-	204, // 303: pilab.agent.v2.AgentService.AdoptToCloud:output_type -> pilab.agent.v2.AdoptToCloudResponse
-	206, // 304: pilab.agent.v2.AgentService.DisconnectFromCloud:output_type -> pilab.agent.v2.DisconnectFromCloudResponse
-	208, // 305: pilab.agent.v2.AgentService.UpdateConfig:output_type -> pilab.agent.v2.UpdateConfigResponse
-	211, // 306: pilab.agent.v2.AgentService.ListSnapshots:output_type -> pilab.agent.v2.ListSnapshotsResponse
-	213, // 307: pilab.agent.v2.AgentService.ConsolidateSnapshot:output_type -> pilab.agent.v2.ConsolidateSnapshotResponse
-	215, // 308: pilab.agent.v2.AgentService.CloneSnapshot:output_type -> pilab.agent.v2.CloneSnapshotResponse
-	218, // 309: pilab.agent.v2.AgentService.CreateVolume:output_type -> pilab.agent.v2.CreateVolumeResponse
-	220, // 310: pilab.agent.v2.AgentService.DeleteVolume:output_type -> pilab.agent.v2.DeleteVolumeResponse
-	222, // 311: pilab.agent.v2.AgentService.ResizeVolume:output_type -> pilab.agent.v2.ResizeVolumeResponse
-	224, // 312: pilab.agent.v2.AgentService.ListVolumes:output_type -> pilab.agent.v2.ListVolumesResponse
-	226, // 313: pilab.agent.v2.AgentService.GetVolume:output_type -> pilab.agent.v2.GetVolumeResponse
-	228, // 314: pilab.agent.v2.AgentService.CloneVolume:output_type -> pilab.agent.v2.CloneVolumeResponse
-	230, // 315: pilab.agent.v2.AgentService.BackupSystemVolume:output_type -> pilab.agent.v2.BackupSystemVolumeResponse
-	232, // 316: pilab.agent.v2.AgentService.RestoreSystemVolume:output_type -> pilab.agent.v2.RestoreSystemVolumeResponse
-	223, // [223:317] is the sub-list for method output_type
-	129, // [129:223] is the sub-list for method input_type
+	259, // 132: pilab.agent.v2.AgentService.QueryMetrics:input_type -> pilab.cloud.core.v1.QueryMetricsRequest
+	34,  // 133: pilab.agent.v2.AgentService.CreateVM:input_type -> pilab.agent.v2.CreateVMRequest
+	36,  // 134: pilab.agent.v2.AgentService.GetVMDetails:input_type -> pilab.agent.v2.GetVMDetailsRequest
+	38,  // 135: pilab.agent.v2.AgentService.UpdateVM:input_type -> pilab.agent.v2.UpdateVMRequest
+	40,  // 136: pilab.agent.v2.AgentService.DeleteVM:input_type -> pilab.agent.v2.DeleteVMRequest
+	42,  // 137: pilab.agent.v2.AgentService.StartVM:input_type -> pilab.agent.v2.StartVMRequest
+	44,  // 138: pilab.agent.v2.AgentService.StopVM:input_type -> pilab.agent.v2.StopVMRequest
+	46,  // 139: pilab.agent.v2.AgentService.ForceStopVM:input_type -> pilab.agent.v2.ForceStopVMRequest
+	48,  // 140: pilab.agent.v2.AgentService.RebootVM:input_type -> pilab.agent.v2.RebootVMRequest
+	50,  // 141: pilab.agent.v2.AgentService.PauseVM:input_type -> pilab.agent.v2.PauseVMRequest
+	52,  // 142: pilab.agent.v2.AgentService.ResumeVM:input_type -> pilab.agent.v2.ResumeVMRequest
+	55,  // 143: pilab.agent.v2.AgentService.InitiateMigration:input_type -> pilab.agent.v2.InitiateMigrationRequest
+	57,  // 144: pilab.agent.v2.AgentService.PrepareForMigration:input_type -> pilab.agent.v2.PrepareForMigrationRequest
+	59,  // 145: pilab.agent.v2.AgentService.ConfirmMigration:input_type -> pilab.agent.v2.ConfirmMigrationRequest
+	60,  // 146: pilab.agent.v2.AgentService.AbortMigration:input_type -> pilab.agent.v2.AbortMigrationRequest
+	61,  // 147: pilab.agent.v2.AgentService.CreateSnapshot:input_type -> pilab.agent.v2.CreateSnapshotRequest
+	63,  // 148: pilab.agent.v2.AgentService.RevertToSnapshot:input_type -> pilab.agent.v2.RevertToSnapshotRequest
+	65,  // 149: pilab.agent.v2.AgentService.DeleteSnapshot:input_type -> pilab.agent.v2.DeleteSnapshotRequest
+	67,  // 150: pilab.agent.v2.AgentService.GetTaskStatus:input_type -> pilab.agent.v2.GetTaskStatusRequest
+	68,  // 151: pilab.agent.v2.AgentService.CancelTask:input_type -> pilab.agent.v2.CancelTaskRequest
+	70,  // 152: pilab.agent.v2.AgentService.ConfigureNetwork:input_type -> pilab.agent.v2.ConfigureNetworkRequest
+	72,  // 153: pilab.agent.v2.AgentService.ConfigureStorage:input_type -> pilab.agent.v2.ConfigureStorageRequest
+	74,  // 154: pilab.agent.v2.AgentService.ConfigureTime:input_type -> pilab.agent.v2.ConfigureTimeRequest
+	76,  // 155: pilab.agent.v2.AgentService.SetMaintenanceMode:input_type -> pilab.agent.v2.SetMaintenanceModeRequest
+	78,  // 156: pilab.agent.v2.AgentService.UpdateHost:input_type -> pilab.agent.v2.UpdateHostRequest
+	83,  // 157: pilab.agent.v2.AgentService.GetContentLibraryItems:input_type -> pilab.agent.v2.GetContentLibraryItemsRequest
+	85,  // 158: pilab.agent.v2.AgentService.UploadContentLibraryItem:input_type -> pilab.agent.v2.UploadContentLibraryItemRequest
+	149, // 159: pilab.agent.v2.AgentService.ExportOVA:input_type -> pilab.agent.v2.ExportOVARequest
+	151, // 160: pilab.agent.v2.AgentService.ImportOVA:input_type -> pilab.agent.v2.ImportOVARequest
+	88,  // 161: pilab.agent.v2.AgentService.DeleteContentLibraryItem:input_type -> pilab.agent.v2.DeleteContentLibraryItemRequest
+	90,  // 162: pilab.agent.v2.AgentService.GetDatastores:input_type -> pilab.agent.v2.GetDatastoresRequest
+	92,  // 163: pilab.agent.v2.AgentService.GetDatastore:input_type -> pilab.agent.v2.GetDatastoreRequest
+	94,  // 164: pilab.agent.v2.AgentService.CreateDatastore:input_type -> pilab.agent.v2.CreateDatastoreRequest
+	96,  // 165: pilab.agent.v2.AgentService.DeleteDatastore:input_type -> pilab.agent.v2.DeleteDatastoreRequest
+	98,  // 166: pilab.agent.v2.AgentService.GetNetworks:input_type -> pilab.agent.v2.GetNetworksRequest
+	101, // 167: pilab.agent.v2.AgentService.GetNetwork:input_type -> pilab.agent.v2.GetNetworkRequest
+	103, // 168: pilab.agent.v2.AgentService.CreateNetwork:input_type -> pilab.agent.v2.CreateNetworkRequest
+	105, // 169: pilab.agent.v2.AgentService.DeleteNetwork:input_type -> pilab.agent.v2.DeleteNetworkRequest
+	107, // 170: pilab.agent.v2.AgentService.AttachIso:input_type -> pilab.agent.v2.AttachIsoRequest
+	109, // 171: pilab.agent.v2.AgentService.DetachIso:input_type -> pilab.agent.v2.DetachIsoRequest
+	111, // 172: pilab.agent.v2.AgentService.CloneVmFromTemplate:input_type -> pilab.agent.v2.CloneVmFromTemplateRequest
+	113, // 173: pilab.agent.v2.AgentService.GetVMGuestIPs:input_type -> pilab.agent.v2.GetVMGuestIPsRequest
+	116, // 174: pilab.agent.v2.AgentService.ChangeVMUserPassword:input_type -> pilab.agent.v2.ChangeVMUserPasswordRequest
+	118, // 175: pilab.agent.v2.AgentService.AttachCloudInit:input_type -> pilab.agent.v2.AttachCloudInitRequest
+	120, // 176: pilab.agent.v2.AgentService.AttachNetworkInterface:input_type -> pilab.agent.v2.AttachNetworkInterfaceRequest
+	122, // 177: pilab.agent.v2.AgentService.DetachNetworkInterface:input_type -> pilab.agent.v2.DetachNetworkInterfaceRequest
+	260, // 178: pilab.agent.v2.AgentService.Stream:input_type -> pilab.common.v1.StreamRequest
+	124, // 179: pilab.agent.v2.AgentService.GetHardwareHealth:input_type -> pilab.agent.v2.GetHardwareHealthRequest
+	126, // 180: pilab.agent.v2.AgentService.GetSensorData:input_type -> pilab.agent.v2.GetSensorDataRequest
+	128, // 181: pilab.agent.v2.AgentService.DefineVM:input_type -> pilab.agent.v2.DefineVMRequest
+	130, // 182: pilab.agent.v2.AgentService.GetVMDefinition:input_type -> pilab.agent.v2.GetVMDefinitionRequest
+	132, // 183: pilab.agent.v2.AgentService.ControlVM:input_type -> pilab.agent.v2.ControlVMRequest
+	134, // 184: pilab.agent.v2.AgentService.GetVMStatus:input_type -> pilab.agent.v2.GetVMStatusRequest
+	136, // 185: pilab.agent.v2.AgentService.GetVMGuestInfo:input_type -> pilab.agent.v2.GetVMGuestInfoRequest
+	139, // 186: pilab.agent.v2.AgentService.CreatePowerSchedule:input_type -> pilab.agent.v2.CreatePowerScheduleRequest
+	141, // 187: pilab.agent.v2.AgentService.ListPowerSchedules:input_type -> pilab.agent.v2.ListPowerSchedulesRequest
+	143, // 188: pilab.agent.v2.AgentService.UpdatePowerSchedule:input_type -> pilab.agent.v2.UpdatePowerScheduleRequest
+	145, // 189: pilab.agent.v2.AgentService.DeletePowerSchedule:input_type -> pilab.agent.v2.DeletePowerScheduleRequest
+	147, // 190: pilab.agent.v2.AgentService.WakeOnLAN:input_type -> pilab.agent.v2.WakeOnLANRequest
+	154, // 191: pilab.agent.v2.AgentService.GetHostInfo:input_type -> pilab.agent.v2.GetHostInfoRequest
+	156, // 192: pilab.agent.v2.AgentService.GetSystemResources:input_type -> pilab.agent.v2.GetSystemResourcesRequest
+	162, // 193: pilab.agent.v2.AgentService.GetServiceStatus:input_type -> pilab.agent.v2.GetServiceStatusRequest
+	165, // 194: pilab.agent.v2.AgentService.RestartService:input_type -> pilab.agent.v2.RestartServiceRequest
+	167, // 195: pilab.agent.v2.AgentService.GetNetworkConfig:input_type -> pilab.agent.v2.GetNetworkConfigRequest
+	172, // 196: pilab.agent.v2.AgentService.ConfigureNetworkInterface:input_type -> pilab.agent.v2.ConfigureNetworkInterfaceRequest
+	174, // 197: pilab.agent.v2.AgentService.TestNetwork:input_type -> pilab.agent.v2.TestNetworkRequest
+	176, // 198: pilab.agent.v2.AgentService.GetStorageConfig:input_type -> pilab.agent.v2.GetStorageConfigRequest
+	179, // 199: pilab.agent.v2.AgentService.MountNFS:input_type -> pilab.agent.v2.MountNFSRequest
+	181, // 200: pilab.agent.v2.AgentService.UnmountNFS:input_type -> pilab.agent.v2.UnmountNFSRequest
+	183, // 201: pilab.agent.v2.AgentService.GetMaintenanceMode:input_type -> pilab.agent.v2.GetMaintenanceModeRequest
+	185, // 202: pilab.agent.v2.AgentService.GetFirewallRules:input_type -> pilab.agent.v2.GetFirewallRulesRequest
+	188, // 203: pilab.agent.v2.AgentService.AddFirewallRule:input_type -> pilab.agent.v2.AddFirewallRuleRequest
+	190, // 204: pilab.agent.v2.AgentService.RemoveFirewallRule:input_type -> pilab.agent.v2.RemoveFirewallRuleRequest
+	192, // 205: pilab.agent.v2.AgentService.GetDNSConfig:input_type -> pilab.agent.v2.GetDNSConfigRequest
+	194, // 206: pilab.agent.v2.AgentService.SetDNSConfig:input_type -> pilab.agent.v2.SetDNSConfigRequest
+	196, // 207: pilab.agent.v2.AgentService.GetNTPConfig:input_type -> pilab.agent.v2.GetNTPConfigRequest
+	199, // 208: pilab.agent.v2.AgentService.SetNTPConfig:input_type -> pilab.agent.v2.SetNTPConfigRequest
+	201, // 209: pilab.agent.v2.AgentService.GetCloudStatus:input_type -> pilab.agent.v2.GetCloudStatusRequest
+	203, // 210: pilab.agent.v2.AgentService.AdoptToCloud:input_type -> pilab.agent.v2.AdoptToCloudRequest
+	205, // 211: pilab.agent.v2.AgentService.DisconnectFromCloud:input_type -> pilab.agent.v2.DisconnectFromCloudRequest
+	207, // 212: pilab.agent.v2.AgentService.UpdateConfig:input_type -> pilab.agent.v2.UpdateConfigRequest
+	209, // 213: pilab.agent.v2.AgentService.ListSnapshots:input_type -> pilab.agent.v2.ListSnapshotsRequest
+	212, // 214: pilab.agent.v2.AgentService.ConsolidateSnapshot:input_type -> pilab.agent.v2.ConsolidateSnapshotRequest
+	214, // 215: pilab.agent.v2.AgentService.CloneSnapshot:input_type -> pilab.agent.v2.CloneSnapshotRequest
+	217, // 216: pilab.agent.v2.AgentService.CreateVolume:input_type -> pilab.agent.v2.CreateVolumeRequest
+	219, // 217: pilab.agent.v2.AgentService.DeleteVolume:input_type -> pilab.agent.v2.DeleteVolumeRequest
+	221, // 218: pilab.agent.v2.AgentService.ResizeVolume:input_type -> pilab.agent.v2.ResizeVolumeRequest
+	223, // 219: pilab.agent.v2.AgentService.ListVolumes:input_type -> pilab.agent.v2.ListVolumesRequest
+	225, // 220: pilab.agent.v2.AgentService.GetVolume:input_type -> pilab.agent.v2.GetVolumeRequest
+	227, // 221: pilab.agent.v2.AgentService.CloneVolume:input_type -> pilab.agent.v2.CloneVolumeRequest
+	229, // 222: pilab.agent.v2.AgentService.BackupSystemVolume:input_type -> pilab.agent.v2.BackupSystemVolumeRequest
+	231, // 223: pilab.agent.v2.AgentService.RestoreSystemVolume:input_type -> pilab.agent.v2.RestoreSystemVolumeRequest
+	30,  // 224: pilab.agent.v2.AgentService.RegisterHost:output_type -> pilab.agent.v2.RegisterHostResponse
+	32,  // 225: pilab.agent.v2.AgentService.Heartbeat:output_type -> pilab.agent.v2.HeartbeatResponse
+	26,  // 226: pilab.agent.v2.AgentService.GetHostStatus:output_type -> pilab.agent.v2.HostStatus
+	261, // 227: pilab.agent.v2.AgentService.QueryMetrics:output_type -> pilab.cloud.core.v1.QueryMetricsResponse
+	35,  // 228: pilab.agent.v2.AgentService.CreateVM:output_type -> pilab.agent.v2.CreateVMResponse
+	37,  // 229: pilab.agent.v2.AgentService.GetVMDetails:output_type -> pilab.agent.v2.GetVMDetailsResponse
+	39,  // 230: pilab.agent.v2.AgentService.UpdateVM:output_type -> pilab.agent.v2.UpdateVMResponse
+	41,  // 231: pilab.agent.v2.AgentService.DeleteVM:output_type -> pilab.agent.v2.DeleteVMResponse
+	43,  // 232: pilab.agent.v2.AgentService.StartVM:output_type -> pilab.agent.v2.StartVMResponse
+	45,  // 233: pilab.agent.v2.AgentService.StopVM:output_type -> pilab.agent.v2.StopVMResponse
+	47,  // 234: pilab.agent.v2.AgentService.ForceStopVM:output_type -> pilab.agent.v2.ForceStopVMResponse
+	49,  // 235: pilab.agent.v2.AgentService.RebootVM:output_type -> pilab.agent.v2.RebootVMResponse
+	51,  // 236: pilab.agent.v2.AgentService.PauseVM:output_type -> pilab.agent.v2.PauseVMResponse
+	53,  // 237: pilab.agent.v2.AgentService.ResumeVM:output_type -> pilab.agent.v2.ResumeVMResponse
+	56,  // 238: pilab.agent.v2.AgentService.InitiateMigration:output_type -> pilab.agent.v2.InitiateMigrationResponse
+	58,  // 239: pilab.agent.v2.AgentService.PrepareForMigration:output_type -> pilab.agent.v2.PrepareForMigrationResponse
+	252, // 240: pilab.agent.v2.AgentService.ConfirmMigration:output_type -> google.protobuf.Empty
+	252, // 241: pilab.agent.v2.AgentService.AbortMigration:output_type -> google.protobuf.Empty
+	62,  // 242: pilab.agent.v2.AgentService.CreateSnapshot:output_type -> pilab.agent.v2.CreateSnapshotResponse
+	64,  // 243: pilab.agent.v2.AgentService.RevertToSnapshot:output_type -> pilab.agent.v2.RevertToSnapshotResponse
+	66,  // 244: pilab.agent.v2.AgentService.DeleteSnapshot:output_type -> pilab.agent.v2.DeleteSnapshotResponse
+	3,   // 245: pilab.agent.v2.AgentService.GetTaskStatus:output_type -> pilab.agent.v2.Task
+	69,  // 246: pilab.agent.v2.AgentService.CancelTask:output_type -> pilab.agent.v2.CancelTaskResponse
+	71,  // 247: pilab.agent.v2.AgentService.ConfigureNetwork:output_type -> pilab.agent.v2.ConfigureNetworkResponse
+	73,  // 248: pilab.agent.v2.AgentService.ConfigureStorage:output_type -> pilab.agent.v2.ConfigureStorageResponse
+	75,  // 249: pilab.agent.v2.AgentService.ConfigureTime:output_type -> pilab.agent.v2.ConfigureTimeResponse
+	77,  // 250: pilab.agent.v2.AgentService.SetMaintenanceMode:output_type -> pilab.agent.v2.SetMaintenanceModeResponse
+	79,  // 251: pilab.agent.v2.AgentService.UpdateHost:output_type -> pilab.agent.v2.UpdateHostResponse
+	84,  // 252: pilab.agent.v2.AgentService.GetContentLibraryItems:output_type -> pilab.agent.v2.GetContentLibraryItemsResponse
+	87,  // 253: pilab.agent.v2.AgentService.UploadContentLibraryItem:output_type -> pilab.agent.v2.UploadContentLibraryItemResponse
+	150, // 254: pilab.agent.v2.AgentService.ExportOVA:output_type -> pilab.agent.v2.ExportOVAResponse
+	153, // 255: pilab.agent.v2.AgentService.ImportOVA:output_type -> pilab.agent.v2.ImportOVAResponse
+	89,  // 256: pilab.agent.v2.AgentService.DeleteContentLibraryItem:output_type -> pilab.agent.v2.DeleteContentLibraryItemResponse
+	91,  // 257: pilab.agent.v2.AgentService.GetDatastores:output_type -> pilab.agent.v2.GetDatastoresResponse
+	93,  // 258: pilab.agent.v2.AgentService.GetDatastore:output_type -> pilab.agent.v2.GetDatastoreResponse
+	95,  // 259: pilab.agent.v2.AgentService.CreateDatastore:output_type -> pilab.agent.v2.CreateDatastoreResponse
+	97,  // 260: pilab.agent.v2.AgentService.DeleteDatastore:output_type -> pilab.agent.v2.DeleteDatastoreResponse
+	100, // 261: pilab.agent.v2.AgentService.GetNetworks:output_type -> pilab.agent.v2.GetNetworksResponse
+	102, // 262: pilab.agent.v2.AgentService.GetNetwork:output_type -> pilab.agent.v2.GetNetworkResponse
+	104, // 263: pilab.agent.v2.AgentService.CreateNetwork:output_type -> pilab.agent.v2.CreateNetworkResponse
+	106, // 264: pilab.agent.v2.AgentService.DeleteNetwork:output_type -> pilab.agent.v2.DeleteNetworkResponse
+	108, // 265: pilab.agent.v2.AgentService.AttachIso:output_type -> pilab.agent.v2.AttachIsoResponse
+	110, // 266: pilab.agent.v2.AgentService.DetachIso:output_type -> pilab.agent.v2.DetachIsoResponse
+	112, // 267: pilab.agent.v2.AgentService.CloneVmFromTemplate:output_type -> pilab.agent.v2.CloneVmFromTemplateResponse
+	114, // 268: pilab.agent.v2.AgentService.GetVMGuestIPs:output_type -> pilab.agent.v2.GetVMGuestIPsResponse
+	117, // 269: pilab.agent.v2.AgentService.ChangeVMUserPassword:output_type -> pilab.agent.v2.ChangeVMUserPasswordResponse
+	119, // 270: pilab.agent.v2.AgentService.AttachCloudInit:output_type -> pilab.agent.v2.AttachCloudInitResponse
+	121, // 271: pilab.agent.v2.AgentService.AttachNetworkInterface:output_type -> pilab.agent.v2.AttachNetworkInterfaceResponse
+	123, // 272: pilab.agent.v2.AgentService.DetachNetworkInterface:output_type -> pilab.agent.v2.DetachNetworkInterfaceResponse
+	262, // 273: pilab.agent.v2.AgentService.Stream:output_type -> pilab.common.v1.StreamResponse
+	125, // 274: pilab.agent.v2.AgentService.GetHardwareHealth:output_type -> pilab.agent.v2.GetHardwareHealthResponse
+	127, // 275: pilab.agent.v2.AgentService.GetSensorData:output_type -> pilab.agent.v2.GetSensorDataResponse
+	129, // 276: pilab.agent.v2.AgentService.DefineVM:output_type -> pilab.agent.v2.DefineVMResponse
+	131, // 277: pilab.agent.v2.AgentService.GetVMDefinition:output_type -> pilab.agent.v2.GetVMDefinitionResponse
+	133, // 278: pilab.agent.v2.AgentService.ControlVM:output_type -> pilab.agent.v2.ControlVMResponse
+	135, // 279: pilab.agent.v2.AgentService.GetVMStatus:output_type -> pilab.agent.v2.GetVMStatusResponse
+	137, // 280: pilab.agent.v2.AgentService.GetVMGuestInfo:output_type -> pilab.agent.v2.GetVMGuestInfoResponse
+	140, // 281: pilab.agent.v2.AgentService.CreatePowerSchedule:output_type -> pilab.agent.v2.CreatePowerScheduleResponse
+	142, // 282: pilab.agent.v2.AgentService.ListPowerSchedules:output_type -> pilab.agent.v2.ListPowerSchedulesResponse
+	144, // 283: pilab.agent.v2.AgentService.UpdatePowerSchedule:output_type -> pilab.agent.v2.UpdatePowerScheduleResponse
+	146, // 284: pilab.agent.v2.AgentService.DeletePowerSchedule:output_type -> pilab.agent.v2.DeletePowerScheduleResponse
+	148, // 285: pilab.agent.v2.AgentService.WakeOnLAN:output_type -> pilab.agent.v2.WakeOnLANResponse
+	155, // 286: pilab.agent.v2.AgentService.GetHostInfo:output_type -> pilab.agent.v2.HostInfo
+	157, // 287: pilab.agent.v2.AgentService.GetSystemResources:output_type -> pilab.agent.v2.SystemResources
+	163, // 288: pilab.agent.v2.AgentService.GetServiceStatus:output_type -> pilab.agent.v2.ServiceStatusList
+	166, // 289: pilab.agent.v2.AgentService.RestartService:output_type -> pilab.agent.v2.RestartServiceResponse
+	168, // 290: pilab.agent.v2.AgentService.GetNetworkConfig:output_type -> pilab.agent.v2.NetworkConfig
+	173, // 291: pilab.agent.v2.AgentService.ConfigureNetworkInterface:output_type -> pilab.agent.v2.ConfigureNetworkInterfaceResponse
+	175, // 292: pilab.agent.v2.AgentService.TestNetwork:output_type -> pilab.agent.v2.NetworkTestResult
+	177, // 293: pilab.agent.v2.AgentService.GetStorageConfig:output_type -> pilab.agent.v2.StorageConfig
+	180, // 294: pilab.agent.v2.AgentService.MountNFS:output_type -> pilab.agent.v2.MountNFSResponse
+	182, // 295: pilab.agent.v2.AgentService.UnmountNFS:output_type -> pilab.agent.v2.UnmountNFSResponse
+	184, // 296: pilab.agent.v2.AgentService.GetMaintenanceMode:output_type -> pilab.agent.v2.MaintenanceModeStatus
+	186, // 297: pilab.agent.v2.AgentService.GetFirewallRules:output_type -> pilab.agent.v2.FirewallRuleList
+	189, // 298: pilab.agent.v2.AgentService.AddFirewallRule:output_type -> pilab.agent.v2.AddFirewallRuleResponse
+	191, // 299: pilab.agent.v2.AgentService.RemoveFirewallRule:output_type -> pilab.agent.v2.RemoveFirewallRuleResponse
+	193, // 300: pilab.agent.v2.AgentService.GetDNSConfig:output_type -> pilab.agent.v2.DNSConfig
+	195, // 301: pilab.agent.v2.AgentService.SetDNSConfig:output_type -> pilab.agent.v2.SetDNSConfigResponse
+	197, // 302: pilab.agent.v2.AgentService.GetNTPConfig:output_type -> pilab.agent.v2.NTPConfig
+	200, // 303: pilab.agent.v2.AgentService.SetNTPConfig:output_type -> pilab.agent.v2.SetNTPConfigResponse
+	202, // 304: pilab.agent.v2.AgentService.GetCloudStatus:output_type -> pilab.agent.v2.CloudStatus
+	204, // 305: pilab.agent.v2.AgentService.AdoptToCloud:output_type -> pilab.agent.v2.AdoptToCloudResponse
+	206, // 306: pilab.agent.v2.AgentService.DisconnectFromCloud:output_type -> pilab.agent.v2.DisconnectFromCloudResponse
+	208, // 307: pilab.agent.v2.AgentService.UpdateConfig:output_type -> pilab.agent.v2.UpdateConfigResponse
+	211, // 308: pilab.agent.v2.AgentService.ListSnapshots:output_type -> pilab.agent.v2.ListSnapshotsResponse
+	213, // 309: pilab.agent.v2.AgentService.ConsolidateSnapshot:output_type -> pilab.agent.v2.ConsolidateSnapshotResponse
+	215, // 310: pilab.agent.v2.AgentService.CloneSnapshot:output_type -> pilab.agent.v2.CloneSnapshotResponse
+	218, // 311: pilab.agent.v2.AgentService.CreateVolume:output_type -> pilab.agent.v2.CreateVolumeResponse
+	220, // 312: pilab.agent.v2.AgentService.DeleteVolume:output_type -> pilab.agent.v2.DeleteVolumeResponse
+	222, // 313: pilab.agent.v2.AgentService.ResizeVolume:output_type -> pilab.agent.v2.ResizeVolumeResponse
+	224, // 314: pilab.agent.v2.AgentService.ListVolumes:output_type -> pilab.agent.v2.ListVolumesResponse
+	226, // 315: pilab.agent.v2.AgentService.GetVolume:output_type -> pilab.agent.v2.GetVolumeResponse
+	228, // 316: pilab.agent.v2.AgentService.CloneVolume:output_type -> pilab.agent.v2.CloneVolumeResponse
+	230, // 317: pilab.agent.v2.AgentService.BackupSystemVolume:output_type -> pilab.agent.v2.BackupSystemVolumeResponse
+	232, // 318: pilab.agent.v2.AgentService.RestoreSystemVolume:output_type -> pilab.agent.v2.RestoreSystemVolumeResponse
+	224, // [224:319] is the sub-list for method output_type
+	129, // [129:224] is the sub-list for method input_type
 	129, // [129:129] is the sub-list for extension type_name
 	129, // [129:129] is the sub-list for extension extendee
 	0,   // [0:129] is the sub-list for field type_name

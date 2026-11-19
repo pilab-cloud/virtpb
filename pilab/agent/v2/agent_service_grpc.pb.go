@@ -11,7 +11,8 @@ package agentv2
 
 import (
 	context "context"
-	v1 "go.pilab.hu/cloud/virtpb/v3/pilab/common/v1"
+	v11 "go.pilab.hu/cloud/virtpb/v3/pilab/common/v1"
+	v1 "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -27,6 +28,7 @@ const (
 	AgentService_RegisterHost_FullMethodName              = "/pilab.agent.v2.AgentService/RegisterHost"
 	AgentService_Heartbeat_FullMethodName                 = "/pilab.agent.v2.AgentService/Heartbeat"
 	AgentService_GetHostStatus_FullMethodName             = "/pilab.agent.v2.AgentService/GetHostStatus"
+	AgentService_QueryMetrics_FullMethodName              = "/pilab.agent.v2.AgentService/QueryMetrics"
 	AgentService_CreateVM_FullMethodName                  = "/pilab.agent.v2.AgentService/CreateVM"
 	AgentService_GetVMDetails_FullMethodName              = "/pilab.agent.v2.AgentService/GetVMDetails"
 	AgentService_UpdateVM_FullMethodName                  = "/pilab.agent.v2.AgentService/UpdateVM"
@@ -127,6 +129,7 @@ type AgentServiceClient interface {
 	RegisterHost(ctx context.Context, in *RegisterHostRequest, opts ...grpc.CallOption) (*RegisterHostResponse, error)
 	Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error)
 	GetHostStatus(ctx context.Context, in *GetHostStatusRequest, opts ...grpc.CallOption) (*HostStatus, error)
+	QueryMetrics(ctx context.Context, in *v1.QueryMetricsRequest, opts ...grpc.CallOption) (*v1.QueryMetricsResponse, error)
 	CreateVM(ctx context.Context, in *CreateVMRequest, opts ...grpc.CallOption) (*CreateVMResponse, error)
 	GetVMDetails(ctx context.Context, in *GetVMDetailsRequest, opts ...grpc.CallOption) (*GetVMDetailsResponse, error)
 	UpdateVM(ctx context.Context, in *UpdateVMRequest, opts ...grpc.CallOption) (*UpdateVMResponse, error)
@@ -172,7 +175,7 @@ type AgentServiceClient interface {
 	AttachCloudInit(ctx context.Context, in *AttachCloudInitRequest, opts ...grpc.CallOption) (*AttachCloudInitResponse, error)
 	AttachNetworkInterface(ctx context.Context, in *AttachNetworkInterfaceRequest, opts ...grpc.CallOption) (*AttachNetworkInterfaceResponse, error)
 	DetachNetworkInterface(ctx context.Context, in *DetachNetworkInterfaceRequest, opts ...grpc.CallOption) (*DetachNetworkInterfaceResponse, error)
-	Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[v1.StreamRequest, v1.StreamResponse], error)
+	Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[v11.StreamRequest, v11.StreamResponse], error)
 	GetHardwareHealth(ctx context.Context, in *GetHardwareHealthRequest, opts ...grpc.CallOption) (*GetHardwareHealthResponse, error)
 	GetSensorData(ctx context.Context, in *GetSensorDataRequest, opts ...grpc.CallOption) (*GetSensorDataResponse, error)
 	DefineVM(ctx context.Context, in *DefineVMRequest, opts ...grpc.CallOption) (*DefineVMResponse, error)
@@ -255,6 +258,16 @@ func (c *agentServiceClient) GetHostStatus(ctx context.Context, in *GetHostStatu
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HostStatus)
 	err := c.cc.Invoke(ctx, AgentService_GetHostStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *agentServiceClient) QueryMetrics(ctx context.Context, in *v1.QueryMetricsRequest, opts ...grpc.CallOption) (*v1.QueryMetricsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.QueryMetricsResponse)
+	err := c.cc.Invoke(ctx, AgentService_QueryMetrics_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -726,18 +739,18 @@ func (c *agentServiceClient) DetachNetworkInterface(ctx context.Context, in *Det
 	return out, nil
 }
 
-func (c *agentServiceClient) Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[v1.StreamRequest, v1.StreamResponse], error) {
+func (c *agentServiceClient) Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[v11.StreamRequest, v11.StreamResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &AgentService_ServiceDesc.Streams[3], AgentService_Stream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[v1.StreamRequest, v1.StreamResponse]{ClientStream: stream}
+	x := &grpc.GenericClientStream[v11.StreamRequest, v11.StreamResponse]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type AgentService_StreamClient = grpc.BidiStreamingClient[v1.StreamRequest, v1.StreamResponse]
+type AgentService_StreamClient = grpc.BidiStreamingClient[v11.StreamRequest, v11.StreamResponse]
 
 func (c *agentServiceClient) GetHardwareHealth(ctx context.Context, in *GetHardwareHealthRequest, opts ...grpc.CallOption) (*GetHardwareHealthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -1196,6 +1209,7 @@ type AgentServiceServer interface {
 	RegisterHost(context.Context, *RegisterHostRequest) (*RegisterHostResponse, error)
 	Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error)
 	GetHostStatus(context.Context, *GetHostStatusRequest) (*HostStatus, error)
+	QueryMetrics(context.Context, *v1.QueryMetricsRequest) (*v1.QueryMetricsResponse, error)
 	CreateVM(context.Context, *CreateVMRequest) (*CreateVMResponse, error)
 	GetVMDetails(context.Context, *GetVMDetailsRequest) (*GetVMDetailsResponse, error)
 	UpdateVM(context.Context, *UpdateVMRequest) (*UpdateVMResponse, error)
@@ -1241,7 +1255,7 @@ type AgentServiceServer interface {
 	AttachCloudInit(context.Context, *AttachCloudInitRequest) (*AttachCloudInitResponse, error)
 	AttachNetworkInterface(context.Context, *AttachNetworkInterfaceRequest) (*AttachNetworkInterfaceResponse, error)
 	DetachNetworkInterface(context.Context, *DetachNetworkInterfaceRequest) (*DetachNetworkInterfaceResponse, error)
-	Stream(grpc.BidiStreamingServer[v1.StreamRequest, v1.StreamResponse]) error
+	Stream(grpc.BidiStreamingServer[v11.StreamRequest, v11.StreamResponse]) error
 	GetHardwareHealth(context.Context, *GetHardwareHealthRequest) (*GetHardwareHealthResponse, error)
 	GetSensorData(context.Context, *GetSensorDataRequest) (*GetSensorDataResponse, error)
 	DefineVM(context.Context, *DefineVMRequest) (*DefineVMResponse, error)
@@ -1308,6 +1322,9 @@ func (UnimplementedAgentServiceServer) Heartbeat(context.Context, *HeartbeatRequ
 }
 func (UnimplementedAgentServiceServer) GetHostStatus(context.Context, *GetHostStatusRequest) (*HostStatus, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetHostStatus not implemented")
+}
+func (UnimplementedAgentServiceServer) QueryMetrics(context.Context, *v1.QueryMetricsRequest) (*v1.QueryMetricsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method QueryMetrics not implemented")
 }
 func (UnimplementedAgentServiceServer) CreateVM(context.Context, *CreateVMRequest) (*CreateVMResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateVM not implemented")
@@ -1444,7 +1461,7 @@ func (UnimplementedAgentServiceServer) AttachNetworkInterface(context.Context, *
 func (UnimplementedAgentServiceServer) DetachNetworkInterface(context.Context, *DetachNetworkInterfaceRequest) (*DetachNetworkInterfaceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DetachNetworkInterface not implemented")
 }
-func (UnimplementedAgentServiceServer) Stream(grpc.BidiStreamingServer[v1.StreamRequest, v1.StreamResponse]) error {
+func (UnimplementedAgentServiceServer) Stream(grpc.BidiStreamingServer[v11.StreamRequest, v11.StreamResponse]) error {
 	return status.Error(codes.Unimplemented, "method Stream not implemented")
 }
 func (UnimplementedAgentServiceServer) GetHardwareHealth(context.Context, *GetHardwareHealthRequest) (*GetHardwareHealthResponse, error) {
@@ -1653,6 +1670,24 @@ func _AgentService_GetHostStatus_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AgentServiceServer).GetHostStatus(ctx, req.(*GetHostStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AgentService_QueryMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.QueryMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServiceServer).QueryMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AgentService_QueryMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServiceServer).QueryMetrics(ctx, req.(*v1.QueryMetricsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2439,11 +2474,11 @@ func _AgentService_DetachNetworkInterface_Handler(srv interface{}, ctx context.C
 }
 
 func _AgentService_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(AgentServiceServer).Stream(&grpc.GenericServerStream[v1.StreamRequest, v1.StreamResponse]{ServerStream: stream})
+	return srv.(AgentServiceServer).Stream(&grpc.GenericServerStream[v11.StreamRequest, v11.StreamResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type AgentService_StreamServer = grpc.BidiStreamingServer[v1.StreamRequest, v1.StreamResponse]
+type AgentService_StreamServer = grpc.BidiStreamingServer[v11.StreamRequest, v11.StreamResponse]
 
 func _AgentService_GetHardwareHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetHardwareHealthRequest)
@@ -3273,6 +3308,10 @@ var AgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetHostStatus",
 			Handler:    _AgentService_GetHostStatus_Handler,
+		},
+		{
+			MethodName: "QueryMetrics",
+			Handler:    _AgentService_QueryMetrics_Handler,
 		},
 		{
 			MethodName: "CreateVM",

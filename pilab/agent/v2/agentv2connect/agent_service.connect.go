@@ -12,7 +12,8 @@ import (
 	context "context"
 	errors "errors"
 	v2 "go.pilab.hu/cloud/virtpb/v3/pilab/agent/v2"
-	v1 "go.pilab.hu/cloud/virtpb/v3/pilab/common/v1"
+	v11 "go.pilab.hu/cloud/virtpb/v3/pilab/common/v1"
+	v1 "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -46,6 +47,9 @@ const (
 	// AgentServiceGetHostStatusProcedure is the fully-qualified name of the AgentService's
 	// GetHostStatus RPC.
 	AgentServiceGetHostStatusProcedure = "/pilab.agent.v2.AgentService/GetHostStatus"
+	// AgentServiceQueryMetricsProcedure is the fully-qualified name of the AgentService's QueryMetrics
+	// RPC.
+	AgentServiceQueryMetricsProcedure = "/pilab.agent.v2.AgentService/QueryMetrics"
 	// AgentServiceCreateVMProcedure is the fully-qualified name of the AgentService's CreateVM RPC.
 	AgentServiceCreateVMProcedure = "/pilab.agent.v2.AgentService/CreateVM"
 	// AgentServiceGetVMDetailsProcedure is the fully-qualified name of the AgentService's GetVMDetails
@@ -304,6 +308,7 @@ type AgentServiceClient interface {
 	RegisterHost(context.Context, *connect.Request[v2.RegisterHostRequest]) (*connect.Response[v2.RegisterHostResponse], error)
 	Heartbeat(context.Context, *connect.Request[v2.HeartbeatRequest]) (*connect.Response[v2.HeartbeatResponse], error)
 	GetHostStatus(context.Context, *connect.Request[v2.GetHostStatusRequest]) (*connect.Response[v2.HostStatus], error)
+	QueryMetrics(context.Context, *connect.Request[v1.QueryMetricsRequest]) (*connect.Response[v1.QueryMetricsResponse], error)
 	CreateVM(context.Context, *connect.Request[v2.CreateVMRequest]) (*connect.Response[v2.CreateVMResponse], error)
 	GetVMDetails(context.Context, *connect.Request[v2.GetVMDetailsRequest]) (*connect.Response[v2.GetVMDetailsResponse], error)
 	UpdateVM(context.Context, *connect.Request[v2.UpdateVMRequest]) (*connect.Response[v2.UpdateVMResponse], error)
@@ -349,7 +354,7 @@ type AgentServiceClient interface {
 	AttachCloudInit(context.Context, *connect.Request[v2.AttachCloudInitRequest]) (*connect.Response[v2.AttachCloudInitResponse], error)
 	AttachNetworkInterface(context.Context, *connect.Request[v2.AttachNetworkInterfaceRequest]) (*connect.Response[v2.AttachNetworkInterfaceResponse], error)
 	DetachNetworkInterface(context.Context, *connect.Request[v2.DetachNetworkInterfaceRequest]) (*connect.Response[v2.DetachNetworkInterfaceResponse], error)
-	Stream(context.Context) *connect.BidiStreamForClient[v1.StreamRequest, v1.StreamResponse]
+	Stream(context.Context) *connect.BidiStreamForClient[v11.StreamRequest, v11.StreamResponse]
 	GetHardwareHealth(context.Context, *connect.Request[v2.GetHardwareHealthRequest]) (*connect.Response[v2.GetHardwareHealthResponse], error)
 	GetSensorData(context.Context, *connect.Request[v2.GetSensorDataRequest]) (*connect.Response[v2.GetSensorDataResponse], error)
 	DefineVM(context.Context, *connect.Request[v2.DefineVMRequest]) (*connect.Response[v2.DefineVMResponse], error)
@@ -427,6 +432,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceGetHostStatusProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("GetHostStatus")),
+			connect.WithClientOptions(opts...),
+		),
+		queryMetrics: connect.NewClient[v1.QueryMetricsRequest, v1.QueryMetricsResponse](
+			httpClient,
+			baseURL+AgentServiceQueryMetricsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("QueryMetrics")),
 			connect.WithClientOptions(opts...),
 		),
 		createVM: connect.NewClient[v2.CreateVMRequest, v2.CreateVMResponse](
@@ -699,7 +710,7 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("DetachNetworkInterface")),
 			connect.WithClientOptions(opts...),
 		),
-		stream: connect.NewClient[v1.StreamRequest, v1.StreamResponse](
+		stream: connect.NewClient[v11.StreamRequest, v11.StreamResponse](
 			httpClient,
 			baseURL+AgentServiceStreamProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("Stream")),
@@ -983,6 +994,7 @@ type agentServiceClient struct {
 	registerHost              *connect.Client[v2.RegisterHostRequest, v2.RegisterHostResponse]
 	heartbeat                 *connect.Client[v2.HeartbeatRequest, v2.HeartbeatResponse]
 	getHostStatus             *connect.Client[v2.GetHostStatusRequest, v2.HostStatus]
+	queryMetrics              *connect.Client[v1.QueryMetricsRequest, v1.QueryMetricsResponse]
 	createVM                  *connect.Client[v2.CreateVMRequest, v2.CreateVMResponse]
 	getVMDetails              *connect.Client[v2.GetVMDetailsRequest, v2.GetVMDetailsResponse]
 	updateVM                  *connect.Client[v2.UpdateVMRequest, v2.UpdateVMResponse]
@@ -1028,7 +1040,7 @@ type agentServiceClient struct {
 	attachCloudInit           *connect.Client[v2.AttachCloudInitRequest, v2.AttachCloudInitResponse]
 	attachNetworkInterface    *connect.Client[v2.AttachNetworkInterfaceRequest, v2.AttachNetworkInterfaceResponse]
 	detachNetworkInterface    *connect.Client[v2.DetachNetworkInterfaceRequest, v2.DetachNetworkInterfaceResponse]
-	stream                    *connect.Client[v1.StreamRequest, v1.StreamResponse]
+	stream                    *connect.Client[v11.StreamRequest, v11.StreamResponse]
 	getHardwareHealth         *connect.Client[v2.GetHardwareHealthRequest, v2.GetHardwareHealthResponse]
 	getSensorData             *connect.Client[v2.GetSensorDataRequest, v2.GetSensorDataResponse]
 	defineVM                  *connect.Client[v2.DefineVMRequest, v2.DefineVMResponse]
@@ -1089,6 +1101,11 @@ func (c *agentServiceClient) Heartbeat(ctx context.Context, req *connect.Request
 // GetHostStatus calls pilab.agent.v2.AgentService.GetHostStatus.
 func (c *agentServiceClient) GetHostStatus(ctx context.Context, req *connect.Request[v2.GetHostStatusRequest]) (*connect.Response[v2.HostStatus], error) {
 	return c.getHostStatus.CallUnary(ctx, req)
+}
+
+// QueryMetrics calls pilab.agent.v2.AgentService.QueryMetrics.
+func (c *agentServiceClient) QueryMetrics(ctx context.Context, req *connect.Request[v1.QueryMetricsRequest]) (*connect.Response[v1.QueryMetricsResponse], error) {
+	return c.queryMetrics.CallUnary(ctx, req)
 }
 
 // CreateVM calls pilab.agent.v2.AgentService.CreateVM.
@@ -1317,7 +1334,7 @@ func (c *agentServiceClient) DetachNetworkInterface(ctx context.Context, req *co
 }
 
 // Stream calls pilab.agent.v2.AgentService.Stream.
-func (c *agentServiceClient) Stream(ctx context.Context) *connect.BidiStreamForClient[v1.StreamRequest, v1.StreamResponse] {
+func (c *agentServiceClient) Stream(ctx context.Context) *connect.BidiStreamForClient[v11.StreamRequest, v11.StreamResponse] {
 	return c.stream.CallBidiStream(ctx)
 }
 
@@ -1551,6 +1568,7 @@ type AgentServiceHandler interface {
 	RegisterHost(context.Context, *connect.Request[v2.RegisterHostRequest]) (*connect.Response[v2.RegisterHostResponse], error)
 	Heartbeat(context.Context, *connect.Request[v2.HeartbeatRequest]) (*connect.Response[v2.HeartbeatResponse], error)
 	GetHostStatus(context.Context, *connect.Request[v2.GetHostStatusRequest]) (*connect.Response[v2.HostStatus], error)
+	QueryMetrics(context.Context, *connect.Request[v1.QueryMetricsRequest]) (*connect.Response[v1.QueryMetricsResponse], error)
 	CreateVM(context.Context, *connect.Request[v2.CreateVMRequest]) (*connect.Response[v2.CreateVMResponse], error)
 	GetVMDetails(context.Context, *connect.Request[v2.GetVMDetailsRequest]) (*connect.Response[v2.GetVMDetailsResponse], error)
 	UpdateVM(context.Context, *connect.Request[v2.UpdateVMRequest]) (*connect.Response[v2.UpdateVMResponse], error)
@@ -1596,7 +1614,7 @@ type AgentServiceHandler interface {
 	AttachCloudInit(context.Context, *connect.Request[v2.AttachCloudInitRequest]) (*connect.Response[v2.AttachCloudInitResponse], error)
 	AttachNetworkInterface(context.Context, *connect.Request[v2.AttachNetworkInterfaceRequest]) (*connect.Response[v2.AttachNetworkInterfaceResponse], error)
 	DetachNetworkInterface(context.Context, *connect.Request[v2.DetachNetworkInterfaceRequest]) (*connect.Response[v2.DetachNetworkInterfaceResponse], error)
-	Stream(context.Context, *connect.BidiStream[v1.StreamRequest, v1.StreamResponse]) error
+	Stream(context.Context, *connect.BidiStream[v11.StreamRequest, v11.StreamResponse]) error
 	GetHardwareHealth(context.Context, *connect.Request[v2.GetHardwareHealthRequest]) (*connect.Response[v2.GetHardwareHealthResponse], error)
 	GetSensorData(context.Context, *connect.Request[v2.GetSensorDataRequest]) (*connect.Response[v2.GetSensorDataResponse], error)
 	DefineVM(context.Context, *connect.Request[v2.DefineVMRequest]) (*connect.Response[v2.DefineVMResponse], error)
@@ -1670,6 +1688,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceGetHostStatusProcedure,
 		svc.GetHostStatus,
 		connect.WithSchema(agentServiceMethods.ByName("GetHostStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceQueryMetricsHandler := connect.NewUnaryHandler(
+		AgentServiceQueryMetricsProcedure,
+		svc.QueryMetrics,
+		connect.WithSchema(agentServiceMethods.ByName("QueryMetrics")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceCreateVMHandler := connect.NewUnaryHandler(
@@ -2226,6 +2250,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceHeartbeatHandler.ServeHTTP(w, r)
 		case AgentServiceGetHostStatusProcedure:
 			agentServiceGetHostStatusHandler.ServeHTTP(w, r)
+		case AgentServiceQueryMetricsProcedure:
+			agentServiceQueryMetricsHandler.ServeHTTP(w, r)
 		case AgentServiceCreateVMProcedure:
 			agentServiceCreateVMHandler.ServeHTTP(w, r)
 		case AgentServiceGetVMDetailsProcedure:
@@ -2429,6 +2455,10 @@ func (UnimplementedAgentServiceHandler) GetHostStatus(context.Context, *connect.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.agent.v2.AgentService.GetHostStatus is not implemented"))
 }
 
+func (UnimplementedAgentServiceHandler) QueryMetrics(context.Context, *connect.Request[v1.QueryMetricsRequest]) (*connect.Response[v1.QueryMetricsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.agent.v2.AgentService.QueryMetrics is not implemented"))
+}
+
 func (UnimplementedAgentServiceHandler) CreateVM(context.Context, *connect.Request[v2.CreateVMRequest]) (*connect.Response[v2.CreateVMResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.agent.v2.AgentService.CreateVM is not implemented"))
 }
@@ -2609,7 +2639,7 @@ func (UnimplementedAgentServiceHandler) DetachNetworkInterface(context.Context, 
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.agent.v2.AgentService.DetachNetworkInterface is not implemented"))
 }
 
-func (UnimplementedAgentServiceHandler) Stream(context.Context, *connect.BidiStream[v1.StreamRequest, v1.StreamResponse]) error {
+func (UnimplementedAgentServiceHandler) Stream(context.Context, *connect.BidiStream[v11.StreamRequest, v11.StreamResponse]) error {
 	return connect.NewError(connect.CodeUnimplemented, errors.New("pilab.agent.v2.AgentService.Stream is not implemented"))
 }
 

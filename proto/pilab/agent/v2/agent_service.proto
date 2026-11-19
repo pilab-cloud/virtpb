@@ -15,11 +15,13 @@ import "pilab/common/v1/error.proto";
 import "pilab/common/v1/stream.proto";
 import "pilab/common/v1/task.proto";
 import "pilab/pivirtd/v1/pivirtd.proto";
+import "pilab/core/v1/drs_service.proto";
 
 service AgentService {
   rpc RegisterHost(RegisterHostRequest) returns (RegisterHostResponse);
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
   rpc GetHostStatus(GetHostStatusRequest) returns (HostStatus);
+  rpc QueryMetrics(pilab.cloud.core.v1.QueryMetricsRequest) returns (pilab.cloud.core.v1.QueryMetricsResponse);
   rpc CreateVM(CreateVMRequest) returns (CreateVMResponse);
   rpc GetVMDetails(GetVMDetailsRequest) returns (GetVMDetailsResponse);
   rpc UpdateVM(UpdateVMRequest) returns (UpdateVMResponse);
