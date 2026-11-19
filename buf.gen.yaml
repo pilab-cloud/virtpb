@@ -11,7 +11,7 @@ plugins:
     out: .
     opt:
       - paths=source_relative
-#  - remote: buf.build/bufbuild/es
-#    opt: target=ts
-#    include_imports: true
-#    out: ../cloud-pb-ts/src/lib
+  - remote: buf.build/bufbuild/es:v2.2.3
+    opt: target=ts
+    include_imports: true
+    out: ../cloud-pb-ts/src/lib

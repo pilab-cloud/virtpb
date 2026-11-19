@@ -1,0 +1,53 @@
+// EventStreamService provides real-time, role-scoped streaming of events and
+// metrics to clients over ConnectRPC (replacing the legacy WebSocket bridge).
+
+syntax = "proto3";
+
+package pilab.director.v2;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/director/v2;directorv2";
+
+import "pilab/ws/v1/event.proto";
+import "pilab/director/v2/node_service.proto";
+import "pilab/pivirtd/v1/pivirtd.proto";
+import "google/protobuf/timestamp.proto";
+
+message StreamEventsRequest {
+  // Optional VM id filter; empty means every VM the caller may see.
+  repeated string vm_ids = 1;
+  // Optional event type filter (e.g. "vm_event", "job_status",
+  // "host_stats_event"); empty means every type.
+  repeated string event_types = 2;
+  // Replay the last N events before the live stream starts. Replay is best
+  // effort: events published while the replay is being assembled can be
+  // delivered both as replay and as live events. 0 disables replay.
+  uint32 replay_last = 3;
+}
+
+message PublishEventRequest {
+  pilab.ws.v1.Event event = 1;
+}
+
+message PublishEventResponse {
+  bool accepted = 1;
+}
+
+message IngestEventsResponse {
+  uint64 accepted = 1;
+}
+
+message StreamVmMetricsRequest {
+  repeated string vm_ids = 1;
+}
+
+message StreamNodeMetricsRequest {
+  repeated string node_ids = 1;
+}
+
+service EventStreamService {
+  rpc StreamEvents(StreamEventsRequest) returns (stream pilab.ws.v1.Event);
+  rpc StreamVmMetrics(StreamVmMetricsRequest) returns (stream VmMetricsSample);
+  rpc StreamNodeMetrics(StreamNodeMetricsRequest) returns (stream pivirtd.v1.HostStats);
+  rpc PublishEvent(PublishEventRequest) returns (PublishEventResponse);
+  rpc IngestEvents(stream pilab.ws.v1.Event) returns (IngestEventsResponse);
+}
