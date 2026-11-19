@@ -736,7 +736,10 @@ type ApplyResult struct {
 	// when unchanged). Omitted on dry-run.
 	Resource *Resource `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
 	// Warnings are non-fatal advisory messages surfaced by admission.
-	Warnings      []string `protobuf:"bytes,3,rep,name=warnings,proto3" json:"warnings,omitempty"`
+	Warnings []string `protobuf:"bytes,3,rep,name=warnings,proto3" json:"warnings,omitempty"`
+	// Error is set when this object failed while the rest of the batch kept
+	// going. Outcome is OUTCOME_UNSPECIFIED in that case.
+	Error         string `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -790,6 +793,13 @@ func (x *ApplyResult) GetWarnings() []string {
 		return x.Warnings
 	}
 	return nil
+}
+
+func (x *ApplyResult) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
 }
 
 var File_pilab_resource_v1_resource_proto protoreflect.FileDescriptor
@@ -861,11 +871,12 @@ const file_pilab_resource_v1_resource_proto_rawDesc = "" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12\x18\n" +
-	"\aremoved\x18\x04 \x01(\bR\aremoved\"\x9e\x02\n" +
+	"\aremoved\x18\x04 \x01(\bR\aremoved\"\xb4\x02\n" +
 	"\vApplyResult\x12@\n" +
 	"\aoutcome\x18\x01 \x01(\x0e2&.pilab.resource.v1.ApplyResult.OutcomeR\aoutcome\x127\n" +
 	"\bresource\x18\x02 \x01(\v2\x1b.pilab.resource.v1.ResourceR\bresource\x12\x1a\n" +
-	"\bwarnings\x18\x03 \x03(\tR\bwarnings\"x\n" +
+	"\bwarnings\x18\x03 \x03(\tR\bwarnings\x12\x14\n" +
+	"\x05error\x18\x04 \x01(\tR\x05error\"x\n" +
 	"\aOutcome\x12\x17\n" +
 	"\x13OUTCOME_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fOUTCOME_CREATED\x10\x01\x12\x13\n" +

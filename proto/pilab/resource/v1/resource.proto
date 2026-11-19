@@ -168,4 +168,7 @@ message ApplyResult {
   Resource resource = 2;
   // Warnings are non-fatal advisory messages surfaced by admission.
   repeated string warnings = 3;
+  // Error is set when this object failed while the rest of the batch kept
+  // going. Outcome is OUTCOME_UNSPECIFIED in that case.
+  string error = 4;
 }
