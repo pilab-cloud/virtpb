@@ -1,0 +1,253 @@
+// InventoryService is the operator-facing view of the infrastructure
+// hierarchy: datacenter -> cluster -> host, with resource groups (resource
+// pools used by DRS and HA) and VMs placed inside clusters.
+
+syntax = "proto3";
+
+package pilab.director.v2;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/director/v2;directorv2";
+
+service InventoryService {
+  rpc ListDatacenters(ListDatacentersRequest) returns (ListDatacentersResponse);
+  rpc GetDatacenter(GetDatacenterRequest) returns (GetDatacenterResponse);
+
+  rpc ListClusters(ListClustersRequest) returns (ListClustersResponse);
+  rpc GetCluster(GetClusterRequest) returns (GetClusterResponse);
+
+  rpc ListResourceGroups(ListResourceGroupsRequest) returns (ListResourceGroupsResponse);
+  rpc GetResourceGroup(GetResourceGroupRequest) returns (GetResourceGroupResponse);
+  rpc CreateResourceGroup(CreateResourceGroupRequest) returns (CreateResourceGroupResponse);
+  rpc UpdateResourceGroup(UpdateResourceGroupRequest) returns (UpdateResourceGroupResponse);
+  rpc DeleteResourceGroup(DeleteResourceGroupRequest) returns (DeleteResourceGroupResponse);
+
+  // ListVMs lists VMs across all tenants, narrowed by placement.
+  rpc ListVMs(ListVMsRequest) returns (ListVMsResponse);
+
+  // ListNetworks lists VPCs and their subnets across tenants.
+  rpc ListNetworks(ListNetworksRequest) returns (ListNetworksResponse);
+
+  rpc ListIPPools(ListIPPoolsRequest) returns (ListIPPoolsResponse);
+  rpc ListIPAllocations(ListIPAllocationsRequest) returns (ListIPAllocationsResponse);
+}
+
+message Datacenter {
+  string id = 1;
+  string name = 2;
+  string location = 3;
+  string region = 4;
+  repeated string features = 5;
+  bool available = 6;
+  int32 cluster_count = 7;
+  int32 host_count = 8;
+}
+
+message ListDatacentersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListDatacentersResponse {
+  repeated Datacenter datacenters = 1;
+  int32 total = 2;
+}
+
+message GetDatacenterRequest {
+  string id = 1;
+}
+
+message Cluster {
+  string id = 1;
+  string name = 2;
+  string region = 3;
+  string datacenter = 4;
+  string default_vm_network = 5;
+  string state = 6;
+  string state_message = 7;
+  google.protobuf.Timestamp updated_at = 8;
+  int32 host_count = 9;
+  int32 vm_count = 10;
+  int32 resource_group_count = 11;
+}
+
+message ListClustersRequest {
+  // datacenter narrows the list to one datacenter when set.
+  string datacenter = 1;
+}
+
+message ListClustersResponse {
+  repeated Cluster clusters = 1;
+}
+
+message GetClusterRequest {
+  string id = 1;
+}
+
+// ResourceGroup is a resource pool inside a cluster. DRS and HA scope their
+// rules and restart priorities to it, and VMs are placed into it.
+message ResourceGroup {
+  string id = 1;
+  string name = 2;
+  string cluster_id = 3;
+  // parent_id is empty for a root group of the cluster.
+  string parent_id = 4;
+  string description = 5;
+
+  ResourceAllocation cpu = 6;
+  ResourceAllocation memory = 7;
+
+  repeated string vm_ids = 8;
+  map<string, string> labels = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message ResourceAllocation {
+  // shares is the relative weight under contention.
+  int64 shares = 1;
+  // reservation is guaranteed capacity (MHz for cpu, MB for memory).
+  int64 reservation = 2;
+  // limit is the capacity ceiling; -1 means unlimited.
+  int64 limit = 3;
+  bool expandable_reservation = 4;
+}
+
+message ListResourceGroupsRequest {
+  string cluster_id = 1;
+  string parent_id = 2;
+}
+
+message ListResourceGroupsResponse {
+  repeated ResourceGroup resource_groups = 1;
+}
+
+message GetResourceGroupRequest {
+  string id = 1;
+}
+
+message CreateResourceGroupRequest {
+  ResourceGroup resource_group = 1;
+}
+
+message UpdateResourceGroupRequest {
+  ResourceGroup resource_group = 1;
+}
+
+message DeleteResourceGroupRequest {
+  string id = 1;
+}
+
+message InventoryVM {
+  string uid = 1;
+  string name = 2;
+  string state = 3;
+  string namespace = 4;
+  string host_id = 5;
+  string cluster_id = 6;
+  string datacenter = 7;
+  string resource_group_id = 8;
+  int32 vcpus = 9;
+  int64 memory_mb = 10;
+  repeated string ip_addresses = 11;
+}
+
+message ListVMsRequest {
+  string datacenter = 1;
+  string cluster_id = 2;
+  string host_id = 3;
+  string resource_group_id = 4;
+  string namespace = 5;
+  int32 page = 6;
+  int32 page_size = 7;
+}
+
+message ListVMsResponse {
+  repeated InventoryVM vms = 1;
+  int32 total = 2;
+}
+
+message GetDatacenterResponse {
+  Datacenter datacenter = 1;
+}
+
+message GetClusterResponse {
+  Cluster cluster = 1;
+}
+
+message GetResourceGroupResponse {
+  ResourceGroup resource_group = 1;
+}
+
+message CreateResourceGroupResponse {
+  ResourceGroup resource_group = 1;
+}
+
+message UpdateResourceGroupResponse {
+  ResourceGroup resource_group = 1;
+}
+
+message DeleteResourceGroupResponse {}
+
+message InventoryNetwork {
+  string name = 1;
+  string namespace = 2;
+  // kind is "vpc" or "subnet".
+  string kind = 3;
+  string cidr = 4;
+  string gateway = 5;
+  // vpc is the parent VPC name for subnets.
+  string vpc = 6;
+  uint32 vni = 7;
+  string segmentation_type = 8;
+  string phase = 9;
+  bool dhcp = 10;
+  repeated string dns_servers = 11;
+}
+
+message ListNetworksRequest {
+  string namespace = 1;
+  string vpc = 2;
+}
+
+message ListNetworksResponse {
+  repeated InventoryNetwork networks = 1;
+}
+
+message InventoryIPPool {
+  string id = 1;
+  string name = 2;
+  string network = 3;
+  string gateway = 4;
+  repeated string dns_servers = 5;
+  int32 vlan_id = 6;
+  int32 vxlan_id = 7;
+  repeated string tags = 8;
+  bool dhcp_enabled = 9;
+  string allocation_strategy = 10;
+}
+
+message ListIPPoolsRequest {}
+
+message ListIPPoolsResponse {
+  repeated InventoryIPPool pools = 1;
+}
+
+message InventoryIPAllocation {
+  string id = 1;
+  string ip = 2;
+  string pool_id = 3;
+  string target = 4;
+  string mac_address = 5;
+  google.protobuf.Timestamp lease_expiration = 6;
+}
+
+message ListIPAllocationsRequest {
+  string pool_id = 1;
+  string target = 2;
+}
+
+message ListIPAllocationsResponse {
+  repeated InventoryIPAllocation allocations = 1;
+}
