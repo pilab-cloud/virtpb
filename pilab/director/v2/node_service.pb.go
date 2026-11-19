@@ -1916,7 +1916,11 @@ type FullInventoryEvent_VmEntry struct {
 	// architecture.md §2.7 / D6) -- distinct from vm_uuid above. Empty for
 	// a VM the node has never received a uid for (the "no uid" row this
 	// message's own comment above already describes).
-	Uid           string `protobuf:"bytes,7,opt,name=uid,proto3" json:"uid,omitempty"`
+	Uid string `protobuf:"bytes,7,opt,name=uid,proto3" json:"uid,omitempty"`
+	// definition is the VM's pivirtd manifest (VirtualMachine Kind YAML),
+	// kept by the director so HA can define the VM on another host when
+	// this one fails.
+	Definition    string `protobuf:"bytes,8,opt,name=definition,proto3" json:"definition,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1996,6 +2000,13 @@ func (x *FullInventoryEvent_VmEntry) GetPhase() v11.Phase {
 func (x *FullInventoryEvent_VmEntry) GetUid() string {
 	if x != nil {
 		return x.Uid
+	}
+	return ""
+}
+
+func (x *FullInventoryEvent_VmEntry) GetDefinition() string {
+	if x != nil {
+		return x.Definition
 	}
 	return ""
 }
@@ -2107,9 +2118,9 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"\x0fTaskResultEvent\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x125\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x1d.pilab.director.v2.TaskStatusR\x06status\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\xba\x02\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"\xda\x02\n" +
 	"\x12FullInventoryEvent\x12?\n" +
-	"\x03vms\x18\x01 \x03(\v2-.pilab.director.v2.FullInventoryEvent.VmEntryR\x03vms\x1a\xe2\x01\n" +
+	"\x03vms\x18\x01 \x03(\v2-.pilab.director.v2.FullInventoryEvent.VmEntryR\x03vms\x1a\x82\x02\n" +
 	"\aVmEntry\x12\x17\n" +
 	"\avm_uuid\x18\x01 \x01(\tR\x06vmUuid\x12\x17\n" +
 	"\avm_name\x18\x02 \x01(\tR\x06vmName\x12\x14\n" +
@@ -2119,7 +2130,10 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"generation\x12/\n" +
 	"\x13observed_generation\x18\x05 \x01(\x04R\x12observedGeneration\x12,\n" +
 	"\x05phase\x18\x06 \x01(\x0e2\x16.pilab.common.v1.PhaseR\x05phase\x12\x10\n" +
-	"\x03uid\x18\a \x01(\tR\x03uid\"\xb2\x04\n" +
+	"\x03uid\x18\a \x01(\tR\x03uid\x12\x1e\n" +
+	"\n" +
+	"definition\x18\b \x01(\tR\n" +
+	"definition\"\xb2\x04\n" +
 	"\rNodeDirective\x12-\n" +
 	"\x04task\x18\x01 \x01(\v2\x17.pilab.director.v2.TaskH\x00R\x04task\x12I\n" +
 	"\vcancel_task\x18\x02 \x01(\v2&.pilab.director.v2.CancelTaskDirectiveH\x00R\n" +

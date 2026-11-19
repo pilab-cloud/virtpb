@@ -221,6 +221,10 @@ message FullInventoryEvent {
     // a VM the node has never received a uid for (the "no uid" row this
     // message's own comment above already describes).
     string uid = 7;
+    // definition is the VM's pivirtd manifest (VirtualMachine Kind YAML),
+    // kept by the director so HA can define the VM on another host when
+    // this one fails.
+    string definition = 8;
   }
   repeated VmEntry vms = 1;
 }
