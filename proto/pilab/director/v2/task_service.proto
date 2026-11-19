@@ -57,6 +57,12 @@ enum TaskType {
   TASK_TYPE_VM_BACKUP_SYSTEM_VOLUME = 28;
   TASK_TYPE_VM_RESTORE_SYSTEM_VOLUME = 29;
   TASK_TYPE_VM_SNAPSHOT_CONSOLIDATE = 30;
+  // Storage pool tasks run against pivirtd on the target node: params carry
+  // name, type, path and options (create) or name and force (delete).
+  TASK_TYPE_STORAGE_POOL_CREATE = 31;
+  TASK_TYPE_STORAGE_POOL_DELETE = 32;
+  TASK_TYPE_STORAGE_POOL_ACTIVATE = 33;
+  TASK_TYPE_STORAGE_POOL_DEACTIVATE = 34;
 }
 
 enum TaskStatus {

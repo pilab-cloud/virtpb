@@ -39,12 +39,31 @@ const (
 	// DatastoreServiceGetDatastoreProcedure is the fully-qualified name of the DatastoreService's
 	// GetDatastore RPC.
 	DatastoreServiceGetDatastoreProcedure = "/pilab.cloud.core.v1.DatastoreService/GetDatastore"
+	// DatastoreServiceCreateDatastoreProcedure is the fully-qualified name of the DatastoreService's
+	// CreateDatastore RPC.
+	DatastoreServiceCreateDatastoreProcedure = "/pilab.cloud.core.v1.DatastoreService/CreateDatastore"
+	// DatastoreServiceDeleteDatastoreProcedure is the fully-qualified name of the DatastoreService's
+	// DeleteDatastore RPC.
+	DatastoreServiceDeleteDatastoreProcedure = "/pilab.cloud.core.v1.DatastoreService/DeleteDatastore"
+	// DatastoreServiceActivateDatastoreProcedure is the fully-qualified name of the DatastoreService's
+	// ActivateDatastore RPC.
+	DatastoreServiceActivateDatastoreProcedure = "/pilab.cloud.core.v1.DatastoreService/ActivateDatastore"
+	// DatastoreServiceDeactivateDatastoreProcedure is the fully-qualified name of the
+	// DatastoreService's DeactivateDatastore RPC.
+	DatastoreServiceDeactivateDatastoreProcedure = "/pilab.cloud.core.v1.DatastoreService/DeactivateDatastore"
 )
 
 // DatastoreServiceClient is a client for the pilab.cloud.core.v1.DatastoreService service.
 type DatastoreServiceClient interface {
 	ListDatastores(context.Context, *connect.Request[v1.ListDatastoresRequest]) (*connect.Response[v1.ListDatastoresResponse], error)
 	GetDatastore(context.Context, *connect.Request[v1.GetDatastoreRequest]) (*connect.Response[v1.GetDatastoreResponse], error)
+	// CreateDatastore defines the datastore on every target host. The work runs
+	// as one task per host; the response lists them.
+	CreateDatastore(context.Context, *connect.Request[v1.CreateDatastoreRequest]) (*connect.Response[v1.CreateDatastoreResponse], error)
+	DeleteDatastore(context.Context, *connect.Request[v1.DeleteDatastoreRequest]) (*connect.Response[v1.DatastoreOperationResponse], error)
+	// ActivateDatastore mounts / logs in the datastore on the target hosts.
+	ActivateDatastore(context.Context, *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error)
+	DeactivateDatastore(context.Context, *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error)
 }
 
 // NewDatastoreServiceClient constructs a client for the pilab.cloud.core.v1.DatastoreService
@@ -70,13 +89,41 @@ func NewDatastoreServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(datastoreServiceMethods.ByName("GetDatastore")),
 			connect.WithClientOptions(opts...),
 		),
+		createDatastore: connect.NewClient[v1.CreateDatastoreRequest, v1.CreateDatastoreResponse](
+			httpClient,
+			baseURL+DatastoreServiceCreateDatastoreProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("CreateDatastore")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteDatastore: connect.NewClient[v1.DeleteDatastoreRequest, v1.DatastoreOperationResponse](
+			httpClient,
+			baseURL+DatastoreServiceDeleteDatastoreProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("DeleteDatastore")),
+			connect.WithClientOptions(opts...),
+		),
+		activateDatastore: connect.NewClient[v1.DatastoreHostsRequest, v1.DatastoreOperationResponse](
+			httpClient,
+			baseURL+DatastoreServiceActivateDatastoreProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("ActivateDatastore")),
+			connect.WithClientOptions(opts...),
+		),
+		deactivateDatastore: connect.NewClient[v1.DatastoreHostsRequest, v1.DatastoreOperationResponse](
+			httpClient,
+			baseURL+DatastoreServiceDeactivateDatastoreProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("DeactivateDatastore")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // datastoreServiceClient implements DatastoreServiceClient.
 type datastoreServiceClient struct {
-	listDatastores *connect.Client[v1.ListDatastoresRequest, v1.ListDatastoresResponse]
-	getDatastore   *connect.Client[v1.GetDatastoreRequest, v1.GetDatastoreResponse]
+	listDatastores      *connect.Client[v1.ListDatastoresRequest, v1.ListDatastoresResponse]
+	getDatastore        *connect.Client[v1.GetDatastoreRequest, v1.GetDatastoreResponse]
+	createDatastore     *connect.Client[v1.CreateDatastoreRequest, v1.CreateDatastoreResponse]
+	deleteDatastore     *connect.Client[v1.DeleteDatastoreRequest, v1.DatastoreOperationResponse]
+	activateDatastore   *connect.Client[v1.DatastoreHostsRequest, v1.DatastoreOperationResponse]
+	deactivateDatastore *connect.Client[v1.DatastoreHostsRequest, v1.DatastoreOperationResponse]
 }
 
 // ListDatastores calls pilab.cloud.core.v1.DatastoreService.ListDatastores.
@@ -89,10 +136,37 @@ func (c *datastoreServiceClient) GetDatastore(ctx context.Context, req *connect.
 	return c.getDatastore.CallUnary(ctx, req)
 }
 
+// CreateDatastore calls pilab.cloud.core.v1.DatastoreService.CreateDatastore.
+func (c *datastoreServiceClient) CreateDatastore(ctx context.Context, req *connect.Request[v1.CreateDatastoreRequest]) (*connect.Response[v1.CreateDatastoreResponse], error) {
+	return c.createDatastore.CallUnary(ctx, req)
+}
+
+// DeleteDatastore calls pilab.cloud.core.v1.DatastoreService.DeleteDatastore.
+func (c *datastoreServiceClient) DeleteDatastore(ctx context.Context, req *connect.Request[v1.DeleteDatastoreRequest]) (*connect.Response[v1.DatastoreOperationResponse], error) {
+	return c.deleteDatastore.CallUnary(ctx, req)
+}
+
+// ActivateDatastore calls pilab.cloud.core.v1.DatastoreService.ActivateDatastore.
+func (c *datastoreServiceClient) ActivateDatastore(ctx context.Context, req *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error) {
+	return c.activateDatastore.CallUnary(ctx, req)
+}
+
+// DeactivateDatastore calls pilab.cloud.core.v1.DatastoreService.DeactivateDatastore.
+func (c *datastoreServiceClient) DeactivateDatastore(ctx context.Context, req *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error) {
+	return c.deactivateDatastore.CallUnary(ctx, req)
+}
+
 // DatastoreServiceHandler is an implementation of the pilab.cloud.core.v1.DatastoreService service.
 type DatastoreServiceHandler interface {
 	ListDatastores(context.Context, *connect.Request[v1.ListDatastoresRequest]) (*connect.Response[v1.ListDatastoresResponse], error)
 	GetDatastore(context.Context, *connect.Request[v1.GetDatastoreRequest]) (*connect.Response[v1.GetDatastoreResponse], error)
+	// CreateDatastore defines the datastore on every target host. The work runs
+	// as one task per host; the response lists them.
+	CreateDatastore(context.Context, *connect.Request[v1.CreateDatastoreRequest]) (*connect.Response[v1.CreateDatastoreResponse], error)
+	DeleteDatastore(context.Context, *connect.Request[v1.DeleteDatastoreRequest]) (*connect.Response[v1.DatastoreOperationResponse], error)
+	// ActivateDatastore mounts / logs in the datastore on the target hosts.
+	ActivateDatastore(context.Context, *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error)
+	DeactivateDatastore(context.Context, *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error)
 }
 
 // NewDatastoreServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -114,12 +188,44 @@ func NewDatastoreServiceHandler(svc DatastoreServiceHandler, opts ...connect.Han
 		connect.WithSchema(datastoreServiceMethods.ByName("GetDatastore")),
 		connect.WithHandlerOptions(opts...),
 	)
+	datastoreServiceCreateDatastoreHandler := connect.NewUnaryHandler(
+		DatastoreServiceCreateDatastoreProcedure,
+		svc.CreateDatastore,
+		connect.WithSchema(datastoreServiceMethods.ByName("CreateDatastore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	datastoreServiceDeleteDatastoreHandler := connect.NewUnaryHandler(
+		DatastoreServiceDeleteDatastoreProcedure,
+		svc.DeleteDatastore,
+		connect.WithSchema(datastoreServiceMethods.ByName("DeleteDatastore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	datastoreServiceActivateDatastoreHandler := connect.NewUnaryHandler(
+		DatastoreServiceActivateDatastoreProcedure,
+		svc.ActivateDatastore,
+		connect.WithSchema(datastoreServiceMethods.ByName("ActivateDatastore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	datastoreServiceDeactivateDatastoreHandler := connect.NewUnaryHandler(
+		DatastoreServiceDeactivateDatastoreProcedure,
+		svc.DeactivateDatastore,
+		connect.WithSchema(datastoreServiceMethods.ByName("DeactivateDatastore")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pilab.cloud.core.v1.DatastoreService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case DatastoreServiceListDatastoresProcedure:
 			datastoreServiceListDatastoresHandler.ServeHTTP(w, r)
 		case DatastoreServiceGetDatastoreProcedure:
 			datastoreServiceGetDatastoreHandler.ServeHTTP(w, r)
+		case DatastoreServiceCreateDatastoreProcedure:
+			datastoreServiceCreateDatastoreHandler.ServeHTTP(w, r)
+		case DatastoreServiceDeleteDatastoreProcedure:
+			datastoreServiceDeleteDatastoreHandler.ServeHTTP(w, r)
+		case DatastoreServiceActivateDatastoreProcedure:
+			datastoreServiceActivateDatastoreHandler.ServeHTTP(w, r)
+		case DatastoreServiceDeactivateDatastoreProcedure:
+			datastoreServiceDeactivateDatastoreHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -135,4 +241,20 @@ func (UnimplementedDatastoreServiceHandler) ListDatastores(context.Context, *con
 
 func (UnimplementedDatastoreServiceHandler) GetDatastore(context.Context, *connect.Request[v1.GetDatastoreRequest]) (*connect.Response[v1.GetDatastoreResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.GetDatastore is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) CreateDatastore(context.Context, *connect.Request[v1.CreateDatastoreRequest]) (*connect.Response[v1.CreateDatastoreResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.CreateDatastore is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) DeleteDatastore(context.Context, *connect.Request[v1.DeleteDatastoreRequest]) (*connect.Response[v1.DatastoreOperationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.DeleteDatastore is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) ActivateDatastore(context.Context, *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.ActivateDatastore is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) DeactivateDatastore(context.Context, *connect.Request[v1.DatastoreHostsRequest]) (*connect.Response[v1.DatastoreOperationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.DeactivateDatastore is not implemented"))
 }

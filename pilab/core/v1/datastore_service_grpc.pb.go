@@ -19,8 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DatastoreService_ListDatastores_FullMethodName = "/pilab.cloud.core.v1.DatastoreService/ListDatastores"
-	DatastoreService_GetDatastore_FullMethodName   = "/pilab.cloud.core.v1.DatastoreService/GetDatastore"
+	DatastoreService_ListDatastores_FullMethodName      = "/pilab.cloud.core.v1.DatastoreService/ListDatastores"
+	DatastoreService_GetDatastore_FullMethodName        = "/pilab.cloud.core.v1.DatastoreService/GetDatastore"
+	DatastoreService_CreateDatastore_FullMethodName     = "/pilab.cloud.core.v1.DatastoreService/CreateDatastore"
+	DatastoreService_DeleteDatastore_FullMethodName     = "/pilab.cloud.core.v1.DatastoreService/DeleteDatastore"
+	DatastoreService_ActivateDatastore_FullMethodName   = "/pilab.cloud.core.v1.DatastoreService/ActivateDatastore"
+	DatastoreService_DeactivateDatastore_FullMethodName = "/pilab.cloud.core.v1.DatastoreService/DeactivateDatastore"
 )
 
 // DatastoreServiceClient is the client API for DatastoreService service.
@@ -33,6 +37,13 @@ const (
 type DatastoreServiceClient interface {
 	ListDatastores(ctx context.Context, in *ListDatastoresRequest, opts ...grpc.CallOption) (*ListDatastoresResponse, error)
 	GetDatastore(ctx context.Context, in *GetDatastoreRequest, opts ...grpc.CallOption) (*GetDatastoreResponse, error)
+	// CreateDatastore defines the datastore on every target host. The work runs
+	// as one task per host; the response lists them.
+	CreateDatastore(ctx context.Context, in *CreateDatastoreRequest, opts ...grpc.CallOption) (*CreateDatastoreResponse, error)
+	DeleteDatastore(ctx context.Context, in *DeleteDatastoreRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error)
+	// ActivateDatastore mounts / logs in the datastore on the target hosts.
+	ActivateDatastore(ctx context.Context, in *DatastoreHostsRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error)
+	DeactivateDatastore(ctx context.Context, in *DatastoreHostsRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error)
 }
 
 type datastoreServiceClient struct {
@@ -63,6 +74,46 @@ func (c *datastoreServiceClient) GetDatastore(ctx context.Context, in *GetDatast
 	return out, nil
 }
 
+func (c *datastoreServiceClient) CreateDatastore(ctx context.Context, in *CreateDatastoreRequest, opts ...grpc.CallOption) (*CreateDatastoreResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateDatastoreResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_CreateDatastore_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreServiceClient) DeleteDatastore(ctx context.Context, in *DeleteDatastoreRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DatastoreOperationResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_DeleteDatastore_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreServiceClient) ActivateDatastore(ctx context.Context, in *DatastoreHostsRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DatastoreOperationResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_ActivateDatastore_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreServiceClient) DeactivateDatastore(ctx context.Context, in *DatastoreHostsRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DatastoreOperationResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_DeactivateDatastore_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DatastoreServiceServer is the server API for DatastoreService service.
 // All implementations must embed UnimplementedDatastoreServiceServer
 // for forward compatibility.
@@ -73,6 +124,13 @@ func (c *datastoreServiceClient) GetDatastore(ctx context.Context, in *GetDatast
 type DatastoreServiceServer interface {
 	ListDatastores(context.Context, *ListDatastoresRequest) (*ListDatastoresResponse, error)
 	GetDatastore(context.Context, *GetDatastoreRequest) (*GetDatastoreResponse, error)
+	// CreateDatastore defines the datastore on every target host. The work runs
+	// as one task per host; the response lists them.
+	CreateDatastore(context.Context, *CreateDatastoreRequest) (*CreateDatastoreResponse, error)
+	DeleteDatastore(context.Context, *DeleteDatastoreRequest) (*DatastoreOperationResponse, error)
+	// ActivateDatastore mounts / logs in the datastore on the target hosts.
+	ActivateDatastore(context.Context, *DatastoreHostsRequest) (*DatastoreOperationResponse, error)
+	DeactivateDatastore(context.Context, *DatastoreHostsRequest) (*DatastoreOperationResponse, error)
 	mustEmbedUnimplementedDatastoreServiceServer()
 }
 
@@ -88,6 +146,18 @@ func (UnimplementedDatastoreServiceServer) ListDatastores(context.Context, *List
 }
 func (UnimplementedDatastoreServiceServer) GetDatastore(context.Context, *GetDatastoreRequest) (*GetDatastoreResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) CreateDatastore(context.Context, *CreateDatastoreRequest) (*CreateDatastoreResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) DeleteDatastore(context.Context, *DeleteDatastoreRequest) (*DatastoreOperationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) ActivateDatastore(context.Context, *DatastoreHostsRequest) (*DatastoreOperationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ActivateDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) DeactivateDatastore(context.Context, *DatastoreHostsRequest) (*DatastoreOperationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeactivateDatastore not implemented")
 }
 func (UnimplementedDatastoreServiceServer) mustEmbedUnimplementedDatastoreServiceServer() {}
 func (UnimplementedDatastoreServiceServer) testEmbeddedByValue()                          {}
@@ -146,6 +216,78 @@ func _DatastoreService_GetDatastore_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatastoreService_CreateDatastore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDatastoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).CreateDatastore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_CreateDatastore_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).CreateDatastore(ctx, req.(*CreateDatastoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatastoreService_DeleteDatastore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDatastoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).DeleteDatastore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_DeleteDatastore_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).DeleteDatastore(ctx, req.(*DeleteDatastoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatastoreService_ActivateDatastore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DatastoreHostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).ActivateDatastore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_ActivateDatastore_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).ActivateDatastore(ctx, req.(*DatastoreHostsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatastoreService_DeactivateDatastore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DatastoreHostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).DeactivateDatastore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_DeactivateDatastore_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).DeactivateDatastore(ctx, req.(*DatastoreHostsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DatastoreService_ServiceDesc is the grpc.ServiceDesc for DatastoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -160,6 +302,22 @@ var DatastoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDatastore",
 			Handler:    _DatastoreService_GetDatastore_Handler,
+		},
+		{
+			MethodName: "CreateDatastore",
+			Handler:    _DatastoreService_CreateDatastore_Handler,
+		},
+		{
+			MethodName: "DeleteDatastore",
+			Handler:    _DatastoreService_DeleteDatastore_Handler,
+		},
+		{
+			MethodName: "ActivateDatastore",
+			Handler:    _DatastoreService_ActivateDatastore_Handler,
+		},
+		{
+			MethodName: "DeactivateDatastore",
+			Handler:    _DatastoreService_DeactivateDatastore_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

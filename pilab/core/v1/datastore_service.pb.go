@@ -482,6 +482,367 @@ func (x *GetDatastoreResponse) GetDatastore() *Datastore {
 	return nil
 }
 
+type CreateDatastoreRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Name  string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// dir, nfs, iscsi or ceph.
+	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	// Mount path on the host, e.g. /var/lib/pivirt/datastores/gold.
+	Path string `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
+	// Backend settings, e.g. server and export for nfs, portal and target for
+	// iscsi.
+	Options map[string]string `protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Hosts to define it on. Empty means every active host of cluster_id.
+	HostIds       []string `protobuf:"bytes,5,rep,name=host_ids,json=hostIds,proto3" json:"host_ids,omitempty"`
+	ClusterId     string   `protobuf:"bytes,6,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateDatastoreRequest) Reset() {
+	*x = CreateDatastoreRequest{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateDatastoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateDatastoreRequest) ProtoMessage() {}
+
+func (x *CreateDatastoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateDatastoreRequest.ProtoReflect.Descriptor instead.
+func (*CreateDatastoreRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *CreateDatastoreRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateDatastoreRequest) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *CreateDatastoreRequest) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *CreateDatastoreRequest) GetOptions() map[string]string {
+	if x != nil {
+		return x.Options
+	}
+	return nil
+}
+
+func (x *CreateDatastoreRequest) GetHostIds() []string {
+	if x != nil {
+		return x.HostIds
+	}
+	return nil
+}
+
+func (x *CreateDatastoreRequest) GetClusterId() string {
+	if x != nil {
+		return x.ClusterId
+	}
+	return ""
+}
+
+type DatastoreOperation struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	HostId string                 `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
+	// Task running the change on the host; empty when it could not be queued.
+	TaskId        string `protobuf:"bytes,2,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	Error         string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DatastoreOperation) Reset() {
+	*x = DatastoreOperation{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DatastoreOperation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DatastoreOperation) ProtoMessage() {}
+
+func (x *DatastoreOperation) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DatastoreOperation.ProtoReflect.Descriptor instead.
+func (*DatastoreOperation) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *DatastoreOperation) GetHostId() string {
+	if x != nil {
+		return x.HostId
+	}
+	return ""
+}
+
+func (x *DatastoreOperation) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *DatastoreOperation) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type CreateDatastoreResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Cluster-wide datastore id: the same on every host.
+	DatastoreId   string                `protobuf:"bytes,1,opt,name=datastore_id,json=datastoreId,proto3" json:"datastore_id,omitempty"`
+	Operations    []*DatastoreOperation `protobuf:"bytes,2,rep,name=operations,proto3" json:"operations,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateDatastoreResponse) Reset() {
+	*x = CreateDatastoreResponse{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateDatastoreResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateDatastoreResponse) ProtoMessage() {}
+
+func (x *CreateDatastoreResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateDatastoreResponse.ProtoReflect.Descriptor instead.
+func (*CreateDatastoreResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CreateDatastoreResponse) GetDatastoreId() string {
+	if x != nil {
+		return x.DatastoreId
+	}
+	return ""
+}
+
+func (x *CreateDatastoreResponse) GetOperations() []*DatastoreOperation {
+	if x != nil {
+		return x.Operations
+	}
+	return nil
+}
+
+type DatastoreHostsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Hosts to act on. Empty means every host that has the datastore.
+	HostIds       []string `protobuf:"bytes,2,rep,name=host_ids,json=hostIds,proto3" json:"host_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DatastoreHostsRequest) Reset() {
+	*x = DatastoreHostsRequest{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DatastoreHostsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DatastoreHostsRequest) ProtoMessage() {}
+
+func (x *DatastoreHostsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DatastoreHostsRequest.ProtoReflect.Descriptor instead.
+func (*DatastoreHostsRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DatastoreHostsRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DatastoreHostsRequest) GetHostIds() []string {
+	if x != nil {
+		return x.HostIds
+	}
+	return nil
+}
+
+type DeleteDatastoreRequest struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Id      string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	HostIds []string               `protobuf:"bytes,2,rep,name=host_ids,json=hostIds,proto3" json:"host_ids,omitempty"`
+	// Delete even while VMs still have disks on it.
+	Force         bool `protobuf:"varint,3,opt,name=force,proto3" json:"force,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteDatastoreRequest) Reset() {
+	*x = DeleteDatastoreRequest{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteDatastoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteDatastoreRequest) ProtoMessage() {}
+
+func (x *DeleteDatastoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteDatastoreRequest.ProtoReflect.Descriptor instead.
+func (*DeleteDatastoreRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *DeleteDatastoreRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DeleteDatastoreRequest) GetHostIds() []string {
+	if x != nil {
+		return x.HostIds
+	}
+	return nil
+}
+
+func (x *DeleteDatastoreRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
+}
+
+type DatastoreOperationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Operations    []*DatastoreOperation  `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DatastoreOperationResponse) Reset() {
+	*x = DatastoreOperationResponse{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DatastoreOperationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DatastoreOperationResponse) ProtoMessage() {}
+
+func (x *DatastoreOperationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DatastoreOperationResponse.ProtoReflect.Descriptor instead.
+func (*DatastoreOperationResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *DatastoreOperationResponse) GetOperations() []*DatastoreOperation {
+	if x != nil {
+		return x.Operations
+	}
+	return nil
+}
+
 var File_pilab_core_v1_datastore_service_proto protoreflect.FileDescriptor
 
 const file_pilab_core_v1_datastore_service_proto_rawDesc = "" +
@@ -522,15 +883,50 @@ const file_pilab_core_v1_datastore_service_proto_rawDesc = "" +
 	"\x13GetDatastoreRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"T\n" +
 	"\x14GetDatastoreResponse\x12<\n" +
-	"\tdatastore\x18\x01 \x01(\v2\x1e.pilab.cloud.core.v1.DatastoreR\tdatastore*\x89\x01\n" +
+	"\tdatastore\x18\x01 \x01(\v2\x1e.pilab.cloud.core.v1.DatastoreR\tdatastore\"\x9e\x02\n" +
+	"\x16CreateDatastoreRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04type\x18\x02 \x01(\tR\x04type\x12\x12\n" +
+	"\x04path\x18\x03 \x01(\tR\x04path\x12R\n" +
+	"\aoptions\x18\x04 \x03(\v28.pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntryR\aoptions\x12\x19\n" +
+	"\bhost_ids\x18\x05 \x03(\tR\ahostIds\x12\x1d\n" +
+	"\n" +
+	"cluster_id\x18\x06 \x01(\tR\tclusterId\x1a:\n" +
+	"\fOptionsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\\\n" +
+	"\x12DatastoreOperation\x12\x17\n" +
+	"\ahost_id\x18\x01 \x01(\tR\x06hostId\x12\x17\n" +
+	"\atask_id\x18\x02 \x01(\tR\x06taskId\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\"\x85\x01\n" +
+	"\x17CreateDatastoreResponse\x12!\n" +
+	"\fdatastore_id\x18\x01 \x01(\tR\vdatastoreId\x12G\n" +
+	"\n" +
+	"operations\x18\x02 \x03(\v2'.pilab.cloud.core.v1.DatastoreOperationR\n" +
+	"operations\"B\n" +
+	"\x15DatastoreHostsRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\bhost_ids\x18\x02 \x03(\tR\ahostIds\"Y\n" +
+	"\x16DeleteDatastoreRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\bhost_ids\x18\x02 \x03(\tR\ahostIds\x12\x14\n" +
+	"\x05force\x18\x03 \x01(\bR\x05force\"e\n" +
+	"\x1aDatastoreOperationResponse\x12G\n" +
+	"\n" +
+	"operations\x18\x01 \x03(\v2'.pilab.cloud.core.v1.DatastoreOperationR\n" +
+	"operations*\x89\x01\n" +
 	"\x0fDatastoreHealth\x12 \n" +
 	"\x1cDATASTORE_HEALTH_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13DATASTORE_HEALTH_OK\x10\x01\x12\x1d\n" +
 	"\x19DATASTORE_HEALTH_DEGRADED\x10\x02\x12\x1c\n" +
-	"\x18DATASTORE_HEALTH_OFFLINE\x10\x032\xe2\x01\n" +
+	"\x18DATASTORE_HEALTH_OFFLINE\x10\x032\xa7\x05\n" +
 	"\x10DatastoreService\x12i\n" +
 	"\x0eListDatastores\x12*.pilab.cloud.core.v1.ListDatastoresRequest\x1a+.pilab.cloud.core.v1.ListDatastoresResponse\x12c\n" +
-	"\fGetDatastore\x12(.pilab.cloud.core.v1.GetDatastoreRequest\x1a).pilab.cloud.core.v1.GetDatastoreResponseB2Z0go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1b\x06proto3"
+	"\fGetDatastore\x12(.pilab.cloud.core.v1.GetDatastoreRequest\x1a).pilab.cloud.core.v1.GetDatastoreResponse\x12l\n" +
+	"\x0fCreateDatastore\x12+.pilab.cloud.core.v1.CreateDatastoreRequest\x1a,.pilab.cloud.core.v1.CreateDatastoreResponse\x12o\n" +
+	"\x0fDeleteDatastore\x12+.pilab.cloud.core.v1.DeleteDatastoreRequest\x1a/.pilab.cloud.core.v1.DatastoreOperationResponse\x12p\n" +
+	"\x11ActivateDatastore\x12*.pilab.cloud.core.v1.DatastoreHostsRequest\x1a/.pilab.cloud.core.v1.DatastoreOperationResponse\x12r\n" +
+	"\x13DeactivateDatastore\x12*.pilab.cloud.core.v1.DatastoreHostsRequest\x1a/.pilab.cloud.core.v1.DatastoreOperationResponseB2Z0go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1b\x06proto3"
 
 var (
 	file_pilab_core_v1_datastore_service_proto_rawDescOnce sync.Once
@@ -545,32 +941,50 @@ func file_pilab_core_v1_datastore_service_proto_rawDescGZIP() []byte {
 }
 
 var file_pilab_core_v1_datastore_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pilab_core_v1_datastore_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_pilab_core_v1_datastore_service_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_pilab_core_v1_datastore_service_proto_goTypes = []any{
-	(DatastoreHealth)(0),           // 0: pilab.cloud.core.v1.DatastoreHealth
-	(*DatastoreHost)(nil),          // 1: pilab.cloud.core.v1.DatastoreHost
-	(*Datastore)(nil),              // 2: pilab.cloud.core.v1.Datastore
-	(*ListDatastoresRequest)(nil),  // 3: pilab.cloud.core.v1.ListDatastoresRequest
-	(*ListDatastoresResponse)(nil), // 4: pilab.cloud.core.v1.ListDatastoresResponse
-	(*GetDatastoreRequest)(nil),    // 5: pilab.cloud.core.v1.GetDatastoreRequest
-	(*GetDatastoreResponse)(nil),   // 6: pilab.cloud.core.v1.GetDatastoreResponse
-	(*timestamppb.Timestamp)(nil),  // 7: google.protobuf.Timestamp
+	(DatastoreHealth)(0),               // 0: pilab.cloud.core.v1.DatastoreHealth
+	(*DatastoreHost)(nil),              // 1: pilab.cloud.core.v1.DatastoreHost
+	(*Datastore)(nil),                  // 2: pilab.cloud.core.v1.Datastore
+	(*ListDatastoresRequest)(nil),      // 3: pilab.cloud.core.v1.ListDatastoresRequest
+	(*ListDatastoresResponse)(nil),     // 4: pilab.cloud.core.v1.ListDatastoresResponse
+	(*GetDatastoreRequest)(nil),        // 5: pilab.cloud.core.v1.GetDatastoreRequest
+	(*GetDatastoreResponse)(nil),       // 6: pilab.cloud.core.v1.GetDatastoreResponse
+	(*CreateDatastoreRequest)(nil),     // 7: pilab.cloud.core.v1.CreateDatastoreRequest
+	(*DatastoreOperation)(nil),         // 8: pilab.cloud.core.v1.DatastoreOperation
+	(*CreateDatastoreResponse)(nil),    // 9: pilab.cloud.core.v1.CreateDatastoreResponse
+	(*DatastoreHostsRequest)(nil),      // 10: pilab.cloud.core.v1.DatastoreHostsRequest
+	(*DeleteDatastoreRequest)(nil),     // 11: pilab.cloud.core.v1.DeleteDatastoreRequest
+	(*DatastoreOperationResponse)(nil), // 12: pilab.cloud.core.v1.DatastoreOperationResponse
+	nil,                                // 13: pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
+	(*timestamppb.Timestamp)(nil),      // 14: google.protobuf.Timestamp
 }
 var file_pilab_core_v1_datastore_service_proto_depIdxs = []int32{
-	0, // 0: pilab.cloud.core.v1.Datastore.health:type_name -> pilab.cloud.core.v1.DatastoreHealth
-	1, // 1: pilab.cloud.core.v1.Datastore.hosts:type_name -> pilab.cloud.core.v1.DatastoreHost
-	7, // 2: pilab.cloud.core.v1.Datastore.last_report_at:type_name -> google.protobuf.Timestamp
-	2, // 3: pilab.cloud.core.v1.ListDatastoresResponse.datastores:type_name -> pilab.cloud.core.v1.Datastore
-	2, // 4: pilab.cloud.core.v1.GetDatastoreResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
-	3, // 5: pilab.cloud.core.v1.DatastoreService.ListDatastores:input_type -> pilab.cloud.core.v1.ListDatastoresRequest
-	5, // 6: pilab.cloud.core.v1.DatastoreService.GetDatastore:input_type -> pilab.cloud.core.v1.GetDatastoreRequest
-	4, // 7: pilab.cloud.core.v1.DatastoreService.ListDatastores:output_type -> pilab.cloud.core.v1.ListDatastoresResponse
-	6, // 8: pilab.cloud.core.v1.DatastoreService.GetDatastore:output_type -> pilab.cloud.core.v1.GetDatastoreResponse
-	7, // [7:9] is the sub-list for method output_type
-	5, // [5:7] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	0,  // 0: pilab.cloud.core.v1.Datastore.health:type_name -> pilab.cloud.core.v1.DatastoreHealth
+	1,  // 1: pilab.cloud.core.v1.Datastore.hosts:type_name -> pilab.cloud.core.v1.DatastoreHost
+	14, // 2: pilab.cloud.core.v1.Datastore.last_report_at:type_name -> google.protobuf.Timestamp
+	2,  // 3: pilab.cloud.core.v1.ListDatastoresResponse.datastores:type_name -> pilab.cloud.core.v1.Datastore
+	2,  // 4: pilab.cloud.core.v1.GetDatastoreResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
+	13, // 5: pilab.cloud.core.v1.CreateDatastoreRequest.options:type_name -> pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
+	8,  // 6: pilab.cloud.core.v1.CreateDatastoreResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
+	8,  // 7: pilab.cloud.core.v1.DatastoreOperationResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
+	3,  // 8: pilab.cloud.core.v1.DatastoreService.ListDatastores:input_type -> pilab.cloud.core.v1.ListDatastoresRequest
+	5,  // 9: pilab.cloud.core.v1.DatastoreService.GetDatastore:input_type -> pilab.cloud.core.v1.GetDatastoreRequest
+	7,  // 10: pilab.cloud.core.v1.DatastoreService.CreateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
+	11, // 11: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:input_type -> pilab.cloud.core.v1.DeleteDatastoreRequest
+	10, // 12: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
+	10, // 13: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
+	4,  // 14: pilab.cloud.core.v1.DatastoreService.ListDatastores:output_type -> pilab.cloud.core.v1.ListDatastoresResponse
+	6,  // 15: pilab.cloud.core.v1.DatastoreService.GetDatastore:output_type -> pilab.cloud.core.v1.GetDatastoreResponse
+	9,  // 16: pilab.cloud.core.v1.DatastoreService.CreateDatastore:output_type -> pilab.cloud.core.v1.CreateDatastoreResponse
+	12, // 17: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	12, // 18: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	12, // 19: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	14, // [14:20] is the sub-list for method output_type
+	8,  // [8:14] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_pilab_core_v1_datastore_service_proto_init() }
@@ -584,7 +998,7 @@ func file_pilab_core_v1_datastore_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_core_v1_datastore_service_proto_rawDesc), len(file_pilab_core_v1_datastore_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

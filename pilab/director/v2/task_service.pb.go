@@ -64,6 +64,12 @@ const (
 	TaskType_TASK_TYPE_VM_BACKUP_SYSTEM_VOLUME  TaskType = 28
 	TaskType_TASK_TYPE_VM_RESTORE_SYSTEM_VOLUME TaskType = 29
 	TaskType_TASK_TYPE_VM_SNAPSHOT_CONSOLIDATE  TaskType = 30
+	// Storage pool tasks run against pivirtd on the target node: params carry
+	// name, type, path and options (create) or name and force (delete).
+	TaskType_TASK_TYPE_STORAGE_POOL_CREATE     TaskType = 31
+	TaskType_TASK_TYPE_STORAGE_POOL_DELETE     TaskType = 32
+	TaskType_TASK_TYPE_STORAGE_POOL_ACTIVATE   TaskType = 33
+	TaskType_TASK_TYPE_STORAGE_POOL_DEACTIVATE TaskType = 34
 )
 
 // Enum value maps for TaskType.
@@ -100,6 +106,10 @@ var (
 		28: "TASK_TYPE_VM_BACKUP_SYSTEM_VOLUME",
 		29: "TASK_TYPE_VM_RESTORE_SYSTEM_VOLUME",
 		30: "TASK_TYPE_VM_SNAPSHOT_CONSOLIDATE",
+		31: "TASK_TYPE_STORAGE_POOL_CREATE",
+		32: "TASK_TYPE_STORAGE_POOL_DELETE",
+		33: "TASK_TYPE_STORAGE_POOL_ACTIVATE",
+		34: "TASK_TYPE_STORAGE_POOL_DEACTIVATE",
 	}
 	TaskType_value = map[string]int32{
 		"TASK_TYPE_UNSPECIFIED":              0,
@@ -133,6 +143,10 @@ var (
 		"TASK_TYPE_VM_BACKUP_SYSTEM_VOLUME":  28,
 		"TASK_TYPE_VM_RESTORE_SYSTEM_VOLUME": 29,
 		"TASK_TYPE_VM_SNAPSHOT_CONSOLIDATE":  30,
+		"TASK_TYPE_STORAGE_POOL_CREATE":      31,
+		"TASK_TYPE_STORAGE_POOL_DELETE":      32,
+		"TASK_TYPE_STORAGE_POOL_ACTIVATE":    33,
+		"TASK_TYPE_STORAGE_POOL_DEACTIVATE":  34,
 	}
 )
 
@@ -1655,7 +1669,7 @@ const file_pilab_director_v2_task_service_proto_rawDesc = "" +
 	" \x01(\tR\n" +
 	"snapshotId\x12'\n" +
 	"\x0ftimeout_seconds\x18\v \x01(\x03R\x0etimeoutSeconds\x12\x14\n" +
-	"\x05force\x18\f \x01(\bR\x05force*\xa2\a\n" +
+	"\x05force\x18\f \x01(\bR\x05force*\xb4\b\n" +
 	"\bTaskType\x12\x19\n" +
 	"\x15TASK_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13TASK_TYPE_VM_CREATE\x10\x01\x12\x16\n" +
@@ -1688,7 +1702,11 @@ const file_pilab_director_v2_task_service_proto_rawDesc = "" +
 	"\x1cTASK_TYPE_VM_CHANGE_PASSWORD\x10\x1b\x12%\n" +
 	"!TASK_TYPE_VM_BACKUP_SYSTEM_VOLUME\x10\x1c\x12&\n" +
 	"\"TASK_TYPE_VM_RESTORE_SYSTEM_VOLUME\x10\x1d\x12%\n" +
-	"!TASK_TYPE_VM_SNAPSHOT_CONSOLIDATE\x10\x1e*\xc9\x01\n" +
+	"!TASK_TYPE_VM_SNAPSHOT_CONSOLIDATE\x10\x1e\x12!\n" +
+	"\x1dTASK_TYPE_STORAGE_POOL_CREATE\x10\x1f\x12!\n" +
+	"\x1dTASK_TYPE_STORAGE_POOL_DELETE\x10 \x12#\n" +
+	"\x1fTASK_TYPE_STORAGE_POOL_ACTIVATE\x10!\x12%\n" +
+	"!TASK_TYPE_STORAGE_POOL_DEACTIVATE\x10\"*\xc9\x01\n" +
 	"\n" +
 	"TaskStatus\x12\x1b\n" +
 	"\x17TASK_STATUS_UNSPECIFIED\x10\x00\x12\x17\n" +
