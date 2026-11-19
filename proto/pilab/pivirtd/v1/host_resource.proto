@@ -86,6 +86,8 @@ message StoragePoolSummary {
   string kind = 2;
   int64 total_bytes = 3;
   int64 available_bytes = 4;
+  string name = 5;
+  string mount_path = 6;
 }
 
 // ==================== Event Streaming ====================

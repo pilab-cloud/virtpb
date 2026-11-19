@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package pilab.cloud.core.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+import "google/protobuf/timestamp.proto";
+
+// DatastoreService is the director's cluster-wide view of storage: every
+// datastore the hosts report, which hosts are connected to it, its capacity
+// and its health (vSphere datastore inventory).
+service DatastoreService {
+  rpc ListDatastores(ListDatastoresRequest) returns (ListDatastoresResponse);
+  rpc GetDatastore(GetDatastoreRequest) returns (GetDatastoreResponse);
+}
+
+enum DatastoreHealth {
+  DATASTORE_HEALTH_UNSPECIFIED = 0;
+  DATASTORE_HEALTH_OK = 1;
+  // Usable but at risk: running low on space, or a host that should see it
+  // does not.
+  DATASTORE_HEALTH_DEGRADED = 2;
+  // No active host can reach it.
+  DATASTORE_HEALTH_OFFLINE = 3;
+}
+
+message DatastoreHost {
+  string host_id = 1;
+  string host_name = 2;
+  // False when the host is down, in maintenance or has not reported it lately.
+  bool connected = 3;
+  int64 total_bytes = 4;
+  int64 available_bytes = 5;
+  string mount_path = 6;
+}
+
+message Datastore {
+  string id = 1;
+  string name = 2;
+  // local, nfs, iscsi, ceph, ...
+  string kind = 3;
+  // Visible to more than one host, so VMs on it migrate without a disk copy.
+  bool shared = 4;
+  int64 total_bytes = 5;
+  int64 available_bytes = 6;
+  double used_percent = 7;
+  DatastoreHealth health = 8;
+  repeated string health_reasons = 9;
+  repeated DatastoreHost hosts = 10;
+  repeated string clusters = 11;
+  google.protobuf.Timestamp last_report_at = 12;
+}
+
+message ListDatastoresRequest {
+  // Only datastores connected to this host.
+  string host_id = 1;
+  // Only datastores of this cluster.
+  string cluster_id = 2;
+}
+
+message ListDatastoresResponse {
+  repeated Datastore datastores = 1;
+}
+
+message GetDatastoreRequest {
+  string id = 1;
+}
+
+message GetDatastoreResponse {
+  Datastore datastore = 1;
+}

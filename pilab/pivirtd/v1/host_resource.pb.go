@@ -473,6 +473,8 @@ type StoragePoolSummary struct {
 	Kind           string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
 	TotalBytes     int64                  `protobuf:"varint,3,opt,name=total_bytes,json=totalBytes,proto3" json:"total_bytes,omitempty"`
 	AvailableBytes int64                  `protobuf:"varint,4,opt,name=available_bytes,json=availableBytes,proto3" json:"available_bytes,omitempty"`
+	Name           string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	MountPath      string                 `protobuf:"bytes,6,opt,name=mount_path,json=mountPath,proto3" json:"mount_path,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -533,6 +535,20 @@ func (x *StoragePoolSummary) GetAvailableBytes() int64 {
 		return x.AvailableBytes
 	}
 	return 0
+}
+
+func (x *StoragePoolSummary) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StoragePoolSummary) GetMountPath() string {
+	if x != nil {
+		return x.MountPath
+	}
+	return ""
 }
 
 // SubscribeEventsRequest is an empty request to subscribe to VM events.
@@ -1271,13 +1287,16 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x0eStorageSummary\x12(\n" +
 	"\x10pool_total_bytes\x18\x01 \x01(\x03R\x0epoolTotalBytes\x120\n" +
 	"\x14pool_available_bytes\x18\x02 \x01(\x03R\x12poolAvailableBytes\x12&\n" +
-	"\x0fpool_used_bytes\x18\x03 \x01(\x03R\rpoolUsedBytes\"\x82\x01\n" +
+	"\x0fpool_used_bytes\x18\x03 \x01(\x03R\rpoolUsedBytes\"\xb5\x01\n" +
 	"\x12StoragePoolSummary\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1f\n" +
 	"\vtotal_bytes\x18\x03 \x01(\x03R\n" +
 	"totalBytes\x12'\n" +
-	"\x0favailable_bytes\x18\x04 \x01(\x03R\x0eavailableBytes\"\x18\n" +
+	"\x0favailable_bytes\x18\x04 \x01(\x03R\x0eavailableBytes\x12\x12\n" +
+	"\x04name\x18\x05 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"mount_path\x18\x06 \x01(\tR\tmountPath\"\x18\n" +
 	"\x16SubscribeEventsRequest\"\xa3\x05\n" +
 	"\tHostEvent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x123\n" +
