@@ -91,6 +91,9 @@ message GetResourceRequest {
   string kind = 1;
   // Name is the resource name, unique within the kind and namespace.
   string name = 2;
+  // Namespace scopes the lookup for namespaced kinds (e.g. a Project's
+  // organisation). Empty for cluster-scoped kinds.
+  string namespace = 3;
 }
 
 message GetResourceResponse {
@@ -114,6 +117,9 @@ message DeleteResourceRequest {
   string kind = 1;
   // Name is the resource name to delete.
   string name = 2;
+  // Namespace scopes the lookup for namespaced kinds. Empty for
+  // cluster-scoped kinds.
+  string namespace = 3;
 }
 
 message DeleteResourceResponse {}

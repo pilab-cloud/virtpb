@@ -236,7 +236,10 @@ type GetResourceRequest struct {
 	// Kind is the resource kind, e.g. "VirtualMachine".
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Name is the resource name, unique within the kind and namespace.
-	Name          string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Namespace scopes the lookup for namespaced kinds (e.g. a Project's
+	// organisation). Empty for cluster-scoped kinds.
+	Namespace     string `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -281,6 +284,13 @@ func (x *GetResourceRequest) GetKind() string {
 func (x *GetResourceRequest) GetName() string {
 	if x != nil {
 		return x.Name
+	}
+	return ""
+}
+
+func (x *GetResourceRequest) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
 	}
 	return ""
 }
@@ -433,7 +443,10 @@ type DeleteResourceRequest struct {
 	// Kind is the resource kind to delete.
 	Kind string `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
 	// Name is the resource name to delete.
-	Name          string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Namespace scopes the lookup for namespaced kinds. Empty for
+	// cluster-scoped kinds.
+	Namespace     string `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -478,6 +491,13 @@ func (x *DeleteResourceRequest) GetKind() string {
 func (x *DeleteResourceRequest) GetName() string {
 	if x != nil {
 		return x.Name
+	}
+	return ""
+}
+
+func (x *DeleteResourceRequest) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
 	}
 	return ""
 }
@@ -715,20 +735,22 @@ const file_pilab_resource_v1_resource_service_proto_rawDesc = "" +
 	"\aoptions\x18\x02 \x01(\v2\x1f.pilab.resource.v1.ApplyOptionsR\aoptions\"\x8a\x01\n" +
 	"\x16ApplyResourcesResponse\x128\n" +
 	"\aresults\x18\x01 \x03(\v2\x1e.pilab.resource.v1.ApplyResultR\aresults\x126\n" +
-	"\x06pruned\x18\x02 \x03(\v2\x1e.pilab.resource.v1.PruneResultR\x06pruned\"<\n" +
+	"\x06pruned\x18\x02 \x03(\v2\x1e.pilab.resource.v1.PruneResultR\x06pruned\"Z\n" +
 	"\x12GetResourceRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"N\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1c\n" +
+	"\tnamespace\x18\x03 \x01(\tR\tnamespace\"N\n" +
 	"\x13GetResourceResponse\x127\n" +
 	"\bresource\x18\x01 \x01(\v2\x1b.pilab.resource.v1.ResourceR\bresource\"F\n" +
 	"\x14ListResourcesRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
 	"\bselector\x18\x02 \x01(\tR\bselector\"R\n" +
 	"\x15ListResourcesResponse\x129\n" +
-	"\tresources\x18\x01 \x03(\v2\x1b.pilab.resource.v1.ResourceR\tresources\"?\n" +
+	"\tresources\x18\x01 \x03(\v2\x1b.pilab.resource.v1.ResourceR\tresources\"]\n" +
 	"\x15DeleteResourceRequest\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\x18\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1c\n" +
+	"\tnamespace\x18\x03 \x01(\tR\tnamespace\"\x18\n" +
 	"\x16DeleteResourceResponse\"\x12\n" +
 	"\x10ListKindsRequest\")\n" +
 	"\x11ListKindsResponse\x12\x14\n" +
