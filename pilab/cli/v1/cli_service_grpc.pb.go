@@ -295,6 +295,7 @@ const (
 	VMService_GetVMConsole_FullMethodName      = "/pilab.cli.v1.VMService/GetVMConsole"
 	VMService_UpdateVMResources_FullMethodName = "/pilab.cli.v1.VMService/UpdateVMResources"
 	VMService_GetVMResources_FullMethodName    = "/pilab.cli.v1.VMService/GetVMResources"
+	VMService_AdoptVM_FullMethodName           = "/pilab.cli.v1.VMService/AdoptVM"
 )
 
 // VMServiceClient is the client API for VMService service.
@@ -318,6 +319,9 @@ type VMServiceClient interface {
 	GetVMConsole(ctx context.Context, in *GetVMConsoleRequest, opts ...grpc.CallOption) (*GetVMConsoleResponse, error)
 	UpdateVMResources(ctx context.Context, in *UpdateVMResourcesRequest, opts ...grpc.CallOption) (*UpdateVMResourcesResponse, error)
 	GetVMResources(ctx context.Context, in *GetVMResourcesRequest, opts ...grpc.CallOption) (*GetVMResourcesResponse, error)
+	// AdoptVM takes a quarantined VM (one a node reported that the director did
+	// not create) under management and places it in a tenancy namespace.
+	AdoptVM(ctx context.Context, in *AdoptVMRequest, opts ...grpc.CallOption) (*v1.VM, error)
 }
 
 type vMServiceClient struct {
@@ -498,6 +502,16 @@ func (c *vMServiceClient) GetVMResources(ctx context.Context, in *GetVMResources
 	return out, nil
 }
 
+func (c *vMServiceClient) AdoptVM(ctx context.Context, in *AdoptVMRequest, opts ...grpc.CallOption) (*v1.VM, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.VM)
+	err := c.cc.Invoke(ctx, VMService_AdoptVM_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VMServiceServer is the server API for VMService service.
 // All implementations must embed UnimplementedVMServiceServer
 // for forward compatibility.
@@ -519,6 +533,9 @@ type VMServiceServer interface {
 	GetVMConsole(context.Context, *GetVMConsoleRequest) (*GetVMConsoleResponse, error)
 	UpdateVMResources(context.Context, *UpdateVMResourcesRequest) (*UpdateVMResourcesResponse, error)
 	GetVMResources(context.Context, *GetVMResourcesRequest) (*GetVMResourcesResponse, error)
+	// AdoptVM takes a quarantined VM (one a node reported that the director did
+	// not create) under management and places it in a tenancy namespace.
+	AdoptVM(context.Context, *AdoptVMRequest) (*v1.VM, error)
 	mustEmbedUnimplementedVMServiceServer()
 }
 
@@ -579,6 +596,9 @@ func (UnimplementedVMServiceServer) UpdateVMResources(context.Context, *UpdateVM
 }
 func (UnimplementedVMServiceServer) GetVMResources(context.Context, *GetVMResourcesRequest) (*GetVMResourcesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetVMResources not implemented")
+}
+func (UnimplementedVMServiceServer) AdoptVM(context.Context, *AdoptVMRequest) (*v1.VM, error) {
+	return nil, status.Error(codes.Unimplemented, "method AdoptVM not implemented")
 }
 func (UnimplementedVMServiceServer) mustEmbedUnimplementedVMServiceServer() {}
 func (UnimplementedVMServiceServer) testEmbeddedByValue()                   {}
@@ -907,6 +927,24 @@ func _VMService_GetVMResources_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VMService_AdoptVM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdoptVMRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VMServiceServer).AdoptVM(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VMService_AdoptVM_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VMServiceServer).AdoptVM(ctx, req.(*AdoptVMRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VMService_ServiceDesc is the grpc.ServiceDesc for VMService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -981,6 +1019,10 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetVMResources",
 			Handler:    _VMService_GetVMResources_Handler,
+		},
+		{
+			MethodName: "AdoptVM",
+			Handler:    _VMService_AdoptVM_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

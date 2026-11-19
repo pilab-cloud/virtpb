@@ -109,6 +109,8 @@ const (
 	// VMServiceGetVMResourcesProcedure is the fully-qualified name of the VMService's GetVMResources
 	// RPC.
 	VMServiceGetVMResourcesProcedure = "/pilab.cli.v1.VMService/GetVMResources"
+	// VMServiceAdoptVMProcedure is the fully-qualified name of the VMService's AdoptVM RPC.
+	VMServiceAdoptVMProcedure = "/pilab.cli.v1.VMService/AdoptVM"
 	// DiskServiceCreateDiskProcedure is the fully-qualified name of the DiskService's CreateDisk RPC.
 	DiskServiceCreateDiskProcedure = "/pilab.cli.v1.DiskService/CreateDisk"
 	// DiskServiceGetDiskProcedure is the fully-qualified name of the DiskService's GetDisk RPC.
@@ -535,6 +537,9 @@ type VMServiceClient interface {
 	GetVMConsole(context.Context, *connect.Request[v1.GetVMConsoleRequest]) (*connect.Response[v1.GetVMConsoleResponse], error)
 	UpdateVMResources(context.Context, *connect.Request[v1.UpdateVMResourcesRequest]) (*connect.Response[v1.UpdateVMResourcesResponse], error)
 	GetVMResources(context.Context, *connect.Request[v1.GetVMResourcesRequest]) (*connect.Response[v1.GetVMResourcesResponse], error)
+	// AdoptVM takes a quarantined VM (one a node reported that the director did
+	// not create) under management and places it in a tenancy namespace.
+	AdoptVM(context.Context, *connect.Request[v1.AdoptVMRequest]) (*connect.Response[v11.VM], error)
 }
 
 // NewVMServiceClient constructs a client for the pilab.cli.v1.VMService service. By default, it
@@ -650,6 +655,12 @@ func NewVMServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(vMServiceMethods.ByName("GetVMResources")),
 			connect.WithClientOptions(opts...),
 		),
+		adoptVM: connect.NewClient[v1.AdoptVMRequest, v11.VM](
+			httpClient,
+			baseURL+VMServiceAdoptVMProcedure,
+			connect.WithSchema(vMServiceMethods.ByName("AdoptVM")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -672,6 +683,7 @@ type vMServiceClient struct {
 	getVMConsole      *connect.Client[v1.GetVMConsoleRequest, v1.GetVMConsoleResponse]
 	updateVMResources *connect.Client[v1.UpdateVMResourcesRequest, v1.UpdateVMResourcesResponse]
 	getVMResources    *connect.Client[v1.GetVMResourcesRequest, v1.GetVMResourcesResponse]
+	adoptVM           *connect.Client[v1.AdoptVMRequest, v11.VM]
 }
 
 // CreateVM calls pilab.cli.v1.VMService.CreateVM.
@@ -759,6 +771,11 @@ func (c *vMServiceClient) GetVMResources(ctx context.Context, req *connect.Reque
 	return c.getVMResources.CallUnary(ctx, req)
 }
 
+// AdoptVM calls pilab.cli.v1.VMService.AdoptVM.
+func (c *vMServiceClient) AdoptVM(ctx context.Context, req *connect.Request[v1.AdoptVMRequest]) (*connect.Response[v11.VM], error) {
+	return c.adoptVM.CallUnary(ctx, req)
+}
+
 // VMServiceHandler is an implementation of the pilab.cli.v1.VMService service.
 type VMServiceHandler interface {
 	CreateVM(context.Context, *connect.Request[v1.CreateVMRequest]) (*connect.Response[v11.VM], error)
@@ -778,6 +795,9 @@ type VMServiceHandler interface {
 	GetVMConsole(context.Context, *connect.Request[v1.GetVMConsoleRequest]) (*connect.Response[v1.GetVMConsoleResponse], error)
 	UpdateVMResources(context.Context, *connect.Request[v1.UpdateVMResourcesRequest]) (*connect.Response[v1.UpdateVMResourcesResponse], error)
 	GetVMResources(context.Context, *connect.Request[v1.GetVMResourcesRequest]) (*connect.Response[v1.GetVMResourcesResponse], error)
+	// AdoptVM takes a quarantined VM (one a node reported that the director did
+	// not create) under management and places it in a tenancy namespace.
+	AdoptVM(context.Context, *connect.Request[v1.AdoptVMRequest]) (*connect.Response[v11.VM], error)
 }
 
 // NewVMServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -889,6 +909,12 @@ func NewVMServiceHandler(svc VMServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(vMServiceMethods.ByName("GetVMResources")),
 		connect.WithHandlerOptions(opts...),
 	)
+	vMServiceAdoptVMHandler := connect.NewUnaryHandler(
+		VMServiceAdoptVMProcedure,
+		svc.AdoptVM,
+		connect.WithSchema(vMServiceMethods.ByName("AdoptVM")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pilab.cli.v1.VMService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case VMServiceCreateVMProcedure:
@@ -925,6 +951,8 @@ func NewVMServiceHandler(svc VMServiceHandler, opts ...connect.HandlerOption) (s
 			vMServiceUpdateVMResourcesHandler.ServeHTTP(w, r)
 		case VMServiceGetVMResourcesProcedure:
 			vMServiceGetVMResourcesHandler.ServeHTTP(w, r)
+		case VMServiceAdoptVMProcedure:
+			vMServiceAdoptVMHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1000,6 +1028,10 @@ func (UnimplementedVMServiceHandler) UpdateVMResources(context.Context, *connect
 
 func (UnimplementedVMServiceHandler) GetVMResources(context.Context, *connect.Request[v1.GetVMResourcesRequest]) (*connect.Response[v1.GetVMResourcesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cli.v1.VMService.GetVMResources is not implemented"))
+}
+
+func (UnimplementedVMServiceHandler) AdoptVM(context.Context, *connect.Request[v1.AdoptVMRequest]) (*connect.Response[v11.VM], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cli.v1.VMService.AdoptVM is not implemented"))
 }
 
 // DiskServiceClient is a client for the pilab.cli.v1.DiskService service.

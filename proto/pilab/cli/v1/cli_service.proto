@@ -5,14 +5,14 @@ syntax = "proto3";
 
 package pilab.cli.v1;
 
-option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/cli/v1;cliv1";
-
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
-import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 import "pilab/cli/v1/cli_common.proto";
 import "pilab/common/v1/vm.proto";
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/cli/v1;cliv1";
 
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse);
@@ -40,6 +40,9 @@ service VMService {
   rpc GetVMConsole(GetVMConsoleRequest) returns (GetVMConsoleResponse);
   rpc UpdateVMResources(UpdateVMResourcesRequest) returns (UpdateVMResourcesResponse);
   rpc GetVMResources(GetVMResourcesRequest) returns (GetVMResourcesResponse);
+  // AdoptVM takes a quarantined VM (one a node reported that the director did
+  // not create) under management and places it in a tenancy namespace.
+  rpc AdoptVM(AdoptVMRequest) returns (pilab.common.v1.VM);
 }
 
 service DiskService {
@@ -272,6 +275,13 @@ message UpdateVMRequest {
 message DeleteVMRequest {
   string name = 1;
   bool delete_disks = 2;
+}
+
+message AdoptVMRequest {
+  // name is the VM id or hostname of the quarantined machine.
+  string name = 1;
+  // namespace is the "org/project" the VM joins; it must already exist.
+  string namespace = 2;
 }
 
 message StartVMRequest {
@@ -853,8 +863,6 @@ message CreateVMFromOSTemplateRequest {
   map<string, string> metadata = 19;
   bool wait = 20;
 }
-
-
 
 message CreateOrganizationRequest {
   string name = 1;
