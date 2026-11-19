@@ -599,6 +599,107 @@ func (x *ListKindsResponse) GetKinds() []string {
 	return nil
 }
 
+type PruneResourcesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Declared is the set the caller just applied. Only its kinds are
+	// considered: an object of a kind the caller did not touch is never a
+	// prune candidate.
+	Declared []*Resource `protobuf:"bytes,1,rep,name=declared,proto3" json:"declared,omitempty"`
+	// DryRun reports the candidates without deleting them.
+	DryRun        bool `protobuf:"varint,2,opt,name=dry_run,json=dryRun,proto3" json:"dry_run,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PruneResourcesRequest) Reset() {
+	*x = PruneResourcesRequest{}
+	mi := &file_pilab_resource_v1_resource_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PruneResourcesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PruneResourcesRequest) ProtoMessage() {}
+
+func (x *PruneResourcesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_resource_v1_resource_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PruneResourcesRequest.ProtoReflect.Descriptor instead.
+func (*PruneResourcesRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_resource_v1_resource_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *PruneResourcesRequest) GetDeclared() []*Resource {
+	if x != nil {
+		return x.Declared
+	}
+	return nil
+}
+
+func (x *PruneResourcesRequest) GetDryRun() bool {
+	if x != nil {
+		return x.DryRun
+	}
+	return false
+}
+
+type PruneResourcesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Pruned lists the objects that were removed, or would be under dry_run.
+	Pruned        []*PruneResult `protobuf:"bytes,1,rep,name=pruned,proto3" json:"pruned,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PruneResourcesResponse) Reset() {
+	*x = PruneResourcesResponse{}
+	mi := &file_pilab_resource_v1_resource_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PruneResourcesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PruneResourcesResponse) ProtoMessage() {}
+
+func (x *PruneResourcesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_resource_v1_resource_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PruneResourcesResponse.ProtoReflect.Descriptor instead.
+func (*PruneResourcesResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_resource_v1_resource_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *PruneResourcesResponse) GetPruned() []*PruneResult {
+	if x != nil {
+		return x.Pruned
+	}
+	return nil
+}
+
 var File_pilab_resource_v1_resource_service_proto protoreflect.FileDescriptor
 
 const file_pilab_resource_v1_resource_service_proto_rawDesc = "" +
@@ -631,14 +732,20 @@ const file_pilab_resource_v1_resource_service_proto_rawDesc = "" +
 	"\x16DeleteResourceResponse\"\x12\n" +
 	"\x10ListKindsRequest\")\n" +
 	"\x11ListKindsResponse\x12\x14\n" +
-	"\x05kinds\x18\x01 \x03(\tR\x05kinds2\xdd\x04\n" +
+	"\x05kinds\x18\x01 \x03(\tR\x05kinds\"i\n" +
+	"\x15PruneResourcesRequest\x127\n" +
+	"\bdeclared\x18\x01 \x03(\v2\x1b.pilab.resource.v1.ResourceR\bdeclared\x12\x17\n" +
+	"\adry_run\x18\x02 \x01(\bR\x06dryRun\"P\n" +
+	"\x16PruneResourcesResponse\x126\n" +
+	"\x06pruned\x18\x01 \x03(\v2\x1e.pilab.resource.v1.PruneResultR\x06pruned2\xc4\x05\n" +
 	"\x0fResourceService\x12b\n" +
 	"\rApplyResource\x12'.pilab.resource.v1.ApplyResourceRequest\x1a(.pilab.resource.v1.ApplyResourceResponse\x12e\n" +
 	"\x0eApplyResources\x12(.pilab.resource.v1.ApplyResourcesRequest\x1a).pilab.resource.v1.ApplyResourcesResponse\x12\\\n" +
 	"\vGetResource\x12%.pilab.resource.v1.GetResourceRequest\x1a&.pilab.resource.v1.GetResourceResponse\x12b\n" +
 	"\rListResources\x12'.pilab.resource.v1.ListResourcesRequest\x1a(.pilab.resource.v1.ListResourcesResponse\x12e\n" +
 	"\x0eDeleteResource\x12(.pilab.resource.v1.DeleteResourceRequest\x1a).pilab.resource.v1.DeleteResourceResponse\x12V\n" +
-	"\tListKinds\x12#.pilab.resource.v1.ListKindsRequest\x1a$.pilab.resource.v1.ListKindsResponseB:Z8go.pilab.hu/cloud/virtpb/v3/pilab/resource/v1;resourcev1b\x06proto3"
+	"\tListKinds\x12#.pilab.resource.v1.ListKindsRequest\x1a$.pilab.resource.v1.ListKindsResponse\x12e\n" +
+	"\x0ePruneResources\x12(.pilab.resource.v1.PruneResourcesRequest\x1a).pilab.resource.v1.PruneResourcesResponseB:Z8go.pilab.hu/cloud/virtpb/v3/pilab/resource/v1;resourcev1b\x06proto3"
 
 var (
 	file_pilab_resource_v1_resource_service_proto_rawDescOnce sync.Once
@@ -652,7 +759,7 @@ func file_pilab_resource_v1_resource_service_proto_rawDescGZIP() []byte {
 	return file_pilab_resource_v1_resource_service_proto_rawDescData
 }
 
-var file_pilab_resource_v1_resource_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_pilab_resource_v1_resource_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_pilab_resource_v1_resource_service_proto_goTypes = []any{
 	(*ApplyResourceRequest)(nil),   // 0: pilab.resource.v1.ApplyResourceRequest
 	(*ApplyResourceResponse)(nil),  // 1: pilab.resource.v1.ApplyResourceResponse
@@ -666,38 +773,44 @@ var file_pilab_resource_v1_resource_service_proto_goTypes = []any{
 	(*DeleteResourceResponse)(nil), // 9: pilab.resource.v1.DeleteResourceResponse
 	(*ListKindsRequest)(nil),       // 10: pilab.resource.v1.ListKindsRequest
 	(*ListKindsResponse)(nil),      // 11: pilab.resource.v1.ListKindsResponse
-	(*Resource)(nil),               // 12: pilab.resource.v1.Resource
-	(*ApplyOptions)(nil),           // 13: pilab.resource.v1.ApplyOptions
-	(*ApplyResult)(nil),            // 14: pilab.resource.v1.ApplyResult
-	(*PruneResult)(nil),            // 15: pilab.resource.v1.PruneResult
+	(*PruneResourcesRequest)(nil),  // 12: pilab.resource.v1.PruneResourcesRequest
+	(*PruneResourcesResponse)(nil), // 13: pilab.resource.v1.PruneResourcesResponse
+	(*Resource)(nil),               // 14: pilab.resource.v1.Resource
+	(*ApplyOptions)(nil),           // 15: pilab.resource.v1.ApplyOptions
+	(*ApplyResult)(nil),            // 16: pilab.resource.v1.ApplyResult
+	(*PruneResult)(nil),            // 17: pilab.resource.v1.PruneResult
 }
 var file_pilab_resource_v1_resource_service_proto_depIdxs = []int32{
-	12, // 0: pilab.resource.v1.ApplyResourceRequest.resource:type_name -> pilab.resource.v1.Resource
-	13, // 1: pilab.resource.v1.ApplyResourceRequest.options:type_name -> pilab.resource.v1.ApplyOptions
-	14, // 2: pilab.resource.v1.ApplyResourceResponse.result:type_name -> pilab.resource.v1.ApplyResult
-	12, // 3: pilab.resource.v1.ApplyResourcesRequest.resources:type_name -> pilab.resource.v1.Resource
-	13, // 4: pilab.resource.v1.ApplyResourcesRequest.options:type_name -> pilab.resource.v1.ApplyOptions
-	14, // 5: pilab.resource.v1.ApplyResourcesResponse.results:type_name -> pilab.resource.v1.ApplyResult
-	15, // 6: pilab.resource.v1.ApplyResourcesResponse.pruned:type_name -> pilab.resource.v1.PruneResult
-	12, // 7: pilab.resource.v1.GetResourceResponse.resource:type_name -> pilab.resource.v1.Resource
-	12, // 8: pilab.resource.v1.ListResourcesResponse.resources:type_name -> pilab.resource.v1.Resource
-	0,  // 9: pilab.resource.v1.ResourceService.ApplyResource:input_type -> pilab.resource.v1.ApplyResourceRequest
-	2,  // 10: pilab.resource.v1.ResourceService.ApplyResources:input_type -> pilab.resource.v1.ApplyResourcesRequest
-	4,  // 11: pilab.resource.v1.ResourceService.GetResource:input_type -> pilab.resource.v1.GetResourceRequest
-	6,  // 12: pilab.resource.v1.ResourceService.ListResources:input_type -> pilab.resource.v1.ListResourcesRequest
-	8,  // 13: pilab.resource.v1.ResourceService.DeleteResource:input_type -> pilab.resource.v1.DeleteResourceRequest
-	10, // 14: pilab.resource.v1.ResourceService.ListKinds:input_type -> pilab.resource.v1.ListKindsRequest
-	1,  // 15: pilab.resource.v1.ResourceService.ApplyResource:output_type -> pilab.resource.v1.ApplyResourceResponse
-	3,  // 16: pilab.resource.v1.ResourceService.ApplyResources:output_type -> pilab.resource.v1.ApplyResourcesResponse
-	5,  // 17: pilab.resource.v1.ResourceService.GetResource:output_type -> pilab.resource.v1.GetResourceResponse
-	7,  // 18: pilab.resource.v1.ResourceService.ListResources:output_type -> pilab.resource.v1.ListResourcesResponse
-	9,  // 19: pilab.resource.v1.ResourceService.DeleteResource:output_type -> pilab.resource.v1.DeleteResourceResponse
-	11, // 20: pilab.resource.v1.ResourceService.ListKinds:output_type -> pilab.resource.v1.ListKindsResponse
-	15, // [15:21] is the sub-list for method output_type
-	9,  // [9:15] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	14, // 0: pilab.resource.v1.ApplyResourceRequest.resource:type_name -> pilab.resource.v1.Resource
+	15, // 1: pilab.resource.v1.ApplyResourceRequest.options:type_name -> pilab.resource.v1.ApplyOptions
+	16, // 2: pilab.resource.v1.ApplyResourceResponse.result:type_name -> pilab.resource.v1.ApplyResult
+	14, // 3: pilab.resource.v1.ApplyResourcesRequest.resources:type_name -> pilab.resource.v1.Resource
+	15, // 4: pilab.resource.v1.ApplyResourcesRequest.options:type_name -> pilab.resource.v1.ApplyOptions
+	16, // 5: pilab.resource.v1.ApplyResourcesResponse.results:type_name -> pilab.resource.v1.ApplyResult
+	17, // 6: pilab.resource.v1.ApplyResourcesResponse.pruned:type_name -> pilab.resource.v1.PruneResult
+	14, // 7: pilab.resource.v1.GetResourceResponse.resource:type_name -> pilab.resource.v1.Resource
+	14, // 8: pilab.resource.v1.ListResourcesResponse.resources:type_name -> pilab.resource.v1.Resource
+	14, // 9: pilab.resource.v1.PruneResourcesRequest.declared:type_name -> pilab.resource.v1.Resource
+	17, // 10: pilab.resource.v1.PruneResourcesResponse.pruned:type_name -> pilab.resource.v1.PruneResult
+	0,  // 11: pilab.resource.v1.ResourceService.ApplyResource:input_type -> pilab.resource.v1.ApplyResourceRequest
+	2,  // 12: pilab.resource.v1.ResourceService.ApplyResources:input_type -> pilab.resource.v1.ApplyResourcesRequest
+	4,  // 13: pilab.resource.v1.ResourceService.GetResource:input_type -> pilab.resource.v1.GetResourceRequest
+	6,  // 14: pilab.resource.v1.ResourceService.ListResources:input_type -> pilab.resource.v1.ListResourcesRequest
+	8,  // 15: pilab.resource.v1.ResourceService.DeleteResource:input_type -> pilab.resource.v1.DeleteResourceRequest
+	10, // 16: pilab.resource.v1.ResourceService.ListKinds:input_type -> pilab.resource.v1.ListKindsRequest
+	12, // 17: pilab.resource.v1.ResourceService.PruneResources:input_type -> pilab.resource.v1.PruneResourcesRequest
+	1,  // 18: pilab.resource.v1.ResourceService.ApplyResource:output_type -> pilab.resource.v1.ApplyResourceResponse
+	3,  // 19: pilab.resource.v1.ResourceService.ApplyResources:output_type -> pilab.resource.v1.ApplyResourcesResponse
+	5,  // 20: pilab.resource.v1.ResourceService.GetResource:output_type -> pilab.resource.v1.GetResourceResponse
+	7,  // 21: pilab.resource.v1.ResourceService.ListResources:output_type -> pilab.resource.v1.ListResourcesResponse
+	9,  // 22: pilab.resource.v1.ResourceService.DeleteResource:output_type -> pilab.resource.v1.DeleteResourceResponse
+	11, // 23: pilab.resource.v1.ResourceService.ListKinds:output_type -> pilab.resource.v1.ListKindsResponse
+	13, // 24: pilab.resource.v1.ResourceService.PruneResources:output_type -> pilab.resource.v1.PruneResourcesResponse
+	18, // [18:25] is the sub-list for method output_type
+	11, // [11:18] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_pilab_resource_v1_resource_service_proto_init() }
@@ -712,7 +825,7 @@ func file_pilab_resource_v1_resource_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_resource_v1_resource_service_proto_rawDesc), len(file_pilab_resource_v1_resource_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

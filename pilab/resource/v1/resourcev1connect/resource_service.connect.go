@@ -51,6 +51,9 @@ const (
 	// ResourceServiceListKindsProcedure is the fully-qualified name of the ResourceService's ListKinds
 	// RPC.
 	ResourceServiceListKindsProcedure = "/pilab.resource.v1.ResourceService/ListKinds"
+	// ResourceServicePruneResourcesProcedure is the fully-qualified name of the ResourceService's
+	// PruneResources RPC.
+	ResourceServicePruneResourcesProcedure = "/pilab.resource.v1.ResourceService/PruneResources"
 )
 
 // ResourceServiceClient is a client for the pilab.resource.v1.ResourceService service.
@@ -80,6 +83,13 @@ type ResourceServiceClient interface {
 	// so a single CLI binary can discover what the target understands
 	// instead of carrying a build-time table.
 	ListKinds(context.Context, *connect.Request[v1.ListKindsRequest]) (*connect.Response[v1.ListKindsResponse], error)
+	// PruneResources removes objects of the declared kinds that the caller
+	// did not declare, but only those labelled as this tier's own
+	// (pivirt.hu/managed-by). It exists as its own RPC because a client
+	// that applies objects one at a time -- to report progress, or to keep
+	// a long batch from running under one deadline -- still needs to prune
+	// once against the full declared set.
+	PruneResources(context.Context, *connect.Request[v1.PruneResourcesRequest]) (*connect.Response[v1.PruneResourcesResponse], error)
 }
 
 // NewResourceServiceClient constructs a client for the pilab.resource.v1.ResourceService service.
@@ -129,6 +139,12 @@ func NewResourceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(resourceServiceMethods.ByName("ListKinds")),
 			connect.WithClientOptions(opts...),
 		),
+		pruneResources: connect.NewClient[v1.PruneResourcesRequest, v1.PruneResourcesResponse](
+			httpClient,
+			baseURL+ResourceServicePruneResourcesProcedure,
+			connect.WithSchema(resourceServiceMethods.ByName("PruneResources")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -140,6 +156,7 @@ type resourceServiceClient struct {
 	listResources  *connect.Client[v1.ListResourcesRequest, v1.ListResourcesResponse]
 	deleteResource *connect.Client[v1.DeleteResourceRequest, v1.DeleteResourceResponse]
 	listKinds      *connect.Client[v1.ListKindsRequest, v1.ListKindsResponse]
+	pruneResources *connect.Client[v1.PruneResourcesRequest, v1.PruneResourcesResponse]
 }
 
 // ApplyResource calls pilab.resource.v1.ResourceService.ApplyResource.
@@ -172,6 +189,11 @@ func (c *resourceServiceClient) ListKinds(ctx context.Context, req *connect.Requ
 	return c.listKinds.CallUnary(ctx, req)
 }
 
+// PruneResources calls pilab.resource.v1.ResourceService.PruneResources.
+func (c *resourceServiceClient) PruneResources(ctx context.Context, req *connect.Request[v1.PruneResourcesRequest]) (*connect.Response[v1.PruneResourcesResponse], error) {
+	return c.pruneResources.CallUnary(ctx, req)
+}
+
 // ResourceServiceHandler is an implementation of the pilab.resource.v1.ResourceService service.
 type ResourceServiceHandler interface {
 	// ApplyResource runs the full admission chain (decode, admit, validate,
@@ -199,6 +221,13 @@ type ResourceServiceHandler interface {
 	// so a single CLI binary can discover what the target understands
 	// instead of carrying a build-time table.
 	ListKinds(context.Context, *connect.Request[v1.ListKindsRequest]) (*connect.Response[v1.ListKindsResponse], error)
+	// PruneResources removes objects of the declared kinds that the caller
+	// did not declare, but only those labelled as this tier's own
+	// (pivirt.hu/managed-by). It exists as its own RPC because a client
+	// that applies objects one at a time -- to report progress, or to keep
+	// a long batch from running under one deadline -- still needs to prune
+	// once against the full declared set.
+	PruneResources(context.Context, *connect.Request[v1.PruneResourcesRequest]) (*connect.Response[v1.PruneResourcesResponse], error)
 }
 
 // NewResourceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -244,6 +273,12 @@ func NewResourceServiceHandler(svc ResourceServiceHandler, opts ...connect.Handl
 		connect.WithSchema(resourceServiceMethods.ByName("ListKinds")),
 		connect.WithHandlerOptions(opts...),
 	)
+	resourceServicePruneResourcesHandler := connect.NewUnaryHandler(
+		ResourceServicePruneResourcesProcedure,
+		svc.PruneResources,
+		connect.WithSchema(resourceServiceMethods.ByName("PruneResources")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pilab.resource.v1.ResourceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ResourceServiceApplyResourceProcedure:
@@ -258,6 +293,8 @@ func NewResourceServiceHandler(svc ResourceServiceHandler, opts ...connect.Handl
 			resourceServiceDeleteResourceHandler.ServeHTTP(w, r)
 		case ResourceServiceListKindsProcedure:
 			resourceServiceListKindsHandler.ServeHTTP(w, r)
+		case ResourceServicePruneResourcesProcedure:
+			resourceServicePruneResourcesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -289,4 +326,8 @@ func (UnimplementedResourceServiceHandler) DeleteResource(context.Context, *conn
 
 func (UnimplementedResourceServiceHandler) ListKinds(context.Context, *connect.Request[v1.ListKindsRequest]) (*connect.Response[v1.ListKindsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.resource.v1.ResourceService.ListKinds is not implemented"))
+}
+
+func (UnimplementedResourceServiceHandler) PruneResources(context.Context, *connect.Request[v1.PruneResourcesRequest]) (*connect.Response[v1.PruneResourcesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.resource.v1.ResourceService.PruneResources is not implemented"))
 }

@@ -579,7 +579,11 @@ type ApplyOptions struct {
 	// ClientToken is an idempotency key for replay deduplication.
 	// See resource-model-and-tasks.md §5.6.
 	ClientToken string `protobuf:"bytes,3,opt,name=client_token,json=clientToken,proto3" json:"client_token,omitempty"`
-	// FieldManager identifies the writer: "pivirtctl", "agent", or "director".
+	// FieldManager identifies the writer: "pvirtctl", "agent", "pvcli" or
+	// "director". The serving tier records it on the object as the reserved
+	// pivirt.hu/field-manager annotation, so `get` shows who last applied
+	// it. This is bookkeeping, not conflict detection: no server-side apply
+	// ownership model is implemented yet.
 	FieldManager string `protobuf:"bytes,4,opt,name=field_manager,json=fieldManager,proto3" json:"field_manager,omitempty"`
 	// Prune removes objects of the applied kinds that this manifest set does
 	// not declare. It is never implicit, and it only ever removes objects

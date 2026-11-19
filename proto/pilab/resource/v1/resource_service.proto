@@ -45,6 +45,14 @@ service ResourceService {
   // so a single CLI binary can discover what the target understands
   // instead of carrying a build-time table.
   rpc ListKinds(ListKindsRequest) returns (ListKindsResponse);
+
+  // PruneResources removes objects of the declared kinds that the caller
+  // did not declare, but only those labelled as this tier's own
+  // (pivirt.hu/managed-by). It exists as its own RPC because a client
+  // that applies objects one at a time -- to report progress, or to keep
+  // a long batch from running under one deadline -- still needs to prune
+  // once against the full declared set.
+  rpc PruneResources(PruneResourcesRequest) returns (PruneResourcesResponse);
 }
 
 // ==================== Request / Response Messages ====================
@@ -115,4 +123,18 @@ message ListKindsRequest {}
 message ListKindsResponse {
   // Kinds is the set of registered kinds, sorted alphabetically.
   repeated string kinds = 1;
+}
+
+message PruneResourcesRequest {
+  // Declared is the set the caller just applied. Only its kinds are
+  // considered: an object of a kind the caller did not touch is never a
+  // prune candidate.
+  repeated pilab.resource.v1.Resource declared = 1;
+  // DryRun reports the candidates without deleting them.
+  bool dry_run = 2;
+}
+
+message PruneResourcesResponse {
+  // Pruned lists the objects that were removed, or would be under dry_run.
+  repeated pilab.resource.v1.PruneResult pruned = 1;
 }

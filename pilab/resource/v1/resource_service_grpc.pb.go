@@ -25,6 +25,7 @@ const (
 	ResourceService_ListResources_FullMethodName  = "/pilab.resource.v1.ResourceService/ListResources"
 	ResourceService_DeleteResource_FullMethodName = "/pilab.resource.v1.ResourceService/DeleteResource"
 	ResourceService_ListKinds_FullMethodName      = "/pilab.resource.v1.ResourceService/ListKinds"
+	ResourceService_PruneResources_FullMethodName = "/pilab.resource.v1.ResourceService/PruneResources"
 )
 
 // ResourceServiceClient is the client API for ResourceService service.
@@ -65,6 +66,13 @@ type ResourceServiceClient interface {
 	// so a single CLI binary can discover what the target understands
 	// instead of carrying a build-time table.
 	ListKinds(ctx context.Context, in *ListKindsRequest, opts ...grpc.CallOption) (*ListKindsResponse, error)
+	// PruneResources removes objects of the declared kinds that the caller
+	// did not declare, but only those labelled as this tier's own
+	// (pivirt.hu/managed-by). It exists as its own RPC because a client
+	// that applies objects one at a time -- to report progress, or to keep
+	// a long batch from running under one deadline -- still needs to prune
+	// once against the full declared set.
+	PruneResources(ctx context.Context, in *PruneResourcesRequest, opts ...grpc.CallOption) (*PruneResourcesResponse, error)
 }
 
 type resourceServiceClient struct {
@@ -135,6 +143,16 @@ func (c *resourceServiceClient) ListKinds(ctx context.Context, in *ListKindsRequ
 	return out, nil
 }
 
+func (c *resourceServiceClient) PruneResources(ctx context.Context, in *PruneResourcesRequest, opts ...grpc.CallOption) (*PruneResourcesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PruneResourcesResponse)
+	err := c.cc.Invoke(ctx, ResourceService_PruneResources_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ResourceServiceServer is the server API for ResourceService service.
 // All implementations must embed UnimplementedResourceServiceServer
 // for forward compatibility.
@@ -173,6 +191,13 @@ type ResourceServiceServer interface {
 	// so a single CLI binary can discover what the target understands
 	// instead of carrying a build-time table.
 	ListKinds(context.Context, *ListKindsRequest) (*ListKindsResponse, error)
+	// PruneResources removes objects of the declared kinds that the caller
+	// did not declare, but only those labelled as this tier's own
+	// (pivirt.hu/managed-by). It exists as its own RPC because a client
+	// that applies objects one at a time -- to report progress, or to keep
+	// a long batch from running under one deadline -- still needs to prune
+	// once against the full declared set.
+	PruneResources(context.Context, *PruneResourcesRequest) (*PruneResourcesResponse, error)
 	mustEmbedUnimplementedResourceServiceServer()
 }
 
@@ -200,6 +225,9 @@ func (UnimplementedResourceServiceServer) DeleteResource(context.Context, *Delet
 }
 func (UnimplementedResourceServiceServer) ListKinds(context.Context, *ListKindsRequest) (*ListKindsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListKinds not implemented")
+}
+func (UnimplementedResourceServiceServer) PruneResources(context.Context, *PruneResourcesRequest) (*PruneResourcesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method PruneResources not implemented")
 }
 func (UnimplementedResourceServiceServer) mustEmbedUnimplementedResourceServiceServer() {}
 func (UnimplementedResourceServiceServer) testEmbeddedByValue()                         {}
@@ -330,6 +358,24 @@ func _ResourceService_ListKinds_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ResourceService_PruneResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PruneResourcesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResourceServiceServer).PruneResources(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResourceService_PruneResources_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResourceServiceServer).PruneResources(ctx, req.(*PruneResourcesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ResourceService_ServiceDesc is the grpc.ServiceDesc for ResourceService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -360,6 +406,10 @@ var ResourceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListKinds",
 			Handler:    _ResourceService_ListKinds_Handler,
+		},
+		{
+			MethodName: "PruneResources",
+			Handler:    _ResourceService_PruneResources_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
