@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package pilab.events.v1;
+
+import "google/protobuf/timestamp.proto";
+import "pilab/events/v1/domain_event.proto";
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/events/v1;eventsv1";
+
+// DomainEventService queries the recorded domain events. Operator-only.
+service DomainEventService {
+  // ListDomainEvents returns matching events, newest first.
+  rpc ListDomainEvents(ListDomainEventsRequest) returns (ListDomainEventsResponse);
+}
+
+// ListDomainEventsRequest filters are combined with AND; empty filters
+// match everything.
+message ListDomainEventsRequest {
+  string vm_id = 1;
+  // host_id matches events about the host or targeting it.
+  string host_id = 2;
+  // type matches an exact type ("vm.failover.requested") or, ending in
+  // ".", a prefix ("vm.failover.").
+  string type = 3;
+  string correlation_id = 4;
+  string task_id = 5;
+  // since is inclusive, until exclusive.
+  google.protobuf.Timestamp since = 6;
+  google.protobuf.Timestamp until = 7;
+  // page_size defaults to 100 and is capped at 1000.
+  int32 page_size = 8;
+  string page_token = 9;
+}
+
+message ListDomainEventsResponse {
+  repeated DomainEvent events = 1;
+  // next_page_token is empty on the last page.
+  string next_page_token = 2;
+}
