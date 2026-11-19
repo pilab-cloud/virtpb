@@ -64,6 +64,10 @@ message HostResourceReport {
   repeated StoragePoolSummary pools = 18;
   string migration_address = 19;
   int32 max_concurrent_migrations = 20;
+  // agent_endpoint is the base URL the director reaches the agent's API at,
+  // e.g. http://10.0.0.5:50061. The agent works it out from its own listen
+  // address; the director never guesses it.
+  string agent_endpoint = 21;
 }
 
 // NUMANode represents a single NUMA node's configuration.

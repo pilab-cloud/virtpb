@@ -170,8 +170,12 @@ type HostResourceReport struct {
 	Pools                   []*StoragePoolSummary  `protobuf:"bytes,18,rep,name=pools,proto3" json:"pools,omitempty"`
 	MigrationAddress        string                 `protobuf:"bytes,19,opt,name=migration_address,json=migrationAddress,proto3" json:"migration_address,omitempty"`
 	MaxConcurrentMigrations int32                  `protobuf:"varint,20,opt,name=max_concurrent_migrations,json=maxConcurrentMigrations,proto3" json:"max_concurrent_migrations,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// agent_endpoint is the base URL the director reaches the agent's API at,
+	// e.g. http://10.0.0.5:50061. The agent works it out from its own listen
+	// address; the director never guesses it.
+	AgentEndpoint string `protobuf:"bytes,21,opt,name=agent_endpoint,json=agentEndpoint,proto3" json:"agent_endpoint,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HostResourceReport) Reset() {
@@ -342,6 +346,13 @@ func (x *HostResourceReport) GetMaxConcurrentMigrations() int32 {
 		return x.MaxConcurrentMigrations
 	}
 	return 0
+}
+
+func (x *HostResourceReport) GetAgentEndpoint() string {
+	if x != nil {
+		return x.AgentEndpoint
+	}
+	return ""
 }
 
 // NUMANode represents a single NUMA node's configuration.
@@ -1254,7 +1265,7 @@ var File_pilab_pivirtd_v1_host_resource_proto protoreflect.FileDescriptor
 
 const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\n" +
-	"$pilab/pivirtd/v1/host_resource.proto\x12\x10pilab.pivirtd.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\a\n" +
+	"$pilab/pivirtd/v1/host_resource.proto\x12\x10pilab.pivirtd.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\a\n" +
 	"\x12HostResourceReport\x12#\n" +
 	"\rphysical_cpus\x18\x01 \x01(\x05R\fphysicalCpus\x12%\n" +
 	"\x0ephysical_cores\x18\x02 \x01(\x05R\rphysicalCores\x12)\n" +
@@ -1278,7 +1289,8 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x0fcpu_model_flags\x18\x11 \x03(\tR\rcpuModelFlags\x12:\n" +
 	"\x05pools\x18\x12 \x03(\v2$.pilab.pivirtd.v1.StoragePoolSummaryR\x05pools\x12+\n" +
 	"\x11migration_address\x18\x13 \x01(\tR\x10migrationAddress\x12:\n" +
-	"\x19max_concurrent_migrations\x18\x14 \x01(\x05R\x17maxConcurrentMigrations\"s\n" +
+	"\x19max_concurrent_migrations\x18\x14 \x01(\x05R\x17maxConcurrentMigrations\x12%\n" +
+	"\x0eagent_endpoint\x18\x15 \x01(\tR\ragentEndpoint\"s\n" +
 	"\bNUMANode\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\x05R\x06nodeId\x12,\n" +
 	"\x12memory_total_bytes\x18\x02 \x01(\x03R\x10memoryTotalBytes\x12 \n" +
