@@ -63,6 +63,11 @@ enum TaskType {
   TASK_TYPE_STORAGE_POOL_DELETE = 32;
   TASK_TYPE_STORAGE_POOL_ACTIVATE = 33;
   TASK_TYPE_STORAGE_POOL_DEACTIVATE = 34;
+
+  // Standalone disk tasks: params carry disk_id (device id), plus path, format,
+  // size_gb and bus for attach.
+  TASK_TYPE_VM_DISK_ATTACH = 35;
+  TASK_TYPE_VM_DISK_DETACH = 36;
 }
 
 enum TaskStatus {
