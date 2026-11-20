@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package pilab.core.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
+
+// NsxService exposes the logical network plane (VPCs, segments, routers,
+// public addressing, firewall groups, VTEPs) as one operator-facing graph.
+service NsxService {
+  // GetTopology returns the logical network graph, optionally for one namespace.
+  rpc GetTopology(GetTopologyRequest) returns (GetTopologyResponse);
+}
+
+message GetTopologyRequest {
+  // Empty means every namespace.
+  string namespace = 1;
+}
+
+message GetTopologyResponse {
+  repeated TopologyNode nodes = 1;
+  repeated TopologyEdge edges = 2;
+}
+
+// TopologyNode kinds: vtep, vpc, subnet, router, floating_ip, security_group.
+message TopologyNode {
+  string id = 1;
+  string kind = 2;
+  string name = 3;
+  string namespace = 4;
+  // parent_id places the node in the containment tree (subnet -> vpc -> ...);
+  // empty for roots.
+  string parent_id = 5;
+  // state is ready, pending, degraded or unknown.
+  string state = 6;
+  map<string, string> properties = 7;
+}
+
+// TopologyEdge is a non-containment link, e.g. router -> subnet or
+// floating_ip -> router.
+message TopologyEdge {
+  string from = 1;
+  string to = 2;
+  string kind = 3;
+}
