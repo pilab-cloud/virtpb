@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package pilab.cli.v1;
+
+option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/cli/v1;cliv1";
+
+// AuthzService answers authorization questions about a principal.
+//
+// It exists so the privilege engine can be inspected without performing the
+// operation: an operator checks what a tenant would be allowed to do before
+// flipping enforcement on, and the permissions UI renders the same answer.
+service AuthzService {
+  // CheckPermissions answers "may this principal use this privilege on this
+  // object", with the grant that decided it.
+  rpc CheckPermissions(CheckPermissionsRequest) returns (CheckPermissionsResponse);
+  // ListPrivileges returns the privilege catalogue and the roles that bundle
+  // it, which is what a role editor needs.
+  rpc ListPrivileges(ListPrivilegesRequest) returns (ListPrivilegesResponse);
+}
+
+message CheckPermission {
+  // object is "<kind>:<path>", e.g. "vm:pilab/teststack/plane-test",
+  // "project:pilab/teststack" or "root".
+  string object = 1;
+  // privilege is a vSphere-style privilege name, e.g.
+  // "VirtualMachine.Interact.Migrate".
+  string privilege = 2;
+}
+
+message CheckPermissionsRequest {
+  repeated CheckPermission checks = 1;
+  // subject asks on behalf of somebody else: "user:<id>" or "group:<name>".
+  // Empty means the caller. Only an operator may ask for another subject.
+  string subject = 2;
+}
+
+message CheckPermissionResult {
+  bool allowed = 1;
+  string object = 2;
+  string privilege = 3;
+  // reason is the engine's explanation, e.g.
+  // "allowed by VMAdmin on project:pilab/teststack".
+  string reason = 4;
+  string matched_object = 5;
+  string matched_role = 6;
+  string matched_permission = 7;
+  // inherited_from is the ancestor the grant is attached to, when it was not
+  // defined on the object itself.
+  string inherited_from = 8;
+}
+
+message CheckPermissionsResponse {
+  repeated CheckPermissionResult results = 1;
+  uint64 policy_version = 2;
+}
+
+message ListPrivilegesRequest {}
+
+message ListPrivilegesResponse {
+  repeated string privileges = 1;
+  repeated Role roles = 2;
+  uint64 policy_version = 3;
+}
+
+message Role {
+  string name = 1;
+  string description = 2;
+  repeated string privileges = 3;
+  // system roles ship with the build and cannot be edited.
+  bool system = 4;
+}
