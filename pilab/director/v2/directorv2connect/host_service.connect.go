@@ -61,6 +61,24 @@ const (
 	// HostAdminServiceDeleteDiskProcedure is the fully-qualified name of the HostAdminService's
 	// DeleteDisk RPC.
 	HostAdminServiceDeleteDiskProcedure = "/pilab.director.v2.HostAdminService/DeleteDisk"
+	// HostAdminServiceRebootHostProcedure is the fully-qualified name of the HostAdminService's
+	// RebootHost RPC.
+	HostAdminServiceRebootHostProcedure = "/pilab.director.v2.HostAdminService/RebootHost"
+	// HostAdminServicePowerOffHostProcedure is the fully-qualified name of the HostAdminService's
+	// PowerOffHost RPC.
+	HostAdminServicePowerOffHostProcedure = "/pilab.director.v2.HostAdminService/PowerOffHost"
+	// HostAdminServiceDeleteHostProcedure is the fully-qualified name of the HostAdminService's
+	// DeleteHost RPC.
+	HostAdminServiceDeleteHostProcedure = "/pilab.director.v2.HostAdminService/DeleteHost"
+	// HostAdminServiceGetHostStatsProcedure is the fully-qualified name of the HostAdminService's
+	// GetHostStats RPC.
+	HostAdminServiceGetHostStatsProcedure = "/pilab.director.v2.HostAdminService/GetHostStats"
+	// HostAdminServiceListInventoryVolumesProcedure is the fully-qualified name of the
+	// HostAdminService's ListInventoryVolumes RPC.
+	HostAdminServiceListInventoryVolumesProcedure = "/pilab.director.v2.HostAdminService/ListInventoryVolumes"
+	// HostAdminServiceListDirectorTasksProcedure is the fully-qualified name of the HostAdminService's
+	// ListDirectorTasks RPC.
+	HostAdminServiceListDirectorTasksProcedure = "/pilab.director.v2.HostAdminService/ListDirectorTasks"
 )
 
 // HostAdminServiceClient is a client for the pilab.director.v2.HostAdminService service.
@@ -87,6 +105,23 @@ type HostAdminServiceClient interface {
 	CreateDisk(context.Context, *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(context.Context, *connect.Request[v2.DeleteDiskRequest]) (*connect.Response[v2.DeleteDiskResponse], error)
+	// RebootHost reboots the hypervisor through its agent. The host should be
+	// in maintenance unless force is set.
+	RebootHost(context.Context, *connect.Request[v2.RebootHostRequest]) (*connect.Response[v2.RebootHostResponse], error)
+	// PowerOffHost powers the hypervisor off through its agent. The host
+	// should be in maintenance unless force is set.
+	PowerOffHost(context.Context, *connect.Request[v2.PowerOffHostRequest]) (*connect.Response[v2.PowerOffHostResponse], error)
+	// DeleteHost removes a host from the inventory. The host must be in
+	// maintenance, and is refused while VMs remain on it unless force is set.
+	DeleteHost(context.Context, *connect.Request[v2.DeleteHostRequest]) (*connect.Response[v2.DeleteHostResponse], error)
+	// GetHostStats returns the latest utilisation sample the host's agent
+	// reported.
+	GetHostStats(context.Context, *connect.Request[v2.GetHostStatsRequest]) (*connect.Response[v2.GetHostStatsResponse], error)
+	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
+	// narrowed to one host.
+	ListInventoryVolumes(context.Context, *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error)
+	// ListDirectorTasks lists recent director tasks, newest first.
+	ListDirectorTasks(context.Context, *connect.Request[v2.ListDirectorTasksRequest]) (*connect.Response[v2.ListDirectorTasksResponse], error)
 }
 
 // NewHostAdminServiceClient constructs a client for the pilab.director.v2.HostAdminService service.
@@ -148,19 +183,61 @@ func NewHostAdminServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(hostAdminServiceMethods.ByName("DeleteDisk")),
 			connect.WithClientOptions(opts...),
 		),
+		rebootHost: connect.NewClient[v2.RebootHostRequest, v2.RebootHostResponse](
+			httpClient,
+			baseURL+HostAdminServiceRebootHostProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("RebootHost")),
+			connect.WithClientOptions(opts...),
+		),
+		powerOffHost: connect.NewClient[v2.PowerOffHostRequest, v2.PowerOffHostResponse](
+			httpClient,
+			baseURL+HostAdminServicePowerOffHostProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("PowerOffHost")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteHost: connect.NewClient[v2.DeleteHostRequest, v2.DeleteHostResponse](
+			httpClient,
+			baseURL+HostAdminServiceDeleteHostProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("DeleteHost")),
+			connect.WithClientOptions(opts...),
+		),
+		getHostStats: connect.NewClient[v2.GetHostStatsRequest, v2.GetHostStatsResponse](
+			httpClient,
+			baseURL+HostAdminServiceGetHostStatsProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("GetHostStats")),
+			connect.WithClientOptions(opts...),
+		),
+		listInventoryVolumes: connect.NewClient[v2.ListInventoryVolumesRequest, v2.ListInventoryVolumesResponse](
+			httpClient,
+			baseURL+HostAdminServiceListInventoryVolumesProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("ListInventoryVolumes")),
+			connect.WithClientOptions(opts...),
+		),
+		listDirectorTasks: connect.NewClient[v2.ListDirectorTasksRequest, v2.ListDirectorTasksResponse](
+			httpClient,
+			baseURL+HostAdminServiceListDirectorTasksProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("ListDirectorTasks")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // hostAdminServiceClient implements HostAdminServiceClient.
 type hostAdminServiceClient struct {
-	listHosts          *connect.Client[v2.ListHostsRequest, v2.ListHostsResponse]
-	getHost            *connect.Client[v2.GetHostRequest, v2.GetHostResponse]
-	setMaintenance     *connect.Client[v2.SetMaintenanceRequest, v2.SetMaintenanceResponse]
-	migrateVM          *connect.Client[v2.MigrateVMRequest, v2.MigrateVMResponse]
-	applyHostResources *connect.Client[v2.ApplyHostResourcesRequest, v2.ApplyHostResourcesResponse]
-	listHostResources  *connect.Client[v2.ListHostResourcesRequest, v2.ListHostResourcesResponse]
-	createDisk         *connect.Client[v2.CreateDiskRequest, v2.CreateDiskResponse]
-	deleteDisk         *connect.Client[v2.DeleteDiskRequest, v2.DeleteDiskResponse]
+	listHosts            *connect.Client[v2.ListHostsRequest, v2.ListHostsResponse]
+	getHost              *connect.Client[v2.GetHostRequest, v2.GetHostResponse]
+	setMaintenance       *connect.Client[v2.SetMaintenanceRequest, v2.SetMaintenanceResponse]
+	migrateVM            *connect.Client[v2.MigrateVMRequest, v2.MigrateVMResponse]
+	applyHostResources   *connect.Client[v2.ApplyHostResourcesRequest, v2.ApplyHostResourcesResponse]
+	listHostResources    *connect.Client[v2.ListHostResourcesRequest, v2.ListHostResourcesResponse]
+	createDisk           *connect.Client[v2.CreateDiskRequest, v2.CreateDiskResponse]
+	deleteDisk           *connect.Client[v2.DeleteDiskRequest, v2.DeleteDiskResponse]
+	rebootHost           *connect.Client[v2.RebootHostRequest, v2.RebootHostResponse]
+	powerOffHost         *connect.Client[v2.PowerOffHostRequest, v2.PowerOffHostResponse]
+	deleteHost           *connect.Client[v2.DeleteHostRequest, v2.DeleteHostResponse]
+	getHostStats         *connect.Client[v2.GetHostStatsRequest, v2.GetHostStatsResponse]
+	listInventoryVolumes *connect.Client[v2.ListInventoryVolumesRequest, v2.ListInventoryVolumesResponse]
+	listDirectorTasks    *connect.Client[v2.ListDirectorTasksRequest, v2.ListDirectorTasksResponse]
 }
 
 // ListHosts calls pilab.director.v2.HostAdminService.ListHosts.
@@ -203,6 +280,36 @@ func (c *hostAdminServiceClient) DeleteDisk(ctx context.Context, req *connect.Re
 	return c.deleteDisk.CallUnary(ctx, req)
 }
 
+// RebootHost calls pilab.director.v2.HostAdminService.RebootHost.
+func (c *hostAdminServiceClient) RebootHost(ctx context.Context, req *connect.Request[v2.RebootHostRequest]) (*connect.Response[v2.RebootHostResponse], error) {
+	return c.rebootHost.CallUnary(ctx, req)
+}
+
+// PowerOffHost calls pilab.director.v2.HostAdminService.PowerOffHost.
+func (c *hostAdminServiceClient) PowerOffHost(ctx context.Context, req *connect.Request[v2.PowerOffHostRequest]) (*connect.Response[v2.PowerOffHostResponse], error) {
+	return c.powerOffHost.CallUnary(ctx, req)
+}
+
+// DeleteHost calls pilab.director.v2.HostAdminService.DeleteHost.
+func (c *hostAdminServiceClient) DeleteHost(ctx context.Context, req *connect.Request[v2.DeleteHostRequest]) (*connect.Response[v2.DeleteHostResponse], error) {
+	return c.deleteHost.CallUnary(ctx, req)
+}
+
+// GetHostStats calls pilab.director.v2.HostAdminService.GetHostStats.
+func (c *hostAdminServiceClient) GetHostStats(ctx context.Context, req *connect.Request[v2.GetHostStatsRequest]) (*connect.Response[v2.GetHostStatsResponse], error) {
+	return c.getHostStats.CallUnary(ctx, req)
+}
+
+// ListInventoryVolumes calls pilab.director.v2.HostAdminService.ListInventoryVolumes.
+func (c *hostAdminServiceClient) ListInventoryVolumes(ctx context.Context, req *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error) {
+	return c.listInventoryVolumes.CallUnary(ctx, req)
+}
+
+// ListDirectorTasks calls pilab.director.v2.HostAdminService.ListDirectorTasks.
+func (c *hostAdminServiceClient) ListDirectorTasks(ctx context.Context, req *connect.Request[v2.ListDirectorTasksRequest]) (*connect.Response[v2.ListDirectorTasksResponse], error) {
+	return c.listDirectorTasks.CallUnary(ctx, req)
+}
+
 // HostAdminServiceHandler is an implementation of the pilab.director.v2.HostAdminService service.
 type HostAdminServiceHandler interface {
 	ListHosts(context.Context, *connect.Request[v2.ListHostsRequest]) (*connect.Response[v2.ListHostsResponse], error)
@@ -227,6 +334,23 @@ type HostAdminServiceHandler interface {
 	CreateDisk(context.Context, *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(context.Context, *connect.Request[v2.DeleteDiskRequest]) (*connect.Response[v2.DeleteDiskResponse], error)
+	// RebootHost reboots the hypervisor through its agent. The host should be
+	// in maintenance unless force is set.
+	RebootHost(context.Context, *connect.Request[v2.RebootHostRequest]) (*connect.Response[v2.RebootHostResponse], error)
+	// PowerOffHost powers the hypervisor off through its agent. The host
+	// should be in maintenance unless force is set.
+	PowerOffHost(context.Context, *connect.Request[v2.PowerOffHostRequest]) (*connect.Response[v2.PowerOffHostResponse], error)
+	// DeleteHost removes a host from the inventory. The host must be in
+	// maintenance, and is refused while VMs remain on it unless force is set.
+	DeleteHost(context.Context, *connect.Request[v2.DeleteHostRequest]) (*connect.Response[v2.DeleteHostResponse], error)
+	// GetHostStats returns the latest utilisation sample the host's agent
+	// reported.
+	GetHostStats(context.Context, *connect.Request[v2.GetHostStatsRequest]) (*connect.Response[v2.GetHostStatsResponse], error)
+	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
+	// narrowed to one host.
+	ListInventoryVolumes(context.Context, *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error)
+	// ListDirectorTasks lists recent director tasks, newest first.
+	ListDirectorTasks(context.Context, *connect.Request[v2.ListDirectorTasksRequest]) (*connect.Response[v2.ListDirectorTasksResponse], error)
 }
 
 // NewHostAdminServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -284,6 +408,42 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 		connect.WithSchema(hostAdminServiceMethods.ByName("DeleteDisk")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostAdminServiceRebootHostHandler := connect.NewUnaryHandler(
+		HostAdminServiceRebootHostProcedure,
+		svc.RebootHost,
+		connect.WithSchema(hostAdminServiceMethods.ByName("RebootHost")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostAdminServicePowerOffHostHandler := connect.NewUnaryHandler(
+		HostAdminServicePowerOffHostProcedure,
+		svc.PowerOffHost,
+		connect.WithSchema(hostAdminServiceMethods.ByName("PowerOffHost")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostAdminServiceDeleteHostHandler := connect.NewUnaryHandler(
+		HostAdminServiceDeleteHostProcedure,
+		svc.DeleteHost,
+		connect.WithSchema(hostAdminServiceMethods.ByName("DeleteHost")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostAdminServiceGetHostStatsHandler := connect.NewUnaryHandler(
+		HostAdminServiceGetHostStatsProcedure,
+		svc.GetHostStats,
+		connect.WithSchema(hostAdminServiceMethods.ByName("GetHostStats")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostAdminServiceListInventoryVolumesHandler := connect.NewUnaryHandler(
+		HostAdminServiceListInventoryVolumesProcedure,
+		svc.ListInventoryVolumes,
+		connect.WithSchema(hostAdminServiceMethods.ByName("ListInventoryVolumes")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostAdminServiceListDirectorTasksHandler := connect.NewUnaryHandler(
+		HostAdminServiceListDirectorTasksProcedure,
+		svc.ListDirectorTasks,
+		connect.WithSchema(hostAdminServiceMethods.ByName("ListDirectorTasks")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pilab.director.v2.HostAdminService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case HostAdminServiceListHostsProcedure:
@@ -302,6 +462,18 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 			hostAdminServiceCreateDiskHandler.ServeHTTP(w, r)
 		case HostAdminServiceDeleteDiskProcedure:
 			hostAdminServiceDeleteDiskHandler.ServeHTTP(w, r)
+		case HostAdminServiceRebootHostProcedure:
+			hostAdminServiceRebootHostHandler.ServeHTTP(w, r)
+		case HostAdminServicePowerOffHostProcedure:
+			hostAdminServicePowerOffHostHandler.ServeHTTP(w, r)
+		case HostAdminServiceDeleteHostProcedure:
+			hostAdminServiceDeleteHostHandler.ServeHTTP(w, r)
+		case HostAdminServiceGetHostStatsProcedure:
+			hostAdminServiceGetHostStatsHandler.ServeHTTP(w, r)
+		case HostAdminServiceListInventoryVolumesProcedure:
+			hostAdminServiceListInventoryVolumesHandler.ServeHTTP(w, r)
+		case HostAdminServiceListDirectorTasksProcedure:
+			hostAdminServiceListDirectorTasksHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -341,4 +513,28 @@ func (UnimplementedHostAdminServiceHandler) CreateDisk(context.Context, *connect
 
 func (UnimplementedHostAdminServiceHandler) DeleteDisk(context.Context, *connect.Request[v2.DeleteDiskRequest]) (*connect.Response[v2.DeleteDiskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.DeleteDisk is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) RebootHost(context.Context, *connect.Request[v2.RebootHostRequest]) (*connect.Response[v2.RebootHostResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.RebootHost is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) PowerOffHost(context.Context, *connect.Request[v2.PowerOffHostRequest]) (*connect.Response[v2.PowerOffHostResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.PowerOffHost is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) DeleteHost(context.Context, *connect.Request[v2.DeleteHostRequest]) (*connect.Response[v2.DeleteHostResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.DeleteHost is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) GetHostStats(context.Context, *connect.Request[v2.GetHostStatsRequest]) (*connect.Response[v2.GetHostStatsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.GetHostStats is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) ListInventoryVolumes(context.Context, *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.ListInventoryVolumes is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) ListDirectorTasks(context.Context, *connect.Request[v2.ListDirectorTasksRequest]) (*connect.Response[v2.ListDirectorTasksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.ListDirectorTasks is not implemented"))
 }

@@ -23,14 +23,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	HostAdminService_ListHosts_FullMethodName          = "/pilab.director.v2.HostAdminService/ListHosts"
-	HostAdminService_GetHost_FullMethodName            = "/pilab.director.v2.HostAdminService/GetHost"
-	HostAdminService_SetMaintenance_FullMethodName     = "/pilab.director.v2.HostAdminService/SetMaintenance"
-	HostAdminService_MigrateVM_FullMethodName          = "/pilab.director.v2.HostAdminService/MigrateVM"
-	HostAdminService_ApplyHostResources_FullMethodName = "/pilab.director.v2.HostAdminService/ApplyHostResources"
-	HostAdminService_ListHostResources_FullMethodName  = "/pilab.director.v2.HostAdminService/ListHostResources"
-	HostAdminService_CreateDisk_FullMethodName         = "/pilab.director.v2.HostAdminService/CreateDisk"
-	HostAdminService_DeleteDisk_FullMethodName         = "/pilab.director.v2.HostAdminService/DeleteDisk"
+	HostAdminService_ListHosts_FullMethodName            = "/pilab.director.v2.HostAdminService/ListHosts"
+	HostAdminService_GetHost_FullMethodName              = "/pilab.director.v2.HostAdminService/GetHost"
+	HostAdminService_SetMaintenance_FullMethodName       = "/pilab.director.v2.HostAdminService/SetMaintenance"
+	HostAdminService_MigrateVM_FullMethodName            = "/pilab.director.v2.HostAdminService/MigrateVM"
+	HostAdminService_ApplyHostResources_FullMethodName   = "/pilab.director.v2.HostAdminService/ApplyHostResources"
+	HostAdminService_ListHostResources_FullMethodName    = "/pilab.director.v2.HostAdminService/ListHostResources"
+	HostAdminService_CreateDisk_FullMethodName           = "/pilab.director.v2.HostAdminService/CreateDisk"
+	HostAdminService_DeleteDisk_FullMethodName           = "/pilab.director.v2.HostAdminService/DeleteDisk"
+	HostAdminService_RebootHost_FullMethodName           = "/pilab.director.v2.HostAdminService/RebootHost"
+	HostAdminService_PowerOffHost_FullMethodName         = "/pilab.director.v2.HostAdminService/PowerOffHost"
+	HostAdminService_DeleteHost_FullMethodName           = "/pilab.director.v2.HostAdminService/DeleteHost"
+	HostAdminService_GetHostStats_FullMethodName         = "/pilab.director.v2.HostAdminService/GetHostStats"
+	HostAdminService_ListInventoryVolumes_FullMethodName = "/pilab.director.v2.HostAdminService/ListInventoryVolumes"
+	HostAdminService_ListDirectorTasks_FullMethodName    = "/pilab.director.v2.HostAdminService/ListDirectorTasks"
 )
 
 // HostAdminServiceClient is the client API for HostAdminService service.
@@ -59,6 +65,23 @@ type HostAdminServiceClient interface {
 	CreateDisk(ctx context.Context, in *CreateDiskRequest, opts ...grpc.CallOption) (*CreateDiskResponse, error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(ctx context.Context, in *DeleteDiskRequest, opts ...grpc.CallOption) (*DeleteDiskResponse, error)
+	// RebootHost reboots the hypervisor through its agent. The host should be
+	// in maintenance unless force is set.
+	RebootHost(ctx context.Context, in *RebootHostRequest, opts ...grpc.CallOption) (*RebootHostResponse, error)
+	// PowerOffHost powers the hypervisor off through its agent. The host
+	// should be in maintenance unless force is set.
+	PowerOffHost(ctx context.Context, in *PowerOffHostRequest, opts ...grpc.CallOption) (*PowerOffHostResponse, error)
+	// DeleteHost removes a host from the inventory. The host must be in
+	// maintenance, and is refused while VMs remain on it unless force is set.
+	DeleteHost(ctx context.Context, in *DeleteHostRequest, opts ...grpc.CallOption) (*DeleteHostResponse, error)
+	// GetHostStats returns the latest utilisation sample the host's agent
+	// reported.
+	GetHostStats(ctx context.Context, in *GetHostStatsRequest, opts ...grpc.CallOption) (*GetHostStatsResponse, error)
+	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
+	// narrowed to one host.
+	ListInventoryVolumes(ctx context.Context, in *ListInventoryVolumesRequest, opts ...grpc.CallOption) (*ListInventoryVolumesResponse, error)
+	// ListDirectorTasks lists recent director tasks, newest first.
+	ListDirectorTasks(ctx context.Context, in *ListDirectorTasksRequest, opts ...grpc.CallOption) (*ListDirectorTasksResponse, error)
 }
 
 type hostAdminServiceClient struct {
@@ -149,6 +172,66 @@ func (c *hostAdminServiceClient) DeleteDisk(ctx context.Context, in *DeleteDiskR
 	return out, nil
 }
 
+func (c *hostAdminServiceClient) RebootHost(ctx context.Context, in *RebootHostRequest, opts ...grpc.CallOption) (*RebootHostResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RebootHostResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_RebootHost_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostAdminServiceClient) PowerOffHost(ctx context.Context, in *PowerOffHostRequest, opts ...grpc.CallOption) (*PowerOffHostResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PowerOffHostResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_PowerOffHost_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostAdminServiceClient) DeleteHost(ctx context.Context, in *DeleteHostRequest, opts ...grpc.CallOption) (*DeleteHostResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteHostResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_DeleteHost_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostAdminServiceClient) GetHostStats(ctx context.Context, in *GetHostStatsRequest, opts ...grpc.CallOption) (*GetHostStatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetHostStatsResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_GetHostStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostAdminServiceClient) ListInventoryVolumes(ctx context.Context, in *ListInventoryVolumesRequest, opts ...grpc.CallOption) (*ListInventoryVolumesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListInventoryVolumesResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_ListInventoryVolumes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostAdminServiceClient) ListDirectorTasks(ctx context.Context, in *ListDirectorTasksRequest, opts ...grpc.CallOption) (*ListDirectorTasksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListDirectorTasksResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_ListDirectorTasks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HostAdminServiceServer is the server API for HostAdminService service.
 // All implementations must embed UnimplementedHostAdminServiceServer
 // for forward compatibility.
@@ -175,6 +258,23 @@ type HostAdminServiceServer interface {
 	CreateDisk(context.Context, *CreateDiskRequest) (*CreateDiskResponse, error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(context.Context, *DeleteDiskRequest) (*DeleteDiskResponse, error)
+	// RebootHost reboots the hypervisor through its agent. The host should be
+	// in maintenance unless force is set.
+	RebootHost(context.Context, *RebootHostRequest) (*RebootHostResponse, error)
+	// PowerOffHost powers the hypervisor off through its agent. The host
+	// should be in maintenance unless force is set.
+	PowerOffHost(context.Context, *PowerOffHostRequest) (*PowerOffHostResponse, error)
+	// DeleteHost removes a host from the inventory. The host must be in
+	// maintenance, and is refused while VMs remain on it unless force is set.
+	DeleteHost(context.Context, *DeleteHostRequest) (*DeleteHostResponse, error)
+	// GetHostStats returns the latest utilisation sample the host's agent
+	// reported.
+	GetHostStats(context.Context, *GetHostStatsRequest) (*GetHostStatsResponse, error)
+	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
+	// narrowed to one host.
+	ListInventoryVolumes(context.Context, *ListInventoryVolumesRequest) (*ListInventoryVolumesResponse, error)
+	// ListDirectorTasks lists recent director tasks, newest first.
+	ListDirectorTasks(context.Context, *ListDirectorTasksRequest) (*ListDirectorTasksResponse, error)
 	mustEmbedUnimplementedHostAdminServiceServer()
 }
 
@@ -208,6 +308,24 @@ func (UnimplementedHostAdminServiceServer) CreateDisk(context.Context, *CreateDi
 }
 func (UnimplementedHostAdminServiceServer) DeleteDisk(context.Context, *DeleteDiskRequest) (*DeleteDiskResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteDisk not implemented")
+}
+func (UnimplementedHostAdminServiceServer) RebootHost(context.Context, *RebootHostRequest) (*RebootHostResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RebootHost not implemented")
+}
+func (UnimplementedHostAdminServiceServer) PowerOffHost(context.Context, *PowerOffHostRequest) (*PowerOffHostResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method PowerOffHost not implemented")
+}
+func (UnimplementedHostAdminServiceServer) DeleteHost(context.Context, *DeleteHostRequest) (*DeleteHostResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteHost not implemented")
+}
+func (UnimplementedHostAdminServiceServer) GetHostStats(context.Context, *GetHostStatsRequest) (*GetHostStatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetHostStats not implemented")
+}
+func (UnimplementedHostAdminServiceServer) ListInventoryVolumes(context.Context, *ListInventoryVolumesRequest) (*ListInventoryVolumesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListInventoryVolumes not implemented")
+}
+func (UnimplementedHostAdminServiceServer) ListDirectorTasks(context.Context, *ListDirectorTasksRequest) (*ListDirectorTasksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListDirectorTasks not implemented")
 }
 func (UnimplementedHostAdminServiceServer) mustEmbedUnimplementedHostAdminServiceServer() {}
 func (UnimplementedHostAdminServiceServer) testEmbeddedByValue()                          {}
@@ -374,6 +492,114 @@ func _HostAdminService_DeleteDisk_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HostAdminService_RebootHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RebootHostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).RebootHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_RebootHost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).RebootHost(ctx, req.(*RebootHostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostAdminService_PowerOffHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PowerOffHostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).PowerOffHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_PowerOffHost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).PowerOffHost(ctx, req.(*PowerOffHostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostAdminService_DeleteHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteHostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).DeleteHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_DeleteHost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).DeleteHost(ctx, req.(*DeleteHostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostAdminService_GetHostStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetHostStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).GetHostStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_GetHostStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).GetHostStats(ctx, req.(*GetHostStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostAdminService_ListInventoryVolumes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListInventoryVolumesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).ListInventoryVolumes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_ListInventoryVolumes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).ListInventoryVolumes(ctx, req.(*ListInventoryVolumesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostAdminService_ListDirectorTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDirectorTasksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).ListDirectorTasks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_ListDirectorTasks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).ListDirectorTasks(ctx, req.(*ListDirectorTasksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HostAdminService_ServiceDesc is the grpc.ServiceDesc for HostAdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -412,6 +638,30 @@ var HostAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteDisk",
 			Handler:    _HostAdminService_DeleteDisk_Handler,
+		},
+		{
+			MethodName: "RebootHost",
+			Handler:    _HostAdminService_RebootHost_Handler,
+		},
+		{
+			MethodName: "PowerOffHost",
+			Handler:    _HostAdminService_PowerOffHost_Handler,
+		},
+		{
+			MethodName: "DeleteHost",
+			Handler:    _HostAdminService_DeleteHost_Handler,
+		},
+		{
+			MethodName: "GetHostStats",
+			Handler:    _HostAdminService_GetHostStats_Handler,
+		},
+		{
+			MethodName: "ListInventoryVolumes",
+			Handler:    _HostAdminService_ListInventoryVolumes_Handler,
+		},
+		{
+			MethodName: "ListDirectorTasks",
+			Handler:    _HostAdminService_ListDirectorTasks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -7,6 +7,8 @@ syntax = "proto3";
 package pilab.director.v2;
 
 import "pilab/director/v2/node_service.proto";
+import "pilab/director/v2/task_service.proto";
+import "pilab/pivirtd/v1/pivirtd.proto";
 import "pilab/resource/v1/resource.proto";
 
 option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/director/v2;directorv2";
@@ -37,6 +39,29 @@ service HostAdminService {
 
   // DeleteDisk removes a standalone disk image created by CreateDisk.
   rpc DeleteDisk(DeleteDiskRequest) returns (DeleteDiskResponse);
+
+  // RebootHost reboots the hypervisor through its agent. The host should be
+  // in maintenance unless force is set.
+  rpc RebootHost(RebootHostRequest) returns (RebootHostResponse);
+
+  // PowerOffHost powers the hypervisor off through its agent. The host
+  // should be in maintenance unless force is set.
+  rpc PowerOffHost(PowerOffHostRequest) returns (PowerOffHostResponse);
+
+  // DeleteHost removes a host from the inventory. The host must be in
+  // maintenance, and is refused while VMs remain on it unless force is set.
+  rpc DeleteHost(DeleteHostRequest) returns (DeleteHostResponse);
+
+  // GetHostStats returns the latest utilisation sample the host's agent
+  // reported.
+  rpc GetHostStats(GetHostStatsRequest) returns (GetHostStatsResponse);
+
+  // ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
+  // narrowed to one host.
+  rpc ListInventoryVolumes(ListInventoryVolumesRequest) returns (ListInventoryVolumesResponse);
+
+  // ListDirectorTasks lists recent director tasks, newest first.
+  rpc ListDirectorTasks(ListDirectorTasksRequest) returns (ListDirectorTasksResponse);
 }
 
 message Host {
@@ -168,4 +193,84 @@ message DeleteDiskRequest {
 
 message DeleteDiskResponse {
   ResourceOutcome outcome = 1;
+}
+
+message RebootHostRequest {
+  string id = 1;
+  // force reboots even when the host is not in maintenance.
+  bool force = 2;
+  string reason = 3;
+  int32 timeout_seconds = 4;
+}
+
+message RebootHostResponse {
+  ResourceOutcome outcome = 1;
+}
+
+message PowerOffHostRequest {
+  string id = 1;
+  // force powers off even when the host is not in maintenance.
+  bool force = 2;
+  string reason = 3;
+  int32 timeout_seconds = 4;
+}
+
+message PowerOffHostResponse {
+  ResourceOutcome outcome = 1;
+}
+
+message DeleteHostRequest {
+  string id = 1;
+  // force deletes the host even though VMs are still recorded on it.
+  bool force = 2;
+}
+
+message DeleteHostResponse {}
+
+message GetHostStatsRequest {
+  string id = 1;
+}
+
+message GetHostStatsResponse {
+  string host_id = 1;
+  // stats is the latest HostStats the host's agent reported.
+  pilab.pivirtd.v1.HostStats stats = 2;
+}
+
+message InventoryVolume {
+  // id is "<vm_id>/<name>".
+  string id = 1;
+  string name = 2;
+  string path = 3;
+  int64 size_bytes = 4;
+  string type = 5;
+  string bus = 6;
+  string device = 7;
+  string vm_id = 8;
+  string vm_name = 9;
+  string host_id = 10;
+}
+
+message ListInventoryVolumesRequest {
+  // host_id narrows the list to one host; empty lists every host.
+  string host_id = 1;
+}
+
+message ListInventoryVolumesResponse {
+  repeated InventoryVolume volumes = 1;
+}
+
+message ListDirectorTasksRequest {
+  // limit caps the result; 0 means 100, the maximum is 1000.
+  int32 limit = 1;
+  // host_id keeps only tasks targeting this host.
+  string host_id = 2;
+  // vm_id keeps only tasks targeting this VM.
+  string vm_id = 3;
+  // statuses keeps only tasks in one of these states; empty keeps all.
+  repeated TaskStatus statuses = 4;
+}
+
+message ListDirectorTasksResponse {
+  repeated Task tasks = 1;
 }
