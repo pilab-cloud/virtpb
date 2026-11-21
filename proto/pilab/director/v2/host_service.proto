@@ -27,6 +27,10 @@ service HostAdminService {
   // per-object outcome once the agent answers (or the timeout elapses).
   rpc ApplyHostResources(ApplyHostResourcesRequest) returns (ApplyHostResourcesResponse);
 
+  // ListHostResources reads host objects of one kind back from the host's
+  // pivirtd through its agent, optionally filtered by a label selector.
+  rpc ListHostResources(ListHostResourcesRequest) returns (ListHostResourcesResponse);
+
   // CreateDisk creates a standalone disk image on the host, optionally
   // allocated from one of its storage pools.
   rpc CreateDisk(CreateDiskRequest) returns (CreateDiskResponse);
@@ -123,6 +127,20 @@ message ApplyHostResourcesRequest {
 
 message ApplyHostResourcesResponse {
   ResourceResultEvent result = 1;
+}
+
+message ListHostResourcesRequest {
+  string host_id = 1;
+  // kind is the host object kind, e.g. "StoragePool" or "HostBridge".
+  string kind = 2;
+  // selector is a label selector ("k=v,k2!=v2"); empty matches everything.
+  string selector = 3;
+  // timeout_seconds bounds the wait for the agent's answer; 0 means 60.
+  int32 timeout_seconds = 4;
+}
+
+message ListHostResourcesResponse {
+  repeated pilab.resource.v1.Resource resources = 1;
 }
 
 message CreateDiskRequest {

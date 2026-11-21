@@ -146,6 +146,8 @@ message HostMetricsEvent {
 message ResourceResultEvent {
   string directive_id = 1;
   repeated ResourceOutcome outcomes = 2;
+  // resources holds the objects a directive's list queries matched.
+  repeated pilab.resource.v1.Resource resources = 3;
 }
 
 message ResourceOutcome {
@@ -275,6 +277,16 @@ message ResourceDirective {
   repeated ResourceRef delete = 3;
   // field_manager is recorded on every applied object ("director").
   string field_manager = 4;
+  // list reads objects back from pivirtd; the matches come back in
+  // ResourceResultEvent.resources.
+  repeated ResourceQuery list = 5;
+}
+
+// ResourceQuery selects host objects of one kind.
+message ResourceQuery {
+  string kind = 1;
+  // selector is a label selector; empty matches everything.
+  string selector = 2;
 }
 
 message ResourceRef {

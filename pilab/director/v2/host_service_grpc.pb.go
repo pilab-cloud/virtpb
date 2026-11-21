@@ -28,6 +28,7 @@ const (
 	HostAdminService_SetMaintenance_FullMethodName     = "/pilab.director.v2.HostAdminService/SetMaintenance"
 	HostAdminService_MigrateVM_FullMethodName          = "/pilab.director.v2.HostAdminService/MigrateVM"
 	HostAdminService_ApplyHostResources_FullMethodName = "/pilab.director.v2.HostAdminService/ApplyHostResources"
+	HostAdminService_ListHostResources_FullMethodName  = "/pilab.director.v2.HostAdminService/ListHostResources"
 	HostAdminService_CreateDisk_FullMethodName         = "/pilab.director.v2.HostAdminService/CreateDisk"
 	HostAdminService_DeleteDisk_FullMethodName         = "/pilab.director.v2.HostAdminService/DeleteDisk"
 )
@@ -50,6 +51,9 @@ type HostAdminServiceClient interface {
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(ctx context.Context, in *ApplyHostResourcesRequest, opts ...grpc.CallOption) (*ApplyHostResourcesResponse, error)
+	// ListHostResources reads host objects of one kind back from the host's
+	// pivirtd through its agent, optionally filtered by a label selector.
+	ListHostResources(ctx context.Context, in *ListHostResourcesRequest, opts ...grpc.CallOption) (*ListHostResourcesResponse, error)
 	// CreateDisk creates a standalone disk image on the host, optionally
 	// allocated from one of its storage pools.
 	CreateDisk(ctx context.Context, in *CreateDiskRequest, opts ...grpc.CallOption) (*CreateDiskResponse, error)
@@ -115,6 +119,16 @@ func (c *hostAdminServiceClient) ApplyHostResources(ctx context.Context, in *App
 	return out, nil
 }
 
+func (c *hostAdminServiceClient) ListHostResources(ctx context.Context, in *ListHostResourcesRequest, opts ...grpc.CallOption) (*ListHostResourcesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListHostResourcesResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_ListHostResources_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *hostAdminServiceClient) CreateDisk(ctx context.Context, in *CreateDiskRequest, opts ...grpc.CallOption) (*CreateDiskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateDiskResponse)
@@ -153,6 +167,9 @@ type HostAdminServiceServer interface {
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(context.Context, *ApplyHostResourcesRequest) (*ApplyHostResourcesResponse, error)
+	// ListHostResources reads host objects of one kind back from the host's
+	// pivirtd through its agent, optionally filtered by a label selector.
+	ListHostResources(context.Context, *ListHostResourcesRequest) (*ListHostResourcesResponse, error)
 	// CreateDisk creates a standalone disk image on the host, optionally
 	// allocated from one of its storage pools.
 	CreateDisk(context.Context, *CreateDiskRequest) (*CreateDiskResponse, error)
@@ -182,6 +199,9 @@ func (UnimplementedHostAdminServiceServer) MigrateVM(context.Context, *MigrateVM
 }
 func (UnimplementedHostAdminServiceServer) ApplyHostResources(context.Context, *ApplyHostResourcesRequest) (*ApplyHostResourcesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ApplyHostResources not implemented")
+}
+func (UnimplementedHostAdminServiceServer) ListHostResources(context.Context, *ListHostResourcesRequest) (*ListHostResourcesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListHostResources not implemented")
 }
 func (UnimplementedHostAdminServiceServer) CreateDisk(context.Context, *CreateDiskRequest) (*CreateDiskResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateDisk not implemented")
@@ -300,6 +320,24 @@ func _HostAdminService_ApplyHostResources_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HostAdminService_ListHostResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListHostResourcesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).ListHostResources(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_ListHostResources_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).ListHostResources(ctx, req.(*ListHostResourcesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _HostAdminService_CreateDisk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateDiskRequest)
 	if err := dec(in); err != nil {
@@ -362,6 +400,10 @@ var HostAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ApplyHostResources",
 			Handler:    _HostAdminService_ApplyHostResources_Handler,
+		},
+		{
+			MethodName: "ListHostResources",
+			Handler:    _HostAdminService_ListHostResources_Handler,
 		},
 		{
 			MethodName: "CreateDisk",

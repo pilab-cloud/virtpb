@@ -847,9 +847,11 @@ func (x *HostMetricsEvent) GetStats() *v1.HostStats {
 // ResourceResultEvent reports what applying a ResourceDirective did on the
 // host, one outcome per resource, in the directive's order.
 type ResourceResultEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	DirectiveId   string                 `protobuf:"bytes,1,opt,name=directive_id,json=directiveId,proto3" json:"directive_id,omitempty"`
-	Outcomes      []*ResourceOutcome     `protobuf:"bytes,2,rep,name=outcomes,proto3" json:"outcomes,omitempty"`
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	DirectiveId string                 `protobuf:"bytes,1,opt,name=directive_id,json=directiveId,proto3" json:"directive_id,omitempty"`
+	Outcomes    []*ResourceOutcome     `protobuf:"bytes,2,rep,name=outcomes,proto3" json:"outcomes,omitempty"`
+	// resources holds the objects a directive's list queries matched.
+	Resources     []*v12.Resource `protobuf:"bytes,3,rep,name=resources,proto3" json:"resources,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -894,6 +896,13 @@ func (x *ResourceResultEvent) GetDirectiveId() string {
 func (x *ResourceResultEvent) GetOutcomes() []*ResourceOutcome {
 	if x != nil {
 		return x.Outcomes
+	}
+	return nil
+}
+
+func (x *ResourceResultEvent) GetResources() []*v12.Resource {
+	if x != nil {
+		return x.Resources
 	}
 	return nil
 }
@@ -1631,7 +1640,10 @@ type ResourceDirective struct {
 	// delete names objects to remove, applied after apply.
 	Delete []*ResourceRef `protobuf:"bytes,3,rep,name=delete,proto3" json:"delete,omitempty"`
 	// field_manager is recorded on every applied object ("director").
-	FieldManager  string `protobuf:"bytes,4,opt,name=field_manager,json=fieldManager,proto3" json:"field_manager,omitempty"`
+	FieldManager string `protobuf:"bytes,4,opt,name=field_manager,json=fieldManager,proto3" json:"field_manager,omitempty"`
+	// list reads objects back from pivirtd; the matches come back in
+	// ResourceResultEvent.resources.
+	List          []*ResourceQuery `protobuf:"bytes,5,rep,name=list,proto3" json:"list,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1694,6 +1706,67 @@ func (x *ResourceDirective) GetFieldManager() string {
 	return ""
 }
 
+func (x *ResourceDirective) GetList() []*ResourceQuery {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+// ResourceQuery selects host objects of one kind.
+type ResourceQuery struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Kind  string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// selector is a label selector; empty matches everything.
+	Selector      string `protobuf:"bytes,2,opt,name=selector,proto3" json:"selector,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResourceQuery) Reset() {
+	*x = ResourceQuery{}
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResourceQuery) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResourceQuery) ProtoMessage() {}
+
+func (x *ResourceQuery) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResourceQuery.ProtoReflect.Descriptor instead.
+func (*ResourceQuery) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ResourceQuery) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *ResourceQuery) GetSelector() string {
+	if x != nil {
+		return x.Selector
+	}
+	return ""
+}
+
 type ResourceRef struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
@@ -1705,7 +1778,7 @@ type ResourceRef struct {
 
 func (x *ResourceRef) Reset() {
 	*x = ResourceRef{}
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[21]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1717,7 +1790,7 @@ func (x *ResourceRef) String() string {
 func (*ResourceRef) ProtoMessage() {}
 
 func (x *ResourceRef) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[21]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1730,7 +1803,7 @@ func (x *ResourceRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceRef.ProtoReflect.Descriptor instead.
 func (*ResourceRef) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{21}
+	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ResourceRef) GetKind() string {
@@ -1766,7 +1839,7 @@ type ClusterJoinDirective struct {
 
 func (x *ClusterJoinDirective) Reset() {
 	*x = ClusterJoinDirective{}
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[22]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1778,7 +1851,7 @@ func (x *ClusterJoinDirective) String() string {
 func (*ClusterJoinDirective) ProtoMessage() {}
 
 func (x *ClusterJoinDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[22]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1791,7 +1864,7 @@ func (x *ClusterJoinDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterJoinDirective.ProtoReflect.Descriptor instead.
 func (*ClusterJoinDirective) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{22}
+	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ClusterJoinDirective) GetClusterId() string {
@@ -1811,7 +1884,7 @@ type ClusterLeaveDirective struct {
 
 func (x *ClusterLeaveDirective) Reset() {
 	*x = ClusterLeaveDirective{}
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[23]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1823,7 +1896,7 @@ func (x *ClusterLeaveDirective) String() string {
 func (*ClusterLeaveDirective) ProtoMessage() {}
 
 func (x *ClusterLeaveDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[23]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1836,7 +1909,7 @@ func (x *ClusterLeaveDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterLeaveDirective.ProtoReflect.Descriptor instead.
 func (*ClusterLeaveDirective) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{23}
+	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ClusterLeaveDirective) GetClusterId() string {
@@ -1862,7 +1935,7 @@ type DrainDirective struct {
 
 func (x *DrainDirective) Reset() {
 	*x = DrainDirective{}
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[24]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1874,7 +1947,7 @@ func (x *DrainDirective) String() string {
 func (*DrainDirective) ProtoMessage() {}
 
 func (x *DrainDirective) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[24]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1887,7 +1960,7 @@ func (x *DrainDirective) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DrainDirective.ProtoReflect.Descriptor instead.
 func (*DrainDirective) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{24}
+	return file_pilab_director_v2_node_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *DrainDirective) GetReason() string {
@@ -1927,7 +2000,7 @@ type FullInventoryEvent_VmEntry struct {
 
 func (x *FullInventoryEvent_VmEntry) Reset() {
 	*x = FullInventoryEvent_VmEntry{}
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[25]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1939,7 +2012,7 @@ func (x *FullInventoryEvent_VmEntry) String() string {
 func (*FullInventoryEvent_VmEntry) ProtoMessage() {}
 
 func (x *FullInventoryEvent_VmEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_node_service_proto_msgTypes[25]
+	mi := &file_pilab_director_v2_node_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2086,10 +2159,11 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"\x04nics\x18\n" +
 	" \x03(\v2\x1e.pilab.pivirtd.v1.NetworkStatsR\x04nics\"E\n" +
 	"\x10HostMetricsEvent\x121\n" +
-	"\x05stats\x18\x01 \x01(\v2\x1b.pilab.pivirtd.v1.HostStatsR\x05stats\"x\n" +
+	"\x05stats\x18\x01 \x01(\v2\x1b.pilab.pivirtd.v1.HostStatsR\x05stats\"\xb3\x01\n" +
 	"\x13ResourceResultEvent\x12!\n" +
 	"\fdirective_id\x18\x01 \x01(\tR\vdirectiveId\x12>\n" +
-	"\boutcomes\x18\x02 \x03(\v2\".pilab.director.v2.ResourceOutcomeR\boutcomes\"\xba\x01\n" +
+	"\boutcomes\x18\x02 \x03(\v2\".pilab.director.v2.ResourceOutcomeR\boutcomes\x129\n" +
+	"\tresources\x18\x03 \x03(\v2\x1b.pilab.resource.v1.ResourceR\tresources\"\xba\x01\n" +
 	"\x0fResourceOutcome\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
@@ -2150,12 +2224,16 @@ const file_pilab_director_v2_node_service_proto_rawDesc = "" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\"\x11\n" +
 	"\x0fResyncDirective\"B\n" +
 	"\x0fConfigDirective\x12/\n" +
-	"\x06config\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x06config\"\xc6\x01\n" +
+	"\x06config\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x06config\"\xfc\x01\n" +
 	"\x11ResourceDirective\x12!\n" +
 	"\fdirective_id\x18\x01 \x01(\tR\vdirectiveId\x121\n" +
 	"\x05apply\x18\x02 \x03(\v2\x1b.pilab.resource.v1.ResourceR\x05apply\x126\n" +
 	"\x06delete\x18\x03 \x03(\v2\x1e.pilab.director.v2.ResourceRefR\x06delete\x12#\n" +
-	"\rfield_manager\x18\x04 \x01(\tR\ffieldManager\"G\n" +
+	"\rfield_manager\x18\x04 \x01(\tR\ffieldManager\x124\n" +
+	"\x04list\x18\x05 \x03(\v2 .pilab.director.v2.ResourceQueryR\x04list\"?\n" +
+	"\rResourceQuery\x12\x12\n" +
+	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x1a\n" +
+	"\bselector\x18\x02 \x01(\tR\bselector\"G\n" +
 	"\vResourceRef\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
@@ -2186,7 +2264,7 @@ func file_pilab_director_v2_node_service_proto_rawDescGZIP() []byte {
 	return file_pilab_director_v2_node_service_proto_rawDescData
 }
 
-var file_pilab_director_v2_node_service_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_pilab_director_v2_node_service_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_pilab_director_v2_node_service_proto_goTypes = []any{
 	(*RegisterNodeRequest)(nil),        // 0: pilab.director.v2.RegisterNodeRequest
 	(*RegisterNodeResponse)(nil),       // 1: pilab.director.v2.RegisterNodeResponse
@@ -2209,26 +2287,27 @@ var file_pilab_director_v2_node_service_proto_goTypes = []any{
 	(*ResyncDirective)(nil),            // 18: pilab.director.v2.ResyncDirective
 	(*ConfigDirective)(nil),            // 19: pilab.director.v2.ConfigDirective
 	(*ResourceDirective)(nil),          // 20: pilab.director.v2.ResourceDirective
-	(*ResourceRef)(nil),                // 21: pilab.director.v2.ResourceRef
-	(*ClusterJoinDirective)(nil),       // 22: pilab.director.v2.ClusterJoinDirective
-	(*ClusterLeaveDirective)(nil),      // 23: pilab.director.v2.ClusterLeaveDirective
-	(*DrainDirective)(nil),             // 24: pilab.director.v2.DrainDirective
-	(*FullInventoryEvent_VmEntry)(nil), // 25: pilab.director.v2.FullInventoryEvent.VmEntry
-	(*v1.HostResourceReport)(nil),      // 26: pilab.pivirtd.v1.HostResourceReport
-	(*v11.VmGuestInfo)(nil),            // 27: pilab.common.v1.VmGuestInfo
-	(*timestamppb.Timestamp)(nil),      // 28: google.protobuf.Timestamp
-	(*v1.DiskStats)(nil),               // 29: pilab.pivirtd.v1.DiskStats
-	(*v1.NetworkStats)(nil),            // 30: pilab.pivirtd.v1.NetworkStats
-	(*v1.HostStats)(nil),               // 31: pilab.pivirtd.v1.HostStats
-	(v11.Phase)(0),                     // 32: pilab.common.v1.Phase
-	(*structpb.Struct)(nil),            // 33: google.protobuf.Struct
-	(TaskStatus)(0),                    // 34: pilab.director.v2.TaskStatus
-	(*Task)(nil),                       // 35: pilab.director.v2.Task
-	(*v12.Resource)(nil),               // 36: pilab.resource.v1.Resource
+	(*ResourceQuery)(nil),              // 21: pilab.director.v2.ResourceQuery
+	(*ResourceRef)(nil),                // 22: pilab.director.v2.ResourceRef
+	(*ClusterJoinDirective)(nil),       // 23: pilab.director.v2.ClusterJoinDirective
+	(*ClusterLeaveDirective)(nil),      // 24: pilab.director.v2.ClusterLeaveDirective
+	(*DrainDirective)(nil),             // 25: pilab.director.v2.DrainDirective
+	(*FullInventoryEvent_VmEntry)(nil), // 26: pilab.director.v2.FullInventoryEvent.VmEntry
+	(*v1.HostResourceReport)(nil),      // 27: pilab.pivirtd.v1.HostResourceReport
+	(*v11.VmGuestInfo)(nil),            // 28: pilab.common.v1.VmGuestInfo
+	(*timestamppb.Timestamp)(nil),      // 29: google.protobuf.Timestamp
+	(*v1.DiskStats)(nil),               // 30: pilab.pivirtd.v1.DiskStats
+	(*v1.NetworkStats)(nil),            // 31: pilab.pivirtd.v1.NetworkStats
+	(*v1.HostStats)(nil),               // 32: pilab.pivirtd.v1.HostStats
+	(*v12.Resource)(nil),               // 33: pilab.resource.v1.Resource
+	(v11.Phase)(0),                     // 34: pilab.common.v1.Phase
+	(*structpb.Struct)(nil),            // 35: google.protobuf.Struct
+	(TaskStatus)(0),                    // 36: pilab.director.v2.TaskStatus
+	(*Task)(nil),                       // 37: pilab.director.v2.Task
 }
 var file_pilab_director_v2_node_service_proto_depIdxs = []int32{
 	11, // 0: pilab.director.v2.NodeEvent.heartbeat:type_name -> pilab.director.v2.HeartbeatEvent
-	26, // 1: pilab.director.v2.NodeEvent.host_report:type_name -> pilab.pivirtd.v1.HostResourceReport
+	27, // 1: pilab.director.v2.NodeEvent.host_report:type_name -> pilab.pivirtd.v1.HostResourceReport
 	12, // 2: pilab.director.v2.NodeEvent.vm_status:type_name -> pilab.director.v2.VmStatusEvent
 	6,  // 3: pilab.director.v2.NodeEvent.vm_metrics:type_name -> pilab.director.v2.VmMetricsBatch
 	13, // 4: pilab.director.v2.NodeEvent.task_progress:type_name -> pilab.director.v2.TaskProgressEvent
@@ -2237,41 +2316,43 @@ var file_pilab_director_v2_node_service_proto_depIdxs = []int32{
 	9,  // 7: pilab.director.v2.NodeEvent.resource_result:type_name -> pilab.director.v2.ResourceResultEvent
 	8,  // 8: pilab.director.v2.NodeEvent.host_metrics:type_name -> pilab.director.v2.HostMetricsEvent
 	5,  // 9: pilab.director.v2.NodeEvent.vm_guest_info:type_name -> pilab.director.v2.VmGuestInfoEvent
-	27, // 10: pilab.director.v2.VmGuestInfoEvent.guest_info:type_name -> pilab.common.v1.VmGuestInfo
-	28, // 11: pilab.director.v2.VmMetricsBatch.at:type_name -> google.protobuf.Timestamp
+	28, // 10: pilab.director.v2.VmGuestInfoEvent.guest_info:type_name -> pilab.common.v1.VmGuestInfo
+	29, // 11: pilab.director.v2.VmMetricsBatch.at:type_name -> google.protobuf.Timestamp
 	7,  // 12: pilab.director.v2.VmMetricsBatch.samples:type_name -> pilab.director.v2.VmMetricsSample
-	29, // 13: pilab.director.v2.VmMetricsSample.disks:type_name -> pilab.pivirtd.v1.DiskStats
-	30, // 14: pilab.director.v2.VmMetricsSample.nics:type_name -> pilab.pivirtd.v1.NetworkStats
-	31, // 15: pilab.director.v2.HostMetricsEvent.stats:type_name -> pilab.pivirtd.v1.HostStats
+	30, // 13: pilab.director.v2.VmMetricsSample.disks:type_name -> pilab.pivirtd.v1.DiskStats
+	31, // 14: pilab.director.v2.VmMetricsSample.nics:type_name -> pilab.pivirtd.v1.NetworkStats
+	32, // 15: pilab.director.v2.HostMetricsEvent.stats:type_name -> pilab.pivirtd.v1.HostStats
 	10, // 16: pilab.director.v2.ResourceResultEvent.outcomes:type_name -> pilab.director.v2.ResourceOutcome
-	28, // 17: pilab.director.v2.HeartbeatEvent.timestamp:type_name -> google.protobuf.Timestamp
-	32, // 18: pilab.director.v2.VmStatusEvent.phase:type_name -> pilab.common.v1.Phase
-	33, // 19: pilab.director.v2.TaskProgressEvent.progress:type_name -> google.protobuf.Struct
-	34, // 20: pilab.director.v2.TaskResultEvent.status:type_name -> pilab.director.v2.TaskStatus
-	25, // 21: pilab.director.v2.FullInventoryEvent.vms:type_name -> pilab.director.v2.FullInventoryEvent.VmEntry
-	35, // 22: pilab.director.v2.NodeDirective.task:type_name -> pilab.director.v2.Task
-	17, // 23: pilab.director.v2.NodeDirective.cancel_task:type_name -> pilab.director.v2.CancelTaskDirective
-	18, // 24: pilab.director.v2.NodeDirective.resync:type_name -> pilab.director.v2.ResyncDirective
-	19, // 25: pilab.director.v2.NodeDirective.config:type_name -> pilab.director.v2.ConfigDirective
-	22, // 26: pilab.director.v2.NodeDirective.cluster_join:type_name -> pilab.director.v2.ClusterJoinDirective
-	23, // 27: pilab.director.v2.NodeDirective.cluster_leave:type_name -> pilab.director.v2.ClusterLeaveDirective
-	24, // 28: pilab.director.v2.NodeDirective.drain:type_name -> pilab.director.v2.DrainDirective
-	20, // 29: pilab.director.v2.NodeDirective.resources:type_name -> pilab.director.v2.ResourceDirective
-	33, // 30: pilab.director.v2.ConfigDirective.config:type_name -> google.protobuf.Struct
-	36, // 31: pilab.director.v2.ResourceDirective.apply:type_name -> pilab.resource.v1.Resource
-	21, // 32: pilab.director.v2.ResourceDirective.delete:type_name -> pilab.director.v2.ResourceRef
-	32, // 33: pilab.director.v2.FullInventoryEvent.VmEntry.phase:type_name -> pilab.common.v1.Phase
-	0,  // 34: pilab.director.v2.NodeService.Register:input_type -> pilab.director.v2.RegisterNodeRequest
-	2,  // 35: pilab.director.v2.NodeService.RequestCertificate:input_type -> pilab.director.v2.RequestCertificateRequest
-	4,  // 36: pilab.director.v2.NodeService.Session:input_type -> pilab.director.v2.NodeEvent
-	1,  // 37: pilab.director.v2.NodeService.Register:output_type -> pilab.director.v2.RegisterNodeResponse
-	3,  // 38: pilab.director.v2.NodeService.RequestCertificate:output_type -> pilab.director.v2.RequestCertificateResponse
-	16, // 39: pilab.director.v2.NodeService.Session:output_type -> pilab.director.v2.NodeDirective
-	37, // [37:40] is the sub-list for method output_type
-	34, // [34:37] is the sub-list for method input_type
-	34, // [34:34] is the sub-list for extension type_name
-	34, // [34:34] is the sub-list for extension extendee
-	0,  // [0:34] is the sub-list for field type_name
+	33, // 17: pilab.director.v2.ResourceResultEvent.resources:type_name -> pilab.resource.v1.Resource
+	29, // 18: pilab.director.v2.HeartbeatEvent.timestamp:type_name -> google.protobuf.Timestamp
+	34, // 19: pilab.director.v2.VmStatusEvent.phase:type_name -> pilab.common.v1.Phase
+	35, // 20: pilab.director.v2.TaskProgressEvent.progress:type_name -> google.protobuf.Struct
+	36, // 21: pilab.director.v2.TaskResultEvent.status:type_name -> pilab.director.v2.TaskStatus
+	26, // 22: pilab.director.v2.FullInventoryEvent.vms:type_name -> pilab.director.v2.FullInventoryEvent.VmEntry
+	37, // 23: pilab.director.v2.NodeDirective.task:type_name -> pilab.director.v2.Task
+	17, // 24: pilab.director.v2.NodeDirective.cancel_task:type_name -> pilab.director.v2.CancelTaskDirective
+	18, // 25: pilab.director.v2.NodeDirective.resync:type_name -> pilab.director.v2.ResyncDirective
+	19, // 26: pilab.director.v2.NodeDirective.config:type_name -> pilab.director.v2.ConfigDirective
+	23, // 27: pilab.director.v2.NodeDirective.cluster_join:type_name -> pilab.director.v2.ClusterJoinDirective
+	24, // 28: pilab.director.v2.NodeDirective.cluster_leave:type_name -> pilab.director.v2.ClusterLeaveDirective
+	25, // 29: pilab.director.v2.NodeDirective.drain:type_name -> pilab.director.v2.DrainDirective
+	20, // 30: pilab.director.v2.NodeDirective.resources:type_name -> pilab.director.v2.ResourceDirective
+	35, // 31: pilab.director.v2.ConfigDirective.config:type_name -> google.protobuf.Struct
+	33, // 32: pilab.director.v2.ResourceDirective.apply:type_name -> pilab.resource.v1.Resource
+	22, // 33: pilab.director.v2.ResourceDirective.delete:type_name -> pilab.director.v2.ResourceRef
+	21, // 34: pilab.director.v2.ResourceDirective.list:type_name -> pilab.director.v2.ResourceQuery
+	34, // 35: pilab.director.v2.FullInventoryEvent.VmEntry.phase:type_name -> pilab.common.v1.Phase
+	0,  // 36: pilab.director.v2.NodeService.Register:input_type -> pilab.director.v2.RegisterNodeRequest
+	2,  // 37: pilab.director.v2.NodeService.RequestCertificate:input_type -> pilab.director.v2.RequestCertificateRequest
+	4,  // 38: pilab.director.v2.NodeService.Session:input_type -> pilab.director.v2.NodeEvent
+	1,  // 39: pilab.director.v2.NodeService.Register:output_type -> pilab.director.v2.RegisterNodeResponse
+	3,  // 40: pilab.director.v2.NodeService.RequestCertificate:output_type -> pilab.director.v2.RequestCertificateResponse
+	16, // 41: pilab.director.v2.NodeService.Session:output_type -> pilab.director.v2.NodeDirective
+	39, // [39:42] is the sub-list for method output_type
+	36, // [36:39] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_pilab_director_v2_node_service_proto_init() }
@@ -2308,7 +2389,7 @@ func file_pilab_director_v2_node_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_director_v2_node_service_proto_rawDesc), len(file_pilab_director_v2_node_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   26,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

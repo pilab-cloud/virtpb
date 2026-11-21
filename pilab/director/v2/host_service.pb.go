@@ -813,6 +813,121 @@ func (x *ApplyHostResourcesResponse) GetResult() *ResourceResultEvent {
 	return nil
 }
 
+type ListHostResourcesRequest struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	HostId string                 `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
+	// kind is the host object kind, e.g. "StoragePool" or "HostBridge".
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// selector is a label selector ("k=v,k2!=v2"); empty matches everything.
+	Selector string `protobuf:"bytes,3,opt,name=selector,proto3" json:"selector,omitempty"`
+	// timeout_seconds bounds the wait for the agent's answer; 0 means 60.
+	TimeoutSeconds int32 `protobuf:"varint,4,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ListHostResourcesRequest) Reset() {
+	*x = ListHostResourcesRequest{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListHostResourcesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListHostResourcesRequest) ProtoMessage() {}
+
+func (x *ListHostResourcesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListHostResourcesRequest.ProtoReflect.Descriptor instead.
+func (*ListHostResourcesRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ListHostResourcesRequest) GetHostId() string {
+	if x != nil {
+		return x.HostId
+	}
+	return ""
+}
+
+func (x *ListHostResourcesRequest) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *ListHostResourcesRequest) GetSelector() string {
+	if x != nil {
+		return x.Selector
+	}
+	return ""
+}
+
+func (x *ListHostResourcesRequest) GetTimeoutSeconds() int32 {
+	if x != nil {
+		return x.TimeoutSeconds
+	}
+	return 0
+}
+
+type ListHostResourcesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Resources     []*v1.Resource         `protobuf:"bytes,1,rep,name=resources,proto3" json:"resources,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListHostResourcesResponse) Reset() {
+	*x = ListHostResourcesResponse{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListHostResourcesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListHostResourcesResponse) ProtoMessage() {}
+
+func (x *ListHostResourcesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListHostResourcesResponse.ProtoReflect.Descriptor instead.
+func (*ListHostResourcesResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *ListHostResourcesResponse) GetResources() []*v1.Resource {
+	if x != nil {
+		return x.Resources
+	}
+	return nil
+}
+
 type CreateDiskRequest struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	HostId string                 `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
@@ -831,7 +946,7 @@ type CreateDiskRequest struct {
 
 func (x *CreateDiskRequest) Reset() {
 	*x = CreateDiskRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[12]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -843,7 +958,7 @@ func (x *CreateDiskRequest) String() string {
 func (*CreateDiskRequest) ProtoMessage() {}
 
 func (x *CreateDiskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[12]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -856,7 +971,7 @@ func (x *CreateDiskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDiskRequest.ProtoReflect.Descriptor instead.
 func (*CreateDiskRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{12}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CreateDiskRequest) GetHostId() string {
@@ -917,7 +1032,7 @@ type CreateDiskResponse struct {
 
 func (x *CreateDiskResponse) Reset() {
 	*x = CreateDiskResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[13]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -929,7 +1044,7 @@ func (x *CreateDiskResponse) String() string {
 func (*CreateDiskResponse) ProtoMessage() {}
 
 func (x *CreateDiskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[13]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -942,7 +1057,7 @@ func (x *CreateDiskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDiskResponse.ProtoReflect.Descriptor instead.
 func (*CreateDiskResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{13}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreateDiskResponse) GetOutcome() *ResourceOutcome {
@@ -963,7 +1078,7 @@ type DeleteDiskRequest struct {
 
 func (x *DeleteDiskRequest) Reset() {
 	*x = DeleteDiskRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[14]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -975,7 +1090,7 @@ func (x *DeleteDiskRequest) String() string {
 func (*DeleteDiskRequest) ProtoMessage() {}
 
 func (x *DeleteDiskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[14]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -988,7 +1103,7 @@ func (x *DeleteDiskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDiskRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDiskRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{14}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *DeleteDiskRequest) GetHostId() string {
@@ -1021,7 +1136,7 @@ type DeleteDiskResponse struct {
 
 func (x *DeleteDiskResponse) Reset() {
 	*x = DeleteDiskResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[15]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1033,7 +1148,7 @@ func (x *DeleteDiskResponse) String() string {
 func (*DeleteDiskResponse) ProtoMessage() {}
 
 func (x *DeleteDiskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[15]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1046,7 +1161,7 @@ func (x *DeleteDiskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDiskResponse.ProtoReflect.Descriptor instead.
 func (*DeleteDiskResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{15}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *DeleteDiskResponse) GetOutcome() *ResourceOutcome {
@@ -1119,7 +1234,14 @@ const file_pilab_director_v2_host_service_proto_rawDesc = "" +
 	"\x06delete\x18\x03 \x03(\v2\x1e.pilab.director.v2.ResourceRefR\x06delete\x12'\n" +
 	"\x0ftimeout_seconds\x18\x04 \x01(\x05R\x0etimeoutSeconds\"\\\n" +
 	"\x1aApplyHostResourcesResponse\x12>\n" +
-	"\x06result\x18\x01 \x01(\v2&.pilab.director.v2.ResourceResultEventR\x06result\"\xc2\x01\n" +
+	"\x06result\x18\x01 \x01(\v2&.pilab.director.v2.ResourceResultEventR\x06result\"\x8c\x01\n" +
+	"\x18ListHostResourcesRequest\x12\x17\n" +
+	"\ahost_id\x18\x01 \x01(\tR\x06hostId\x12\x12\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1a\n" +
+	"\bselector\x18\x03 \x01(\tR\bselector\x12'\n" +
+	"\x0ftimeout_seconds\x18\x04 \x01(\x05R\x0etimeoutSeconds\"V\n" +
+	"\x19ListHostResourcesResponse\x129\n" +
+	"\tresources\x18\x01 \x03(\v2\x1b.pilab.resource.v1.ResourceR\tresources\"\xc2\x01\n" +
 	"\x11CreateDiskRequest\x12\x17\n" +
 	"\ahost_id\x18\x01 \x01(\tR\x06hostId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
@@ -1135,13 +1257,14 @@ const file_pilab_director_v2_host_service_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12'\n" +
 	"\x0ftimeout_seconds\x18\x03 \x01(\x05R\x0etimeoutSeconds\"R\n" +
 	"\x12DeleteDiskResponse\x12<\n" +
-	"\aoutcome\x18\x01 \x01(\v2\".pilab.director.v2.ResourceOutcomeR\aoutcome2\xa4\x05\n" +
+	"\aoutcome\x18\x01 \x01(\v2\".pilab.director.v2.ResourceOutcomeR\aoutcome2\x94\x06\n" +
 	"\x10HostAdminService\x12V\n" +
 	"\tListHosts\x12#.pilab.director.v2.ListHostsRequest\x1a$.pilab.director.v2.ListHostsResponse\x12P\n" +
 	"\aGetHost\x12!.pilab.director.v2.GetHostRequest\x1a\".pilab.director.v2.GetHostResponse\x12e\n" +
 	"\x0eSetMaintenance\x12(.pilab.director.v2.SetMaintenanceRequest\x1a).pilab.director.v2.SetMaintenanceResponse\x12V\n" +
 	"\tMigrateVM\x12#.pilab.director.v2.MigrateVMRequest\x1a$.pilab.director.v2.MigrateVMResponse\x12q\n" +
-	"\x12ApplyHostResources\x12,.pilab.director.v2.ApplyHostResourcesRequest\x1a-.pilab.director.v2.ApplyHostResourcesResponse\x12Y\n" +
+	"\x12ApplyHostResources\x12,.pilab.director.v2.ApplyHostResourcesRequest\x1a-.pilab.director.v2.ApplyHostResourcesResponse\x12n\n" +
+	"\x11ListHostResources\x12+.pilab.director.v2.ListHostResourcesRequest\x1a,.pilab.director.v2.ListHostResourcesResponse\x12Y\n" +
 	"\n" +
 	"CreateDisk\x12$.pilab.director.v2.CreateDiskRequest\x1a%.pilab.director.v2.CreateDiskResponse\x12Y\n" +
 	"\n" +
@@ -1159,7 +1282,7 @@ func file_pilab_director_v2_host_service_proto_rawDescGZIP() []byte {
 	return file_pilab_director_v2_host_service_proto_rawDescData
 }
 
-var file_pilab_director_v2_host_service_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_pilab_director_v2_host_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_pilab_director_v2_host_service_proto_goTypes = []any{
 	(*Host)(nil),                       // 0: pilab.director.v2.Host
 	(*ListHostsRequest)(nil),           // 1: pilab.director.v2.ListHostsRequest
@@ -1173,44 +1296,49 @@ var file_pilab_director_v2_host_service_proto_goTypes = []any{
 	(*MigrateVMResponse)(nil),          // 9: pilab.director.v2.MigrateVMResponse
 	(*ApplyHostResourcesRequest)(nil),  // 10: pilab.director.v2.ApplyHostResourcesRequest
 	(*ApplyHostResourcesResponse)(nil), // 11: pilab.director.v2.ApplyHostResourcesResponse
-	(*CreateDiskRequest)(nil),          // 12: pilab.director.v2.CreateDiskRequest
-	(*CreateDiskResponse)(nil),         // 13: pilab.director.v2.CreateDiskResponse
-	(*DeleteDiskRequest)(nil),          // 14: pilab.director.v2.DeleteDiskRequest
-	(*DeleteDiskResponse)(nil),         // 15: pilab.director.v2.DeleteDiskResponse
-	(*v1.Resource)(nil),                // 16: pilab.resource.v1.Resource
-	(*ResourceRef)(nil),                // 17: pilab.director.v2.ResourceRef
-	(*ResourceResultEvent)(nil),        // 18: pilab.director.v2.ResourceResultEvent
-	(*ResourceOutcome)(nil),            // 19: pilab.director.v2.ResourceOutcome
+	(*ListHostResourcesRequest)(nil),   // 12: pilab.director.v2.ListHostResourcesRequest
+	(*ListHostResourcesResponse)(nil),  // 13: pilab.director.v2.ListHostResourcesResponse
+	(*CreateDiskRequest)(nil),          // 14: pilab.director.v2.CreateDiskRequest
+	(*CreateDiskResponse)(nil),         // 15: pilab.director.v2.CreateDiskResponse
+	(*DeleteDiskRequest)(nil),          // 16: pilab.director.v2.DeleteDiskRequest
+	(*DeleteDiskResponse)(nil),         // 17: pilab.director.v2.DeleteDiskResponse
+	(*v1.Resource)(nil),                // 18: pilab.resource.v1.Resource
+	(*ResourceRef)(nil),                // 19: pilab.director.v2.ResourceRef
+	(*ResourceResultEvent)(nil),        // 20: pilab.director.v2.ResourceResultEvent
+	(*ResourceOutcome)(nil),            // 21: pilab.director.v2.ResourceOutcome
 }
 var file_pilab_director_v2_host_service_proto_depIdxs = []int32{
 	0,  // 0: pilab.director.v2.ListHostsResponse.hosts:type_name -> pilab.director.v2.Host
 	0,  // 1: pilab.director.v2.GetHostResponse.host:type_name -> pilab.director.v2.Host
 	0,  // 2: pilab.director.v2.SetMaintenanceResponse.host:type_name -> pilab.director.v2.Host
 	7,  // 3: pilab.director.v2.SetMaintenanceResponse.evacuations:type_name -> pilab.director.v2.Evacuation
-	16, // 4: pilab.director.v2.ApplyHostResourcesRequest.apply:type_name -> pilab.resource.v1.Resource
-	17, // 5: pilab.director.v2.ApplyHostResourcesRequest.delete:type_name -> pilab.director.v2.ResourceRef
-	18, // 6: pilab.director.v2.ApplyHostResourcesResponse.result:type_name -> pilab.director.v2.ResourceResultEvent
-	19, // 7: pilab.director.v2.CreateDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
-	19, // 8: pilab.director.v2.DeleteDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
-	1,  // 9: pilab.director.v2.HostAdminService.ListHosts:input_type -> pilab.director.v2.ListHostsRequest
-	3,  // 10: pilab.director.v2.HostAdminService.GetHost:input_type -> pilab.director.v2.GetHostRequest
-	6,  // 11: pilab.director.v2.HostAdminService.SetMaintenance:input_type -> pilab.director.v2.SetMaintenanceRequest
-	8,  // 12: pilab.director.v2.HostAdminService.MigrateVM:input_type -> pilab.director.v2.MigrateVMRequest
-	10, // 13: pilab.director.v2.HostAdminService.ApplyHostResources:input_type -> pilab.director.v2.ApplyHostResourcesRequest
-	12, // 14: pilab.director.v2.HostAdminService.CreateDisk:input_type -> pilab.director.v2.CreateDiskRequest
-	14, // 15: pilab.director.v2.HostAdminService.DeleteDisk:input_type -> pilab.director.v2.DeleteDiskRequest
-	2,  // 16: pilab.director.v2.HostAdminService.ListHosts:output_type -> pilab.director.v2.ListHostsResponse
-	4,  // 17: pilab.director.v2.HostAdminService.GetHost:output_type -> pilab.director.v2.GetHostResponse
-	5,  // 18: pilab.director.v2.HostAdminService.SetMaintenance:output_type -> pilab.director.v2.SetMaintenanceResponse
-	9,  // 19: pilab.director.v2.HostAdminService.MigrateVM:output_type -> pilab.director.v2.MigrateVMResponse
-	11, // 20: pilab.director.v2.HostAdminService.ApplyHostResources:output_type -> pilab.director.v2.ApplyHostResourcesResponse
-	13, // 21: pilab.director.v2.HostAdminService.CreateDisk:output_type -> pilab.director.v2.CreateDiskResponse
-	15, // 22: pilab.director.v2.HostAdminService.DeleteDisk:output_type -> pilab.director.v2.DeleteDiskResponse
-	16, // [16:23] is the sub-list for method output_type
-	9,  // [9:16] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	18, // 4: pilab.director.v2.ApplyHostResourcesRequest.apply:type_name -> pilab.resource.v1.Resource
+	19, // 5: pilab.director.v2.ApplyHostResourcesRequest.delete:type_name -> pilab.director.v2.ResourceRef
+	20, // 6: pilab.director.v2.ApplyHostResourcesResponse.result:type_name -> pilab.director.v2.ResourceResultEvent
+	18, // 7: pilab.director.v2.ListHostResourcesResponse.resources:type_name -> pilab.resource.v1.Resource
+	21, // 8: pilab.director.v2.CreateDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	21, // 9: pilab.director.v2.DeleteDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	1,  // 10: pilab.director.v2.HostAdminService.ListHosts:input_type -> pilab.director.v2.ListHostsRequest
+	3,  // 11: pilab.director.v2.HostAdminService.GetHost:input_type -> pilab.director.v2.GetHostRequest
+	6,  // 12: pilab.director.v2.HostAdminService.SetMaintenance:input_type -> pilab.director.v2.SetMaintenanceRequest
+	8,  // 13: pilab.director.v2.HostAdminService.MigrateVM:input_type -> pilab.director.v2.MigrateVMRequest
+	10, // 14: pilab.director.v2.HostAdminService.ApplyHostResources:input_type -> pilab.director.v2.ApplyHostResourcesRequest
+	12, // 15: pilab.director.v2.HostAdminService.ListHostResources:input_type -> pilab.director.v2.ListHostResourcesRequest
+	14, // 16: pilab.director.v2.HostAdminService.CreateDisk:input_type -> pilab.director.v2.CreateDiskRequest
+	16, // 17: pilab.director.v2.HostAdminService.DeleteDisk:input_type -> pilab.director.v2.DeleteDiskRequest
+	2,  // 18: pilab.director.v2.HostAdminService.ListHosts:output_type -> pilab.director.v2.ListHostsResponse
+	4,  // 19: pilab.director.v2.HostAdminService.GetHost:output_type -> pilab.director.v2.GetHostResponse
+	5,  // 20: pilab.director.v2.HostAdminService.SetMaintenance:output_type -> pilab.director.v2.SetMaintenanceResponse
+	9,  // 21: pilab.director.v2.HostAdminService.MigrateVM:output_type -> pilab.director.v2.MigrateVMResponse
+	11, // 22: pilab.director.v2.HostAdminService.ApplyHostResources:output_type -> pilab.director.v2.ApplyHostResourcesResponse
+	13, // 23: pilab.director.v2.HostAdminService.ListHostResources:output_type -> pilab.director.v2.ListHostResourcesResponse
+	15, // 24: pilab.director.v2.HostAdminService.CreateDisk:output_type -> pilab.director.v2.CreateDiskResponse
+	17, // 25: pilab.director.v2.HostAdminService.DeleteDisk:output_type -> pilab.director.v2.DeleteDiskResponse
+	18, // [18:26] is the sub-list for method output_type
+	10, // [10:18] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_pilab_director_v2_host_service_proto_init() }
@@ -1225,7 +1353,7 @@ func file_pilab_director_v2_host_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_director_v2_host_service_proto_rawDesc), len(file_pilab_director_v2_host_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

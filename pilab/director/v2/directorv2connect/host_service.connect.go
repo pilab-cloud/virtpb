@@ -52,6 +52,9 @@ const (
 	// HostAdminServiceApplyHostResourcesProcedure is the fully-qualified name of the HostAdminService's
 	// ApplyHostResources RPC.
 	HostAdminServiceApplyHostResourcesProcedure = "/pilab.director.v2.HostAdminService/ApplyHostResources"
+	// HostAdminServiceListHostResourcesProcedure is the fully-qualified name of the HostAdminService's
+	// ListHostResources RPC.
+	HostAdminServiceListHostResourcesProcedure = "/pilab.director.v2.HostAdminService/ListHostResources"
 	// HostAdminServiceCreateDiskProcedure is the fully-qualified name of the HostAdminService's
 	// CreateDisk RPC.
 	HostAdminServiceCreateDiskProcedure = "/pilab.director.v2.HostAdminService/CreateDisk"
@@ -76,6 +79,9 @@ type HostAdminServiceClient interface {
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(context.Context, *connect.Request[v2.ApplyHostResourcesRequest]) (*connect.Response[v2.ApplyHostResourcesResponse], error)
+	// ListHostResources reads host objects of one kind back from the host's
+	// pivirtd through its agent, optionally filtered by a label selector.
+	ListHostResources(context.Context, *connect.Request[v2.ListHostResourcesRequest]) (*connect.Response[v2.ListHostResourcesResponse], error)
 	// CreateDisk creates a standalone disk image on the host, optionally
 	// allocated from one of its storage pools.
 	CreateDisk(context.Context, *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error)
@@ -124,6 +130,12 @@ func NewHostAdminServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(hostAdminServiceMethods.ByName("ApplyHostResources")),
 			connect.WithClientOptions(opts...),
 		),
+		listHostResources: connect.NewClient[v2.ListHostResourcesRequest, v2.ListHostResourcesResponse](
+			httpClient,
+			baseURL+HostAdminServiceListHostResourcesProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("ListHostResources")),
+			connect.WithClientOptions(opts...),
+		),
 		createDisk: connect.NewClient[v2.CreateDiskRequest, v2.CreateDiskResponse](
 			httpClient,
 			baseURL+HostAdminServiceCreateDiskProcedure,
@@ -146,6 +158,7 @@ type hostAdminServiceClient struct {
 	setMaintenance     *connect.Client[v2.SetMaintenanceRequest, v2.SetMaintenanceResponse]
 	migrateVM          *connect.Client[v2.MigrateVMRequest, v2.MigrateVMResponse]
 	applyHostResources *connect.Client[v2.ApplyHostResourcesRequest, v2.ApplyHostResourcesResponse]
+	listHostResources  *connect.Client[v2.ListHostResourcesRequest, v2.ListHostResourcesResponse]
 	createDisk         *connect.Client[v2.CreateDiskRequest, v2.CreateDiskResponse]
 	deleteDisk         *connect.Client[v2.DeleteDiskRequest, v2.DeleteDiskResponse]
 }
@@ -175,6 +188,11 @@ func (c *hostAdminServiceClient) ApplyHostResources(ctx context.Context, req *co
 	return c.applyHostResources.CallUnary(ctx, req)
 }
 
+// ListHostResources calls pilab.director.v2.HostAdminService.ListHostResources.
+func (c *hostAdminServiceClient) ListHostResources(ctx context.Context, req *connect.Request[v2.ListHostResourcesRequest]) (*connect.Response[v2.ListHostResourcesResponse], error) {
+	return c.listHostResources.CallUnary(ctx, req)
+}
+
 // CreateDisk calls pilab.director.v2.HostAdminService.CreateDisk.
 func (c *hostAdminServiceClient) CreateDisk(ctx context.Context, req *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error) {
 	return c.createDisk.CallUnary(ctx, req)
@@ -201,6 +219,9 @@ type HostAdminServiceHandler interface {
 	// ApplyHostResources ships host objects to the host's agent and returns the
 	// per-object outcome once the agent answers (or the timeout elapses).
 	ApplyHostResources(context.Context, *connect.Request[v2.ApplyHostResourcesRequest]) (*connect.Response[v2.ApplyHostResourcesResponse], error)
+	// ListHostResources reads host objects of one kind back from the host's
+	// pivirtd through its agent, optionally filtered by a label selector.
+	ListHostResources(context.Context, *connect.Request[v2.ListHostResourcesRequest]) (*connect.Response[v2.ListHostResourcesResponse], error)
 	// CreateDisk creates a standalone disk image on the host, optionally
 	// allocated from one of its storage pools.
 	CreateDisk(context.Context, *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error)
@@ -245,6 +266,12 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 		connect.WithSchema(hostAdminServiceMethods.ByName("ApplyHostResources")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostAdminServiceListHostResourcesHandler := connect.NewUnaryHandler(
+		HostAdminServiceListHostResourcesProcedure,
+		svc.ListHostResources,
+		connect.WithSchema(hostAdminServiceMethods.ByName("ListHostResources")),
+		connect.WithHandlerOptions(opts...),
+	)
 	hostAdminServiceCreateDiskHandler := connect.NewUnaryHandler(
 		HostAdminServiceCreateDiskProcedure,
 		svc.CreateDisk,
@@ -269,6 +296,8 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 			hostAdminServiceMigrateVMHandler.ServeHTTP(w, r)
 		case HostAdminServiceApplyHostResourcesProcedure:
 			hostAdminServiceApplyHostResourcesHandler.ServeHTTP(w, r)
+		case HostAdminServiceListHostResourcesProcedure:
+			hostAdminServiceListHostResourcesHandler.ServeHTTP(w, r)
 		case HostAdminServiceCreateDiskProcedure:
 			hostAdminServiceCreateDiskHandler.ServeHTTP(w, r)
 		case HostAdminServiceDeleteDiskProcedure:
@@ -300,6 +329,10 @@ func (UnimplementedHostAdminServiceHandler) MigrateVM(context.Context, *connect.
 
 func (UnimplementedHostAdminServiceHandler) ApplyHostResources(context.Context, *connect.Request[v2.ApplyHostResourcesRequest]) (*connect.Response[v2.ApplyHostResourcesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.ApplyHostResources is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) ListHostResources(context.Context, *connect.Request[v2.ListHostResourcesRequest]) (*connect.Response[v2.ListHostResourcesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.ListHostResources is not implemented"))
 }
 
 func (UnimplementedHostAdminServiceHandler) CreateDisk(context.Context, *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error) {
