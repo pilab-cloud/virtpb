@@ -175,6 +175,7 @@ message RebootVMRequest {
 message DeleteVMRequest {
   string name = 1;
   bool force = 2;  // stop if running
+  bool delete_disks = 3;  // also remove disk volumes owned by the VM
 }
 
 message UpdateVMMemoryRequest {

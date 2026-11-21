@@ -503,7 +503,8 @@ func (x *RebootVMRequest) GetForce() bool {
 type DeleteVMRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Force         bool                   `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"` // stop if running
+	Force         bool                   `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`                                // stop if running
+	DeleteDisks   bool                   `protobuf:"varint,3,opt,name=delete_disks,json=deleteDisks,proto3" json:"delete_disks,omitempty"` // also remove disk volumes owned by the VM
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -548,6 +549,13 @@ func (x *DeleteVMRequest) GetName() string {
 func (x *DeleteVMRequest) GetForce() bool {
 	if x != nil {
 		return x.Force
+	}
+	return false
+}
+
+func (x *DeleteVMRequest) GetDeleteDisks() bool {
+	if x != nil {
+		return x.DeleteDisks
 	}
 	return false
 }
@@ -8668,10 +8676,11 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\";\n" +
 	"\x0fRebootVMRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\";\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\"^\n" +
 	"\x0fDeleteVMRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05force\x18\x02 \x01(\bR\x05force\"U\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\x12!\n" +
+	"\fdelete_disks\x18\x03 \x01(\bR\vdeleteDisks\"U\n" +
 	"\x15UpdateVMMemoryRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12(\n" +
 	"\x10target_memory_mb\x18\x02 \x01(\x05R\x0etargetMemoryMb\"T\n" +
