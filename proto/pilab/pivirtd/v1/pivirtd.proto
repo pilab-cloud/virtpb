@@ -70,14 +70,6 @@ service PivirtdService {
   rpc DeleteBridge(DeleteBridgeRequest) returns (DeleteNetworkResponse);
   rpc ListBridges(ListBridgesRequest) returns (ListBridgesResponse);
 
-  // OVS Networking
-  rpc CreateOVSBridge(CreateOVSBridgeRequest) returns (NetworkResponse);
-  rpc DeleteOVSBridge(DeleteOVSBridgeRequest) returns (DeleteNetworkResponse);
-  rpc ListOVSBridges(ListOVSBridgesRequest) returns (ListOVSBridgesResponse);
-  rpc AddOVSPort(AddOVSPortRequest) returns (NetworkResponse);
-  rpc RemoveOVSPort(RemoveOVSPortRequest) returns (DeleteNetworkResponse);
-  rpc ListOVSPorts(ListOVSPortsRequest) returns (ListOVSPortsResponse);
-
   // Network Namespaces
   rpc ListNetworkNamespaces(ListNetworkNamespacesRequest) returns (ListNetworkNamespacesResponse);
 
@@ -739,8 +731,8 @@ message CreateTAPDeviceRequest {
   bool persistent = 3;
   string owner = 4;
   string group = 5;
-  bool use_ovs = 6;           // attach to OVS bridge
-  string ovs_bridge = 7;         // OVS bridge name
+  reserved 6, 7;
+  reserved "use_ovs", "ovs_bridge";
   int32 vlan_tag = 8;            // VLAN tag
   bool tag_trunk = 9;            // trunk mode
 }
@@ -750,10 +742,10 @@ message CreateBridgeRequest {
   repeated string interfaces = 2;  // physical interfaces to bridge
   string ip_address = 3;
   string netmask = 4;
-  bool open_vswitch = 5;           // use OVS instead of Linux bridge
   int32 vlan_tag = 6;            // VLAN tag for access port
   repeated int32 trunks = 7;         // VLAN trunk ranges
-  string ovs_bridge = 8;          // parent OVS bridge (e.g., br-int)
+  reserved 5, 8;
+  reserved "open_vswitch", "ovs_bridge";
 }
 
 message NetworkResponse {
@@ -806,60 +798,9 @@ message NetworkDevice {
   oneof device {
     TAPDevice tap = 1;
     Bridge bridge = 2;
-    OVSBridge ovs_bridge = 3;
-    OVSPort ovs_port = 4;
   }
-}
-
-// ==================== OVS Messages ====================
-
-message CreateOVSBridgeRequest {
-  string name = 1;
-  string parent = 2;           // parent OVS bridge (e.g., br-int)
-  bool internal = 3;          // create internal port
-}
-
-message DeleteOVSBridgeRequest {
-  string name = 1;
-}
-
-message ListOVSBridgesRequest {}
-
-message ListOVSBridgesResponse {
-  repeated OVSBridge bridges = 1;
-}
-
-message AddOVSPortRequest {
-  string bridge = 1;            // OVS bridge name
-  string port = 2;              // port/TAP device name
-  int32 vlan_tag = 3;          // VLAN tag for access port
-  repeated int32 trunks = 4;       // VLAN trunk ranges
-}
-
-message RemoveOVSPortRequest {
-  string bridge = 1;
-  string port = 2;
-}
-
-message ListOVSPortsRequest {
-  string bridge = 1;
-}
-
-message ListOVSPortsResponse {
-  repeated OVSPort ports = 1;
-}
-
-message OVSBridge {
-  string name = 1;
-  string parent = 2;           // parent bridge
-  bool internal = 3;          // has internal port
-}
-
-message OVSPort {
-  string name = 1;
-  string bridge = 2;
-  int32 vlan_tag = 3;
-  repeated int32 trunks = 4;
+  reserved 3, 4;
+  reserved "ovs_bridge", "ovs_port";
 }
 
 // ==================== UEFI Messages ====================

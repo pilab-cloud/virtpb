@@ -99,7 +99,7 @@ type Droplet struct {
 	MemoryMb      uint64                 `protobuf:"varint,12,opt,name=memory_mb,json=memoryMb,proto3" json:"memory_mb,omitempty"`
 	DiskGb        uint64                 `protobuf:"varint,13,opt,name=disk_gb,json=diskGb,proto3" json:"disk_gb,omitempty"`
 	IopsProfile   string                 `protobuf:"bytes,14,opt,name=iops_profile,json=iopsProfile,proto3" json:"iops_profile,omitempty"` // Enforced via QEMU throttle-group
-	QosProfile    string                 `protobuf:"bytes,15,opt,name=qos_profile,json=qosProfile,proto3" json:"qos_profile,omitempty"`    // Enforced via tc / OVS QoS
+	QosProfile    string                 `protobuf:"bytes,15,opt,name=qos_profile,json=qosProfile,proto3" json:"qos_profile,omitempty"`    // Enforced via tc / eBPF
 	Tags          []string               `protobuf:"bytes,16,rep,name=tags,proto3" json:"tags,omitempty"`
 	SshKeyIds     []string               `protobuf:"bytes,17,rep,name=ssh_key_ids,json=sshKeyIds,proto3" json:"ssh_key_ids,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`

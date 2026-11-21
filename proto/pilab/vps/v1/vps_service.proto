@@ -48,7 +48,7 @@ message Droplet {
   uint64 memory_mb = 12;
   uint64 disk_gb = 13;
   string iops_profile = 14;        // Enforced via QEMU throttle-group
-  string qos_profile = 15;         // Enforced via tc / OVS QoS
+  string qos_profile = 15;         // Enforced via tc / eBPF
 
   repeated string tags = 16;
   repeated string ssh_key_ids = 17;

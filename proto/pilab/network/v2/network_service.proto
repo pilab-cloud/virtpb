@@ -1,5 +1,5 @@
 // Package network provides virtual networking services including networks,
-// ports, VLAN/VXLAN management, IPAM, QoS, security, DVS, and statistics.
+// ports, VLAN/VXLAN management, IPAM, QoS, security, and statistics.
 
 syntax = "proto3";
 
@@ -74,7 +74,8 @@ message VirtualNetwork {
   google.protobuf.Timestamp updated_at = 20;
   string cluster_id = 21;
   NetworkRole role = 22;
-  string ovs_bridge = 23;
+  reserved 23;
+  reserved "ovs_bridge";
   repeated string uplinks = 24;
 }
 

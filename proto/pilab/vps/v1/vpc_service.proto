@@ -46,7 +46,7 @@ message Vpc {
   string physical_network = 13;
   uint32 mtu = 14;
   bool hardware_offload_enabled = 15;
-  string sdn_driver = 16;          // "ebpf-bgp" or "ovs"
+  string sdn_driver = 16;          // "ebpf-bgp" (legacy "ovs" values are accepted but deprecated)
 }
 
 message Subnet {

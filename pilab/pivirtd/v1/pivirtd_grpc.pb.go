@@ -60,12 +60,6 @@ const (
 	PivirtdService_CreateBridge_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/CreateBridge"
 	PivirtdService_DeleteBridge_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/DeleteBridge"
 	PivirtdService_ListBridges_FullMethodName           = "/pilab.pivirtd.v1.PivirtdService/ListBridges"
-	PivirtdService_CreateOVSBridge_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/CreateOVSBridge"
-	PivirtdService_DeleteOVSBridge_FullMethodName       = "/pilab.pivirtd.v1.PivirtdService/DeleteOVSBridge"
-	PivirtdService_ListOVSBridges_FullMethodName        = "/pilab.pivirtd.v1.PivirtdService/ListOVSBridges"
-	PivirtdService_AddOVSPort_FullMethodName            = "/pilab.pivirtd.v1.PivirtdService/AddOVSPort"
-	PivirtdService_RemoveOVSPort_FullMethodName         = "/pilab.pivirtd.v1.PivirtdService/RemoveOVSPort"
-	PivirtdService_ListOVSPorts_FullMethodName          = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
 	PivirtdService_ListNetworkNamespaces_FullMethodName = "/pilab.pivirtd.v1.PivirtdService/ListNetworkNamespaces"
 	PivirtdService_ListAdoptableDevices_FullMethodName  = "/pilab.pivirtd.v1.PivirtdService/ListAdoptableDevices"
 	PivirtdService_SetLabels_FullMethodName             = "/pilab.pivirtd.v1.PivirtdService/SetLabels"
@@ -152,13 +146,6 @@ type PivirtdServiceClient interface {
 	CreateBridge(ctx context.Context, in *CreateBridgeRequest, opts ...grpc.CallOption) (*NetworkResponse, error)
 	DeleteBridge(ctx context.Context, in *DeleteBridgeRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
 	ListBridges(ctx context.Context, in *ListBridgesRequest, opts ...grpc.CallOption) (*ListBridgesResponse, error)
-	// OVS Networking
-	CreateOVSBridge(ctx context.Context, in *CreateOVSBridgeRequest, opts ...grpc.CallOption) (*NetworkResponse, error)
-	DeleteOVSBridge(ctx context.Context, in *DeleteOVSBridgeRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
-	ListOVSBridges(ctx context.Context, in *ListOVSBridgesRequest, opts ...grpc.CallOption) (*ListOVSBridgesResponse, error)
-	AddOVSPort(ctx context.Context, in *AddOVSPortRequest, opts ...grpc.CallOption) (*NetworkResponse, error)
-	RemoveOVSPort(ctx context.Context, in *RemoveOVSPortRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
-	ListOVSPorts(ctx context.Context, in *ListOVSPortsRequest, opts ...grpc.CallOption) (*ListOVSPortsResponse, error)
 	// Network Namespaces
 	ListNetworkNamespaces(ctx context.Context, in *ListNetworkNamespacesRequest, opts ...grpc.CallOption) (*ListNetworkNamespacesResponse, error)
 	// Adoption reporting — host devices pivirtd found but does not manage.
@@ -637,66 +624,6 @@ func (c *pivirtdServiceClient) ListBridges(ctx context.Context, in *ListBridgesR
 	return out, nil
 }
 
-func (c *pivirtdServiceClient) CreateOVSBridge(ctx context.Context, in *CreateOVSBridgeRequest, opts ...grpc.CallOption) (*NetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(NetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_CreateOVSBridge_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) DeleteOVSBridge(ctx context.Context, in *DeleteOVSBridgeRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteNetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_DeleteOVSBridge_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) ListOVSBridges(ctx context.Context, in *ListOVSBridgesRequest, opts ...grpc.CallOption) (*ListOVSBridgesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListOVSBridgesResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_ListOVSBridges_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) AddOVSPort(ctx context.Context, in *AddOVSPortRequest, opts ...grpc.CallOption) (*NetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(NetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_AddOVSPort_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) RemoveOVSPort(ctx context.Context, in *RemoveOVSPortRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteNetworkResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_RemoveOVSPort_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pivirtdServiceClient) ListOVSPorts(ctx context.Context, in *ListOVSPortsRequest, opts ...grpc.CallOption) (*ListOVSPortsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListOVSPortsResponse)
-	err := c.cc.Invoke(ctx, PivirtdService_ListOVSPorts_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *pivirtdServiceClient) ListNetworkNamespaces(ctx context.Context, in *ListNetworkNamespacesRequest, opts ...grpc.CallOption) (*ListNetworkNamespacesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListNetworkNamespacesResponse)
@@ -1042,13 +969,6 @@ type PivirtdServiceServer interface {
 	CreateBridge(context.Context, *CreateBridgeRequest) (*NetworkResponse, error)
 	DeleteBridge(context.Context, *DeleteBridgeRequest) (*DeleteNetworkResponse, error)
 	ListBridges(context.Context, *ListBridgesRequest) (*ListBridgesResponse, error)
-	// OVS Networking
-	CreateOVSBridge(context.Context, *CreateOVSBridgeRequest) (*NetworkResponse, error)
-	DeleteOVSBridge(context.Context, *DeleteOVSBridgeRequest) (*DeleteNetworkResponse, error)
-	ListOVSBridges(context.Context, *ListOVSBridgesRequest) (*ListOVSBridgesResponse, error)
-	AddOVSPort(context.Context, *AddOVSPortRequest) (*NetworkResponse, error)
-	RemoveOVSPort(context.Context, *RemoveOVSPortRequest) (*DeleteNetworkResponse, error)
-	ListOVSPorts(context.Context, *ListOVSPortsRequest) (*ListOVSPortsResponse, error)
 	// Network Namespaces
 	ListNetworkNamespaces(context.Context, *ListNetworkNamespacesRequest) (*ListNetworkNamespacesResponse, error)
 	// Adoption reporting — host devices pivirtd found but does not manage.
@@ -1220,24 +1140,6 @@ func (UnimplementedPivirtdServiceServer) DeleteBridge(context.Context, *DeleteBr
 }
 func (UnimplementedPivirtdServiceServer) ListBridges(context.Context, *ListBridgesRequest) (*ListBridgesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListBridges not implemented")
-}
-func (UnimplementedPivirtdServiceServer) CreateOVSBridge(context.Context, *CreateOVSBridgeRequest) (*NetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateOVSBridge not implemented")
-}
-func (UnimplementedPivirtdServiceServer) DeleteOVSBridge(context.Context, *DeleteOVSBridgeRequest) (*DeleteNetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteOVSBridge not implemented")
-}
-func (UnimplementedPivirtdServiceServer) ListOVSBridges(context.Context, *ListOVSBridgesRequest) (*ListOVSBridgesResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListOVSBridges not implemented")
-}
-func (UnimplementedPivirtdServiceServer) AddOVSPort(context.Context, *AddOVSPortRequest) (*NetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method AddOVSPort not implemented")
-}
-func (UnimplementedPivirtdServiceServer) RemoveOVSPort(context.Context, *RemoveOVSPortRequest) (*DeleteNetworkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method RemoveOVSPort not implemented")
-}
-func (UnimplementedPivirtdServiceServer) ListOVSPorts(context.Context, *ListOVSPortsRequest) (*ListOVSPortsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListOVSPorts not implemented")
 }
 func (UnimplementedPivirtdServiceServer) ListNetworkNamespaces(context.Context, *ListNetworkNamespacesRequest) (*ListNetworkNamespacesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListNetworkNamespaces not implemented")
@@ -2068,114 +1970,6 @@ func _PivirtdService_ListBridges_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PivirtdService_CreateOVSBridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateOVSBridgeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).CreateOVSBridge(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_CreateOVSBridge_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).CreateOVSBridge(ctx, req.(*CreateOVSBridgeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_DeleteOVSBridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteOVSBridgeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).DeleteOVSBridge(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_DeleteOVSBridge_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).DeleteOVSBridge(ctx, req.(*DeleteOVSBridgeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_ListOVSBridges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListOVSBridgesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).ListOVSBridges(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_ListOVSBridges_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).ListOVSBridges(ctx, req.(*ListOVSBridgesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_AddOVSPort_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddOVSPortRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).AddOVSPort(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_AddOVSPort_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).AddOVSPort(ctx, req.(*AddOVSPortRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_RemoveOVSPort_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveOVSPortRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).RemoveOVSPort(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_RemoveOVSPort_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).RemoveOVSPort(ctx, req.(*RemoveOVSPortRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PivirtdService_ListOVSPorts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListOVSPortsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PivirtdServiceServer).ListOVSPorts(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PivirtdService_ListOVSPorts_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PivirtdServiceServer).ListOVSPorts(ctx, req.(*ListOVSPortsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _PivirtdService_ListNetworkNamespaces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListNetworkNamespacesRequest)
 	if err := dec(in); err != nil {
@@ -2835,30 +2629,6 @@ var PivirtdService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListBridges",
 			Handler:    _PivirtdService_ListBridges_Handler,
-		},
-		{
-			MethodName: "CreateOVSBridge",
-			Handler:    _PivirtdService_CreateOVSBridge_Handler,
-		},
-		{
-			MethodName: "DeleteOVSBridge",
-			Handler:    _PivirtdService_DeleteOVSBridge_Handler,
-		},
-		{
-			MethodName: "ListOVSBridges",
-			Handler:    _PivirtdService_ListOVSBridges_Handler,
-		},
-		{
-			MethodName: "AddOVSPort",
-			Handler:    _PivirtdService_AddOVSPort_Handler,
-		},
-		{
-			MethodName: "RemoveOVSPort",
-			Handler:    _PivirtdService_RemoveOVSPort_Handler,
-		},
-		{
-			MethodName: "ListOVSPorts",
-			Handler:    _PivirtdService_ListOVSPorts_Handler,
 		},
 		{
 			MethodName: "ListNetworkNamespaces",

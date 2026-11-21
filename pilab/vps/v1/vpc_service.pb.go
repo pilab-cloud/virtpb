@@ -39,7 +39,7 @@ type Vpc struct {
 	PhysicalNetwork        string                 `protobuf:"bytes,13,opt,name=physical_network,json=physicalNetwork,proto3" json:"physical_network,omitempty"`
 	Mtu                    uint32                 `protobuf:"varint,14,opt,name=mtu,proto3" json:"mtu,omitempty"`
 	HardwareOffloadEnabled bool                   `protobuf:"varint,15,opt,name=hardware_offload_enabled,json=hardwareOffloadEnabled,proto3" json:"hardware_offload_enabled,omitempty"`
-	SdnDriver              string                 `protobuf:"bytes,16,opt,name=sdn_driver,json=sdnDriver,proto3" json:"sdn_driver,omitempty"` // "ebpf-bgp" or "ovs"
+	SdnDriver              string                 `protobuf:"bytes,16,opt,name=sdn_driver,json=sdnDriver,proto3" json:"sdn_driver,omitempty"` // "ebpf-bgp" (legacy "ovs" values are accepted but deprecated)
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }

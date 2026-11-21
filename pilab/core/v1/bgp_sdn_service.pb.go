@@ -25,7 +25,8 @@ const (
 type SdnDriver int32
 
 const (
-	SdnDriver_SDN_DRIVER_UNSPECIFIED     SdnDriver = 0
+	SdnDriver_SDN_DRIVER_UNSPECIFIED SdnDriver = 0
+	// Deprecated: Open vSwitch was removed; kept for wire compatibility.
 	SdnDriver_SDN_DRIVER_LEGACY_OVS      SdnDriver = 1
 	SdnDriver_SDN_DRIVER_KERNEL_EBPF_BGP SdnDriver = 2
 )

@@ -145,24 +145,6 @@ const (
 	// PivirtdServiceListBridgesProcedure is the fully-qualified name of the PivirtdService's
 	// ListBridges RPC.
 	PivirtdServiceListBridgesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListBridges"
-	// PivirtdServiceCreateOVSBridgeProcedure is the fully-qualified name of the PivirtdService's
-	// CreateOVSBridge RPC.
-	PivirtdServiceCreateOVSBridgeProcedure = "/pilab.pivirtd.v1.PivirtdService/CreateOVSBridge"
-	// PivirtdServiceDeleteOVSBridgeProcedure is the fully-qualified name of the PivirtdService's
-	// DeleteOVSBridge RPC.
-	PivirtdServiceDeleteOVSBridgeProcedure = "/pilab.pivirtd.v1.PivirtdService/DeleteOVSBridge"
-	// PivirtdServiceListOVSBridgesProcedure is the fully-qualified name of the PivirtdService's
-	// ListOVSBridges RPC.
-	PivirtdServiceListOVSBridgesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOVSBridges"
-	// PivirtdServiceAddOVSPortProcedure is the fully-qualified name of the PivirtdService's AddOVSPort
-	// RPC.
-	PivirtdServiceAddOVSPortProcedure = "/pilab.pivirtd.v1.PivirtdService/AddOVSPort"
-	// PivirtdServiceRemoveOVSPortProcedure is the fully-qualified name of the PivirtdService's
-	// RemoveOVSPort RPC.
-	PivirtdServiceRemoveOVSPortProcedure = "/pilab.pivirtd.v1.PivirtdService/RemoveOVSPort"
-	// PivirtdServiceListOVSPortsProcedure is the fully-qualified name of the PivirtdService's
-	// ListOVSPorts RPC.
-	PivirtdServiceListOVSPortsProcedure = "/pilab.pivirtd.v1.PivirtdService/ListOVSPorts"
 	// PivirtdServiceListNetworkNamespacesProcedure is the fully-qualified name of the PivirtdService's
 	// ListNetworkNamespaces RPC.
 	PivirtdServiceListNetworkNamespacesProcedure = "/pilab.pivirtd.v1.PivirtdService/ListNetworkNamespaces"
@@ -299,13 +281,6 @@ type PivirtdServiceClient interface {
 	CreateBridge(context.Context, *connect.Request[v1.CreateBridgeRequest]) (*connect.Response[v1.NetworkResponse], error)
 	DeleteBridge(context.Context, *connect.Request[v1.DeleteBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
 	ListBridges(context.Context, *connect.Request[v1.ListBridgesRequest]) (*connect.Response[v1.ListBridgesResponse], error)
-	// OVS Networking
-	CreateOVSBridge(context.Context, *connect.Request[v1.CreateOVSBridgeRequest]) (*connect.Response[v1.NetworkResponse], error)
-	DeleteOVSBridge(context.Context, *connect.Request[v1.DeleteOVSBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListOVSBridges(context.Context, *connect.Request[v1.ListOVSBridgesRequest]) (*connect.Response[v1.ListOVSBridgesResponse], error)
-	AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error)
-	RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error)
 	// Network Namespaces
 	ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error)
 	// Adoption reporting — host devices pivirtd found but does not manage.
@@ -604,42 +579,6 @@ func NewPivirtdServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(pivirtdServiceMethods.ByName("ListBridges")),
 			connect.WithClientOptions(opts...),
 		),
-		createOVSBridge: connect.NewClient[v1.CreateOVSBridgeRequest, v1.NetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceCreateOVSBridgeProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("CreateOVSBridge")),
-			connect.WithClientOptions(opts...),
-		),
-		deleteOVSBridge: connect.NewClient[v1.DeleteOVSBridgeRequest, v1.DeleteNetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceDeleteOVSBridgeProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("DeleteOVSBridge")),
-			connect.WithClientOptions(opts...),
-		),
-		listOVSBridges: connect.NewClient[v1.ListOVSBridgesRequest, v1.ListOVSBridgesResponse](
-			httpClient,
-			baseURL+PivirtdServiceListOVSBridgesProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSBridges")),
-			connect.WithClientOptions(opts...),
-		),
-		addOVSPort: connect.NewClient[v1.AddOVSPortRequest, v1.NetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceAddOVSPortProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("AddOVSPort")),
-			connect.WithClientOptions(opts...),
-		),
-		removeOVSPort: connect.NewClient[v1.RemoveOVSPortRequest, v1.DeleteNetworkResponse](
-			httpClient,
-			baseURL+PivirtdServiceRemoveOVSPortProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("RemoveOVSPort")),
-			connect.WithClientOptions(opts...),
-		),
-		listOVSPorts: connect.NewClient[v1.ListOVSPortsRequest, v1.ListOVSPortsResponse](
-			httpClient,
-			baseURL+PivirtdServiceListOVSPortsProcedure,
-			connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSPorts")),
-			connect.WithClientOptions(opts...),
-		),
 		listNetworkNamespaces: connect.NewClient[v1.ListNetworkNamespacesRequest, v1.ListNetworkNamespacesResponse](
 			httpClient,
 			baseURL+PivirtdServiceListNetworkNamespacesProcedure,
@@ -854,12 +793,6 @@ type pivirtdServiceClient struct {
 	createBridge          *connect.Client[v1.CreateBridgeRequest, v1.NetworkResponse]
 	deleteBridge          *connect.Client[v1.DeleteBridgeRequest, v1.DeleteNetworkResponse]
 	listBridges           *connect.Client[v1.ListBridgesRequest, v1.ListBridgesResponse]
-	createOVSBridge       *connect.Client[v1.CreateOVSBridgeRequest, v1.NetworkResponse]
-	deleteOVSBridge       *connect.Client[v1.DeleteOVSBridgeRequest, v1.DeleteNetworkResponse]
-	listOVSBridges        *connect.Client[v1.ListOVSBridgesRequest, v1.ListOVSBridgesResponse]
-	addOVSPort            *connect.Client[v1.AddOVSPortRequest, v1.NetworkResponse]
-	removeOVSPort         *connect.Client[v1.RemoveOVSPortRequest, v1.DeleteNetworkResponse]
-	listOVSPorts          *connect.Client[v1.ListOVSPortsRequest, v1.ListOVSPortsResponse]
 	listNetworkNamespaces *connect.Client[v1.ListNetworkNamespacesRequest, v1.ListNetworkNamespacesResponse]
 	listAdoptableDevices  *connect.Client[v1.ListAdoptableDevicesRequest, v1.ListAdoptableDevicesResponse]
 	setLabels             *connect.Client[v1.SetLabelsRequest, v1.SetLabelsResponse]
@@ -1097,36 +1030,6 @@ func (c *pivirtdServiceClient) ListBridges(ctx context.Context, req *connect.Req
 	return c.listBridges.CallUnary(ctx, req)
 }
 
-// CreateOVSBridge calls pilab.pivirtd.v1.PivirtdService.CreateOVSBridge.
-func (c *pivirtdServiceClient) CreateOVSBridge(ctx context.Context, req *connect.Request[v1.CreateOVSBridgeRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return c.createOVSBridge.CallUnary(ctx, req)
-}
-
-// DeleteOVSBridge calls pilab.pivirtd.v1.PivirtdService.DeleteOVSBridge.
-func (c *pivirtdServiceClient) DeleteOVSBridge(ctx context.Context, req *connect.Request[v1.DeleteOVSBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return c.deleteOVSBridge.CallUnary(ctx, req)
-}
-
-// ListOVSBridges calls pilab.pivirtd.v1.PivirtdService.ListOVSBridges.
-func (c *pivirtdServiceClient) ListOVSBridges(ctx context.Context, req *connect.Request[v1.ListOVSBridgesRequest]) (*connect.Response[v1.ListOVSBridgesResponse], error) {
-	return c.listOVSBridges.CallUnary(ctx, req)
-}
-
-// AddOVSPort calls pilab.pivirtd.v1.PivirtdService.AddOVSPort.
-func (c *pivirtdServiceClient) AddOVSPort(ctx context.Context, req *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return c.addOVSPort.CallUnary(ctx, req)
-}
-
-// RemoveOVSPort calls pilab.pivirtd.v1.PivirtdService.RemoveOVSPort.
-func (c *pivirtdServiceClient) RemoveOVSPort(ctx context.Context, req *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return c.removeOVSPort.CallUnary(ctx, req)
-}
-
-// ListOVSPorts calls pilab.pivirtd.v1.PivirtdService.ListOVSPorts.
-func (c *pivirtdServiceClient) ListOVSPorts(ctx context.Context, req *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error) {
-	return c.listOVSPorts.CallUnary(ctx, req)
-}
-
 // ListNetworkNamespaces calls pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces.
 func (c *pivirtdServiceClient) ListNetworkNamespaces(ctx context.Context, req *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error) {
 	return c.listNetworkNamespaces.CallUnary(ctx, req)
@@ -1319,13 +1222,6 @@ type PivirtdServiceHandler interface {
 	CreateBridge(context.Context, *connect.Request[v1.CreateBridgeRequest]) (*connect.Response[v1.NetworkResponse], error)
 	DeleteBridge(context.Context, *connect.Request[v1.DeleteBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
 	ListBridges(context.Context, *connect.Request[v1.ListBridgesRequest]) (*connect.Response[v1.ListBridgesResponse], error)
-	// OVS Networking
-	CreateOVSBridge(context.Context, *connect.Request[v1.CreateOVSBridgeRequest]) (*connect.Response[v1.NetworkResponse], error)
-	DeleteOVSBridge(context.Context, *connect.Request[v1.DeleteOVSBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListOVSBridges(context.Context, *connect.Request[v1.ListOVSBridgesRequest]) (*connect.Response[v1.ListOVSBridgesResponse], error)
-	AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error)
-	RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error)
-	ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error)
 	// Network Namespaces
 	ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error)
 	// Adoption reporting — host devices pivirtd found but does not manage.
@@ -1620,42 +1516,6 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 		connect.WithSchema(pivirtdServiceMethods.ByName("ListBridges")),
 		connect.WithHandlerOptions(opts...),
 	)
-	pivirtdServiceCreateOVSBridgeHandler := connect.NewUnaryHandler(
-		PivirtdServiceCreateOVSBridgeProcedure,
-		svc.CreateOVSBridge,
-		connect.WithSchema(pivirtdServiceMethods.ByName("CreateOVSBridge")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceDeleteOVSBridgeHandler := connect.NewUnaryHandler(
-		PivirtdServiceDeleteOVSBridgeProcedure,
-		svc.DeleteOVSBridge,
-		connect.WithSchema(pivirtdServiceMethods.ByName("DeleteOVSBridge")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceListOVSBridgesHandler := connect.NewUnaryHandler(
-		PivirtdServiceListOVSBridgesProcedure,
-		svc.ListOVSBridges,
-		connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSBridges")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceAddOVSPortHandler := connect.NewUnaryHandler(
-		PivirtdServiceAddOVSPortProcedure,
-		svc.AddOVSPort,
-		connect.WithSchema(pivirtdServiceMethods.ByName("AddOVSPort")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceRemoveOVSPortHandler := connect.NewUnaryHandler(
-		PivirtdServiceRemoveOVSPortProcedure,
-		svc.RemoveOVSPort,
-		connect.WithSchema(pivirtdServiceMethods.ByName("RemoveOVSPort")),
-		connect.WithHandlerOptions(opts...),
-	)
-	pivirtdServiceListOVSPortsHandler := connect.NewUnaryHandler(
-		PivirtdServiceListOVSPortsProcedure,
-		svc.ListOVSPorts,
-		connect.WithSchema(pivirtdServiceMethods.ByName("ListOVSPorts")),
-		connect.WithHandlerOptions(opts...),
-	)
 	pivirtdServiceListNetworkNamespacesHandler := connect.NewUnaryHandler(
 		PivirtdServiceListNetworkNamespacesProcedure,
 		svc.ListNetworkNamespaces,
@@ -1908,18 +1768,6 @@ func NewPivirtdServiceHandler(svc PivirtdServiceHandler, opts ...connect.Handler
 			pivirtdServiceDeleteBridgeHandler.ServeHTTP(w, r)
 		case PivirtdServiceListBridgesProcedure:
 			pivirtdServiceListBridgesHandler.ServeHTTP(w, r)
-		case PivirtdServiceCreateOVSBridgeProcedure:
-			pivirtdServiceCreateOVSBridgeHandler.ServeHTTP(w, r)
-		case PivirtdServiceDeleteOVSBridgeProcedure:
-			pivirtdServiceDeleteOVSBridgeHandler.ServeHTTP(w, r)
-		case PivirtdServiceListOVSBridgesProcedure:
-			pivirtdServiceListOVSBridgesHandler.ServeHTTP(w, r)
-		case PivirtdServiceAddOVSPortProcedure:
-			pivirtdServiceAddOVSPortHandler.ServeHTTP(w, r)
-		case PivirtdServiceRemoveOVSPortProcedure:
-			pivirtdServiceRemoveOVSPortHandler.ServeHTTP(w, r)
-		case PivirtdServiceListOVSPortsProcedure:
-			pivirtdServiceListOVSPortsHandler.ServeHTTP(w, r)
 		case PivirtdServiceListNetworkNamespacesProcedure:
 			pivirtdServiceListNetworkNamespacesHandler.ServeHTTP(w, r)
 		case PivirtdServiceListAdoptableDevicesProcedure:
@@ -2147,30 +1995,6 @@ func (UnimplementedPivirtdServiceHandler) DeleteBridge(context.Context, *connect
 
 func (UnimplementedPivirtdServiceHandler) ListBridges(context.Context, *connect.Request[v1.ListBridgesRequest]) (*connect.Response[v1.ListBridgesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListBridges is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) CreateOVSBridge(context.Context, *connect.Request[v1.CreateOVSBridgeRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.CreateOVSBridge is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) DeleteOVSBridge(context.Context, *connect.Request[v1.DeleteOVSBridgeRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.DeleteOVSBridge is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) ListOVSBridges(context.Context, *connect.Request[v1.ListOVSBridgesRequest]) (*connect.Response[v1.ListOVSBridgesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOVSBridges is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) AddOVSPort(context.Context, *connect.Request[v1.AddOVSPortRequest]) (*connect.Response[v1.NetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.AddOVSPort is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) RemoveOVSPort(context.Context, *connect.Request[v1.RemoveOVSPortRequest]) (*connect.Response[v1.DeleteNetworkResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.RemoveOVSPort is not implemented"))
-}
-
-func (UnimplementedPivirtdServiceHandler) ListOVSPorts(context.Context, *connect.Request[v1.ListOVSPortsRequest]) (*connect.Response[v1.ListOVSPortsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.pivirtd.v1.PivirtdService.ListOVSPorts is not implemented"))
 }
 
 func (UnimplementedPivirtdServiceHandler) ListNetworkNamespaces(context.Context, *connect.Request[v1.ListNetworkNamespacesRequest]) (*connect.Response[v1.ListNetworkNamespacesResponse], error) {

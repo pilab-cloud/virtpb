@@ -1,5 +1,5 @@
 // Package network provides virtual networking services including networks,
-// ports, VLAN/VXLAN management, IPAM, QoS, security, DVS, and statistics.
+// ports, VLAN/VXLAN management, IPAM, QoS, security, and statistics.
 
 syntax = "proto3";
 
@@ -12,7 +12,7 @@ import "pilab/network/v2/network_common.proto";
 
 option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/network/v2;networkv2";
 
-// ClusterBridgeService manages OVS bridges per cluster.
+// ClusterBridgeService manages Linux bridges per cluster.
 service ClusterBridgeService {
   rpc CreateClusterBridge(CreateClusterBridgeRequest) returns (ClusterBridge);
   rpc GetClusterBridge(GetClusterBridgeRequest) returns (ClusterBridge);
@@ -23,7 +23,7 @@ service ClusterBridgeService {
   rpc RemoveUplink(RemoveUplinkRequest) returns (google.protobuf.Empty);
 }
 
-// ClusterBridge represents an OVS bridge configuration for a cluster.
+// ClusterBridge represents a Linux bridge configuration for a cluster.
 message ClusterBridge {
   string id = 1;
   string cluster_id = 2;
@@ -32,7 +32,8 @@ message ClusterBridge {
   int32 vlan = 5;
   int32 mtu = 6;
   repeated string uplinks = 7;
-  string ovs_bridge_name = 8;
+  reserved 8;
+  reserved "ovs_bridge_name";
   bool uplink_bond = 9;
   map<string, string> metadata = 10;
   google.protobuf.Timestamp created_at = 11;

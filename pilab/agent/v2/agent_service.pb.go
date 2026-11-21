@@ -4008,7 +4008,6 @@ type ConfigureNetworkRequest struct {
 	// Types that are valid to be assigned to ConfigType:
 	//
 	//	*ConfigureNetworkRequest_NetworkInterface
-	//	*ConfigureNetworkRequest_OvsConfig
 	ConfigType    isConfigureNetworkRequest_ConfigType `protobuf_oneof:"config_type"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -4067,15 +4066,6 @@ func (x *ConfigureNetworkRequest) GetNetworkInterface() *NetworkInterface {
 	return nil
 }
 
-func (x *ConfigureNetworkRequest) GetOvsConfig() string {
-	if x != nil {
-		if x, ok := x.ConfigType.(*ConfigureNetworkRequest_OvsConfig); ok {
-			return x.OvsConfig
-		}
-	}
-	return ""
-}
-
 type isConfigureNetworkRequest_ConfigType interface {
 	isConfigureNetworkRequest_ConfigType()
 }
@@ -4084,13 +4074,7 @@ type ConfigureNetworkRequest_NetworkInterface struct {
 	NetworkInterface *NetworkInterface `protobuf:"bytes,2,opt,name=network_interface,json=networkInterface,proto3,oneof"`
 }
 
-type ConfigureNetworkRequest_OvsConfig struct {
-	OvsConfig string `protobuf:"bytes,3,opt,name=ovs_config,json=ovsConfig,proto3,oneof"`
-}
-
 func (*ConfigureNetworkRequest_NetworkInterface) isConfigureNetworkRequest_ConfigType() {}
-
-func (*ConfigureNetworkRequest_OvsConfig) isConfigureNetworkRequest_ConfigType() {}
 
 type ConfigureNetworkResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -13948,13 +13932,12 @@ const file_pilab_agent_v2_agent_service_proto_rawDesc = "" +
 	"\x11CancelTaskRequest\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\"F\n" +
 	"\x12CancelTaskResponse\x120\n" +
-	"\amessage\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\amessage\"\xb3\x01\n" +
+	"\amessage\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\amessage\"\xa4\x01\n" +
 	"\x17ConfigureNetworkRequest\x12\x17\n" +
 	"\ahost_id\x18\x01 \x01(\tR\x06hostId\x12O\n" +
-	"\x11network_interface\x18\x02 \x01(\v2 .pilab.agent.v2.NetworkInterfaceH\x00R\x10networkInterface\x12\x1f\n" +
-	"\n" +
-	"ovs_config\x18\x03 \x01(\tH\x00R\tovsConfigB\r\n" +
-	"\vconfig_type\"L\n" +
+	"\x11network_interface\x18\x02 \x01(\v2 .pilab.agent.v2.NetworkInterfaceH\x00R\x10networkInterfaceB\r\n" +
+	"\vconfig_typeJ\x04\b\x03\x10\x04R\n" +
+	"ovs_config\"L\n" +
 	"\x18ConfigureNetworkResponse\x120\n" +
 	"\amessage\x18\x01 \x01(\v2\x16.google.protobuf.EmptyR\amessage\"\xf8\x01\n" +
 	"\x17ConfigureStorageRequest\x12\x17\n" +
@@ -15422,7 +15405,6 @@ func file_pilab_agent_v2_agent_service_proto_init() {
 	}
 	file_pilab_agent_v2_agent_service_proto_msgTypes[67].OneofWrappers = []any{
 		(*ConfigureNetworkRequest_NetworkInterface)(nil),
-		(*ConfigureNetworkRequest_OvsConfig)(nil),
 	}
 	file_pilab_agent_v2_agent_service_proto_msgTypes[69].OneofWrappers = []any{
 		(*ConfigureStorageRequest_LvmVolume)(nil),

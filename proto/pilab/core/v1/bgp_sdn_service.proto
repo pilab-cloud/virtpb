@@ -12,6 +12,7 @@ import "google/protobuf/timestamp.proto";
 
 enum SdnDriver {
   SDN_DRIVER_UNSPECIFIED = 0;
+  // Deprecated: Open vSwitch was removed; kept for wire compatibility.
   SDN_DRIVER_LEGACY_OVS = 1;
   SDN_DRIVER_KERNEL_EBPF_BGP = 2;
 }

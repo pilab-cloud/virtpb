@@ -499,10 +499,11 @@ message CancelTaskResponse {
 }
 
 message ConfigureNetworkRequest {
+  reserved 3;
+  reserved "ovs_config";
   string host_id = 1;
   oneof config_type {
     NetworkInterface network_interface = 2;
-    string ovs_config = 3;
   }
 }
 
