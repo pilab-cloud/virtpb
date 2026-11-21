@@ -287,8 +287,12 @@ type Cluster struct {
 	HostCount          int32                  `protobuf:"varint,9,opt,name=host_count,json=hostCount,proto3" json:"host_count,omitempty"`
 	VmCount            int32                  `protobuf:"varint,10,opt,name=vm_count,json=vmCount,proto3" json:"vm_count,omitempty"`
 	ResourceGroupCount int32                  `protobuf:"varint,11,opt,name=resource_group_count,json=resourceGroupCount,proto3" json:"resource_group_count,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// ha_enabled and drs_enabled are the effective automation switches; a
+	// cluster that never set them reports true (legacy behaviour).
+	HaEnabled     bool `protobuf:"varint,12,opt,name=ha_enabled,json=haEnabled,proto3" json:"ha_enabled,omitempty"`
+	DrsEnabled    bool `protobuf:"varint,13,opt,name=drs_enabled,json=drsEnabled,proto3" json:"drs_enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Cluster) Reset() {
@@ -396,6 +400,20 @@ func (x *Cluster) GetResourceGroupCount() int32 {
 		return x.ResourceGroupCount
 	}
 	return 0
+}
+
+func (x *Cluster) GetHaEnabled() bool {
+	if x != nil {
+		return x.HaEnabled
+	}
+	return false
+}
+
+func (x *Cluster) GetDrsEnabled() bool {
+	if x != nil {
+		return x.DrsEnabled
+	}
+	return false
 }
 
 type ListClustersRequest struct {
@@ -2146,7 +2164,7 @@ const file_pilab_director_v2_inventory_service_proto_rawDesc = "" +
 	"\vdatacenters\x18\x01 \x03(\v2\x1d.pilab.director.v2.DatacenterR\vdatacenters\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\"&\n" +
 	"\x14GetDatacenterRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xf5\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xb5\x03\n" +
 	"\aCluster\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
@@ -2163,7 +2181,11 @@ const file_pilab_director_v2_inventory_service_proto_rawDesc = "" +
 	"host_count\x18\t \x01(\x05R\thostCount\x12\x19\n" +
 	"\bvm_count\x18\n" +
 	" \x01(\x05R\avmCount\x120\n" +
-	"\x14resource_group_count\x18\v \x01(\x05R\x12resourceGroupCount\"5\n" +
+	"\x14resource_group_count\x18\v \x01(\x05R\x12resourceGroupCount\x12\x1d\n" +
+	"\n" +
+	"ha_enabled\x18\f \x01(\bR\thaEnabled\x12\x1f\n" +
+	"\vdrs_enabled\x18\r \x01(\bR\n" +
+	"drsEnabled\"5\n" +
 	"\x13ListClustersRequest\x12\x1e\n" +
 	"\n" +
 	"datacenter\x18\x01 \x01(\tR\n" +

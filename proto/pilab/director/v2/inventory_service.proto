@@ -70,6 +70,10 @@ message Cluster {
   int32 host_count = 9;
   int32 vm_count = 10;
   int32 resource_group_count = 11;
+  // ha_enabled and drs_enabled are the effective automation switches; a
+  // cluster that never set them reports true (legacy behaviour).
+  bool ha_enabled = 12;
+  bool drs_enabled = 13;
 }
 
 message ListClustersRequest {
