@@ -77,9 +77,21 @@ message GetDatastoreResponse {
   Datastore datastore = 1;
 }
 
+// ZfsDatastoreBacking describes a ZFS-backed datastore: a dataset (or zvol
+// hierarchy) on the given pool.
+message ZfsDatastoreBacking {
+  string zpool = 1;
+  string dataset = 2;
+  bool create = 3;
+  string mountpoint = 4;
+  string compression = 5;
+  string recordsize = 6;
+  string volblocksize = 7;
+}
+
 message CreateDatastoreRequest {
   string name = 1;
-  // dir, nfs, iscsi or ceph.
+  // dir, nfs, iscsi, ceph or zfs.
   string type = 2;
   // Mount path on the host, e.g. /var/lib/pivirt/datastores/gold.
   string path = 3;
@@ -89,6 +101,10 @@ message CreateDatastoreRequest {
   // Hosts to define it on. Empty means every active host of cluster_id.
   repeated string host_ids = 5;
   string cluster_id = 6;
+  // Backend-specific definition. Unset keeps the legacy type/options behaviour.
+  oneof backing {
+    ZfsDatastoreBacking zfs = 20;
+  }
 }
 
 message DatastoreOperation {
