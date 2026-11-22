@@ -60,6 +60,13 @@ message BlockDevice {
   string partition_table_type = 13; // "gpt", "dos", "unknown"
   bool is_system_disk = 14;     // true if carries root (/), /boot, or swap
   repeated BlockDevice children = 15;
+  // Hardware / SAN identity used by the shared-LVM pre-flight.
+  string scsi_wwid = 16;        // /dev/disk/by-id/scsi-<wwid>
+  string multipath_path = 17;   // /dev/mapper/<name> when multipath is active
+  string vendor = 18;
+  string device_id = 19;
+  string iscsi_session = 20;    // e.g. "session1" when the device is an iSCSI LUN
+  string lvm_vg = 21;           // volume group when the device/LV belongs to one
 }
 
 message ListDevicesRequest {
@@ -93,6 +100,42 @@ message WipeDiskRequest {
 message WipeDiskResponse {
   bool success = 1;
   string message = 2;
+}
+
+message RescanDevicesRequest {
+  string node_id = 1;
+}
+
+message RescanDevicesResponse {
+  string node_id = 1;
+  string hostname = 2;
+  repeated BlockDevice devices = 3;
+  string message = 4;
+}
+
+message DiskHealth {
+  string device = 1;
+  bool healthy = 2;
+  // status is the SMART overall-health value, e.g. "PASSED", "FAILED",
+  // "UNKNOWN" when smartctl is unavailable.
+  string status = 3;
+  int32 temperature_celsius = 4;
+  int64 power_on_hours = 5;
+  int64 reallocated_sectors = 6;
+  int64 pending_sectors = 7;
+  int64 wear_level_percent = 8;
+  string model = 9;
+  string serial = 10;
+  string detail = 11;
+}
+
+message GetDiskHealthRequest {
+  string node_id = 1;
+  string device = 2;
+}
+
+message GetDiskHealthResponse {
+  DiskHealth health = 1;
 }
 
 // ---------------- Partitions ----------------
@@ -133,6 +176,51 @@ message FormatPartitionRequest {
 message FormatPartitionResponse {
   bool success = 1;
   string message = 2;
+}
+
+message MountFilesystemRequest {
+  string node_id = 1;
+  string device = 2;            // e.g. "/dev/sda1" or "/dev/vg/lv"
+  string mount_point = 3;       // absolute host path
+  string fs_type = 4;           // optional; auto-detected when empty
+  repeated string options = 5;  // mount options, e.g. ["noatime"]
+  bool create_mountpoint = 6;
+  // persist=true asks the agent to make the mount survive reboot.
+  bool persist = 7;
+}
+
+message MountFilesystemResponse {
+  bool success = 1;
+  string message = 2;
+  string mount_point = 3;
+}
+
+message UnmountFilesystemRequest {
+  string node_id = 1;
+  string mount_point = 2;
+  bool force = 3;
+}
+
+message UnmountFilesystemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ResizePartitionRequest {
+  string node_id = 1;
+  string device = 2;            // disk e.g. "/dev/sda"
+  uint32 partition_number = 3;
+  // size_mb is the new partition size; 0 grows to the end of the disk.
+  int64 size_mb = 4;
+  // resize_filesystem grows ext4/xfs after the partition is resized.
+  bool resize_filesystem = 5;
+}
+
+message ResizePartitionResponse {
+  bool success = 1;
+  string message = 2;
+  string partition_device = 3;
+  int64 size_bytes = 4;
 }
 
 // ---------------- LVM ----------------
@@ -237,6 +325,21 @@ message RemoveLvmLvRequest {
 message RemoveLvmLvResponse {
   bool success = 1;
   string message = 2;
+}
+
+message CreateLvmThinPoolRequest {
+  string node_id = 1;
+  string vg_name = 2;
+  string pool_name = 3;
+  int64 size_mb = 4;            // 0 uses all free extents in the VG
+  int64 chunk_size_kb = 5;      // optional; e.g. 128
+  int64 metadata_size_mb = 6;   // optional
+}
+
+message CreateLvmThinPoolResponse {
+  bool success = 1;
+  string message = 2;
+  string pool_path = 3;         // e.g. "/dev/vg_fast/pool_vms"
 }
 
 // ---------------- ZFS ----------------
@@ -611,13 +714,18 @@ message CheckMigrationStorageResponse {
 service StorageProvisioningService {
   // Physical Devices & Disks
   rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse);
+  rpc RescanDevices(RescanDevicesRequest) returns (RescanDevicesResponse);
   rpc InitializeDisk(InitializeDiskRequest) returns (InitializeDiskResponse);
   rpc WipeDisk(WipeDiskRequest) returns (WipeDiskResponse);
+  rpc GetDiskHealth(GetDiskHealthRequest) returns (GetDiskHealthResponse);
 
   // Partitions & Filesystems
   rpc CreatePartition(CreatePartitionRequest) returns (CreatePartitionResponse);
   rpc DeletePartition(DeletePartitionRequest) returns (DeletePartitionResponse);
   rpc FormatPartition(FormatPartitionRequest) returns (FormatPartitionResponse);
+  rpc ResizePartition(ResizePartitionRequest) returns (ResizePartitionResponse);
+  rpc MountFilesystem(MountFilesystemRequest) returns (MountFilesystemResponse);
+  rpc UnmountFilesystem(UnmountFilesystemRequest) returns (UnmountFilesystemResponse);
 
   // LVM
   rpc ListLvm(ListLvmRequest) returns (ListLvmResponse);
@@ -627,6 +735,7 @@ service StorageProvisioningService {
   rpc RemoveLvmVg(RemoveLvmVgRequest) returns (RemoveLvmVgResponse);
   rpc CreateLvmLv(CreateLvmLvRequest) returns (CreateLvmLvResponse);
   rpc RemoveLvmLv(RemoveLvmLvRequest) returns (RemoveLvmLvResponse);
+  rpc CreateLvmThinPool(CreateLvmThinPoolRequest) returns (CreateLvmThinPoolResponse);
 
   // ZFS
   rpc ListZfs(ListZfsRequest) returns (ListZfsResponse);

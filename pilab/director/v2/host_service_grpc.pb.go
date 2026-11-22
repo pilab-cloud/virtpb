@@ -35,6 +35,7 @@ const (
 	HostAdminService_PowerOffHost_FullMethodName         = "/pilab.director.v2.HostAdminService/PowerOffHost"
 	HostAdminService_DeleteHost_FullMethodName           = "/pilab.director.v2.HostAdminService/DeleteHost"
 	HostAdminService_GetHostStats_FullMethodName         = "/pilab.director.v2.HostAdminService/GetHostStats"
+	HostAdminService_GetHostHardware_FullMethodName      = "/pilab.director.v2.HostAdminService/GetHostHardware"
 	HostAdminService_ListInventoryVolumes_FullMethodName = "/pilab.director.v2.HostAdminService/ListInventoryVolumes"
 	HostAdminService_ListDirectorTasks_FullMethodName    = "/pilab.director.v2.HostAdminService/ListDirectorTasks"
 )
@@ -77,6 +78,12 @@ type HostAdminServiceClient interface {
 	// GetHostStats returns the latest utilisation sample the host's agent
 	// reported.
 	GetHostStats(ctx context.Context, in *GetHostStatsRequest, opts ...grpc.CallOption) (*GetHostStatsResponse, error)
+	// GetHostHardware returns the physical hardware inventory (disks, network
+	// adapters and PCI devices) the host's agent last reported. Inventory is
+	// remembered per host and refreshed by the agent's periodic host report;
+	// an empty response with no reported_at means the host has not reported
+	// hardware yet.
+	GetHostHardware(ctx context.Context, in *GetHostHardwareRequest, opts ...grpc.CallOption) (*GetHostHardwareResponse, error)
 	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
 	// narrowed to one host.
 	ListInventoryVolumes(ctx context.Context, in *ListInventoryVolumesRequest, opts ...grpc.CallOption) (*ListInventoryVolumesResponse, error)
@@ -212,6 +219,16 @@ func (c *hostAdminServiceClient) GetHostStats(ctx context.Context, in *GetHostSt
 	return out, nil
 }
 
+func (c *hostAdminServiceClient) GetHostHardware(ctx context.Context, in *GetHostHardwareRequest, opts ...grpc.CallOption) (*GetHostHardwareResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetHostHardwareResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_GetHostHardware_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *hostAdminServiceClient) ListInventoryVolumes(ctx context.Context, in *ListInventoryVolumesRequest, opts ...grpc.CallOption) (*ListInventoryVolumesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListInventoryVolumesResponse)
@@ -270,6 +287,12 @@ type HostAdminServiceServer interface {
 	// GetHostStats returns the latest utilisation sample the host's agent
 	// reported.
 	GetHostStats(context.Context, *GetHostStatsRequest) (*GetHostStatsResponse, error)
+	// GetHostHardware returns the physical hardware inventory (disks, network
+	// adapters and PCI devices) the host's agent last reported. Inventory is
+	// remembered per host and refreshed by the agent's periodic host report;
+	// an empty response with no reported_at means the host has not reported
+	// hardware yet.
+	GetHostHardware(context.Context, *GetHostHardwareRequest) (*GetHostHardwareResponse, error)
 	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
 	// narrowed to one host.
 	ListInventoryVolumes(context.Context, *ListInventoryVolumesRequest) (*ListInventoryVolumesResponse, error)
@@ -320,6 +343,9 @@ func (UnimplementedHostAdminServiceServer) DeleteHost(context.Context, *DeleteHo
 }
 func (UnimplementedHostAdminServiceServer) GetHostStats(context.Context, *GetHostStatsRequest) (*GetHostStatsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetHostStats not implemented")
+}
+func (UnimplementedHostAdminServiceServer) GetHostHardware(context.Context, *GetHostHardwareRequest) (*GetHostHardwareResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetHostHardware not implemented")
 }
 func (UnimplementedHostAdminServiceServer) ListInventoryVolumes(context.Context, *ListInventoryVolumesRequest) (*ListInventoryVolumesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListInventoryVolumes not implemented")
@@ -564,6 +590,24 @@ func _HostAdminService_GetHostStats_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HostAdminService_GetHostHardware_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetHostHardwareRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).GetHostHardware(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_GetHostHardware_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).GetHostHardware(ctx, req.(*GetHostHardwareRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _HostAdminService_ListInventoryVolumes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListInventoryVolumesRequest)
 	if err := dec(in); err != nil {
@@ -654,6 +698,10 @@ var HostAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetHostStats",
 			Handler:    _HostAdminService_GetHostStats_Handler,
+		},
+		{
+			MethodName: "GetHostHardware",
+			Handler:    _HostAdminService_GetHostHardware_Handler,
 		},
 		{
 			MethodName: "ListInventoryVolumes",

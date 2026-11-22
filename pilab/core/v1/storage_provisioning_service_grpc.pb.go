@@ -20,11 +20,16 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	StorageProvisioningService_ListDevices_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListDevices"
+	StorageProvisioningService_RescanDevices_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/RescanDevices"
 	StorageProvisioningService_InitializeDisk_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/InitializeDisk"
 	StorageProvisioningService_WipeDisk_FullMethodName              = "/pilab.core.v1.StorageProvisioningService/WipeDisk"
+	StorageProvisioningService_GetDiskHealth_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/GetDiskHealth"
 	StorageProvisioningService_CreatePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreatePartition"
 	StorageProvisioningService_DeletePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/DeletePartition"
 	StorageProvisioningService_FormatPartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/FormatPartition"
+	StorageProvisioningService_ResizePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/ResizePartition"
+	StorageProvisioningService_MountFilesystem_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/MountFilesystem"
+	StorageProvisioningService_UnmountFilesystem_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/UnmountFilesystem"
 	StorageProvisioningService_ListLvm_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/ListLvm"
 	StorageProvisioningService_CreateLvmPv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmPv"
 	StorageProvisioningService_RemoveLvmPv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmPv"
@@ -32,6 +37,7 @@ const (
 	StorageProvisioningService_RemoveLvmVg_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmVg"
 	StorageProvisioningService_CreateLvmLv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmLv"
 	StorageProvisioningService_RemoveLvmLv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmLv"
+	StorageProvisioningService_CreateLvmThinPool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/CreateLvmThinPool"
 	StorageProvisioningService_ListZfs_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/ListZfs"
 	StorageProvisioningService_CreateZpool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateZpool"
 	StorageProvisioningService_DestroyZpool_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/DestroyZpool"
@@ -58,12 +64,17 @@ const (
 type StorageProvisioningServiceClient interface {
 	// Physical Devices & Disks
 	ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error)
+	RescanDevices(ctx context.Context, in *RescanDevicesRequest, opts ...grpc.CallOption) (*RescanDevicesResponse, error)
 	InitializeDisk(ctx context.Context, in *InitializeDiskRequest, opts ...grpc.CallOption) (*InitializeDiskResponse, error)
 	WipeDisk(ctx context.Context, in *WipeDiskRequest, opts ...grpc.CallOption) (*WipeDiskResponse, error)
+	GetDiskHealth(ctx context.Context, in *GetDiskHealthRequest, opts ...grpc.CallOption) (*GetDiskHealthResponse, error)
 	// Partitions & Filesystems
 	CreatePartition(ctx context.Context, in *CreatePartitionRequest, opts ...grpc.CallOption) (*CreatePartitionResponse, error)
 	DeletePartition(ctx context.Context, in *DeletePartitionRequest, opts ...grpc.CallOption) (*DeletePartitionResponse, error)
 	FormatPartition(ctx context.Context, in *FormatPartitionRequest, opts ...grpc.CallOption) (*FormatPartitionResponse, error)
+	ResizePartition(ctx context.Context, in *ResizePartitionRequest, opts ...grpc.CallOption) (*ResizePartitionResponse, error)
+	MountFilesystem(ctx context.Context, in *MountFilesystemRequest, opts ...grpc.CallOption) (*MountFilesystemResponse, error)
+	UnmountFilesystem(ctx context.Context, in *UnmountFilesystemRequest, opts ...grpc.CallOption) (*UnmountFilesystemResponse, error)
 	// LVM
 	ListLvm(ctx context.Context, in *ListLvmRequest, opts ...grpc.CallOption) (*ListLvmResponse, error)
 	CreateLvmPv(ctx context.Context, in *CreateLvmPvRequest, opts ...grpc.CallOption) (*CreateLvmPvResponse, error)
@@ -72,6 +83,7 @@ type StorageProvisioningServiceClient interface {
 	RemoveLvmVg(ctx context.Context, in *RemoveLvmVgRequest, opts ...grpc.CallOption) (*RemoveLvmVgResponse, error)
 	CreateLvmLv(ctx context.Context, in *CreateLvmLvRequest, opts ...grpc.CallOption) (*CreateLvmLvResponse, error)
 	RemoveLvmLv(ctx context.Context, in *RemoveLvmLvRequest, opts ...grpc.CallOption) (*RemoveLvmLvResponse, error)
+	CreateLvmThinPool(ctx context.Context, in *CreateLvmThinPoolRequest, opts ...grpc.CallOption) (*CreateLvmThinPoolResponse, error)
 	// ZFS
 	ListZfs(ctx context.Context, in *ListZfsRequest, opts ...grpc.CallOption) (*ListZfsResponse, error)
 	CreateZpool(ctx context.Context, in *CreateZpoolRequest, opts ...grpc.CallOption) (*CreateZpoolResponse, error)
@@ -115,6 +127,16 @@ func (c *storageProvisioningServiceClient) ListDevices(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *storageProvisioningServiceClient) RescanDevices(ctx context.Context, in *RescanDevicesRequest, opts ...grpc.CallOption) (*RescanDevicesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RescanDevicesResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_RescanDevices_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageProvisioningServiceClient) InitializeDisk(ctx context.Context, in *InitializeDiskRequest, opts ...grpc.CallOption) (*InitializeDiskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(InitializeDiskResponse)
@@ -129,6 +151,16 @@ func (c *storageProvisioningServiceClient) WipeDisk(ctx context.Context, in *Wip
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(WipeDiskResponse)
 	err := c.cc.Invoke(ctx, StorageProvisioningService_WipeDisk_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) GetDiskHealth(ctx context.Context, in *GetDiskHealthRequest, opts ...grpc.CallOption) (*GetDiskHealthResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDiskHealthResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_GetDiskHealth_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -159,6 +191,36 @@ func (c *storageProvisioningServiceClient) FormatPartition(ctx context.Context, 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(FormatPartitionResponse)
 	err := c.cc.Invoke(ctx, StorageProvisioningService_FormatPartition_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ResizePartition(ctx context.Context, in *ResizePartitionRequest, opts ...grpc.CallOption) (*ResizePartitionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResizePartitionResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ResizePartition_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) MountFilesystem(ctx context.Context, in *MountFilesystemRequest, opts ...grpc.CallOption) (*MountFilesystemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MountFilesystemResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_MountFilesystem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) UnmountFilesystem(ctx context.Context, in *UnmountFilesystemRequest, opts ...grpc.CallOption) (*UnmountFilesystemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UnmountFilesystemResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_UnmountFilesystem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -229,6 +291,16 @@ func (c *storageProvisioningServiceClient) RemoveLvmLv(ctx context.Context, in *
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RemoveLvmLvResponse)
 	err := c.cc.Invoke(ctx, StorageProvisioningService_RemoveLvmLv_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) CreateLvmThinPool(ctx context.Context, in *CreateLvmThinPoolRequest, opts ...grpc.CallOption) (*CreateLvmThinPoolResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateLvmThinPoolResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CreateLvmThinPool_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -421,12 +493,17 @@ func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Con
 type StorageProvisioningServiceServer interface {
 	// Physical Devices & Disks
 	ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error)
+	RescanDevices(context.Context, *RescanDevicesRequest) (*RescanDevicesResponse, error)
 	InitializeDisk(context.Context, *InitializeDiskRequest) (*InitializeDiskResponse, error)
 	WipeDisk(context.Context, *WipeDiskRequest) (*WipeDiskResponse, error)
+	GetDiskHealth(context.Context, *GetDiskHealthRequest) (*GetDiskHealthResponse, error)
 	// Partitions & Filesystems
 	CreatePartition(context.Context, *CreatePartitionRequest) (*CreatePartitionResponse, error)
 	DeletePartition(context.Context, *DeletePartitionRequest) (*DeletePartitionResponse, error)
 	FormatPartition(context.Context, *FormatPartitionRequest) (*FormatPartitionResponse, error)
+	ResizePartition(context.Context, *ResizePartitionRequest) (*ResizePartitionResponse, error)
+	MountFilesystem(context.Context, *MountFilesystemRequest) (*MountFilesystemResponse, error)
+	UnmountFilesystem(context.Context, *UnmountFilesystemRequest) (*UnmountFilesystemResponse, error)
 	// LVM
 	ListLvm(context.Context, *ListLvmRequest) (*ListLvmResponse, error)
 	CreateLvmPv(context.Context, *CreateLvmPvRequest) (*CreateLvmPvResponse, error)
@@ -435,6 +512,7 @@ type StorageProvisioningServiceServer interface {
 	RemoveLvmVg(context.Context, *RemoveLvmVgRequest) (*RemoveLvmVgResponse, error)
 	CreateLvmLv(context.Context, *CreateLvmLvRequest) (*CreateLvmLvResponse, error)
 	RemoveLvmLv(context.Context, *RemoveLvmLvRequest) (*RemoveLvmLvResponse, error)
+	CreateLvmThinPool(context.Context, *CreateLvmThinPoolRequest) (*CreateLvmThinPoolResponse, error)
 	// ZFS
 	ListZfs(context.Context, *ListZfsRequest) (*ListZfsResponse, error)
 	CreateZpool(context.Context, *CreateZpoolRequest) (*CreateZpoolResponse, error)
@@ -471,11 +549,17 @@ type UnimplementedStorageProvisioningServiceServer struct{}
 func (UnimplementedStorageProvisioningServiceServer) ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListDevices not implemented")
 }
+func (UnimplementedStorageProvisioningServiceServer) RescanDevices(context.Context, *RescanDevicesRequest) (*RescanDevicesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RescanDevices not implemented")
+}
 func (UnimplementedStorageProvisioningServiceServer) InitializeDisk(context.Context, *InitializeDiskRequest) (*InitializeDiskResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method InitializeDisk not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) WipeDisk(context.Context, *WipeDiskRequest) (*WipeDiskResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method WipeDisk not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) GetDiskHealth(context.Context, *GetDiskHealthRequest) (*GetDiskHealthResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetDiskHealth not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) CreatePartition(context.Context, *CreatePartitionRequest) (*CreatePartitionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePartition not implemented")
@@ -485,6 +569,15 @@ func (UnimplementedStorageProvisioningServiceServer) DeletePartition(context.Con
 }
 func (UnimplementedStorageProvisioningServiceServer) FormatPartition(context.Context, *FormatPartitionRequest) (*FormatPartitionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method FormatPartition not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ResizePartition(context.Context, *ResizePartitionRequest) (*ResizePartitionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResizePartition not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) MountFilesystem(context.Context, *MountFilesystemRequest) (*MountFilesystemResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MountFilesystem not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) UnmountFilesystem(context.Context, *UnmountFilesystemRequest) (*UnmountFilesystemResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnmountFilesystem not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) ListLvm(context.Context, *ListLvmRequest) (*ListLvmResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListLvm not implemented")
@@ -506,6 +599,9 @@ func (UnimplementedStorageProvisioningServiceServer) CreateLvmLv(context.Context
 }
 func (UnimplementedStorageProvisioningServiceServer) RemoveLvmLv(context.Context, *RemoveLvmLvRequest) (*RemoveLvmLvResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RemoveLvmLv not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CreateLvmThinPool(context.Context, *CreateLvmThinPoolRequest) (*CreateLvmThinPoolResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateLvmThinPool not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) ListZfs(context.Context, *ListZfsRequest) (*ListZfsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListZfs not implemented")
@@ -601,6 +697,24 @@ func _StorageProvisioningService_ListDevices_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageProvisioningService_RescanDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RescanDevicesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).RescanDevices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_RescanDevices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).RescanDevices(ctx, req.(*RescanDevicesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageProvisioningService_InitializeDisk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(InitializeDiskRequest)
 	if err := dec(in); err != nil {
@@ -633,6 +747,24 @@ func _StorageProvisioningService_WipeDisk_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageProvisioningServiceServer).WipeDisk(ctx, req.(*WipeDiskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_GetDiskHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDiskHealthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).GetDiskHealth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_GetDiskHealth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).GetDiskHealth(ctx, req.(*GetDiskHealthRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -687,6 +819,60 @@ func _StorageProvisioningService_FormatPartition_Handler(srv interface{}, ctx co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageProvisioningServiceServer).FormatPartition(ctx, req.(*FormatPartitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ResizePartition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResizePartitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ResizePartition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ResizePartition_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ResizePartition(ctx, req.(*ResizePartitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_MountFilesystem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MountFilesystemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).MountFilesystem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_MountFilesystem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).MountFilesystem(ctx, req.(*MountFilesystemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_UnmountFilesystem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnmountFilesystemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).UnmountFilesystem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_UnmountFilesystem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).UnmountFilesystem(ctx, req.(*UnmountFilesystemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -813,6 +999,24 @@ func _StorageProvisioningService_RemoveLvmLv_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageProvisioningServiceServer).RemoveLvmLv(ctx, req.(*RemoveLvmLvRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_CreateLvmThinPool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateLvmThinPoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CreateLvmThinPool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CreateLvmThinPool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CreateLvmThinPool(ctx, req.(*CreateLvmThinPoolRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1153,12 +1357,20 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _StorageProvisioningService_ListDevices_Handler,
 		},
 		{
+			MethodName: "RescanDevices",
+			Handler:    _StorageProvisioningService_RescanDevices_Handler,
+		},
+		{
 			MethodName: "InitializeDisk",
 			Handler:    _StorageProvisioningService_InitializeDisk_Handler,
 		},
 		{
 			MethodName: "WipeDisk",
 			Handler:    _StorageProvisioningService_WipeDisk_Handler,
+		},
+		{
+			MethodName: "GetDiskHealth",
+			Handler:    _StorageProvisioningService_GetDiskHealth_Handler,
 		},
 		{
 			MethodName: "CreatePartition",
@@ -1171,6 +1383,18 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FormatPartition",
 			Handler:    _StorageProvisioningService_FormatPartition_Handler,
+		},
+		{
+			MethodName: "ResizePartition",
+			Handler:    _StorageProvisioningService_ResizePartition_Handler,
+		},
+		{
+			MethodName: "MountFilesystem",
+			Handler:    _StorageProvisioningService_MountFilesystem_Handler,
+		},
+		{
+			MethodName: "UnmountFilesystem",
+			Handler:    _StorageProvisioningService_UnmountFilesystem_Handler,
 		},
 		{
 			MethodName: "ListLvm",
@@ -1199,6 +1423,10 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveLvmLv",
 			Handler:    _StorageProvisioningService_RemoveLvmLv_Handler,
+		},
+		{
+			MethodName: "CreateLvmThinPool",
+			Handler:    _StorageProvisioningService_CreateLvmThinPool_Handler,
 		},
 		{
 			MethodName: "ListZfs",

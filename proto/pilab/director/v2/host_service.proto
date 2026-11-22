@@ -6,8 +6,10 @@ syntax = "proto3";
 
 package pilab.director.v2;
 
+import "google/protobuf/timestamp.proto";
 import "pilab/director/v2/node_service.proto";
 import "pilab/director/v2/task_service.proto";
+import "pilab/pivirtd/v1/host_resource.proto";
 import "pilab/pivirtd/v1/pivirtd.proto";
 import "pilab/resource/v1/resource.proto";
 
@@ -55,6 +57,13 @@ service HostAdminService {
   // GetHostStats returns the latest utilisation sample the host's agent
   // reported.
   rpc GetHostStats(GetHostStatsRequest) returns (GetHostStatsResponse);
+
+  // GetHostHardware returns the physical hardware inventory (disks, network
+  // adapters and PCI devices) the host's agent last reported. Inventory is
+  // remembered per host and refreshed by the agent's periodic host report;
+  // an empty response with no reported_at means the host has not reported
+  // hardware yet.
+  rpc GetHostHardware(GetHostHardwareRequest) returns (GetHostHardwareResponse);
 
   // ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
   // narrowed to one host.
@@ -235,6 +244,20 @@ message GetHostStatsResponse {
   string host_id = 1;
   // stats is the latest HostStats the host's agent reported.
   pilab.pivirtd.v1.HostStats stats = 2;
+}
+
+message GetHostHardwareRequest {
+  string id = 1;
+}
+
+message GetHostHardwareResponse {
+  string host_id = 1;
+  repeated pilab.pivirtd.v1.HostDisk disks = 2;
+  repeated pilab.pivirtd.v1.HostNetworkAdapter network_adapters = 3;
+  repeated pilab.pivirtd.v1.HostPCIDeviceInfo pci_devices = 4;
+  // reported_at is when the agent last sent this inventory; unset when the
+  // host has never reported hardware.
+  google.protobuf.Timestamp reported_at = 5;
 }
 
 message InventoryVolume {

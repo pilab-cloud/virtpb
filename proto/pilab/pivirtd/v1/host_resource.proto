@@ -68,6 +68,69 @@ message HostResourceReport {
   // e.g. http://10.0.0.5:50061. The agent works it out from its own listen
   // address; the director never guesses it.
   string agent_endpoint = 21;
+
+  // Physical hardware inventory. These are the devices the hypervisor
+  // actually has, not the resources VMs request; they change only when the
+  // host's hardware changes.
+  repeated HostDisk disks = 22;
+  repeated HostNetworkAdapter network_adapters = 23;
+  repeated HostPCIDeviceInfo pci_devices = 24;
+}
+
+// HostDisk is one physical block device (not a partition).
+message HostDisk {
+  // name is the kernel name, e.g. "sda" or "nvme0n1".
+  string name = 1;
+  // path is the device node, e.g. "/dev/sda".
+  string path = 2;
+  string model = 3;
+  string serial = 4;
+  // wwn is the World Wide Name / unique device id when the kernel exposes one.
+  string wwn = 5;
+  string vendor = 6;
+  int64 size_bytes = 7;
+  // type is "hdd", "ssd" or "nvme".
+  string type = 8;
+  // bus is "sata", "sas", "nvme", "virtio", "usb" or "unknown".
+  string bus = 9;
+  bool rotational = 10;
+  bool removable = 11;
+  // pci_address is the parent controller's BDF when the disk sits behind PCI.
+  string pci_address = 12;
+}
+
+// HostNetworkAdapter is one physical or virtual network interface on the host.
+message HostNetworkAdapter {
+  string name = 1;
+  string mac_address = 2;
+  string driver = 3;
+  // pci_address is the parent controller's BDF, empty for virtual interfaces.
+  string pci_address = 4;
+  string vendor = 5;
+  string model = 6;
+  // speed_mbps is the negotiated link speed; 0 when unknown or down.
+  int64 speed_mbps = 7;
+  int32 mtu = 8;
+  bool link_up = 9;
+  bool virtual = 10;
+  repeated string addresses = 11;
+}
+
+// HostPCIDeviceInfo is one device on the host's PCI bus.
+message HostPCIDeviceInfo {
+  // address is the BDF, e.g. "0000:01:00.0".
+  string address = 1;
+  string vendor_id = 2;
+  string device_id = 3;
+  // class_id is the PCI class code without the 0x prefix, e.g. "0200".
+  string class_id = 4;
+  string class_name = 5;
+  string driver = 6;
+  string subsystem_vendor_id = 7;
+  string subsystem_device_id = 8;
+  bool multifunction = 9;
+  // network_interface names the netdev this device backs, when it is a NIC.
+  string network_interface = 10;
 }
 
 // NUMANode represents a single NUMA node's configuration.

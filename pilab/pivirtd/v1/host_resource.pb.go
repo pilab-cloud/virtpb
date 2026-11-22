@@ -174,8 +174,14 @@ type HostResourceReport struct {
 	// e.g. http://10.0.0.5:50061. The agent works it out from its own listen
 	// address; the director never guesses it.
 	AgentEndpoint string `protobuf:"bytes,21,opt,name=agent_endpoint,json=agentEndpoint,proto3" json:"agent_endpoint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Physical hardware inventory. These are the devices the hypervisor
+	// actually has, not the resources VMs request; they change only when the
+	// host's hardware changes.
+	Disks           []*HostDisk           `protobuf:"bytes,22,rep,name=disks,proto3" json:"disks,omitempty"`
+	NetworkAdapters []*HostNetworkAdapter `protobuf:"bytes,23,rep,name=network_adapters,json=networkAdapters,proto3" json:"network_adapters,omitempty"`
+	PciDevices      []*HostPCIDeviceInfo  `protobuf:"bytes,24,rep,name=pci_devices,json=pciDevices,proto3" json:"pci_devices,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *HostResourceReport) Reset() {
@@ -355,6 +361,413 @@ func (x *HostResourceReport) GetAgentEndpoint() string {
 	return ""
 }
 
+func (x *HostResourceReport) GetDisks() []*HostDisk {
+	if x != nil {
+		return x.Disks
+	}
+	return nil
+}
+
+func (x *HostResourceReport) GetNetworkAdapters() []*HostNetworkAdapter {
+	if x != nil {
+		return x.NetworkAdapters
+	}
+	return nil
+}
+
+func (x *HostResourceReport) GetPciDevices() []*HostPCIDeviceInfo {
+	if x != nil {
+		return x.PciDevices
+	}
+	return nil
+}
+
+// HostDisk is one physical block device (not a partition).
+type HostDisk struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the kernel name, e.g. "sda" or "nvme0n1".
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// path is the device node, e.g. "/dev/sda".
+	Path   string `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
+	Model  string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
+	Serial string `protobuf:"bytes,4,opt,name=serial,proto3" json:"serial,omitempty"`
+	// wwn is the World Wide Name / unique device id when the kernel exposes one.
+	Wwn       string `protobuf:"bytes,5,opt,name=wwn,proto3" json:"wwn,omitempty"`
+	Vendor    string `protobuf:"bytes,6,opt,name=vendor,proto3" json:"vendor,omitempty"`
+	SizeBytes int64  `protobuf:"varint,7,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	// type is "hdd", "ssd" or "nvme".
+	Type string `protobuf:"bytes,8,opt,name=type,proto3" json:"type,omitempty"`
+	// bus is "sata", "sas", "nvme", "virtio", "usb" or "unknown".
+	Bus        string `protobuf:"bytes,9,opt,name=bus,proto3" json:"bus,omitempty"`
+	Rotational bool   `protobuf:"varint,10,opt,name=rotational,proto3" json:"rotational,omitempty"`
+	Removable  bool   `protobuf:"varint,11,opt,name=removable,proto3" json:"removable,omitempty"`
+	// pci_address is the parent controller's BDF when the disk sits behind PCI.
+	PciAddress    string `protobuf:"bytes,12,opt,name=pci_address,json=pciAddress,proto3" json:"pci_address,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HostDisk) Reset() {
+	*x = HostDisk{}
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HostDisk) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HostDisk) ProtoMessage() {}
+
+func (x *HostDisk) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HostDisk.ProtoReflect.Descriptor instead.
+func (*HostDisk) Descriptor() ([]byte, []int) {
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *HostDisk) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *HostDisk) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *HostDisk) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *HostDisk) GetSerial() string {
+	if x != nil {
+		return x.Serial
+	}
+	return ""
+}
+
+func (x *HostDisk) GetWwn() string {
+	if x != nil {
+		return x.Wwn
+	}
+	return ""
+}
+
+func (x *HostDisk) GetVendor() string {
+	if x != nil {
+		return x.Vendor
+	}
+	return ""
+}
+
+func (x *HostDisk) GetSizeBytes() int64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
+func (x *HostDisk) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *HostDisk) GetBus() string {
+	if x != nil {
+		return x.Bus
+	}
+	return ""
+}
+
+func (x *HostDisk) GetRotational() bool {
+	if x != nil {
+		return x.Rotational
+	}
+	return false
+}
+
+func (x *HostDisk) GetRemovable() bool {
+	if x != nil {
+		return x.Removable
+	}
+	return false
+}
+
+func (x *HostDisk) GetPciAddress() string {
+	if x != nil {
+		return x.PciAddress
+	}
+	return ""
+}
+
+// HostNetworkAdapter is one physical or virtual network interface on the host.
+type HostNetworkAdapter struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	Name       string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	MacAddress string                 `protobuf:"bytes,2,opt,name=mac_address,json=macAddress,proto3" json:"mac_address,omitempty"`
+	Driver     string                 `protobuf:"bytes,3,opt,name=driver,proto3" json:"driver,omitempty"`
+	// pci_address is the parent controller's BDF, empty for virtual interfaces.
+	PciAddress string `protobuf:"bytes,4,opt,name=pci_address,json=pciAddress,proto3" json:"pci_address,omitempty"`
+	Vendor     string `protobuf:"bytes,5,opt,name=vendor,proto3" json:"vendor,omitempty"`
+	Model      string `protobuf:"bytes,6,opt,name=model,proto3" json:"model,omitempty"`
+	// speed_mbps is the negotiated link speed; 0 when unknown or down.
+	SpeedMbps     int64    `protobuf:"varint,7,opt,name=speed_mbps,json=speedMbps,proto3" json:"speed_mbps,omitempty"`
+	Mtu           int32    `protobuf:"varint,8,opt,name=mtu,proto3" json:"mtu,omitempty"`
+	LinkUp        bool     `protobuf:"varint,9,opt,name=link_up,json=linkUp,proto3" json:"link_up,omitempty"`
+	Virtual       bool     `protobuf:"varint,10,opt,name=virtual,proto3" json:"virtual,omitempty"`
+	Addresses     []string `protobuf:"bytes,11,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HostNetworkAdapter) Reset() {
+	*x = HostNetworkAdapter{}
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HostNetworkAdapter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HostNetworkAdapter) ProtoMessage() {}
+
+func (x *HostNetworkAdapter) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HostNetworkAdapter.ProtoReflect.Descriptor instead.
+func (*HostNetworkAdapter) Descriptor() ([]byte, []int) {
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *HostNetworkAdapter) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *HostNetworkAdapter) GetMacAddress() string {
+	if x != nil {
+		return x.MacAddress
+	}
+	return ""
+}
+
+func (x *HostNetworkAdapter) GetDriver() string {
+	if x != nil {
+		return x.Driver
+	}
+	return ""
+}
+
+func (x *HostNetworkAdapter) GetPciAddress() string {
+	if x != nil {
+		return x.PciAddress
+	}
+	return ""
+}
+
+func (x *HostNetworkAdapter) GetVendor() string {
+	if x != nil {
+		return x.Vendor
+	}
+	return ""
+}
+
+func (x *HostNetworkAdapter) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *HostNetworkAdapter) GetSpeedMbps() int64 {
+	if x != nil {
+		return x.SpeedMbps
+	}
+	return 0
+}
+
+func (x *HostNetworkAdapter) GetMtu() int32 {
+	if x != nil {
+		return x.Mtu
+	}
+	return 0
+}
+
+func (x *HostNetworkAdapter) GetLinkUp() bool {
+	if x != nil {
+		return x.LinkUp
+	}
+	return false
+}
+
+func (x *HostNetworkAdapter) GetVirtual() bool {
+	if x != nil {
+		return x.Virtual
+	}
+	return false
+}
+
+func (x *HostNetworkAdapter) GetAddresses() []string {
+	if x != nil {
+		return x.Addresses
+	}
+	return nil
+}
+
+// HostPCIDeviceInfo is one device on the host's PCI bus.
+type HostPCIDeviceInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// address is the BDF, e.g. "0000:01:00.0".
+	Address  string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	VendorId string `protobuf:"bytes,2,opt,name=vendor_id,json=vendorId,proto3" json:"vendor_id,omitempty"`
+	DeviceId string `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	// class_id is the PCI class code without the 0x prefix, e.g. "0200".
+	ClassId           string `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassName         string `protobuf:"bytes,5,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	Driver            string `protobuf:"bytes,6,opt,name=driver,proto3" json:"driver,omitempty"`
+	SubsystemVendorId string `protobuf:"bytes,7,opt,name=subsystem_vendor_id,json=subsystemVendorId,proto3" json:"subsystem_vendor_id,omitempty"`
+	SubsystemDeviceId string `protobuf:"bytes,8,opt,name=subsystem_device_id,json=subsystemDeviceId,proto3" json:"subsystem_device_id,omitempty"`
+	Multifunction     bool   `protobuf:"varint,9,opt,name=multifunction,proto3" json:"multifunction,omitempty"`
+	// network_interface names the netdev this device backs, when it is a NIC.
+	NetworkInterface string `protobuf:"bytes,10,opt,name=network_interface,json=networkInterface,proto3" json:"network_interface,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *HostPCIDeviceInfo) Reset() {
+	*x = HostPCIDeviceInfo{}
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HostPCIDeviceInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HostPCIDeviceInfo) ProtoMessage() {}
+
+func (x *HostPCIDeviceInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HostPCIDeviceInfo.ProtoReflect.Descriptor instead.
+func (*HostPCIDeviceInfo) Descriptor() ([]byte, []int) {
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *HostPCIDeviceInfo) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetVendorId() string {
+	if x != nil {
+		return x.VendorId
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetDeviceId() string {
+	if x != nil {
+		return x.DeviceId
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetClassName() string {
+	if x != nil {
+		return x.ClassName
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetDriver() string {
+	if x != nil {
+		return x.Driver
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetSubsystemVendorId() string {
+	if x != nil {
+		return x.SubsystemVendorId
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetSubsystemDeviceId() string {
+	if x != nil {
+		return x.SubsystemDeviceId
+	}
+	return ""
+}
+
+func (x *HostPCIDeviceInfo) GetMultifunction() bool {
+	if x != nil {
+		return x.Multifunction
+	}
+	return false
+}
+
+func (x *HostPCIDeviceInfo) GetNetworkInterface() string {
+	if x != nil {
+		return x.NetworkInterface
+	}
+	return ""
+}
+
 // NUMANode represents a single NUMA node's configuration.
 type NUMANode struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
@@ -367,7 +780,7 @@ type NUMANode struct {
 
 func (x *NUMANode) Reset() {
 	*x = NUMANode{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[1]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -379,7 +792,7 @@ func (x *NUMANode) String() string {
 func (*NUMANode) ProtoMessage() {}
 
 func (x *NUMANode) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[1]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -392,7 +805,7 @@ func (x *NUMANode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NUMANode.ProtoReflect.Descriptor instead.
 func (*NUMANode) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{1}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *NUMANode) GetNodeId() int32 {
@@ -428,7 +841,7 @@ type StorageSummary struct {
 
 func (x *StorageSummary) Reset() {
 	*x = StorageSummary{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[2]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -440,7 +853,7 @@ func (x *StorageSummary) String() string {
 func (*StorageSummary) ProtoMessage() {}
 
 func (x *StorageSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[2]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -453,7 +866,7 @@ func (x *StorageSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageSummary.ProtoReflect.Descriptor instead.
 func (*StorageSummary) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{2}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StorageSummary) GetPoolTotalBytes() int64 {
@@ -492,7 +905,7 @@ type StoragePoolSummary struct {
 
 func (x *StoragePoolSummary) Reset() {
 	*x = StoragePoolSummary{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[3]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -504,7 +917,7 @@ func (x *StoragePoolSummary) String() string {
 func (*StoragePoolSummary) ProtoMessage() {}
 
 func (x *StoragePoolSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[3]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -517,7 +930,7 @@ func (x *StoragePoolSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoragePoolSummary.ProtoReflect.Descriptor instead.
 func (*StoragePoolSummary) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{3}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *StoragePoolSummary) GetId() string {
@@ -571,7 +984,7 @@ type SubscribeEventsRequest struct {
 
 func (x *SubscribeEventsRequest) Reset() {
 	*x = SubscribeEventsRequest{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[4]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -583,7 +996,7 @@ func (x *SubscribeEventsRequest) String() string {
 func (*SubscribeEventsRequest) ProtoMessage() {}
 
 func (x *SubscribeEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[4]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -596,7 +1009,7 @@ func (x *SubscribeEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeEventsRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeEventsRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{4}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{7}
 }
 
 // HostEvent represents an event occurring on the host, with a typed payload.
@@ -621,7 +1034,7 @@ type HostEvent struct {
 
 func (x *HostEvent) Reset() {
 	*x = HostEvent{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[5]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -633,7 +1046,7 @@ func (x *HostEvent) String() string {
 func (*HostEvent) ProtoMessage() {}
 
 func (x *HostEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[5]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -646,7 +1059,7 @@ func (x *HostEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HostEvent.ProtoReflect.Descriptor instead.
 func (*HostEvent) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{5}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *HostEvent) GetId() string {
@@ -799,7 +1212,7 @@ type VmLifecycleEvent struct {
 
 func (x *VmLifecycleEvent) Reset() {
 	*x = VmLifecycleEvent{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[6]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -811,7 +1224,7 @@ func (x *VmLifecycleEvent) String() string {
 func (*VmLifecycleEvent) ProtoMessage() {}
 
 func (x *VmLifecycleEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[6]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -824,7 +1237,7 @@ func (x *VmLifecycleEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VmLifecycleEvent.ProtoReflect.Descriptor instead.
 func (*VmLifecycleEvent) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{6}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *VmLifecycleEvent) GetVmName() string {
@@ -867,7 +1280,7 @@ type HostHealthEvent struct {
 
 func (x *HostHealthEvent) Reset() {
 	*x = HostHealthEvent{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[7]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -879,7 +1292,7 @@ func (x *HostHealthEvent) String() string {
 func (*HostHealthEvent) ProtoMessage() {}
 
 func (x *HostHealthEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[7]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -892,7 +1305,7 @@ func (x *HostHealthEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HostHealthEvent.ProtoReflect.Descriptor instead.
 func (*HostHealthEvent) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{7}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *HostHealthEvent) GetCheckName() string {
@@ -929,7 +1342,7 @@ type ResourcePressureEvent struct {
 
 func (x *ResourcePressureEvent) Reset() {
 	*x = ResourcePressureEvent{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[8]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -941,7 +1354,7 @@ func (x *ResourcePressureEvent) String() string {
 func (*ResourcePressureEvent) ProtoMessage() {}
 
 func (x *ResourcePressureEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[8]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -954,7 +1367,7 @@ func (x *ResourcePressureEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourcePressureEvent.ProtoReflect.Descriptor instead.
 func (*ResourcePressureEvent) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{8}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ResourcePressureEvent) GetResourceType() string {
@@ -999,7 +1412,7 @@ type VmDiskMoveEvent struct {
 
 func (x *VmDiskMoveEvent) Reset() {
 	*x = VmDiskMoveEvent{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[9]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1011,7 +1424,7 @@ func (x *VmDiskMoveEvent) String() string {
 func (*VmDiskMoveEvent) ProtoMessage() {}
 
 func (x *VmDiskMoveEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[9]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1024,7 +1437,7 @@ func (x *VmDiskMoveEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VmDiskMoveEvent.ProtoReflect.Descriptor instead.
 func (*VmDiskMoveEvent) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{9}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *VmDiskMoveEvent) GetVmName() string {
@@ -1083,7 +1496,7 @@ type VmSnapshotEvent struct {
 
 func (x *VmSnapshotEvent) Reset() {
 	*x = VmSnapshotEvent{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[10]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1095,7 +1508,7 @@ func (x *VmSnapshotEvent) String() string {
 func (*VmSnapshotEvent) ProtoMessage() {}
 
 func (x *VmSnapshotEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[10]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1108,7 +1521,7 @@ func (x *VmSnapshotEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VmSnapshotEvent.ProtoReflect.Descriptor instead.
 func (*VmSnapshotEvent) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{10}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *VmSnapshotEvent) GetVmName() string {
@@ -1170,7 +1583,7 @@ type VmMigrationEvent struct {
 
 func (x *VmMigrationEvent) Reset() {
 	*x = VmMigrationEvent{}
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[11]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1182,7 +1595,7 @@ func (x *VmMigrationEvent) String() string {
 func (*VmMigrationEvent) ProtoMessage() {}
 
 func (x *VmMigrationEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[11]
+	mi := &file_pilab_pivirtd_v1_host_resource_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1195,7 +1608,7 @@ func (x *VmMigrationEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VmMigrationEvent.ProtoReflect.Descriptor instead.
 func (*VmMigrationEvent) Descriptor() ([]byte, []int) {
-	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{11}
+	return file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *VmMigrationEvent) GetVmName() string {
@@ -1265,7 +1678,7 @@ var File_pilab_pivirtd_v1_host_resource_proto protoreflect.FileDescriptor
 
 const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\n" +
-	"$pilab/pivirtd/v1/host_resource.proto\x12\x10pilab.pivirtd.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\a\n" +
+	"$pilab/pivirtd/v1/host_resource.proto\x12\x10pilab.pivirtd.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\t\n" +
 	"\x12HostResourceReport\x12#\n" +
 	"\rphysical_cpus\x18\x01 \x01(\x05R\fphysicalCpus\x12%\n" +
 	"\x0ephysical_cores\x18\x02 \x01(\x05R\rphysicalCores\x12)\n" +
@@ -1290,7 +1703,58 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x05pools\x18\x12 \x03(\v2$.pilab.pivirtd.v1.StoragePoolSummaryR\x05pools\x12+\n" +
 	"\x11migration_address\x18\x13 \x01(\tR\x10migrationAddress\x12:\n" +
 	"\x19max_concurrent_migrations\x18\x14 \x01(\x05R\x17maxConcurrentMigrations\x12%\n" +
-	"\x0eagent_endpoint\x18\x15 \x01(\tR\ragentEndpoint\"s\n" +
+	"\x0eagent_endpoint\x18\x15 \x01(\tR\ragentEndpoint\x120\n" +
+	"\x05disks\x18\x16 \x03(\v2\x1a.pilab.pivirtd.v1.HostDiskR\x05disks\x12O\n" +
+	"\x10network_adapters\x18\x17 \x03(\v2$.pilab.pivirtd.v1.HostNetworkAdapterR\x0fnetworkAdapters\x12D\n" +
+	"\vpci_devices\x18\x18 \x03(\v2#.pilab.pivirtd.v1.HostPCIDeviceInfoR\n" +
+	"pciDevices\"\xae\x02\n" +
+	"\bHostDisk\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04path\x18\x02 \x01(\tR\x04path\x12\x14\n" +
+	"\x05model\x18\x03 \x01(\tR\x05model\x12\x16\n" +
+	"\x06serial\x18\x04 \x01(\tR\x06serial\x12\x10\n" +
+	"\x03wwn\x18\x05 \x01(\tR\x03wwn\x12\x16\n" +
+	"\x06vendor\x18\x06 \x01(\tR\x06vendor\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\a \x01(\x03R\tsizeBytes\x12\x12\n" +
+	"\x04type\x18\b \x01(\tR\x04type\x12\x10\n" +
+	"\x03bus\x18\t \x01(\tR\x03bus\x12\x1e\n" +
+	"\n" +
+	"rotational\x18\n" +
+	" \x01(\bR\n" +
+	"rotational\x12\x1c\n" +
+	"\tremovable\x18\v \x01(\bR\tremovable\x12\x1f\n" +
+	"\vpci_address\x18\f \x01(\tR\n" +
+	"pciAddress\"\xb2\x02\n" +
+	"\x12HostNetworkAdapter\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n" +
+	"\vmac_address\x18\x02 \x01(\tR\n" +
+	"macAddress\x12\x16\n" +
+	"\x06driver\x18\x03 \x01(\tR\x06driver\x12\x1f\n" +
+	"\vpci_address\x18\x04 \x01(\tR\n" +
+	"pciAddress\x12\x16\n" +
+	"\x06vendor\x18\x05 \x01(\tR\x06vendor\x12\x14\n" +
+	"\x05model\x18\x06 \x01(\tR\x05model\x12\x1d\n" +
+	"\n" +
+	"speed_mbps\x18\a \x01(\x03R\tspeedMbps\x12\x10\n" +
+	"\x03mtu\x18\b \x01(\x05R\x03mtu\x12\x17\n" +
+	"\alink_up\x18\t \x01(\bR\x06linkUp\x12\x18\n" +
+	"\avirtual\x18\n" +
+	" \x01(\bR\avirtual\x12\x1c\n" +
+	"\taddresses\x18\v \x03(\tR\taddresses\"\xec\x02\n" +
+	"\x11HostPCIDeviceInfo\x12\x18\n" +
+	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x1b\n" +
+	"\tvendor_id\x18\x02 \x01(\tR\bvendorId\x12\x1b\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12\x19\n" +
+	"\bclass_id\x18\x04 \x01(\tR\aclassId\x12\x1d\n" +
+	"\n" +
+	"class_name\x18\x05 \x01(\tR\tclassName\x12\x16\n" +
+	"\x06driver\x18\x06 \x01(\tR\x06driver\x12.\n" +
+	"\x13subsystem_vendor_id\x18\a \x01(\tR\x11subsystemVendorId\x12.\n" +
+	"\x13subsystem_device_id\x18\b \x01(\tR\x11subsystemDeviceId\x12$\n" +
+	"\rmultifunction\x18\t \x01(\bR\rmultifunction\x12+\n" +
+	"\x11network_interface\x18\n" +
+	" \x01(\tR\x10networkInterface\"s\n" +
 	"\bNUMANode\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\x05R\x06nodeId\x12,\n" +
 	"\x12memory_total_bytes\x18\x02 \x01(\x03R\x10memoryTotalBytes\x12 \n" +
@@ -1409,41 +1873,47 @@ func file_pilab_pivirtd_v1_host_resource_proto_rawDescGZIP() []byte {
 }
 
 var file_pilab_pivirtd_v1_host_resource_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pilab_pivirtd_v1_host_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_pilab_pivirtd_v1_host_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_pilab_pivirtd_v1_host_resource_proto_goTypes = []any{
 	(HostEventType)(0),             // 0: pilab.pivirtd.v1.HostEventType
 	(*HostResourceReport)(nil),     // 1: pilab.pivirtd.v1.HostResourceReport
-	(*NUMANode)(nil),               // 2: pilab.pivirtd.v1.NUMANode
-	(*StorageSummary)(nil),         // 3: pilab.pivirtd.v1.StorageSummary
-	(*StoragePoolSummary)(nil),     // 4: pilab.pivirtd.v1.StoragePoolSummary
-	(*SubscribeEventsRequest)(nil), // 5: pilab.pivirtd.v1.SubscribeEventsRequest
-	(*HostEvent)(nil),              // 6: pilab.pivirtd.v1.HostEvent
-	(*VmLifecycleEvent)(nil),       // 7: pilab.pivirtd.v1.VmLifecycleEvent
-	(*HostHealthEvent)(nil),        // 8: pilab.pivirtd.v1.HostHealthEvent
-	(*ResourcePressureEvent)(nil),  // 9: pilab.pivirtd.v1.ResourcePressureEvent
-	(*VmDiskMoveEvent)(nil),        // 10: pilab.pivirtd.v1.VmDiskMoveEvent
-	(*VmSnapshotEvent)(nil),        // 11: pilab.pivirtd.v1.VmSnapshotEvent
-	(*VmMigrationEvent)(nil),       // 12: pilab.pivirtd.v1.VmMigrationEvent
-	(*timestamppb.Timestamp)(nil),  // 13: google.protobuf.Timestamp
+	(*HostDisk)(nil),               // 2: pilab.pivirtd.v1.HostDisk
+	(*HostNetworkAdapter)(nil),     // 3: pilab.pivirtd.v1.HostNetworkAdapter
+	(*HostPCIDeviceInfo)(nil),      // 4: pilab.pivirtd.v1.HostPCIDeviceInfo
+	(*NUMANode)(nil),               // 5: pilab.pivirtd.v1.NUMANode
+	(*StorageSummary)(nil),         // 6: pilab.pivirtd.v1.StorageSummary
+	(*StoragePoolSummary)(nil),     // 7: pilab.pivirtd.v1.StoragePoolSummary
+	(*SubscribeEventsRequest)(nil), // 8: pilab.pivirtd.v1.SubscribeEventsRequest
+	(*HostEvent)(nil),              // 9: pilab.pivirtd.v1.HostEvent
+	(*VmLifecycleEvent)(nil),       // 10: pilab.pivirtd.v1.VmLifecycleEvent
+	(*HostHealthEvent)(nil),        // 11: pilab.pivirtd.v1.HostHealthEvent
+	(*ResourcePressureEvent)(nil),  // 12: pilab.pivirtd.v1.ResourcePressureEvent
+	(*VmDiskMoveEvent)(nil),        // 13: pilab.pivirtd.v1.VmDiskMoveEvent
+	(*VmSnapshotEvent)(nil),        // 14: pilab.pivirtd.v1.VmSnapshotEvent
+	(*VmMigrationEvent)(nil),       // 15: pilab.pivirtd.v1.VmMigrationEvent
+	(*timestamppb.Timestamp)(nil),  // 16: google.protobuf.Timestamp
 }
 var file_pilab_pivirtd_v1_host_resource_proto_depIdxs = []int32{
-	2,  // 0: pilab.pivirtd.v1.HostResourceReport.numa_nodes:type_name -> pilab.pivirtd.v1.NUMANode
-	3,  // 1: pilab.pivirtd.v1.HostResourceReport.storage:type_name -> pilab.pivirtd.v1.StorageSummary
-	4,  // 2: pilab.pivirtd.v1.HostResourceReport.pools:type_name -> pilab.pivirtd.v1.StoragePoolSummary
-	0,  // 3: pilab.pivirtd.v1.HostEvent.type:type_name -> pilab.pivirtd.v1.HostEventType
-	13, // 4: pilab.pivirtd.v1.HostEvent.timestamp:type_name -> google.protobuf.Timestamp
-	7,  // 5: pilab.pivirtd.v1.HostEvent.vm_lifecycle:type_name -> pilab.pivirtd.v1.VmLifecycleEvent
-	8,  // 6: pilab.pivirtd.v1.HostEvent.host_health:type_name -> pilab.pivirtd.v1.HostHealthEvent
-	9,  // 7: pilab.pivirtd.v1.HostEvent.resource_pressure:type_name -> pilab.pivirtd.v1.ResourcePressureEvent
-	1,  // 8: pilab.pivirtd.v1.HostEvent.resource_report:type_name -> pilab.pivirtd.v1.HostResourceReport
-	10, // 9: pilab.pivirtd.v1.HostEvent.vm_disk_move:type_name -> pilab.pivirtd.v1.VmDiskMoveEvent
-	11, // 10: pilab.pivirtd.v1.HostEvent.vm_snapshot:type_name -> pilab.pivirtd.v1.VmSnapshotEvent
-	12, // 11: pilab.pivirtd.v1.HostEvent.vm_migration:type_name -> pilab.pivirtd.v1.VmMigrationEvent
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	5,  // 0: pilab.pivirtd.v1.HostResourceReport.numa_nodes:type_name -> pilab.pivirtd.v1.NUMANode
+	6,  // 1: pilab.pivirtd.v1.HostResourceReport.storage:type_name -> pilab.pivirtd.v1.StorageSummary
+	7,  // 2: pilab.pivirtd.v1.HostResourceReport.pools:type_name -> pilab.pivirtd.v1.StoragePoolSummary
+	2,  // 3: pilab.pivirtd.v1.HostResourceReport.disks:type_name -> pilab.pivirtd.v1.HostDisk
+	3,  // 4: pilab.pivirtd.v1.HostResourceReport.network_adapters:type_name -> pilab.pivirtd.v1.HostNetworkAdapter
+	4,  // 5: pilab.pivirtd.v1.HostResourceReport.pci_devices:type_name -> pilab.pivirtd.v1.HostPCIDeviceInfo
+	0,  // 6: pilab.pivirtd.v1.HostEvent.type:type_name -> pilab.pivirtd.v1.HostEventType
+	16, // 7: pilab.pivirtd.v1.HostEvent.timestamp:type_name -> google.protobuf.Timestamp
+	10, // 8: pilab.pivirtd.v1.HostEvent.vm_lifecycle:type_name -> pilab.pivirtd.v1.VmLifecycleEvent
+	11, // 9: pilab.pivirtd.v1.HostEvent.host_health:type_name -> pilab.pivirtd.v1.HostHealthEvent
+	12, // 10: pilab.pivirtd.v1.HostEvent.resource_pressure:type_name -> pilab.pivirtd.v1.ResourcePressureEvent
+	1,  // 11: pilab.pivirtd.v1.HostEvent.resource_report:type_name -> pilab.pivirtd.v1.HostResourceReport
+	13, // 12: pilab.pivirtd.v1.HostEvent.vm_disk_move:type_name -> pilab.pivirtd.v1.VmDiskMoveEvent
+	14, // 13: pilab.pivirtd.v1.HostEvent.vm_snapshot:type_name -> pilab.pivirtd.v1.VmSnapshotEvent
+	15, // 14: pilab.pivirtd.v1.HostEvent.vm_migration:type_name -> pilab.pivirtd.v1.VmMigrationEvent
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_pilab_pivirtd_v1_host_resource_proto_init() }
@@ -1451,7 +1921,7 @@ func file_pilab_pivirtd_v1_host_resource_proto_init() {
 	if File_pilab_pivirtd_v1_host_resource_proto != nil {
 		return
 	}
-	file_pilab_pivirtd_v1_host_resource_proto_msgTypes[5].OneofWrappers = []any{
+	file_pilab_pivirtd_v1_host_resource_proto_msgTypes[8].OneofWrappers = []any{
 		(*HostEvent_VmLifecycle)(nil),
 		(*HostEvent_HostHealth)(nil),
 		(*HostEvent_ResourcePressure)(nil),
@@ -1466,7 +1936,7 @@ func file_pilab_pivirtd_v1_host_resource_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_pivirtd_v1_host_resource_proto_rawDesc), len(file_pilab_pivirtd_v1_host_resource_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
