@@ -79,13 +79,25 @@ message GetDatastoreResponse {
 
 // ZfsDatastoreBacking describes a ZFS-backed datastore: a dataset (or zvol
 // hierarchy) on the given pool.
+//
+// The pool must already exist. This backing only optionally creates the
+// dataset inside that pool; it never creates, imports or destroys the pool.
 message ZfsDatastoreBacking {
+  // Existing pool that owns the dataset. Must already exist on the host.
   string zpool = 1;
+  // Dataset inside zpool, e.g. "pivirt/datastores/gold". Required by the
+  // current backend.
   string dataset = 2;
+  // Create the dataset if it is missing. It must NOT create or destroy the
+  // zpool.
   bool create = 3;
+  // Mount point for a newly created dataset. Absolute path.
   string mountpoint = 4;
+  // ZFS compression property for a newly created dataset (e.g. lz4, zstd).
   string compression = 5;
+  // recordsize for a newly created filesystem dataset.
   string recordsize = 6;
+  // volblocksize for a newly created zvol.
   string volblocksize = 7;
 }
 

@@ -484,15 +484,27 @@ func (x *GetDatastoreResponse) GetDatastore() *Datastore {
 
 // ZfsDatastoreBacking describes a ZFS-backed datastore: a dataset (or zvol
 // hierarchy) on the given pool.
+//
+// The pool must already exist. This backing only optionally creates the
+// dataset inside that pool; it never creates, imports or destroys the pool.
 type ZfsDatastoreBacking struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Zpool         string                 `protobuf:"bytes,1,opt,name=zpool,proto3" json:"zpool,omitempty"`
-	Dataset       string                 `protobuf:"bytes,2,opt,name=dataset,proto3" json:"dataset,omitempty"`
-	Create        bool                   `protobuf:"varint,3,opt,name=create,proto3" json:"create,omitempty"`
-	Mountpoint    string                 `protobuf:"bytes,4,opt,name=mountpoint,proto3" json:"mountpoint,omitempty"`
-	Compression   string                 `protobuf:"bytes,5,opt,name=compression,proto3" json:"compression,omitempty"`
-	Recordsize    string                 `protobuf:"bytes,6,opt,name=recordsize,proto3" json:"recordsize,omitempty"`
-	Volblocksize  string                 `protobuf:"bytes,7,opt,name=volblocksize,proto3" json:"volblocksize,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Existing pool that owns the dataset. Must already exist on the host.
+	Zpool string `protobuf:"bytes,1,opt,name=zpool,proto3" json:"zpool,omitempty"`
+	// Dataset inside zpool, e.g. "pivirt/datastores/gold". Required by the
+	// current backend.
+	Dataset string `protobuf:"bytes,2,opt,name=dataset,proto3" json:"dataset,omitempty"`
+	// Create the dataset if it is missing. It must NOT create or destroy the
+	// zpool.
+	Create bool `protobuf:"varint,3,opt,name=create,proto3" json:"create,omitempty"`
+	// Mount point for a newly created dataset. Absolute path.
+	Mountpoint string `protobuf:"bytes,4,opt,name=mountpoint,proto3" json:"mountpoint,omitempty"`
+	// ZFS compression property for a newly created dataset (e.g. lz4, zstd).
+	Compression string `protobuf:"bytes,5,opt,name=compression,proto3" json:"compression,omitempty"`
+	// recordsize for a newly created filesystem dataset.
+	Recordsize string `protobuf:"bytes,6,opt,name=recordsize,proto3" json:"recordsize,omitempty"`
+	// volblocksize for a newly created zvol.
+	Volblocksize  string `protobuf:"bytes,7,opt,name=volblocksize,proto3" json:"volblocksize,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
