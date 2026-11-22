@@ -73,6 +73,9 @@ const (
 	// HostAdminServiceGetHostStatsProcedure is the fully-qualified name of the HostAdminService's
 	// GetHostStats RPC.
 	HostAdminServiceGetHostStatsProcedure = "/pilab.director.v2.HostAdminService/GetHostStats"
+	// HostAdminServiceGetHostHardwareProcedure is the fully-qualified name of the HostAdminService's
+	// GetHostHardware RPC.
+	HostAdminServiceGetHostHardwareProcedure = "/pilab.director.v2.HostAdminService/GetHostHardware"
 	// HostAdminServiceListInventoryVolumesProcedure is the fully-qualified name of the
 	// HostAdminService's ListInventoryVolumes RPC.
 	HostAdminServiceListInventoryVolumesProcedure = "/pilab.director.v2.HostAdminService/ListInventoryVolumes"
@@ -117,6 +120,12 @@ type HostAdminServiceClient interface {
 	// GetHostStats returns the latest utilisation sample the host's agent
 	// reported.
 	GetHostStats(context.Context, *connect.Request[v2.GetHostStatsRequest]) (*connect.Response[v2.GetHostStatsResponse], error)
+	// GetHostHardware returns the physical hardware inventory (disks, network
+	// adapters and PCI devices) the host's agent last reported. Inventory is
+	// remembered per host and refreshed by the agent's periodic host report;
+	// an empty response with no reported_at means the host has not reported
+	// hardware yet.
+	GetHostHardware(context.Context, *connect.Request[v2.GetHostHardwareRequest]) (*connect.Response[v2.GetHostHardwareResponse], error)
 	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
 	// narrowed to one host.
 	ListInventoryVolumes(context.Context, *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error)
@@ -207,6 +216,12 @@ func NewHostAdminServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(hostAdminServiceMethods.ByName("GetHostStats")),
 			connect.WithClientOptions(opts...),
 		),
+		getHostHardware: connect.NewClient[v2.GetHostHardwareRequest, v2.GetHostHardwareResponse](
+			httpClient,
+			baseURL+HostAdminServiceGetHostHardwareProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("GetHostHardware")),
+			connect.WithClientOptions(opts...),
+		),
 		listInventoryVolumes: connect.NewClient[v2.ListInventoryVolumesRequest, v2.ListInventoryVolumesResponse](
 			httpClient,
 			baseURL+HostAdminServiceListInventoryVolumesProcedure,
@@ -236,6 +251,7 @@ type hostAdminServiceClient struct {
 	powerOffHost         *connect.Client[v2.PowerOffHostRequest, v2.PowerOffHostResponse]
 	deleteHost           *connect.Client[v2.DeleteHostRequest, v2.DeleteHostResponse]
 	getHostStats         *connect.Client[v2.GetHostStatsRequest, v2.GetHostStatsResponse]
+	getHostHardware      *connect.Client[v2.GetHostHardwareRequest, v2.GetHostHardwareResponse]
 	listInventoryVolumes *connect.Client[v2.ListInventoryVolumesRequest, v2.ListInventoryVolumesResponse]
 	listDirectorTasks    *connect.Client[v2.ListDirectorTasksRequest, v2.ListDirectorTasksResponse]
 }
@@ -300,6 +316,11 @@ func (c *hostAdminServiceClient) GetHostStats(ctx context.Context, req *connect.
 	return c.getHostStats.CallUnary(ctx, req)
 }
 
+// GetHostHardware calls pilab.director.v2.HostAdminService.GetHostHardware.
+func (c *hostAdminServiceClient) GetHostHardware(ctx context.Context, req *connect.Request[v2.GetHostHardwareRequest]) (*connect.Response[v2.GetHostHardwareResponse], error) {
+	return c.getHostHardware.CallUnary(ctx, req)
+}
+
 // ListInventoryVolumes calls pilab.director.v2.HostAdminService.ListInventoryVolumes.
 func (c *hostAdminServiceClient) ListInventoryVolumes(ctx context.Context, req *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error) {
 	return c.listInventoryVolumes.CallUnary(ctx, req)
@@ -346,6 +367,12 @@ type HostAdminServiceHandler interface {
 	// GetHostStats returns the latest utilisation sample the host's agent
 	// reported.
 	GetHostStats(context.Context, *connect.Request[v2.GetHostStatsRequest]) (*connect.Response[v2.GetHostStatsResponse], error)
+	// GetHostHardware returns the physical hardware inventory (disks, network
+	// adapters and PCI devices) the host's agent last reported. Inventory is
+	// remembered per host and refreshed by the agent's periodic host report;
+	// an empty response with no reported_at means the host has not reported
+	// hardware yet.
+	GetHostHardware(context.Context, *connect.Request[v2.GetHostHardwareRequest]) (*connect.Response[v2.GetHostHardwareResponse], error)
 	// ListInventoryVolumes lists the disks of the VMs in the inventory, optionally
 	// narrowed to one host.
 	ListInventoryVolumes(context.Context, *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error)
@@ -432,6 +459,12 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 		connect.WithSchema(hostAdminServiceMethods.ByName("GetHostStats")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostAdminServiceGetHostHardwareHandler := connect.NewUnaryHandler(
+		HostAdminServiceGetHostHardwareProcedure,
+		svc.GetHostHardware,
+		connect.WithSchema(hostAdminServiceMethods.ByName("GetHostHardware")),
+		connect.WithHandlerOptions(opts...),
+	)
 	hostAdminServiceListInventoryVolumesHandler := connect.NewUnaryHandler(
 		HostAdminServiceListInventoryVolumesProcedure,
 		svc.ListInventoryVolumes,
@@ -470,6 +503,8 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 			hostAdminServiceDeleteHostHandler.ServeHTTP(w, r)
 		case HostAdminServiceGetHostStatsProcedure:
 			hostAdminServiceGetHostStatsHandler.ServeHTTP(w, r)
+		case HostAdminServiceGetHostHardwareProcedure:
+			hostAdminServiceGetHostHardwareHandler.ServeHTTP(w, r)
 		case HostAdminServiceListInventoryVolumesProcedure:
 			hostAdminServiceListInventoryVolumesHandler.ServeHTTP(w, r)
 		case HostAdminServiceListDirectorTasksProcedure:
@@ -529,6 +564,10 @@ func (UnimplementedHostAdminServiceHandler) DeleteHost(context.Context, *connect
 
 func (UnimplementedHostAdminServiceHandler) GetHostStats(context.Context, *connect.Request[v2.GetHostStatsRequest]) (*connect.Response[v2.GetHostStatsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.GetHostStats is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) GetHostHardware(context.Context, *connect.Request[v2.GetHostHardwareRequest]) (*connect.Response[v2.GetHostHardwareResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.GetHostHardware is not implemented"))
 }
 
 func (UnimplementedHostAdminServiceHandler) ListInventoryVolumes(context.Context, *connect.Request[v2.ListInventoryVolumesRequest]) (*connect.Response[v2.ListInventoryVolumesResponse], error) {

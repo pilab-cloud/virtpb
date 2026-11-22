@@ -25,6 +25,8 @@ const (
 	DatastoreService_DeleteDatastore_FullMethodName     = "/pilab.cloud.core.v1.DatastoreService/DeleteDatastore"
 	DatastoreService_ActivateDatastore_FullMethodName   = "/pilab.cloud.core.v1.DatastoreService/ActivateDatastore"
 	DatastoreService_DeactivateDatastore_FullMethodName = "/pilab.cloud.core.v1.DatastoreService/DeactivateDatastore"
+	DatastoreService_ValidateDatastore_FullMethodName   = "/pilab.cloud.core.v1.DatastoreService/ValidateDatastore"
+	DatastoreService_TestDatastore_FullMethodName       = "/pilab.cloud.core.v1.DatastoreService/TestDatastore"
 )
 
 // DatastoreServiceClient is the client API for DatastoreService service.
@@ -44,6 +46,12 @@ type DatastoreServiceClient interface {
 	// ActivateDatastore mounts / logs in the datastore on the target hosts.
 	ActivateDatastore(ctx context.Context, in *DatastoreHostsRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error)
 	DeactivateDatastore(ctx context.Context, in *DatastoreHostsRequest, opts ...grpc.CallOption) (*DatastoreOperationResponse, error)
+	// ValidateDatastore is the UI pre-flight: it checks the request shape and
+	// host selection without creating anything.
+	ValidateDatastore(ctx context.Context, in *CreateDatastoreRequest, opts ...grpc.CallOption) (*ValidateDatastoreResponse, error)
+	// TestDatastore probes an existing datastore against its hosts and reports
+	// what each host currently sees.
+	TestDatastore(ctx context.Context, in *TestDatastoreRequest, opts ...grpc.CallOption) (*TestDatastoreResponse, error)
 }
 
 type datastoreServiceClient struct {
@@ -114,6 +122,26 @@ func (c *datastoreServiceClient) DeactivateDatastore(ctx context.Context, in *Da
 	return out, nil
 }
 
+func (c *datastoreServiceClient) ValidateDatastore(ctx context.Context, in *CreateDatastoreRequest, opts ...grpc.CallOption) (*ValidateDatastoreResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateDatastoreResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_ValidateDatastore_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreServiceClient) TestDatastore(ctx context.Context, in *TestDatastoreRequest, opts ...grpc.CallOption) (*TestDatastoreResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TestDatastoreResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_TestDatastore_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DatastoreServiceServer is the server API for DatastoreService service.
 // All implementations must embed UnimplementedDatastoreServiceServer
 // for forward compatibility.
@@ -131,6 +159,12 @@ type DatastoreServiceServer interface {
 	// ActivateDatastore mounts / logs in the datastore on the target hosts.
 	ActivateDatastore(context.Context, *DatastoreHostsRequest) (*DatastoreOperationResponse, error)
 	DeactivateDatastore(context.Context, *DatastoreHostsRequest) (*DatastoreOperationResponse, error)
+	// ValidateDatastore is the UI pre-flight: it checks the request shape and
+	// host selection without creating anything.
+	ValidateDatastore(context.Context, *CreateDatastoreRequest) (*ValidateDatastoreResponse, error)
+	// TestDatastore probes an existing datastore against its hosts and reports
+	// what each host currently sees.
+	TestDatastore(context.Context, *TestDatastoreRequest) (*TestDatastoreResponse, error)
 	mustEmbedUnimplementedDatastoreServiceServer()
 }
 
@@ -158,6 +192,12 @@ func (UnimplementedDatastoreServiceServer) ActivateDatastore(context.Context, *D
 }
 func (UnimplementedDatastoreServiceServer) DeactivateDatastore(context.Context, *DatastoreHostsRequest) (*DatastoreOperationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeactivateDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) ValidateDatastore(context.Context, *CreateDatastoreRequest) (*ValidateDatastoreResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ValidateDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) TestDatastore(context.Context, *TestDatastoreRequest) (*TestDatastoreResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TestDatastore not implemented")
 }
 func (UnimplementedDatastoreServiceServer) mustEmbedUnimplementedDatastoreServiceServer() {}
 func (UnimplementedDatastoreServiceServer) testEmbeddedByValue()                          {}
@@ -288,6 +328,42 @@ func _DatastoreService_DeactivateDatastore_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatastoreService_ValidateDatastore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDatastoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).ValidateDatastore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_ValidateDatastore_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).ValidateDatastore(ctx, req.(*CreateDatastoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatastoreService_TestDatastore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TestDatastoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).TestDatastore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_TestDatastore_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).TestDatastore(ctx, req.(*TestDatastoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DatastoreService_ServiceDesc is the grpc.ServiceDesc for DatastoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -318,6 +394,14 @@ var DatastoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeactivateDatastore",
 			Handler:    _DatastoreService_DeactivateDatastore_Handler,
+		},
+		{
+			MethodName: "ValidateDatastore",
+			Handler:    _DatastoreService_ValidateDatastore_Handler,
+		},
+		{
+			MethodName: "TestDatastore",
+			Handler:    _DatastoreService_TestDatastore_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

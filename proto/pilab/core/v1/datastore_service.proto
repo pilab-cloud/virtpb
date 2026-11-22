@@ -19,6 +19,12 @@ service DatastoreService {
   // ActivateDatastore mounts / logs in the datastore on the target hosts.
   rpc ActivateDatastore(DatastoreHostsRequest) returns (DatastoreOperationResponse);
   rpc DeactivateDatastore(DatastoreHostsRequest) returns (DatastoreOperationResponse);
+  // ValidateDatastore is the UI pre-flight: it checks the request shape and
+  // host selection without creating anything.
+  rpc ValidateDatastore(CreateDatastoreRequest) returns (ValidateDatastoreResponse);
+  // TestDatastore probes an existing datastore against its hosts and reports
+  // what each host currently sees.
+  rpc TestDatastore(TestDatastoreRequest) returns (TestDatastoreResponse);
 }
 
 enum DatastoreHealth {
@@ -130,6 +136,25 @@ message CreateDatastoreResponse {
   // Cluster-wide datastore id: the same on every host.
   string datastore_id = 1;
   repeated DatastoreOperation operations = 2;
+}
+
+message ValidateDatastoreResponse {
+  bool valid = 1;
+  repeated string errors = 2;
+  repeated string warnings = 3;
+  // resolved_host_ids are the hosts the create would target.
+  repeated string resolved_host_ids = 4;
+}
+
+message TestDatastoreRequest {
+  string id = 1;
+}
+
+message TestDatastoreResponse {
+  Datastore datastore = 1;
+  repeated DatastoreHost hosts = 2;
+  bool healthy = 3;
+  repeated string issues = 4;
 }
 
 message DatastoreHostsRequest {

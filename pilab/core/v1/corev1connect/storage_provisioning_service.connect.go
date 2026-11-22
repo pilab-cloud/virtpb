@@ -37,12 +37,18 @@ const (
 	// StorageProvisioningServiceListDevicesProcedure is the fully-qualified name of the
 	// StorageProvisioningService's ListDevices RPC.
 	StorageProvisioningServiceListDevicesProcedure = "/pilab.core.v1.StorageProvisioningService/ListDevices"
+	// StorageProvisioningServiceRescanDevicesProcedure is the fully-qualified name of the
+	// StorageProvisioningService's RescanDevices RPC.
+	StorageProvisioningServiceRescanDevicesProcedure = "/pilab.core.v1.StorageProvisioningService/RescanDevices"
 	// StorageProvisioningServiceInitializeDiskProcedure is the fully-qualified name of the
 	// StorageProvisioningService's InitializeDisk RPC.
 	StorageProvisioningServiceInitializeDiskProcedure = "/pilab.core.v1.StorageProvisioningService/InitializeDisk"
 	// StorageProvisioningServiceWipeDiskProcedure is the fully-qualified name of the
 	// StorageProvisioningService's WipeDisk RPC.
 	StorageProvisioningServiceWipeDiskProcedure = "/pilab.core.v1.StorageProvisioningService/WipeDisk"
+	// StorageProvisioningServiceGetDiskHealthProcedure is the fully-qualified name of the
+	// StorageProvisioningService's GetDiskHealth RPC.
+	StorageProvisioningServiceGetDiskHealthProcedure = "/pilab.core.v1.StorageProvisioningService/GetDiskHealth"
 	// StorageProvisioningServiceCreatePartitionProcedure is the fully-qualified name of the
 	// StorageProvisioningService's CreatePartition RPC.
 	StorageProvisioningServiceCreatePartitionProcedure = "/pilab.core.v1.StorageProvisioningService/CreatePartition"
@@ -52,6 +58,15 @@ const (
 	// StorageProvisioningServiceFormatPartitionProcedure is the fully-qualified name of the
 	// StorageProvisioningService's FormatPartition RPC.
 	StorageProvisioningServiceFormatPartitionProcedure = "/pilab.core.v1.StorageProvisioningService/FormatPartition"
+	// StorageProvisioningServiceResizePartitionProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ResizePartition RPC.
+	StorageProvisioningServiceResizePartitionProcedure = "/pilab.core.v1.StorageProvisioningService/ResizePartition"
+	// StorageProvisioningServiceMountFilesystemProcedure is the fully-qualified name of the
+	// StorageProvisioningService's MountFilesystem RPC.
+	StorageProvisioningServiceMountFilesystemProcedure = "/pilab.core.v1.StorageProvisioningService/MountFilesystem"
+	// StorageProvisioningServiceUnmountFilesystemProcedure is the fully-qualified name of the
+	// StorageProvisioningService's UnmountFilesystem RPC.
+	StorageProvisioningServiceUnmountFilesystemProcedure = "/pilab.core.v1.StorageProvisioningService/UnmountFilesystem"
 	// StorageProvisioningServiceListLvmProcedure is the fully-qualified name of the
 	// StorageProvisioningService's ListLvm RPC.
 	StorageProvisioningServiceListLvmProcedure = "/pilab.core.v1.StorageProvisioningService/ListLvm"
@@ -73,6 +88,9 @@ const (
 	// StorageProvisioningServiceRemoveLvmLvProcedure is the fully-qualified name of the
 	// StorageProvisioningService's RemoveLvmLv RPC.
 	StorageProvisioningServiceRemoveLvmLvProcedure = "/pilab.core.v1.StorageProvisioningService/RemoveLvmLv"
+	// StorageProvisioningServiceCreateLvmThinPoolProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CreateLvmThinPool RPC.
+	StorageProvisioningServiceCreateLvmThinPoolProcedure = "/pilab.core.v1.StorageProvisioningService/CreateLvmThinPool"
 	// StorageProvisioningServiceListZfsProcedure is the fully-qualified name of the
 	// StorageProvisioningService's ListZfs RPC.
 	StorageProvisioningServiceListZfsProcedure = "/pilab.core.v1.StorageProvisioningService/ListZfs"
@@ -134,12 +152,17 @@ const (
 type StorageProvisioningServiceClient interface {
 	// Physical Devices & Disks
 	ListDevices(context.Context, *connect.Request[v1.ListDevicesRequest]) (*connect.Response[v1.ListDevicesResponse], error)
+	RescanDevices(context.Context, *connect.Request[v1.RescanDevicesRequest]) (*connect.Response[v1.RescanDevicesResponse], error)
 	InitializeDisk(context.Context, *connect.Request[v1.InitializeDiskRequest]) (*connect.Response[v1.InitializeDiskResponse], error)
 	WipeDisk(context.Context, *connect.Request[v1.WipeDiskRequest]) (*connect.Response[v1.WipeDiskResponse], error)
+	GetDiskHealth(context.Context, *connect.Request[v1.GetDiskHealthRequest]) (*connect.Response[v1.GetDiskHealthResponse], error)
 	// Partitions & Filesystems
 	CreatePartition(context.Context, *connect.Request[v1.CreatePartitionRequest]) (*connect.Response[v1.CreatePartitionResponse], error)
 	DeletePartition(context.Context, *connect.Request[v1.DeletePartitionRequest]) (*connect.Response[v1.DeletePartitionResponse], error)
 	FormatPartition(context.Context, *connect.Request[v1.FormatPartitionRequest]) (*connect.Response[v1.FormatPartitionResponse], error)
+	ResizePartition(context.Context, *connect.Request[v1.ResizePartitionRequest]) (*connect.Response[v1.ResizePartitionResponse], error)
+	MountFilesystem(context.Context, *connect.Request[v1.MountFilesystemRequest]) (*connect.Response[v1.MountFilesystemResponse], error)
+	UnmountFilesystem(context.Context, *connect.Request[v1.UnmountFilesystemRequest]) (*connect.Response[v1.UnmountFilesystemResponse], error)
 	// LVM
 	ListLvm(context.Context, *connect.Request[v1.ListLvmRequest]) (*connect.Response[v1.ListLvmResponse], error)
 	CreateLvmPv(context.Context, *connect.Request[v1.CreateLvmPvRequest]) (*connect.Response[v1.CreateLvmPvResponse], error)
@@ -148,6 +171,7 @@ type StorageProvisioningServiceClient interface {
 	RemoveLvmVg(context.Context, *connect.Request[v1.RemoveLvmVgRequest]) (*connect.Response[v1.RemoveLvmVgResponse], error)
 	CreateLvmLv(context.Context, *connect.Request[v1.CreateLvmLvRequest]) (*connect.Response[v1.CreateLvmLvResponse], error)
 	RemoveLvmLv(context.Context, *connect.Request[v1.RemoveLvmLvRequest]) (*connect.Response[v1.RemoveLvmLvResponse], error)
+	CreateLvmThinPool(context.Context, *connect.Request[v1.CreateLvmThinPoolRequest]) (*connect.Response[v1.CreateLvmThinPoolResponse], error)
 	// ZFS
 	ListZfs(context.Context, *connect.Request[v1.ListZfsRequest]) (*connect.Response[v1.ListZfsResponse], error)
 	CreateZpool(context.Context, *connect.Request[v1.CreateZpoolRequest]) (*connect.Response[v1.CreateZpoolResponse], error)
@@ -190,6 +214,12 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListDevices")),
 			connect.WithClientOptions(opts...),
 		),
+		rescanDevices: connect.NewClient[v1.RescanDevicesRequest, v1.RescanDevicesResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceRescanDevicesProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("RescanDevices")),
+			connect.WithClientOptions(opts...),
+		),
 		initializeDisk: connect.NewClient[v1.InitializeDiskRequest, v1.InitializeDiskResponse](
 			httpClient,
 			baseURL+StorageProvisioningServiceInitializeDiskProcedure,
@@ -200,6 +230,12 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			httpClient,
 			baseURL+StorageProvisioningServiceWipeDiskProcedure,
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("WipeDisk")),
+			connect.WithClientOptions(opts...),
+		),
+		getDiskHealth: connect.NewClient[v1.GetDiskHealthRequest, v1.GetDiskHealthResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceGetDiskHealthProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("GetDiskHealth")),
 			connect.WithClientOptions(opts...),
 		),
 		createPartition: connect.NewClient[v1.CreatePartitionRequest, v1.CreatePartitionResponse](
@@ -218,6 +254,24 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			httpClient,
 			baseURL+StorageProvisioningServiceFormatPartitionProcedure,
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("FormatPartition")),
+			connect.WithClientOptions(opts...),
+		),
+		resizePartition: connect.NewClient[v1.ResizePartitionRequest, v1.ResizePartitionResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceResizePartitionProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ResizePartition")),
+			connect.WithClientOptions(opts...),
+		),
+		mountFilesystem: connect.NewClient[v1.MountFilesystemRequest, v1.MountFilesystemResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceMountFilesystemProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("MountFilesystem")),
+			connect.WithClientOptions(opts...),
+		),
+		unmountFilesystem: connect.NewClient[v1.UnmountFilesystemRequest, v1.UnmountFilesystemResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceUnmountFilesystemProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("UnmountFilesystem")),
 			connect.WithClientOptions(opts...),
 		),
 		listLvm: connect.NewClient[v1.ListLvmRequest, v1.ListLvmResponse](
@@ -260,6 +314,12 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			httpClient,
 			baseURL+StorageProvisioningServiceRemoveLvmLvProcedure,
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("RemoveLvmLv")),
+			connect.WithClientOptions(opts...),
+		),
+		createLvmThinPool: connect.NewClient[v1.CreateLvmThinPoolRequest, v1.CreateLvmThinPoolResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCreateLvmThinPoolProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateLvmThinPool")),
 			connect.WithClientOptions(opts...),
 		),
 		listZfs: connect.NewClient[v1.ListZfsRequest, v1.ListZfsResponse](
@@ -376,11 +436,16 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 // storageProvisioningServiceClient implements StorageProvisioningServiceClient.
 type storageProvisioningServiceClient struct {
 	listDevices           *connect.Client[v1.ListDevicesRequest, v1.ListDevicesResponse]
+	rescanDevices         *connect.Client[v1.RescanDevicesRequest, v1.RescanDevicesResponse]
 	initializeDisk        *connect.Client[v1.InitializeDiskRequest, v1.InitializeDiskResponse]
 	wipeDisk              *connect.Client[v1.WipeDiskRequest, v1.WipeDiskResponse]
+	getDiskHealth         *connect.Client[v1.GetDiskHealthRequest, v1.GetDiskHealthResponse]
 	createPartition       *connect.Client[v1.CreatePartitionRequest, v1.CreatePartitionResponse]
 	deletePartition       *connect.Client[v1.DeletePartitionRequest, v1.DeletePartitionResponse]
 	formatPartition       *connect.Client[v1.FormatPartitionRequest, v1.FormatPartitionResponse]
+	resizePartition       *connect.Client[v1.ResizePartitionRequest, v1.ResizePartitionResponse]
+	mountFilesystem       *connect.Client[v1.MountFilesystemRequest, v1.MountFilesystemResponse]
+	unmountFilesystem     *connect.Client[v1.UnmountFilesystemRequest, v1.UnmountFilesystemResponse]
 	listLvm               *connect.Client[v1.ListLvmRequest, v1.ListLvmResponse]
 	createLvmPv           *connect.Client[v1.CreateLvmPvRequest, v1.CreateLvmPvResponse]
 	removeLvmPv           *connect.Client[v1.RemoveLvmPvRequest, v1.RemoveLvmPvResponse]
@@ -388,6 +453,7 @@ type storageProvisioningServiceClient struct {
 	removeLvmVg           *connect.Client[v1.RemoveLvmVgRequest, v1.RemoveLvmVgResponse]
 	createLvmLv           *connect.Client[v1.CreateLvmLvRequest, v1.CreateLvmLvResponse]
 	removeLvmLv           *connect.Client[v1.RemoveLvmLvRequest, v1.RemoveLvmLvResponse]
+	createLvmThinPool     *connect.Client[v1.CreateLvmThinPoolRequest, v1.CreateLvmThinPoolResponse]
 	listZfs               *connect.Client[v1.ListZfsRequest, v1.ListZfsResponse]
 	createZpool           *connect.Client[v1.CreateZpoolRequest, v1.CreateZpoolResponse]
 	destroyZpool          *connect.Client[v1.DestroyZpoolRequest, v1.DestroyZpoolResponse]
@@ -413,6 +479,11 @@ func (c *storageProvisioningServiceClient) ListDevices(ctx context.Context, req 
 	return c.listDevices.CallUnary(ctx, req)
 }
 
+// RescanDevices calls pilab.core.v1.StorageProvisioningService.RescanDevices.
+func (c *storageProvisioningServiceClient) RescanDevices(ctx context.Context, req *connect.Request[v1.RescanDevicesRequest]) (*connect.Response[v1.RescanDevicesResponse], error) {
+	return c.rescanDevices.CallUnary(ctx, req)
+}
+
 // InitializeDisk calls pilab.core.v1.StorageProvisioningService.InitializeDisk.
 func (c *storageProvisioningServiceClient) InitializeDisk(ctx context.Context, req *connect.Request[v1.InitializeDiskRequest]) (*connect.Response[v1.InitializeDiskResponse], error) {
 	return c.initializeDisk.CallUnary(ctx, req)
@@ -421,6 +492,11 @@ func (c *storageProvisioningServiceClient) InitializeDisk(ctx context.Context, r
 // WipeDisk calls pilab.core.v1.StorageProvisioningService.WipeDisk.
 func (c *storageProvisioningServiceClient) WipeDisk(ctx context.Context, req *connect.Request[v1.WipeDiskRequest]) (*connect.Response[v1.WipeDiskResponse], error) {
 	return c.wipeDisk.CallUnary(ctx, req)
+}
+
+// GetDiskHealth calls pilab.core.v1.StorageProvisioningService.GetDiskHealth.
+func (c *storageProvisioningServiceClient) GetDiskHealth(ctx context.Context, req *connect.Request[v1.GetDiskHealthRequest]) (*connect.Response[v1.GetDiskHealthResponse], error) {
+	return c.getDiskHealth.CallUnary(ctx, req)
 }
 
 // CreatePartition calls pilab.core.v1.StorageProvisioningService.CreatePartition.
@@ -436,6 +512,21 @@ func (c *storageProvisioningServiceClient) DeletePartition(ctx context.Context, 
 // FormatPartition calls pilab.core.v1.StorageProvisioningService.FormatPartition.
 func (c *storageProvisioningServiceClient) FormatPartition(ctx context.Context, req *connect.Request[v1.FormatPartitionRequest]) (*connect.Response[v1.FormatPartitionResponse], error) {
 	return c.formatPartition.CallUnary(ctx, req)
+}
+
+// ResizePartition calls pilab.core.v1.StorageProvisioningService.ResizePartition.
+func (c *storageProvisioningServiceClient) ResizePartition(ctx context.Context, req *connect.Request[v1.ResizePartitionRequest]) (*connect.Response[v1.ResizePartitionResponse], error) {
+	return c.resizePartition.CallUnary(ctx, req)
+}
+
+// MountFilesystem calls pilab.core.v1.StorageProvisioningService.MountFilesystem.
+func (c *storageProvisioningServiceClient) MountFilesystem(ctx context.Context, req *connect.Request[v1.MountFilesystemRequest]) (*connect.Response[v1.MountFilesystemResponse], error) {
+	return c.mountFilesystem.CallUnary(ctx, req)
+}
+
+// UnmountFilesystem calls pilab.core.v1.StorageProvisioningService.UnmountFilesystem.
+func (c *storageProvisioningServiceClient) UnmountFilesystem(ctx context.Context, req *connect.Request[v1.UnmountFilesystemRequest]) (*connect.Response[v1.UnmountFilesystemResponse], error) {
+	return c.unmountFilesystem.CallUnary(ctx, req)
 }
 
 // ListLvm calls pilab.core.v1.StorageProvisioningService.ListLvm.
@@ -471,6 +562,11 @@ func (c *storageProvisioningServiceClient) CreateLvmLv(ctx context.Context, req 
 // RemoveLvmLv calls pilab.core.v1.StorageProvisioningService.RemoveLvmLv.
 func (c *storageProvisioningServiceClient) RemoveLvmLv(ctx context.Context, req *connect.Request[v1.RemoveLvmLvRequest]) (*connect.Response[v1.RemoveLvmLvResponse], error) {
 	return c.removeLvmLv.CallUnary(ctx, req)
+}
+
+// CreateLvmThinPool calls pilab.core.v1.StorageProvisioningService.CreateLvmThinPool.
+func (c *storageProvisioningServiceClient) CreateLvmThinPool(ctx context.Context, req *connect.Request[v1.CreateLvmThinPoolRequest]) (*connect.Response[v1.CreateLvmThinPoolResponse], error) {
+	return c.createLvmThinPool.CallUnary(ctx, req)
 }
 
 // ListZfs calls pilab.core.v1.StorageProvisioningService.ListZfs.
@@ -568,12 +664,17 @@ func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Con
 type StorageProvisioningServiceHandler interface {
 	// Physical Devices & Disks
 	ListDevices(context.Context, *connect.Request[v1.ListDevicesRequest]) (*connect.Response[v1.ListDevicesResponse], error)
+	RescanDevices(context.Context, *connect.Request[v1.RescanDevicesRequest]) (*connect.Response[v1.RescanDevicesResponse], error)
 	InitializeDisk(context.Context, *connect.Request[v1.InitializeDiskRequest]) (*connect.Response[v1.InitializeDiskResponse], error)
 	WipeDisk(context.Context, *connect.Request[v1.WipeDiskRequest]) (*connect.Response[v1.WipeDiskResponse], error)
+	GetDiskHealth(context.Context, *connect.Request[v1.GetDiskHealthRequest]) (*connect.Response[v1.GetDiskHealthResponse], error)
 	// Partitions & Filesystems
 	CreatePartition(context.Context, *connect.Request[v1.CreatePartitionRequest]) (*connect.Response[v1.CreatePartitionResponse], error)
 	DeletePartition(context.Context, *connect.Request[v1.DeletePartitionRequest]) (*connect.Response[v1.DeletePartitionResponse], error)
 	FormatPartition(context.Context, *connect.Request[v1.FormatPartitionRequest]) (*connect.Response[v1.FormatPartitionResponse], error)
+	ResizePartition(context.Context, *connect.Request[v1.ResizePartitionRequest]) (*connect.Response[v1.ResizePartitionResponse], error)
+	MountFilesystem(context.Context, *connect.Request[v1.MountFilesystemRequest]) (*connect.Response[v1.MountFilesystemResponse], error)
+	UnmountFilesystem(context.Context, *connect.Request[v1.UnmountFilesystemRequest]) (*connect.Response[v1.UnmountFilesystemResponse], error)
 	// LVM
 	ListLvm(context.Context, *connect.Request[v1.ListLvmRequest]) (*connect.Response[v1.ListLvmResponse], error)
 	CreateLvmPv(context.Context, *connect.Request[v1.CreateLvmPvRequest]) (*connect.Response[v1.CreateLvmPvResponse], error)
@@ -582,6 +683,7 @@ type StorageProvisioningServiceHandler interface {
 	RemoveLvmVg(context.Context, *connect.Request[v1.RemoveLvmVgRequest]) (*connect.Response[v1.RemoveLvmVgResponse], error)
 	CreateLvmLv(context.Context, *connect.Request[v1.CreateLvmLvRequest]) (*connect.Response[v1.CreateLvmLvResponse], error)
 	RemoveLvmLv(context.Context, *connect.Request[v1.RemoveLvmLvRequest]) (*connect.Response[v1.RemoveLvmLvResponse], error)
+	CreateLvmThinPool(context.Context, *connect.Request[v1.CreateLvmThinPoolRequest]) (*connect.Response[v1.CreateLvmThinPoolResponse], error)
 	// ZFS
 	ListZfs(context.Context, *connect.Request[v1.ListZfsRequest]) (*connect.Response[v1.ListZfsResponse], error)
 	CreateZpool(context.Context, *connect.Request[v1.CreateZpoolRequest]) (*connect.Response[v1.CreateZpoolResponse], error)
@@ -620,6 +722,12 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListDevices")),
 		connect.WithHandlerOptions(opts...),
 	)
+	storageProvisioningServiceRescanDevicesHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceRescanDevicesProcedure,
+		svc.RescanDevices,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("RescanDevices")),
+		connect.WithHandlerOptions(opts...),
+	)
 	storageProvisioningServiceInitializeDiskHandler := connect.NewUnaryHandler(
 		StorageProvisioningServiceInitializeDiskProcedure,
 		svc.InitializeDisk,
@@ -630,6 +738,12 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		StorageProvisioningServiceWipeDiskProcedure,
 		svc.WipeDisk,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("WipeDisk")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceGetDiskHealthHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceGetDiskHealthProcedure,
+		svc.GetDiskHealth,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("GetDiskHealth")),
 		connect.WithHandlerOptions(opts...),
 	)
 	storageProvisioningServiceCreatePartitionHandler := connect.NewUnaryHandler(
@@ -648,6 +762,24 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		StorageProvisioningServiceFormatPartitionProcedure,
 		svc.FormatPartition,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("FormatPartition")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceResizePartitionHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceResizePartitionProcedure,
+		svc.ResizePartition,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ResizePartition")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceMountFilesystemHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceMountFilesystemProcedure,
+		svc.MountFilesystem,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("MountFilesystem")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceUnmountFilesystemHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceUnmountFilesystemProcedure,
+		svc.UnmountFilesystem,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("UnmountFilesystem")),
 		connect.WithHandlerOptions(opts...),
 	)
 	storageProvisioningServiceListLvmHandler := connect.NewUnaryHandler(
@@ -690,6 +822,12 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		StorageProvisioningServiceRemoveLvmLvProcedure,
 		svc.RemoveLvmLv,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("RemoveLvmLv")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceCreateLvmThinPoolHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCreateLvmThinPoolProcedure,
+		svc.CreateLvmThinPool,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateLvmThinPool")),
 		connect.WithHandlerOptions(opts...),
 	)
 	storageProvisioningServiceListZfsHandler := connect.NewUnaryHandler(
@@ -804,16 +942,26 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		switch r.URL.Path {
 		case StorageProvisioningServiceListDevicesProcedure:
 			storageProvisioningServiceListDevicesHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceRescanDevicesProcedure:
+			storageProvisioningServiceRescanDevicesHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceInitializeDiskProcedure:
 			storageProvisioningServiceInitializeDiskHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceWipeDiskProcedure:
 			storageProvisioningServiceWipeDiskHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceGetDiskHealthProcedure:
+			storageProvisioningServiceGetDiskHealthHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceCreatePartitionProcedure:
 			storageProvisioningServiceCreatePartitionHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceDeletePartitionProcedure:
 			storageProvisioningServiceDeletePartitionHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceFormatPartitionProcedure:
 			storageProvisioningServiceFormatPartitionHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceResizePartitionProcedure:
+			storageProvisioningServiceResizePartitionHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceMountFilesystemProcedure:
+			storageProvisioningServiceMountFilesystemHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceUnmountFilesystemProcedure:
+			storageProvisioningServiceUnmountFilesystemHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceListLvmProcedure:
 			storageProvisioningServiceListLvmHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceCreateLvmPvProcedure:
@@ -828,6 +976,8 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 			storageProvisioningServiceCreateLvmLvHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceRemoveLvmLvProcedure:
 			storageProvisioningServiceRemoveLvmLvHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCreateLvmThinPoolProcedure:
+			storageProvisioningServiceCreateLvmThinPoolHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceListZfsProcedure:
 			storageProvisioningServiceListZfsHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceCreateZpoolProcedure:
@@ -877,12 +1027,20 @@ func (UnimplementedStorageProvisioningServiceHandler) ListDevices(context.Contex
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListDevices is not implemented"))
 }
 
+func (UnimplementedStorageProvisioningServiceHandler) RescanDevices(context.Context, *connect.Request[v1.RescanDevicesRequest]) (*connect.Response[v1.RescanDevicesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.RescanDevices is not implemented"))
+}
+
 func (UnimplementedStorageProvisioningServiceHandler) InitializeDisk(context.Context, *connect.Request[v1.InitializeDiskRequest]) (*connect.Response[v1.InitializeDiskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.InitializeDisk is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) WipeDisk(context.Context, *connect.Request[v1.WipeDiskRequest]) (*connect.Response[v1.WipeDiskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.WipeDisk is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) GetDiskHealth(context.Context, *connect.Request[v1.GetDiskHealthRequest]) (*connect.Response[v1.GetDiskHealthResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GetDiskHealth is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) CreatePartition(context.Context, *connect.Request[v1.CreatePartitionRequest]) (*connect.Response[v1.CreatePartitionResponse], error) {
@@ -895,6 +1053,18 @@ func (UnimplementedStorageProvisioningServiceHandler) DeletePartition(context.Co
 
 func (UnimplementedStorageProvisioningServiceHandler) FormatPartition(context.Context, *connect.Request[v1.FormatPartitionRequest]) (*connect.Response[v1.FormatPartitionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.FormatPartition is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ResizePartition(context.Context, *connect.Request[v1.ResizePartitionRequest]) (*connect.Response[v1.ResizePartitionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ResizePartition is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) MountFilesystem(context.Context, *connect.Request[v1.MountFilesystemRequest]) (*connect.Response[v1.MountFilesystemResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.MountFilesystem is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) UnmountFilesystem(context.Context, *connect.Request[v1.UnmountFilesystemRequest]) (*connect.Response[v1.UnmountFilesystemResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.UnmountFilesystem is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) ListLvm(context.Context, *connect.Request[v1.ListLvmRequest]) (*connect.Response[v1.ListLvmResponse], error) {
@@ -923,6 +1093,10 @@ func (UnimplementedStorageProvisioningServiceHandler) CreateLvmLv(context.Contex
 
 func (UnimplementedStorageProvisioningServiceHandler) RemoveLvmLv(context.Context, *connect.Request[v1.RemoveLvmLvRequest]) (*connect.Response[v1.RemoveLvmLvResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.RemoveLvmLv is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CreateLvmThinPool(context.Context, *connect.Request[v1.CreateLvmThinPoolRequest]) (*connect.Response[v1.CreateLvmThinPoolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CreateLvmThinPool is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) ListZfs(context.Context, *connect.Request[v1.ListZfsRequest]) (*connect.Response[v1.ListZfsResponse], error) {
