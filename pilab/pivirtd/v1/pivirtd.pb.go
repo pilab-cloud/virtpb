@@ -4773,8 +4773,17 @@ type MigrateVMRequest struct {
 	MirrorSpeedBytesSec int64 `protobuf:"varint,10,opt,name=mirror_speed_bytes_sec,json=mirrorSpeedBytesSec,proto3" json:"mirror_speed_bytes_sec,omitempty"`
 	// mirror_timeout_seconds bounds the convergence wait; zero means 6 hours.
 	MirrorTimeoutSeconds int64 `protobuf:"varint,11,opt,name=mirror_timeout_seconds,json=mirrorTimeoutSeconds,proto3" json:"mirror_timeout_seconds,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// mirror_only runs just the disk copy: the destination's disks are already
+	// exposed (INCOMING_PHASE_DISKS) and the VM there does not exist yet, so the
+	// RAM stream cannot start until that call has finished. Without it the copy
+	// and the RAM stream are one call, which requires the destination VM to be
+	// up before its disks are filled -- the pairing QEMU refuses.
+	MirrorOnly bool `protobuf:"varint,12,opt,name=mirror_only,json=mirrorOnly,proto3" json:"mirror_only,omitempty"`
+	// skip_mirror runs only the RAM stream, for the call that follows a
+	// successful mirror_only.
+	SkipMirror    bool `protobuf:"varint,13,opt,name=skip_mirror,json=skipMirror,proto3" json:"skip_mirror,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MigrateVMRequest) Reset() {
@@ -4882,6 +4891,20 @@ func (x *MigrateVMRequest) GetMirrorTimeoutSeconds() int64 {
 		return x.MirrorTimeoutSeconds
 	}
 	return 0
+}
+
+func (x *MigrateVMRequest) GetMirrorOnly() bool {
+	if x != nil {
+		return x.MirrorOnly
+	}
+	return false
+}
+
+func (x *MigrateVMRequest) GetSkipMirror() bool {
+	if x != nil {
+		return x.SkipMirror
+	}
+	return false
 }
 
 type MigrateVMResponse struct {
@@ -9237,7 +9260,7 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12\x16\n" +
 	"\x06delete\x18\x02 \x01(\bR\x06delete\"/\n" +
 	"\x14AbortIncomingRequest\x12\x17\n" +
-	"\avm_name\x18\x01 \x01(\tR\x06vmName\"\xe0\x03\n" +
+	"\avm_name\x18\x01 \x01(\tR\x06vmName\"\xa2\x04\n" +
 	"\x10MigrateVMRequest\x12\x17\n" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12'\n" +
 	"\x0fdestination_uri\x18\x02 \x01(\tR\x0edestinationUri\x12 \n" +
@@ -9250,7 +9273,11 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\fdisk_exports\x18\t \x03(\v2%.pilab.pivirtd.v1.MigrationDiskExportR\vdiskExports\x123\n" +
 	"\x16mirror_speed_bytes_sec\x18\n" +
 	" \x01(\x03R\x13mirrorSpeedBytesSec\x124\n" +
-	"\x16mirror_timeout_seconds\x18\v \x01(\x03R\x14mirrorTimeoutSeconds\"C\n" +
+	"\x16mirror_timeout_seconds\x18\v \x01(\x03R\x14mirrorTimeoutSeconds\x12\x1f\n" +
+	"\vmirror_only\x18\f \x01(\bR\n" +
+	"mirrorOnly\x12\x1f\n" +
+	"\vskip_mirror\x18\r \x01(\bR\n" +
+	"skipMirror\"C\n" +
 	"\x11MigrateVMResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\"4\n" +

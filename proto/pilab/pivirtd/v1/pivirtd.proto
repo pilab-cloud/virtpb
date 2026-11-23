@@ -682,6 +682,15 @@ message MigrateVMRequest {
   int64 mirror_speed_bytes_sec = 10;
   // mirror_timeout_seconds bounds the convergence wait; zero means 6 hours.
   int64 mirror_timeout_seconds = 11;
+  // mirror_only runs just the disk copy: the destination's disks are already
+  // exposed (INCOMING_PHASE_DISKS) and the VM there does not exist yet, so the
+  // RAM stream cannot start until that call has finished. Without it the copy
+  // and the RAM stream are one call, which requires the destination VM to be
+  // up before its disks are filled -- the pairing QEMU refuses.
+  bool mirror_only = 12;
+  // skip_mirror runs only the RAM stream, for the call that follows a
+  // successful mirror_only.
+  bool skip_mirror = 13;
 }
 
 message MigrateVMResponse {
