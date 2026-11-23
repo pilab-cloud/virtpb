@@ -588,10 +588,107 @@ func (x *ZfsDatastoreBacking) GetVolblocksize() string {
 	return ""
 }
 
+// LvmThinDatastoreBacking describes an LVM-thin-backed datastore: a thin pool
+// (and the thin volumes carved out of it) inside an existing volume group.
+//
+// This is host-local storage. The datastore exists only on the host whose
+// local VG backs it; it is never shared, so a VM on it cannot migrate without
+// copying its disks. Define it on a single host, not on a cluster.
+//
+// The volume group must already exist on the host. The director does not
+// create, extend or remove VGs: `create` only creates the thin pool inside the
+// given VG when it is missing. Existing pools are reused as-is, so their
+// settings in this request are ignored.
+//
+// When `create` is true, `size` is required; a create without a size is
+// rejected rather than defaulting to the free space of the volume group.
+type LvmThinDatastoreBacking struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Existing volume group that owns the thin pool, e.g. "vg_fast". Must
+	// already exist on the host.
+	VolumeGroup string `protobuf:"bytes,1,opt,name=volume_group,json=volumeGroup,proto3" json:"volume_group,omitempty"`
+	// Thin pool logical volume inside volume_group, e.g. "pool_vms".
+	ThinPool string `protobuf:"bytes,2,opt,name=thin_pool,json=thinPool,proto3" json:"thin_pool,omitempty"`
+	// Create the thin pool if it is missing. Never creates the volume group.
+	Create bool `protobuf:"varint,3,opt,name=create,proto3" json:"create,omitempty"`
+	// Size for a newly created thin pool, e.g. "100G". Required when create is
+	// true; ignored for an existing pool.
+	Size string `protobuf:"bytes,4,opt,name=size,proto3" json:"size,omitempty"`
+	// Chunk size for a newly created thin pool, e.g. "128k".
+	ChunkSize     string `protobuf:"bytes,5,opt,name=chunk_size,json=chunkSize,proto3" json:"chunk_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LvmThinDatastoreBacking) Reset() {
+	*x = LvmThinDatastoreBacking{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LvmThinDatastoreBacking) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LvmThinDatastoreBacking) ProtoMessage() {}
+
+func (x *LvmThinDatastoreBacking) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LvmThinDatastoreBacking.ProtoReflect.Descriptor instead.
+func (*LvmThinDatastoreBacking) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *LvmThinDatastoreBacking) GetVolumeGroup() string {
+	if x != nil {
+		return x.VolumeGroup
+	}
+	return ""
+}
+
+func (x *LvmThinDatastoreBacking) GetThinPool() string {
+	if x != nil {
+		return x.ThinPool
+	}
+	return ""
+}
+
+func (x *LvmThinDatastoreBacking) GetCreate() bool {
+	if x != nil {
+		return x.Create
+	}
+	return false
+}
+
+func (x *LvmThinDatastoreBacking) GetSize() string {
+	if x != nil {
+		return x.Size
+	}
+	return ""
+}
+
+func (x *LvmThinDatastoreBacking) GetChunkSize() string {
+	if x != nil {
+		return x.ChunkSize
+	}
+	return ""
+}
+
 type CreateDatastoreRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Name  string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// dir, nfs, iscsi, ceph or zfs.
+	// dir, nfs, iscsi, ceph, zfs or lvmthin.
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
 	// Mount path on the host, e.g. /var/lib/pivirt/datastores/gold.
 	Path string `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
@@ -606,6 +703,7 @@ type CreateDatastoreRequest struct {
 	// Types that are valid to be assigned to Backing:
 	//
 	//	*CreateDatastoreRequest_Zfs
+	//	*CreateDatastoreRequest_Lvmthin
 	Backing       isCreateDatastoreRequest_Backing `protobuf_oneof:"backing"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -613,7 +711,7 @@ type CreateDatastoreRequest struct {
 
 func (x *CreateDatastoreRequest) Reset() {
 	*x = CreateDatastoreRequest{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[7]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -625,7 +723,7 @@ func (x *CreateDatastoreRequest) String() string {
 func (*CreateDatastoreRequest) ProtoMessage() {}
 
 func (x *CreateDatastoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[7]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -638,7 +736,7 @@ func (x *CreateDatastoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDatastoreRequest.ProtoReflect.Descriptor instead.
 func (*CreateDatastoreRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{7}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CreateDatastoreRequest) GetName() string {
@@ -699,6 +797,15 @@ func (x *CreateDatastoreRequest) GetZfs() *ZfsDatastoreBacking {
 	return nil
 }
 
+func (x *CreateDatastoreRequest) GetLvmthin() *LvmThinDatastoreBacking {
+	if x != nil {
+		if x, ok := x.Backing.(*CreateDatastoreRequest_Lvmthin); ok {
+			return x.Lvmthin
+		}
+	}
+	return nil
+}
+
 type isCreateDatastoreRequest_Backing interface {
 	isCreateDatastoreRequest_Backing()
 }
@@ -707,7 +814,14 @@ type CreateDatastoreRequest_Zfs struct {
 	Zfs *ZfsDatastoreBacking `protobuf:"bytes,20,opt,name=zfs,proto3,oneof"`
 }
 
+type CreateDatastoreRequest_Lvmthin struct {
+	// Host-local LVM-thin storage on an existing volume group.
+	Lvmthin *LvmThinDatastoreBacking `protobuf:"bytes,21,opt,name=lvmthin,proto3,oneof"`
+}
+
 func (*CreateDatastoreRequest_Zfs) isCreateDatastoreRequest_Backing() {}
+
+func (*CreateDatastoreRequest_Lvmthin) isCreateDatastoreRequest_Backing() {}
 
 type DatastoreOperation struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
@@ -721,7 +835,7 @@ type DatastoreOperation struct {
 
 func (x *DatastoreOperation) Reset() {
 	*x = DatastoreOperation{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[8]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -733,7 +847,7 @@ func (x *DatastoreOperation) String() string {
 func (*DatastoreOperation) ProtoMessage() {}
 
 func (x *DatastoreOperation) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[8]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -746,7 +860,7 @@ func (x *DatastoreOperation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatastoreOperation.ProtoReflect.Descriptor instead.
 func (*DatastoreOperation) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{8}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DatastoreOperation) GetHostId() string {
@@ -781,7 +895,7 @@ type CreateDatastoreResponse struct {
 
 func (x *CreateDatastoreResponse) Reset() {
 	*x = CreateDatastoreResponse{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[9]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -793,7 +907,7 @@ func (x *CreateDatastoreResponse) String() string {
 func (*CreateDatastoreResponse) ProtoMessage() {}
 
 func (x *CreateDatastoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[9]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -806,7 +920,7 @@ func (x *CreateDatastoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDatastoreResponse.ProtoReflect.Descriptor instead.
 func (*CreateDatastoreResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{9}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateDatastoreResponse) GetDatastoreId() string {
@@ -836,7 +950,7 @@ type ValidateDatastoreResponse struct {
 
 func (x *ValidateDatastoreResponse) Reset() {
 	*x = ValidateDatastoreResponse{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[10]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -848,7 +962,7 @@ func (x *ValidateDatastoreResponse) String() string {
 func (*ValidateDatastoreResponse) ProtoMessage() {}
 
 func (x *ValidateDatastoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[10]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -861,7 +975,7 @@ func (x *ValidateDatastoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateDatastoreResponse.ProtoReflect.Descriptor instead.
 func (*ValidateDatastoreResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{10}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ValidateDatastoreResponse) GetValid() bool {
@@ -901,7 +1015,7 @@ type TestDatastoreRequest struct {
 
 func (x *TestDatastoreRequest) Reset() {
 	*x = TestDatastoreRequest{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[11]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -913,7 +1027,7 @@ func (x *TestDatastoreRequest) String() string {
 func (*TestDatastoreRequest) ProtoMessage() {}
 
 func (x *TestDatastoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[11]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -926,7 +1040,7 @@ func (x *TestDatastoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestDatastoreRequest.ProtoReflect.Descriptor instead.
 func (*TestDatastoreRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{11}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *TestDatastoreRequest) GetId() string {
@@ -948,7 +1062,7 @@ type TestDatastoreResponse struct {
 
 func (x *TestDatastoreResponse) Reset() {
 	*x = TestDatastoreResponse{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[12]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -960,7 +1074,7 @@ func (x *TestDatastoreResponse) String() string {
 func (*TestDatastoreResponse) ProtoMessage() {}
 
 func (x *TestDatastoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[12]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -973,7 +1087,7 @@ func (x *TestDatastoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestDatastoreResponse.ProtoReflect.Descriptor instead.
 func (*TestDatastoreResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{12}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *TestDatastoreResponse) GetDatastore() *Datastore {
@@ -1015,7 +1129,7 @@ type DatastoreHostsRequest struct {
 
 func (x *DatastoreHostsRequest) Reset() {
 	*x = DatastoreHostsRequest{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[13]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1027,7 +1141,7 @@ func (x *DatastoreHostsRequest) String() string {
 func (*DatastoreHostsRequest) ProtoMessage() {}
 
 func (x *DatastoreHostsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[13]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1040,7 +1154,7 @@ func (x *DatastoreHostsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatastoreHostsRequest.ProtoReflect.Descriptor instead.
 func (*DatastoreHostsRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{13}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DatastoreHostsRequest) GetId() string {
@@ -1069,7 +1183,7 @@ type DeleteDatastoreRequest struct {
 
 func (x *DeleteDatastoreRequest) Reset() {
 	*x = DeleteDatastoreRequest{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[14]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1081,7 +1195,7 @@ func (x *DeleteDatastoreRequest) String() string {
 func (*DeleteDatastoreRequest) ProtoMessage() {}
 
 func (x *DeleteDatastoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[14]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1094,7 +1208,7 @@ func (x *DeleteDatastoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDatastoreRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDatastoreRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{14}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DeleteDatastoreRequest) GetId() string {
@@ -1127,7 +1241,7 @@ type DatastoreOperationResponse struct {
 
 func (x *DatastoreOperationResponse) Reset() {
 	*x = DatastoreOperationResponse{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[15]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1139,7 +1253,7 @@ func (x *DatastoreOperationResponse) String() string {
 func (*DatastoreOperationResponse) ProtoMessage() {}
 
 func (x *DatastoreOperationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[15]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1152,7 +1266,7 @@ func (x *DatastoreOperationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatastoreOperationResponse.ProtoReflect.Descriptor instead.
 func (*DatastoreOperationResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{15}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *DatastoreOperationResponse) GetOperations() []*DatastoreOperation {
@@ -1214,7 +1328,14 @@ const file_pilab_core_v1_datastore_service_proto_rawDesc = "" +
 	"\n" +
 	"recordsize\x18\x06 \x01(\tR\n" +
 	"recordsize\x12\"\n" +
-	"\fvolblocksize\x18\a \x01(\tR\fvolblocksize\"\xe7\x02\n" +
+	"\fvolblocksize\x18\a \x01(\tR\fvolblocksize\"\xa4\x01\n" +
+	"\x17LvmThinDatastoreBacking\x12!\n" +
+	"\fvolume_group\x18\x01 \x01(\tR\vvolumeGroup\x12\x1b\n" +
+	"\tthin_pool\x18\x02 \x01(\tR\bthinPool\x12\x16\n" +
+	"\x06create\x18\x03 \x01(\bR\x06create\x12\x12\n" +
+	"\x04size\x18\x04 \x01(\tR\x04size\x12\x1d\n" +
+	"\n" +
+	"chunk_size\x18\x05 \x01(\tR\tchunkSize\"\xb1\x03\n" +
 	"\x16CreateDatastoreRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x12\n" +
@@ -1223,7 +1344,8 @@ const file_pilab_core_v1_datastore_service_proto_rawDesc = "" +
 	"\bhost_ids\x18\x05 \x03(\tR\ahostIds\x12\x1d\n" +
 	"\n" +
 	"cluster_id\x18\x06 \x01(\tR\tclusterId\x12<\n" +
-	"\x03zfs\x18\x14 \x01(\v2(.pilab.cloud.core.v1.ZfsDatastoreBackingH\x00R\x03zfs\x1a:\n" +
+	"\x03zfs\x18\x14 \x01(\v2(.pilab.cloud.core.v1.ZfsDatastoreBackingH\x00R\x03zfs\x12H\n" +
+	"\alvmthin\x18\x15 \x01(\v2,.pilab.cloud.core.v1.LvmThinDatastoreBackingH\x00R\alvmthin\x1a:\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
@@ -1288,7 +1410,7 @@ func file_pilab_core_v1_datastore_service_proto_rawDescGZIP() []byte {
 }
 
 var file_pilab_core_v1_datastore_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pilab_core_v1_datastore_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_pilab_core_v1_datastore_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_pilab_core_v1_datastore_service_proto_goTypes = []any{
 	(DatastoreHealth)(0),               // 0: pilab.cloud.core.v1.DatastoreHealth
 	(*DatastoreHost)(nil),              // 1: pilab.cloud.core.v1.DatastoreHost
@@ -1298,51 +1420,53 @@ var file_pilab_core_v1_datastore_service_proto_goTypes = []any{
 	(*GetDatastoreRequest)(nil),        // 5: pilab.cloud.core.v1.GetDatastoreRequest
 	(*GetDatastoreResponse)(nil),       // 6: pilab.cloud.core.v1.GetDatastoreResponse
 	(*ZfsDatastoreBacking)(nil),        // 7: pilab.cloud.core.v1.ZfsDatastoreBacking
-	(*CreateDatastoreRequest)(nil),     // 8: pilab.cloud.core.v1.CreateDatastoreRequest
-	(*DatastoreOperation)(nil),         // 9: pilab.cloud.core.v1.DatastoreOperation
-	(*CreateDatastoreResponse)(nil),    // 10: pilab.cloud.core.v1.CreateDatastoreResponse
-	(*ValidateDatastoreResponse)(nil),  // 11: pilab.cloud.core.v1.ValidateDatastoreResponse
-	(*TestDatastoreRequest)(nil),       // 12: pilab.cloud.core.v1.TestDatastoreRequest
-	(*TestDatastoreResponse)(nil),      // 13: pilab.cloud.core.v1.TestDatastoreResponse
-	(*DatastoreHostsRequest)(nil),      // 14: pilab.cloud.core.v1.DatastoreHostsRequest
-	(*DeleteDatastoreRequest)(nil),     // 15: pilab.cloud.core.v1.DeleteDatastoreRequest
-	(*DatastoreOperationResponse)(nil), // 16: pilab.cloud.core.v1.DatastoreOperationResponse
-	nil,                                // 17: pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
-	(*timestamppb.Timestamp)(nil),      // 18: google.protobuf.Timestamp
+	(*LvmThinDatastoreBacking)(nil),    // 8: pilab.cloud.core.v1.LvmThinDatastoreBacking
+	(*CreateDatastoreRequest)(nil),     // 9: pilab.cloud.core.v1.CreateDatastoreRequest
+	(*DatastoreOperation)(nil),         // 10: pilab.cloud.core.v1.DatastoreOperation
+	(*CreateDatastoreResponse)(nil),    // 11: pilab.cloud.core.v1.CreateDatastoreResponse
+	(*ValidateDatastoreResponse)(nil),  // 12: pilab.cloud.core.v1.ValidateDatastoreResponse
+	(*TestDatastoreRequest)(nil),       // 13: pilab.cloud.core.v1.TestDatastoreRequest
+	(*TestDatastoreResponse)(nil),      // 14: pilab.cloud.core.v1.TestDatastoreResponse
+	(*DatastoreHostsRequest)(nil),      // 15: pilab.cloud.core.v1.DatastoreHostsRequest
+	(*DeleteDatastoreRequest)(nil),     // 16: pilab.cloud.core.v1.DeleteDatastoreRequest
+	(*DatastoreOperationResponse)(nil), // 17: pilab.cloud.core.v1.DatastoreOperationResponse
+	nil,                                // 18: pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
+	(*timestamppb.Timestamp)(nil),      // 19: google.protobuf.Timestamp
 }
 var file_pilab_core_v1_datastore_service_proto_depIdxs = []int32{
 	0,  // 0: pilab.cloud.core.v1.Datastore.health:type_name -> pilab.cloud.core.v1.DatastoreHealth
 	1,  // 1: pilab.cloud.core.v1.Datastore.hosts:type_name -> pilab.cloud.core.v1.DatastoreHost
-	18, // 2: pilab.cloud.core.v1.Datastore.last_report_at:type_name -> google.protobuf.Timestamp
+	19, // 2: pilab.cloud.core.v1.Datastore.last_report_at:type_name -> google.protobuf.Timestamp
 	2,  // 3: pilab.cloud.core.v1.ListDatastoresResponse.datastores:type_name -> pilab.cloud.core.v1.Datastore
 	2,  // 4: pilab.cloud.core.v1.GetDatastoreResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
-	17, // 5: pilab.cloud.core.v1.CreateDatastoreRequest.options:type_name -> pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
+	18, // 5: pilab.cloud.core.v1.CreateDatastoreRequest.options:type_name -> pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
 	7,  // 6: pilab.cloud.core.v1.CreateDatastoreRequest.zfs:type_name -> pilab.cloud.core.v1.ZfsDatastoreBacking
-	9,  // 7: pilab.cloud.core.v1.CreateDatastoreResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
-	2,  // 8: pilab.cloud.core.v1.TestDatastoreResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
-	1,  // 9: pilab.cloud.core.v1.TestDatastoreResponse.hosts:type_name -> pilab.cloud.core.v1.DatastoreHost
-	9,  // 10: pilab.cloud.core.v1.DatastoreOperationResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
-	3,  // 11: pilab.cloud.core.v1.DatastoreService.ListDatastores:input_type -> pilab.cloud.core.v1.ListDatastoresRequest
-	5,  // 12: pilab.cloud.core.v1.DatastoreService.GetDatastore:input_type -> pilab.cloud.core.v1.GetDatastoreRequest
-	8,  // 13: pilab.cloud.core.v1.DatastoreService.CreateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
-	15, // 14: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:input_type -> pilab.cloud.core.v1.DeleteDatastoreRequest
-	14, // 15: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
-	14, // 16: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
-	8,  // 17: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
-	12, // 18: pilab.cloud.core.v1.DatastoreService.TestDatastore:input_type -> pilab.cloud.core.v1.TestDatastoreRequest
-	4,  // 19: pilab.cloud.core.v1.DatastoreService.ListDatastores:output_type -> pilab.cloud.core.v1.ListDatastoresResponse
-	6,  // 20: pilab.cloud.core.v1.DatastoreService.GetDatastore:output_type -> pilab.cloud.core.v1.GetDatastoreResponse
-	10, // 21: pilab.cloud.core.v1.DatastoreService.CreateDatastore:output_type -> pilab.cloud.core.v1.CreateDatastoreResponse
-	16, // 22: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
-	16, // 23: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
-	16, // 24: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
-	11, // 25: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:output_type -> pilab.cloud.core.v1.ValidateDatastoreResponse
-	13, // 26: pilab.cloud.core.v1.DatastoreService.TestDatastore:output_type -> pilab.cloud.core.v1.TestDatastoreResponse
-	19, // [19:27] is the sub-list for method output_type
-	11, // [11:19] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	8,  // 7: pilab.cloud.core.v1.CreateDatastoreRequest.lvmthin:type_name -> pilab.cloud.core.v1.LvmThinDatastoreBacking
+	10, // 8: pilab.cloud.core.v1.CreateDatastoreResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
+	2,  // 9: pilab.cloud.core.v1.TestDatastoreResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
+	1,  // 10: pilab.cloud.core.v1.TestDatastoreResponse.hosts:type_name -> pilab.cloud.core.v1.DatastoreHost
+	10, // 11: pilab.cloud.core.v1.DatastoreOperationResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
+	3,  // 12: pilab.cloud.core.v1.DatastoreService.ListDatastores:input_type -> pilab.cloud.core.v1.ListDatastoresRequest
+	5,  // 13: pilab.cloud.core.v1.DatastoreService.GetDatastore:input_type -> pilab.cloud.core.v1.GetDatastoreRequest
+	9,  // 14: pilab.cloud.core.v1.DatastoreService.CreateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
+	16, // 15: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:input_type -> pilab.cloud.core.v1.DeleteDatastoreRequest
+	15, // 16: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
+	15, // 17: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
+	9,  // 18: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
+	13, // 19: pilab.cloud.core.v1.DatastoreService.TestDatastore:input_type -> pilab.cloud.core.v1.TestDatastoreRequest
+	4,  // 20: pilab.cloud.core.v1.DatastoreService.ListDatastores:output_type -> pilab.cloud.core.v1.ListDatastoresResponse
+	6,  // 21: pilab.cloud.core.v1.DatastoreService.GetDatastore:output_type -> pilab.cloud.core.v1.GetDatastoreResponse
+	11, // 22: pilab.cloud.core.v1.DatastoreService.CreateDatastore:output_type -> pilab.cloud.core.v1.CreateDatastoreResponse
+	17, // 23: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	17, // 24: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	17, // 25: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	12, // 26: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:output_type -> pilab.cloud.core.v1.ValidateDatastoreResponse
+	14, // 27: pilab.cloud.core.v1.DatastoreService.TestDatastore:output_type -> pilab.cloud.core.v1.TestDatastoreResponse
+	20, // [20:28] is the sub-list for method output_type
+	12, // [12:20] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_pilab_core_v1_datastore_service_proto_init() }
@@ -1350,8 +1474,9 @@ func file_pilab_core_v1_datastore_service_proto_init() {
 	if File_pilab_core_v1_datastore_service_proto != nil {
 		return
 	}
-	file_pilab_core_v1_datastore_service_proto_msgTypes[7].OneofWrappers = []any{
+	file_pilab_core_v1_datastore_service_proto_msgTypes[8].OneofWrappers = []any{
 		(*CreateDatastoreRequest_Zfs)(nil),
+		(*CreateDatastoreRequest_Lvmthin)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1359,7 +1484,7 @@ func file_pilab_core_v1_datastore_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_core_v1_datastore_service_proto_rawDesc), len(file_pilab_core_v1_datastore_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   17,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -107,9 +107,38 @@ message ZfsDatastoreBacking {
   string volblocksize = 7;
 }
 
+// LvmThinDatastoreBacking describes an LVM-thin-backed datastore: a thin pool
+// (and the thin volumes carved out of it) inside an existing volume group.
+//
+// This is host-local storage. The datastore exists only on the host whose
+// local VG backs it; it is never shared, so a VM on it cannot migrate without
+// copying its disks. Define it on a single host, not on a cluster.
+//
+// The volume group must already exist on the host. The director does not
+// create, extend or remove VGs: `create` only creates the thin pool inside the
+// given VG when it is missing. Existing pools are reused as-is, so their
+// settings in this request are ignored.
+//
+// When `create` is true, `size` is required; a create without a size is
+// rejected rather than defaulting to the free space of the volume group.
+message LvmThinDatastoreBacking {
+  // Existing volume group that owns the thin pool, e.g. "vg_fast". Must
+  // already exist on the host.
+  string volume_group = 1;
+  // Thin pool logical volume inside volume_group, e.g. "pool_vms".
+  string thin_pool = 2;
+  // Create the thin pool if it is missing. Never creates the volume group.
+  bool create = 3;
+  // Size for a newly created thin pool, e.g. "100G". Required when create is
+  // true; ignored for an existing pool.
+  string size = 4;
+  // Chunk size for a newly created thin pool, e.g. "128k".
+  string chunk_size = 5;
+}
+
 message CreateDatastoreRequest {
   string name = 1;
-  // dir, nfs, iscsi, ceph or zfs.
+  // dir, nfs, iscsi, ceph, zfs or lvmthin.
   string type = 2;
   // Mount path on the host, e.g. /var/lib/pivirt/datastores/gold.
   string path = 3;
@@ -122,6 +151,8 @@ message CreateDatastoreRequest {
   // Backend-specific definition. Unset keeps the legacy type/options behaviour.
   oneof backing {
     ZfsDatastoreBacking zfs = 20;
+    // Host-local LVM-thin storage on an existing volume group.
+    LvmThinDatastoreBacking lvmthin = 21;
   }
 }
 
