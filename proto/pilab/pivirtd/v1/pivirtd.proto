@@ -607,6 +607,21 @@ message VMConfig {
   int32 max_vcpus = 13;
 }
 
+// IncomingPhase splits receiving a storage migration into the two moments it
+// actually has: the disks are filled, and the VM starts.
+//
+// They cannot be one call. The destination's disks hang off devices, a device
+// holds write on its node, and a block export may not share write with a
+// device, so a running VM cannot export the disks a source must mirror into.
+// Exporting from a second process that shares the VM's open files would leave
+// the VM's cached metadata stale, which is corruption. So the files belong to a
+// helper process until the mirror is done, and only then does the VM open them.
+enum IncomingPhase {
+  INCOMING_PHASE_UNSPECIFIED = 0;  // no storage migration (shared storage)
+  INCOMING_PHASE_DISKS = 1;        // create the disks, expose them, do not start the VM
+  INCOMING_PHASE_START = 2;        // the mirror is done: start the VM, accept the RAM stream
+}
+
 message PrepareIncomingRequest {
   VMConfig config = 1;
   string listen_address = 2;
@@ -615,6 +630,10 @@ message PrepareIncomingRequest {
   // without shared storage. When false the destination expects to open the
   // source's disks directly, as today.
   bool mirror_disks = 3;
+  // phase is which half of a storage migration this call performs. UNSPECIFIED
+  // with mirror_disks is refused: it names no phase, and the one-call form
+  // cannot work (see IncomingPhase).
+  IncomingPhase phase = 4;
 }
 
 // MigrationDiskExport is one disk the destination created and exposes over its

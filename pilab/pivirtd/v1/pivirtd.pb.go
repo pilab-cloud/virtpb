@@ -24,6 +24,64 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// IncomingPhase splits receiving a storage migration into the two moments it
+// actually has: the disks are filled, and the VM starts.
+//
+// They cannot be one call. The destination's disks hang off devices, a device
+// holds write on its node, and a block export may not share write with a
+// device, so a running VM cannot export the disks a source must mirror into.
+// Exporting from a second process that shares the VM's open files would leave
+// the VM's cached metadata stale, which is corruption. So the files belong to a
+// helper process until the mirror is done, and only then does the VM open them.
+type IncomingPhase int32
+
+const (
+	IncomingPhase_INCOMING_PHASE_UNSPECIFIED IncomingPhase = 0 // no storage migration (shared storage)
+	IncomingPhase_INCOMING_PHASE_DISKS       IncomingPhase = 1 // create the disks, expose them, do not start the VM
+	IncomingPhase_INCOMING_PHASE_START       IncomingPhase = 2 // the mirror is done: start the VM, accept the RAM stream
+)
+
+// Enum value maps for IncomingPhase.
+var (
+	IncomingPhase_name = map[int32]string{
+		0: "INCOMING_PHASE_UNSPECIFIED",
+		1: "INCOMING_PHASE_DISKS",
+		2: "INCOMING_PHASE_START",
+	}
+	IncomingPhase_value = map[string]int32{
+		"INCOMING_PHASE_UNSPECIFIED": 0,
+		"INCOMING_PHASE_DISKS":       1,
+		"INCOMING_PHASE_START":       2,
+	}
+)
+
+func (x IncomingPhase) Enum() *IncomingPhase {
+	p := new(IncomingPhase)
+	*p = x
+	return p
+}
+
+func (x IncomingPhase) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (IncomingPhase) Descriptor() protoreflect.EnumDescriptor {
+	return file_pilab_pivirtd_v1_pivirtd_proto_enumTypes[0].Descriptor()
+}
+
+func (IncomingPhase) Type() protoreflect.EnumType {
+	return &file_pilab_pivirtd_v1_pivirtd_proto_enumTypes[0]
+}
+
+func (x IncomingPhase) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use IncomingPhase.Descriptor instead.
+func (IncomingPhase) EnumDescriptor() ([]byte, []int) {
+	return file_pilab_pivirtd_v1_pivirtd_proto_rawDescGZIP(), []int{0}
+}
+
 type CreateVMRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -4407,7 +4465,11 @@ type PrepareIncomingRequest struct {
 	// them over NBD on the migration network, so the source can copy the disks
 	// without shared storage. When false the destination expects to open the
 	// source's disks directly, as today.
-	MirrorDisks   bool `protobuf:"varint,3,opt,name=mirror_disks,json=mirrorDisks,proto3" json:"mirror_disks,omitempty"`
+	MirrorDisks bool `protobuf:"varint,3,opt,name=mirror_disks,json=mirrorDisks,proto3" json:"mirror_disks,omitempty"`
+	// phase is which half of a storage migration this call performs. UNSPECIFIED
+	// with mirror_disks is refused: it names no phase, and the one-call form
+	// cannot work (see IncomingPhase).
+	Phase         IncomingPhase `protobuf:"varint,4,opt,name=phase,proto3,enum=pilab.pivirtd.v1.IncomingPhase" json:"phase,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4461,6 +4523,13 @@ func (x *PrepareIncomingRequest) GetMirrorDisks() bool {
 		return x.MirrorDisks
 	}
 	return false
+}
+
+func (x *PrepareIncomingRequest) GetPhase() IncomingPhase {
+	if x != nil {
+		return x.Phase
+	}
+	return IncomingPhase_INCOMING_PHASE_UNSPECIFIED
 }
 
 // MigrationDiskExport is one disk the destination created and exposes over its
@@ -9149,11 +9218,12 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\tmax_vcpus\x18\r \x01(\x05R\bmaxVcpus\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x96\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcd\x01\n" +
 	"\x16PrepareIncomingRequest\x122\n" +
 	"\x06config\x18\x01 \x01(\v2\x1a.pilab.pivirtd.v1.VMConfigR\x06config\x12%\n" +
 	"\x0elisten_address\x18\x02 \x01(\tR\rlistenAddress\x12!\n" +
-	"\fmirror_disks\x18\x03 \x01(\bR\vmirrorDisks\"t\n" +
+	"\fmirror_disks\x18\x03 \x01(\bR\vmirrorDisks\x125\n" +
+	"\x05phase\x18\x04 \x01(\x0e2\x1f.pilab.pivirtd.v1.IncomingPhaseR\x05phase\"t\n" +
 	"\x13MigrationDiskExport\x12\x16\n" +
 	"\x06device\x18\x01 \x01(\tR\x06device\x12\x1f\n" +
 	"\vexport_name\x18\x02 \x01(\tR\n" +
@@ -9466,7 +9536,11 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\x06detail\x18\x03 \x01(\tR\x06detail\"\x1d\n" +
 	"\x1bListAdoptableDevicesRequest\"[\n" +
 	"\x1cListAdoptableDevicesResponse\x12;\n" +
-	"\adevices\x18\x01 \x03(\v2!.pilab.pivirtd.v1.AdoptableDeviceR\adevices2\xe01\n" +
+	"\adevices\x18\x01 \x03(\v2!.pilab.pivirtd.v1.AdoptableDeviceR\adevices*c\n" +
+	"\rIncomingPhase\x12\x1e\n" +
+	"\x1aINCOMING_PHASE_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14INCOMING_PHASE_DISKS\x10\x01\x12\x18\n" +
+	"\x14INCOMING_PHASE_START\x10\x022\xe01\n" +
 	"\x0ePivirtdService\x12K\n" +
 	"\bCreateVM\x12!.pilab.pivirtd.v1.CreateVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\x12N\n" +
 	"\aApplyVM\x12 .pilab.pivirtd.v1.ApplyVMRequest\x1a\x1c.pilab.pivirtd.v1.VMResponse\"\x03\x88\x02\x01\x12I\n" +
@@ -9555,378 +9629,381 @@ func file_pilab_pivirtd_v1_pivirtd_proto_rawDescGZIP() []byte {
 	return file_pilab_pivirtd_v1_pivirtd_proto_rawDescData
 }
 
+var file_pilab_pivirtd_v1_pivirtd_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_pilab_pivirtd_v1_pivirtd_proto_msgTypes = make([]protoimpl.MessageInfo, 144)
 var file_pilab_pivirtd_v1_pivirtd_proto_goTypes = []any{
-	(*CreateVMRequest)(nil),               // 0: pilab.pivirtd.v1.CreateVMRequest
-	(*ApplyVMRequest)(nil),                // 1: pilab.pivirtd.v1.ApplyVMRequest
-	(*StartVMRequest)(nil),                // 2: pilab.pivirtd.v1.StartVMRequest
-	(*StopVMRequest)(nil),                 // 3: pilab.pivirtd.v1.StopVMRequest
-	(*PauseVMRequest)(nil),                // 4: pilab.pivirtd.v1.PauseVMRequest
-	(*ResumeVMRequest)(nil),               // 5: pilab.pivirtd.v1.ResumeVMRequest
-	(*RebootVMRequest)(nil),               // 6: pilab.pivirtd.v1.RebootVMRequest
-	(*DeleteVMRequest)(nil),               // 7: pilab.pivirtd.v1.DeleteVMRequest
-	(*UpdateVMMemoryRequest)(nil),         // 8: pilab.pivirtd.v1.UpdateVMMemoryRequest
-	(*UpdateVMCpuRequest)(nil),            // 9: pilab.pivirtd.v1.UpdateVMCpuRequest
-	(*GetVMRequest)(nil),                  // 10: pilab.pivirtd.v1.GetVMRequest
-	(*ListVMsRequest)(nil),                // 11: pilab.pivirtd.v1.ListVMsRequest
-	(*VMResponse)(nil),                    // 12: pilab.pivirtd.v1.VMResponse
-	(*DeleteVMResponse)(nil),              // 13: pilab.pivirtd.v1.DeleteVMResponse
-	(*ListVMsResponse)(nil),               // 14: pilab.pivirtd.v1.ListVMsResponse
-	(*VMInfo)(nil),                        // 15: pilab.pivirtd.v1.VMInfo
-	(*CPUPinning)(nil),                    // 16: pilab.pivirtd.v1.CPUPinning
-	(*NUMACellConfig)(nil),                // 17: pilab.pivirtd.v1.NUMACellConfig
-	(*HugePagesConfig)(nil),               // 18: pilab.pivirtd.v1.HugePagesConfig
-	(*HostPCIDevice)(nil),                 // 19: pilab.pivirtd.v1.HostPCIDevice
-	(*CPUConfig)(nil),                     // 20: pilab.pivirtd.v1.CPUConfig
-	(*DiskConfig)(nil),                    // 21: pilab.pivirtd.v1.DiskConfig
-	(*NetworkConfig)(nil),                 // 22: pilab.pivirtd.v1.NetworkConfig
-	(*GraphicsConfig)(nil),                // 23: pilab.pivirtd.v1.GraphicsConfig
-	(*GetVMStatsRequest)(nil),             // 24: pilab.pivirtd.v1.GetVMStatsRequest
-	(*VMStatsResponse)(nil),               // 25: pilab.pivirtd.v1.VMStatsResponse
-	(*CPUStats)(nil),                      // 26: pilab.pivirtd.v1.CPUStats
-	(*MemoryStats)(nil),                   // 27: pilab.pivirtd.v1.MemoryStats
-	(*DiskStats)(nil),                     // 28: pilab.pivirtd.v1.DiskStats
-	(*NetworkStats)(nil),                  // 29: pilab.pivirtd.v1.NetworkStats
-	(*StreamVMStatsRequest)(nil),          // 30: pilab.pivirtd.v1.StreamVMStatsRequest
-	(*VMStatsBatch)(nil),                  // 31: pilab.pivirtd.v1.VMStatsBatch
-	(*HostDiskStat)(nil),                  // 32: pilab.pivirtd.v1.HostDiskStat
-	(*HostNetStat)(nil),                   // 33: pilab.pivirtd.v1.HostNetStat
-	(*HostStats)(nil),                     // 34: pilab.pivirtd.v1.HostStats
-	(*PSIPressure)(nil),                   // 35: pilab.pivirtd.v1.PSIPressure
-	(*PSIStats)(nil),                      // 36: pilab.pivirtd.v1.PSIStats
-	(*HostPressure)(nil),                  // 37: pilab.pivirtd.v1.HostPressure
-	(*ExecuteQMPRequest)(nil),             // 38: pilab.pivirtd.v1.ExecuteQMPRequest
-	(*ExecuteQMPResponse)(nil),            // 39: pilab.pivirtd.v1.ExecuteQMPResponse
-	(*StreamQMPRequest)(nil),              // 40: pilab.pivirtd.v1.StreamQMPRequest
-	(*QMPEvent)(nil),                      // 41: pilab.pivirtd.v1.QMPEvent
-	(*CreateSnapshotRequest)(nil),         // 42: pilab.pivirtd.v1.CreateSnapshotRequest
-	(*ListSnapshotsRequest)(nil),          // 43: pilab.pivirtd.v1.ListSnapshotsRequest
-	(*ListSnapshotsResponse)(nil),         // 44: pilab.pivirtd.v1.ListSnapshotsResponse
-	(*RestoreSnapshotRequest)(nil),        // 45: pilab.pivirtd.v1.RestoreSnapshotRequest
-	(*DeleteSnapshotRequest)(nil),         // 46: pilab.pivirtd.v1.DeleteSnapshotRequest
-	(*SnapshotResponse)(nil),              // 47: pilab.pivirtd.v1.SnapshotResponse
-	(*DeleteSnapshotResponse)(nil),        // 48: pilab.pivirtd.v1.DeleteSnapshotResponse
-	(*ConsolidateSnapshotRequest)(nil),    // 49: pilab.pivirtd.v1.ConsolidateSnapshotRequest
-	(*GetSnapshotStatusRequest)(nil),      // 50: pilab.pivirtd.v1.GetSnapshotStatusRequest
-	(*SnapshotStatusResponse)(nil),        // 51: pilab.pivirtd.v1.SnapshotStatusResponse
-	(*SnapshotInfo)(nil),                  // 52: pilab.pivirtd.v1.SnapshotInfo
-	(*CloneVMRequest)(nil),                // 53: pilab.pivirtd.v1.CloneVMRequest
-	(*CloneSnapshotRequest)(nil),          // 54: pilab.pivirtd.v1.CloneSnapshotRequest
-	(*StartDiskMoveRequest)(nil),          // 55: pilab.pivirtd.v1.StartDiskMoveRequest
-	(*GetDiskMoveStatusRequest)(nil),      // 56: pilab.pivirtd.v1.GetDiskMoveStatusRequest
-	(*CancelDiskMoveRequest)(nil),         // 57: pilab.pivirtd.v1.CancelDiskMoveRequest
-	(*DiskMoveResponse)(nil),              // 58: pilab.pivirtd.v1.DiskMoveResponse
-	(*DiskMoveStatusResponse)(nil),        // 59: pilab.pivirtd.v1.DiskMoveStatusResponse
-	(*VMJobStatus)(nil),                   // 60: pilab.pivirtd.v1.VMJobStatus
-	(*VMConfig)(nil),                      // 61: pilab.pivirtd.v1.VMConfig
-	(*PrepareIncomingRequest)(nil),        // 62: pilab.pivirtd.v1.PrepareIncomingRequest
-	(*MigrationDiskExport)(nil),           // 63: pilab.pivirtd.v1.MigrationDiskExport
-	(*PrepareIncomingResponse)(nil),       // 64: pilab.pivirtd.v1.PrepareIncomingResponse
-	(*FinalizeMigrationRequest)(nil),      // 65: pilab.pivirtd.v1.FinalizeMigrationRequest
-	(*AbortIncomingRequest)(nil),          // 66: pilab.pivirtd.v1.AbortIncomingRequest
-	(*MigrateVMRequest)(nil),              // 67: pilab.pivirtd.v1.MigrateVMRequest
-	(*MigrateVMResponse)(nil),             // 68: pilab.pivirtd.v1.MigrateVMResponse
-	(*GetMigrationStatusRequest)(nil),     // 69: pilab.pivirtd.v1.GetMigrationStatusRequest
-	(*MigrationStatusResponse)(nil),       // 70: pilab.pivirtd.v1.MigrationStatusResponse
-	(*CreateStoragePoolRequest)(nil),      // 71: pilab.pivirtd.v1.CreateStoragePoolRequest
-	(*StoragePoolResponse)(nil),           // 72: pilab.pivirtd.v1.StoragePoolResponse
-	(*ListStoragePoolsRequest)(nil),       // 73: pilab.pivirtd.v1.ListStoragePoolsRequest
-	(*ListStoragePoolsResponse)(nil),      // 74: pilab.pivirtd.v1.ListStoragePoolsResponse
-	(*DeleteStoragePoolRequest)(nil),      // 75: pilab.pivirtd.v1.DeleteStoragePoolRequest
-	(*DeleteStoragePoolResponse)(nil),     // 76: pilab.pivirtd.v1.DeleteStoragePoolResponse
-	(*StoragePool)(nil),                   // 77: pilab.pivirtd.v1.StoragePool
-	(*GetStoragePoolRequest)(nil),         // 78: pilab.pivirtd.v1.GetStoragePoolRequest
-	(*ActivateStoragePoolRequest)(nil),    // 79: pilab.pivirtd.v1.ActivateStoragePoolRequest
-	(*DeactivateStoragePoolRequest)(nil),  // 80: pilab.pivirtd.v1.DeactivateStoragePoolRequest
-	(*CreateTAPDeviceRequest)(nil),        // 81: pilab.pivirtd.v1.CreateTAPDeviceRequest
-	(*CreateBridgeRequest)(nil),           // 82: pilab.pivirtd.v1.CreateBridgeRequest
-	(*NetworkResponse)(nil),               // 83: pilab.pivirtd.v1.NetworkResponse
-	(*ListTAPDevicesRequest)(nil),         // 84: pilab.pivirtd.v1.ListTAPDevicesRequest
-	(*ListTAPDevicesResponse)(nil),        // 85: pilab.pivirtd.v1.ListTAPDevicesResponse
-	(*ListBridgesRequest)(nil),            // 86: pilab.pivirtd.v1.ListBridgesRequest
-	(*ListBridgesResponse)(nil),           // 87: pilab.pivirtd.v1.ListBridgesResponse
-	(*DeleteTAPDeviceRequest)(nil),        // 88: pilab.pivirtd.v1.DeleteTAPDeviceRequest
-	(*DeleteBridgeRequest)(nil),           // 89: pilab.pivirtd.v1.DeleteBridgeRequest
-	(*DeleteNetworkResponse)(nil),         // 90: pilab.pivirtd.v1.DeleteNetworkResponse
-	(*TAPDevice)(nil),                     // 91: pilab.pivirtd.v1.TAPDevice
-	(*Bridge)(nil),                        // 92: pilab.pivirtd.v1.Bridge
-	(*NetworkDevice)(nil),                 // 93: pilab.pivirtd.v1.NetworkDevice
-	(*EFIConfig)(nil),                     // 94: pilab.pivirtd.v1.EFIConfig
-	(*SetLabelsRequest)(nil),              // 95: pilab.pivirtd.v1.SetLabelsRequest
-	(*SetLabelsResponse)(nil),             // 96: pilab.pivirtd.v1.SetLabelsResponse
-	(*GetLabelsRequest)(nil),              // 97: pilab.pivirtd.v1.GetLabelsRequest
-	(*GetLabelsResponse)(nil),             // 98: pilab.pivirtd.v1.GetLabelsResponse
-	(*DeleteLabelRequest)(nil),            // 99: pilab.pivirtd.v1.DeleteLabelRequest
-	(*DeleteLabelResponse)(nil),           // 100: pilab.pivirtd.v1.DeleteLabelResponse
-	(*SetProvisioningRequest)(nil),        // 101: pilab.pivirtd.v1.SetProvisioningRequest
-	(*SetProvisioningResponse)(nil),       // 102: pilab.pivirtd.v1.SetProvisioningResponse
-	(*GetVMStatusRequest)(nil),            // 103: pilab.pivirtd.v1.GetVMStatusRequest
-	(*GetVMStatusResponse)(nil),           // 104: pilab.pivirtd.v1.GetVMStatusResponse
-	(*VMCondition)(nil),                   // 105: pilab.pivirtd.v1.VMCondition
-	(*VMEvent)(nil),                       // 106: pilab.pivirtd.v1.VMEvent
-	(*ResourceSpec)(nil),                  // 107: pilab.pivirtd.v1.ResourceSpec
-	(*AttachDiskRequest)(nil),             // 108: pilab.pivirtd.v1.AttachDiskRequest
-	(*DetachDiskRequest)(nil),             // 109: pilab.pivirtd.v1.DetachDiskRequest
-	(*AttachNICRequest)(nil),              // 110: pilab.pivirtd.v1.AttachNICRequest
-	(*DetachNICRequest)(nil),              // 111: pilab.pivirtd.v1.DetachNICRequest
-	(*ResizeDiskRequest)(nil),             // 112: pilab.pivirtd.v1.ResizeDiskRequest
-	(*SetVNCPasswordRequest)(nil),         // 113: pilab.pivirtd.v1.SetVNCPasswordRequest
-	(*SetLinkStateRequest)(nil),           // 114: pilab.pivirtd.v1.SetLinkStateRequest
-	(*RenameVMRequest)(nil),               // 115: pilab.pivirtd.v1.RenameVMRequest
-	(*ChangeISORequest)(nil),              // 116: pilab.pivirtd.v1.ChangeISORequest
-	(*EjectISORequest)(nil),               // 117: pilab.pivirtd.v1.EjectISORequest
-	(*GetSnapshotTreeRequest)(nil),        // 118: pilab.pivirtd.v1.GetSnapshotTreeRequest
-	(*GetSnapshotTreeResponse)(nil),       // 119: pilab.pivirtd.v1.GetSnapshotTreeResponse
-	(*SnapshotNode)(nil),                  // 120: pilab.pivirtd.v1.SnapshotNode
-	(*GetGuestInfoRequest)(nil),           // 121: pilab.pivirtd.v1.GetGuestInfoRequest
-	(*GetGuestInfoResponse)(nil),          // 122: pilab.pivirtd.v1.GetGuestInfoResponse
-	(*GuestNetworkInterface)(nil),         // 123: pilab.pivirtd.v1.GuestNetworkInterface
-	(*GuestExecRequest)(nil),              // 124: pilab.pivirtd.v1.GuestExecRequest
-	(*GuestExecResponse)(nil),             // 125: pilab.pivirtd.v1.GuestExecResponse
-	(*GetGuestExecStatusRequest)(nil),     // 126: pilab.pivirtd.v1.GetGuestExecStatusRequest
-	(*GetGuestExecStatusResponse)(nil),    // 127: pilab.pivirtd.v1.GetGuestExecStatusResponse
-	(*SetGuestHostnameRequest)(nil),       // 128: pilab.pivirtd.v1.SetGuestHostnameRequest
-	(*SetGuestHostnameResponse)(nil),      // 129: pilab.pivirtd.v1.SetGuestHostnameResponse
-	(*CustomizeOSRequest)(nil),            // 130: pilab.pivirtd.v1.CustomizeOSRequest
-	(*UserSpec)(nil),                      // 131: pilab.pivirtd.v1.UserSpec
-	(*CustomizeOSResponse)(nil),           // 132: pilab.pivirtd.v1.CustomizeOSResponse
-	(*ListNetworkNamespacesRequest)(nil),  // 133: pilab.pivirtd.v1.ListNetworkNamespacesRequest
-	(*ListNetworkNamespacesResponse)(nil), // 134: pilab.pivirtd.v1.ListNetworkNamespacesResponse
-	(*AdoptableDevice)(nil),               // 135: pilab.pivirtd.v1.AdoptableDevice
-	(*ListAdoptableDevicesRequest)(nil),   // 136: pilab.pivirtd.v1.ListAdoptableDevicesRequest
-	(*ListAdoptableDevicesResponse)(nil),  // 137: pilab.pivirtd.v1.ListAdoptableDevicesResponse
-	nil,                                   // 138: pilab.pivirtd.v1.VMInfo.LabelsEntry
-	nil,                                   // 139: pilab.pivirtd.v1.VMConfig.LabelsEntry
-	nil,                                   // 140: pilab.pivirtd.v1.CreateStoragePoolRequest.OptionsEntry
-	nil,                                   // 141: pilab.pivirtd.v1.StoragePool.OptionsEntry
-	nil,                                   // 142: pilab.pivirtd.v1.SetLabelsRequest.LabelsEntry
-	nil,                                   // 143: pilab.pivirtd.v1.GetLabelsResponse.LabelsEntry
-	(*timestamppb.Timestamp)(nil),         // 144: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),           // 145: google.protobuf.Duration
-	(v1.SnapshotState)(0),                 // 146: pilab.common.v1.SnapshotState
-	(*SubscribeEventsRequest)(nil),        // 147: pilab.pivirtd.v1.SubscribeEventsRequest
-	(*HostEvent)(nil),                     // 148: pilab.pivirtd.v1.HostEvent
-	(*HostResourceReport)(nil),            // 149: pilab.pivirtd.v1.HostResourceReport
+	(IncomingPhase)(0),                    // 0: pilab.pivirtd.v1.IncomingPhase
+	(*CreateVMRequest)(nil),               // 1: pilab.pivirtd.v1.CreateVMRequest
+	(*ApplyVMRequest)(nil),                // 2: pilab.pivirtd.v1.ApplyVMRequest
+	(*StartVMRequest)(nil),                // 3: pilab.pivirtd.v1.StartVMRequest
+	(*StopVMRequest)(nil),                 // 4: pilab.pivirtd.v1.StopVMRequest
+	(*PauseVMRequest)(nil),                // 5: pilab.pivirtd.v1.PauseVMRequest
+	(*ResumeVMRequest)(nil),               // 6: pilab.pivirtd.v1.ResumeVMRequest
+	(*RebootVMRequest)(nil),               // 7: pilab.pivirtd.v1.RebootVMRequest
+	(*DeleteVMRequest)(nil),               // 8: pilab.pivirtd.v1.DeleteVMRequest
+	(*UpdateVMMemoryRequest)(nil),         // 9: pilab.pivirtd.v1.UpdateVMMemoryRequest
+	(*UpdateVMCpuRequest)(nil),            // 10: pilab.pivirtd.v1.UpdateVMCpuRequest
+	(*GetVMRequest)(nil),                  // 11: pilab.pivirtd.v1.GetVMRequest
+	(*ListVMsRequest)(nil),                // 12: pilab.pivirtd.v1.ListVMsRequest
+	(*VMResponse)(nil),                    // 13: pilab.pivirtd.v1.VMResponse
+	(*DeleteVMResponse)(nil),              // 14: pilab.pivirtd.v1.DeleteVMResponse
+	(*ListVMsResponse)(nil),               // 15: pilab.pivirtd.v1.ListVMsResponse
+	(*VMInfo)(nil),                        // 16: pilab.pivirtd.v1.VMInfo
+	(*CPUPinning)(nil),                    // 17: pilab.pivirtd.v1.CPUPinning
+	(*NUMACellConfig)(nil),                // 18: pilab.pivirtd.v1.NUMACellConfig
+	(*HugePagesConfig)(nil),               // 19: pilab.pivirtd.v1.HugePagesConfig
+	(*HostPCIDevice)(nil),                 // 20: pilab.pivirtd.v1.HostPCIDevice
+	(*CPUConfig)(nil),                     // 21: pilab.pivirtd.v1.CPUConfig
+	(*DiskConfig)(nil),                    // 22: pilab.pivirtd.v1.DiskConfig
+	(*NetworkConfig)(nil),                 // 23: pilab.pivirtd.v1.NetworkConfig
+	(*GraphicsConfig)(nil),                // 24: pilab.pivirtd.v1.GraphicsConfig
+	(*GetVMStatsRequest)(nil),             // 25: pilab.pivirtd.v1.GetVMStatsRequest
+	(*VMStatsResponse)(nil),               // 26: pilab.pivirtd.v1.VMStatsResponse
+	(*CPUStats)(nil),                      // 27: pilab.pivirtd.v1.CPUStats
+	(*MemoryStats)(nil),                   // 28: pilab.pivirtd.v1.MemoryStats
+	(*DiskStats)(nil),                     // 29: pilab.pivirtd.v1.DiskStats
+	(*NetworkStats)(nil),                  // 30: pilab.pivirtd.v1.NetworkStats
+	(*StreamVMStatsRequest)(nil),          // 31: pilab.pivirtd.v1.StreamVMStatsRequest
+	(*VMStatsBatch)(nil),                  // 32: pilab.pivirtd.v1.VMStatsBatch
+	(*HostDiskStat)(nil),                  // 33: pilab.pivirtd.v1.HostDiskStat
+	(*HostNetStat)(nil),                   // 34: pilab.pivirtd.v1.HostNetStat
+	(*HostStats)(nil),                     // 35: pilab.pivirtd.v1.HostStats
+	(*PSIPressure)(nil),                   // 36: pilab.pivirtd.v1.PSIPressure
+	(*PSIStats)(nil),                      // 37: pilab.pivirtd.v1.PSIStats
+	(*HostPressure)(nil),                  // 38: pilab.pivirtd.v1.HostPressure
+	(*ExecuteQMPRequest)(nil),             // 39: pilab.pivirtd.v1.ExecuteQMPRequest
+	(*ExecuteQMPResponse)(nil),            // 40: pilab.pivirtd.v1.ExecuteQMPResponse
+	(*StreamQMPRequest)(nil),              // 41: pilab.pivirtd.v1.StreamQMPRequest
+	(*QMPEvent)(nil),                      // 42: pilab.pivirtd.v1.QMPEvent
+	(*CreateSnapshotRequest)(nil),         // 43: pilab.pivirtd.v1.CreateSnapshotRequest
+	(*ListSnapshotsRequest)(nil),          // 44: pilab.pivirtd.v1.ListSnapshotsRequest
+	(*ListSnapshotsResponse)(nil),         // 45: pilab.pivirtd.v1.ListSnapshotsResponse
+	(*RestoreSnapshotRequest)(nil),        // 46: pilab.pivirtd.v1.RestoreSnapshotRequest
+	(*DeleteSnapshotRequest)(nil),         // 47: pilab.pivirtd.v1.DeleteSnapshotRequest
+	(*SnapshotResponse)(nil),              // 48: pilab.pivirtd.v1.SnapshotResponse
+	(*DeleteSnapshotResponse)(nil),        // 49: pilab.pivirtd.v1.DeleteSnapshotResponse
+	(*ConsolidateSnapshotRequest)(nil),    // 50: pilab.pivirtd.v1.ConsolidateSnapshotRequest
+	(*GetSnapshotStatusRequest)(nil),      // 51: pilab.pivirtd.v1.GetSnapshotStatusRequest
+	(*SnapshotStatusResponse)(nil),        // 52: pilab.pivirtd.v1.SnapshotStatusResponse
+	(*SnapshotInfo)(nil),                  // 53: pilab.pivirtd.v1.SnapshotInfo
+	(*CloneVMRequest)(nil),                // 54: pilab.pivirtd.v1.CloneVMRequest
+	(*CloneSnapshotRequest)(nil),          // 55: pilab.pivirtd.v1.CloneSnapshotRequest
+	(*StartDiskMoveRequest)(nil),          // 56: pilab.pivirtd.v1.StartDiskMoveRequest
+	(*GetDiskMoveStatusRequest)(nil),      // 57: pilab.pivirtd.v1.GetDiskMoveStatusRequest
+	(*CancelDiskMoveRequest)(nil),         // 58: pilab.pivirtd.v1.CancelDiskMoveRequest
+	(*DiskMoveResponse)(nil),              // 59: pilab.pivirtd.v1.DiskMoveResponse
+	(*DiskMoveStatusResponse)(nil),        // 60: pilab.pivirtd.v1.DiskMoveStatusResponse
+	(*VMJobStatus)(nil),                   // 61: pilab.pivirtd.v1.VMJobStatus
+	(*VMConfig)(nil),                      // 62: pilab.pivirtd.v1.VMConfig
+	(*PrepareIncomingRequest)(nil),        // 63: pilab.pivirtd.v1.PrepareIncomingRequest
+	(*MigrationDiskExport)(nil),           // 64: pilab.pivirtd.v1.MigrationDiskExport
+	(*PrepareIncomingResponse)(nil),       // 65: pilab.pivirtd.v1.PrepareIncomingResponse
+	(*FinalizeMigrationRequest)(nil),      // 66: pilab.pivirtd.v1.FinalizeMigrationRequest
+	(*AbortIncomingRequest)(nil),          // 67: pilab.pivirtd.v1.AbortIncomingRequest
+	(*MigrateVMRequest)(nil),              // 68: pilab.pivirtd.v1.MigrateVMRequest
+	(*MigrateVMResponse)(nil),             // 69: pilab.pivirtd.v1.MigrateVMResponse
+	(*GetMigrationStatusRequest)(nil),     // 70: pilab.pivirtd.v1.GetMigrationStatusRequest
+	(*MigrationStatusResponse)(nil),       // 71: pilab.pivirtd.v1.MigrationStatusResponse
+	(*CreateStoragePoolRequest)(nil),      // 72: pilab.pivirtd.v1.CreateStoragePoolRequest
+	(*StoragePoolResponse)(nil),           // 73: pilab.pivirtd.v1.StoragePoolResponse
+	(*ListStoragePoolsRequest)(nil),       // 74: pilab.pivirtd.v1.ListStoragePoolsRequest
+	(*ListStoragePoolsResponse)(nil),      // 75: pilab.pivirtd.v1.ListStoragePoolsResponse
+	(*DeleteStoragePoolRequest)(nil),      // 76: pilab.pivirtd.v1.DeleteStoragePoolRequest
+	(*DeleteStoragePoolResponse)(nil),     // 77: pilab.pivirtd.v1.DeleteStoragePoolResponse
+	(*StoragePool)(nil),                   // 78: pilab.pivirtd.v1.StoragePool
+	(*GetStoragePoolRequest)(nil),         // 79: pilab.pivirtd.v1.GetStoragePoolRequest
+	(*ActivateStoragePoolRequest)(nil),    // 80: pilab.pivirtd.v1.ActivateStoragePoolRequest
+	(*DeactivateStoragePoolRequest)(nil),  // 81: pilab.pivirtd.v1.DeactivateStoragePoolRequest
+	(*CreateTAPDeviceRequest)(nil),        // 82: pilab.pivirtd.v1.CreateTAPDeviceRequest
+	(*CreateBridgeRequest)(nil),           // 83: pilab.pivirtd.v1.CreateBridgeRequest
+	(*NetworkResponse)(nil),               // 84: pilab.pivirtd.v1.NetworkResponse
+	(*ListTAPDevicesRequest)(nil),         // 85: pilab.pivirtd.v1.ListTAPDevicesRequest
+	(*ListTAPDevicesResponse)(nil),        // 86: pilab.pivirtd.v1.ListTAPDevicesResponse
+	(*ListBridgesRequest)(nil),            // 87: pilab.pivirtd.v1.ListBridgesRequest
+	(*ListBridgesResponse)(nil),           // 88: pilab.pivirtd.v1.ListBridgesResponse
+	(*DeleteTAPDeviceRequest)(nil),        // 89: pilab.pivirtd.v1.DeleteTAPDeviceRequest
+	(*DeleteBridgeRequest)(nil),           // 90: pilab.pivirtd.v1.DeleteBridgeRequest
+	(*DeleteNetworkResponse)(nil),         // 91: pilab.pivirtd.v1.DeleteNetworkResponse
+	(*TAPDevice)(nil),                     // 92: pilab.pivirtd.v1.TAPDevice
+	(*Bridge)(nil),                        // 93: pilab.pivirtd.v1.Bridge
+	(*NetworkDevice)(nil),                 // 94: pilab.pivirtd.v1.NetworkDevice
+	(*EFIConfig)(nil),                     // 95: pilab.pivirtd.v1.EFIConfig
+	(*SetLabelsRequest)(nil),              // 96: pilab.pivirtd.v1.SetLabelsRequest
+	(*SetLabelsResponse)(nil),             // 97: pilab.pivirtd.v1.SetLabelsResponse
+	(*GetLabelsRequest)(nil),              // 98: pilab.pivirtd.v1.GetLabelsRequest
+	(*GetLabelsResponse)(nil),             // 99: pilab.pivirtd.v1.GetLabelsResponse
+	(*DeleteLabelRequest)(nil),            // 100: pilab.pivirtd.v1.DeleteLabelRequest
+	(*DeleteLabelResponse)(nil),           // 101: pilab.pivirtd.v1.DeleteLabelResponse
+	(*SetProvisioningRequest)(nil),        // 102: pilab.pivirtd.v1.SetProvisioningRequest
+	(*SetProvisioningResponse)(nil),       // 103: pilab.pivirtd.v1.SetProvisioningResponse
+	(*GetVMStatusRequest)(nil),            // 104: pilab.pivirtd.v1.GetVMStatusRequest
+	(*GetVMStatusResponse)(nil),           // 105: pilab.pivirtd.v1.GetVMStatusResponse
+	(*VMCondition)(nil),                   // 106: pilab.pivirtd.v1.VMCondition
+	(*VMEvent)(nil),                       // 107: pilab.pivirtd.v1.VMEvent
+	(*ResourceSpec)(nil),                  // 108: pilab.pivirtd.v1.ResourceSpec
+	(*AttachDiskRequest)(nil),             // 109: pilab.pivirtd.v1.AttachDiskRequest
+	(*DetachDiskRequest)(nil),             // 110: pilab.pivirtd.v1.DetachDiskRequest
+	(*AttachNICRequest)(nil),              // 111: pilab.pivirtd.v1.AttachNICRequest
+	(*DetachNICRequest)(nil),              // 112: pilab.pivirtd.v1.DetachNICRequest
+	(*ResizeDiskRequest)(nil),             // 113: pilab.pivirtd.v1.ResizeDiskRequest
+	(*SetVNCPasswordRequest)(nil),         // 114: pilab.pivirtd.v1.SetVNCPasswordRequest
+	(*SetLinkStateRequest)(nil),           // 115: pilab.pivirtd.v1.SetLinkStateRequest
+	(*RenameVMRequest)(nil),               // 116: pilab.pivirtd.v1.RenameVMRequest
+	(*ChangeISORequest)(nil),              // 117: pilab.pivirtd.v1.ChangeISORequest
+	(*EjectISORequest)(nil),               // 118: pilab.pivirtd.v1.EjectISORequest
+	(*GetSnapshotTreeRequest)(nil),        // 119: pilab.pivirtd.v1.GetSnapshotTreeRequest
+	(*GetSnapshotTreeResponse)(nil),       // 120: pilab.pivirtd.v1.GetSnapshotTreeResponse
+	(*SnapshotNode)(nil),                  // 121: pilab.pivirtd.v1.SnapshotNode
+	(*GetGuestInfoRequest)(nil),           // 122: pilab.pivirtd.v1.GetGuestInfoRequest
+	(*GetGuestInfoResponse)(nil),          // 123: pilab.pivirtd.v1.GetGuestInfoResponse
+	(*GuestNetworkInterface)(nil),         // 124: pilab.pivirtd.v1.GuestNetworkInterface
+	(*GuestExecRequest)(nil),              // 125: pilab.pivirtd.v1.GuestExecRequest
+	(*GuestExecResponse)(nil),             // 126: pilab.pivirtd.v1.GuestExecResponse
+	(*GetGuestExecStatusRequest)(nil),     // 127: pilab.pivirtd.v1.GetGuestExecStatusRequest
+	(*GetGuestExecStatusResponse)(nil),    // 128: pilab.pivirtd.v1.GetGuestExecStatusResponse
+	(*SetGuestHostnameRequest)(nil),       // 129: pilab.pivirtd.v1.SetGuestHostnameRequest
+	(*SetGuestHostnameResponse)(nil),      // 130: pilab.pivirtd.v1.SetGuestHostnameResponse
+	(*CustomizeOSRequest)(nil),            // 131: pilab.pivirtd.v1.CustomizeOSRequest
+	(*UserSpec)(nil),                      // 132: pilab.pivirtd.v1.UserSpec
+	(*CustomizeOSResponse)(nil),           // 133: pilab.pivirtd.v1.CustomizeOSResponse
+	(*ListNetworkNamespacesRequest)(nil),  // 134: pilab.pivirtd.v1.ListNetworkNamespacesRequest
+	(*ListNetworkNamespacesResponse)(nil), // 135: pilab.pivirtd.v1.ListNetworkNamespacesResponse
+	(*AdoptableDevice)(nil),               // 136: pilab.pivirtd.v1.AdoptableDevice
+	(*ListAdoptableDevicesRequest)(nil),   // 137: pilab.pivirtd.v1.ListAdoptableDevicesRequest
+	(*ListAdoptableDevicesResponse)(nil),  // 138: pilab.pivirtd.v1.ListAdoptableDevicesResponse
+	nil,                                   // 139: pilab.pivirtd.v1.VMInfo.LabelsEntry
+	nil,                                   // 140: pilab.pivirtd.v1.VMConfig.LabelsEntry
+	nil,                                   // 141: pilab.pivirtd.v1.CreateStoragePoolRequest.OptionsEntry
+	nil,                                   // 142: pilab.pivirtd.v1.StoragePool.OptionsEntry
+	nil,                                   // 143: pilab.pivirtd.v1.SetLabelsRequest.LabelsEntry
+	nil,                                   // 144: pilab.pivirtd.v1.GetLabelsResponse.LabelsEntry
+	(*timestamppb.Timestamp)(nil),         // 145: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),           // 146: google.protobuf.Duration
+	(v1.SnapshotState)(0),                 // 147: pilab.common.v1.SnapshotState
+	(*SubscribeEventsRequest)(nil),        // 148: pilab.pivirtd.v1.SubscribeEventsRequest
+	(*HostEvent)(nil),                     // 149: pilab.pivirtd.v1.HostEvent
+	(*HostResourceReport)(nil),            // 150: pilab.pivirtd.v1.HostResourceReport
 }
 var file_pilab_pivirtd_v1_pivirtd_proto_depIdxs = []int32{
-	20,  // 0: pilab.pivirtd.v1.CreateVMRequest.cpu:type_name -> pilab.pivirtd.v1.CPUConfig
-	21,  // 1: pilab.pivirtd.v1.CreateVMRequest.disks:type_name -> pilab.pivirtd.v1.DiskConfig
-	22,  // 2: pilab.pivirtd.v1.CreateVMRequest.networks:type_name -> pilab.pivirtd.v1.NetworkConfig
-	23,  // 3: pilab.pivirtd.v1.CreateVMRequest.graphics:type_name -> pilab.pivirtd.v1.GraphicsConfig
-	94,  // 4: pilab.pivirtd.v1.CreateVMRequest.efi:type_name -> pilab.pivirtd.v1.EFIConfig
-	107, // 5: pilab.pivirtd.v1.CreateVMRequest.resources:type_name -> pilab.pivirtd.v1.ResourceSpec
-	15,  // 6: pilab.pivirtd.v1.VMResponse.vm:type_name -> pilab.pivirtd.v1.VMInfo
-	15,  // 7: pilab.pivirtd.v1.ListVMsResponse.vms:type_name -> pilab.pivirtd.v1.VMInfo
-	20,  // 8: pilab.pivirtd.v1.VMInfo.cpu:type_name -> pilab.pivirtd.v1.CPUConfig
-	21,  // 9: pilab.pivirtd.v1.VMInfo.disks:type_name -> pilab.pivirtd.v1.DiskConfig
-	22,  // 10: pilab.pivirtd.v1.VMInfo.networks:type_name -> pilab.pivirtd.v1.NetworkConfig
-	144, // 11: pilab.pivirtd.v1.VMInfo.created_at:type_name -> google.protobuf.Timestamp
-	144, // 12: pilab.pivirtd.v1.VMInfo.updated_at:type_name -> google.protobuf.Timestamp
-	94,  // 13: pilab.pivirtd.v1.VMInfo.efi:type_name -> pilab.pivirtd.v1.EFIConfig
-	138, // 14: pilab.pivirtd.v1.VMInfo.labels:type_name -> pilab.pivirtd.v1.VMInfo.LabelsEntry
-	19,  // 15: pilab.pivirtd.v1.VMInfo.host_devices:type_name -> pilab.pivirtd.v1.HostPCIDevice
-	16,  // 16: pilab.pivirtd.v1.CPUConfig.pinning:type_name -> pilab.pivirtd.v1.CPUPinning
-	17,  // 17: pilab.pivirtd.v1.CPUConfig.numa:type_name -> pilab.pivirtd.v1.NUMACellConfig
-	18,  // 18: pilab.pivirtd.v1.CPUConfig.hugepages:type_name -> pilab.pivirtd.v1.HugePagesConfig
-	26,  // 19: pilab.pivirtd.v1.VMStatsResponse.cpu_stats:type_name -> pilab.pivirtd.v1.CPUStats
-	27,  // 20: pilab.pivirtd.v1.VMStatsResponse.memory_stats:type_name -> pilab.pivirtd.v1.MemoryStats
-	28,  // 21: pilab.pivirtd.v1.VMStatsResponse.disk_stats:type_name -> pilab.pivirtd.v1.DiskStats
-	29,  // 22: pilab.pivirtd.v1.VMStatsResponse.network_stats:type_name -> pilab.pivirtd.v1.NetworkStats
-	144, // 23: pilab.pivirtd.v1.VMStatsResponse.timestamp:type_name -> google.protobuf.Timestamp
-	144, // 24: pilab.pivirtd.v1.VMStatsBatch.at:type_name -> google.protobuf.Timestamp
-	25,  // 25: pilab.pivirtd.v1.VMStatsBatch.vms:type_name -> pilab.pivirtd.v1.VMStatsResponse
-	34,  // 26: pilab.pivirtd.v1.VMStatsBatch.host_stats:type_name -> pilab.pivirtd.v1.HostStats
-	37,  // 27: pilab.pivirtd.v1.HostStats.pressure:type_name -> pilab.pivirtd.v1.HostPressure
-	32,  // 28: pilab.pivirtd.v1.HostStats.disks:type_name -> pilab.pivirtd.v1.HostDiskStat
-	33,  // 29: pilab.pivirtd.v1.HostStats.nics:type_name -> pilab.pivirtd.v1.HostNetStat
-	35,  // 30: pilab.pivirtd.v1.PSIStats.some:type_name -> pilab.pivirtd.v1.PSIPressure
-	35,  // 31: pilab.pivirtd.v1.PSIStats.full:type_name -> pilab.pivirtd.v1.PSIPressure
-	36,  // 32: pilab.pivirtd.v1.HostPressure.cpu:type_name -> pilab.pivirtd.v1.PSIStats
-	36,  // 33: pilab.pivirtd.v1.HostPressure.memory:type_name -> pilab.pivirtd.v1.PSIStats
-	36,  // 34: pilab.pivirtd.v1.HostPressure.io:type_name -> pilab.pivirtd.v1.PSIStats
-	144, // 35: pilab.pivirtd.v1.QMPEvent.timestamp:type_name -> google.protobuf.Timestamp
-	145, // 36: pilab.pivirtd.v1.CreateSnapshotRequest.retain_for:type_name -> google.protobuf.Duration
-	52,  // 37: pilab.pivirtd.v1.ListSnapshotsResponse.snapshots:type_name -> pilab.pivirtd.v1.SnapshotInfo
-	52,  // 38: pilab.pivirtd.v1.SnapshotResponse.snapshot:type_name -> pilab.pivirtd.v1.SnapshotInfo
-	60,  // 39: pilab.pivirtd.v1.SnapshotStatusResponse.job:type_name -> pilab.pivirtd.v1.VMJobStatus
-	144, // 40: pilab.pivirtd.v1.SnapshotInfo.date:type_name -> google.protobuf.Timestamp
-	146, // 41: pilab.pivirtd.v1.SnapshotInfo.state:type_name -> pilab.common.v1.SnapshotState
-	60,  // 42: pilab.pivirtd.v1.DiskMoveResponse.job:type_name -> pilab.pivirtd.v1.VMJobStatus
-	60,  // 43: pilab.pivirtd.v1.DiskMoveStatusResponse.job:type_name -> pilab.pivirtd.v1.VMJobStatus
-	144, // 44: pilab.pivirtd.v1.VMJobStatus.started_at:type_name -> google.protobuf.Timestamp
-	20,  // 45: pilab.pivirtd.v1.VMConfig.cpu:type_name -> pilab.pivirtd.v1.CPUConfig
-	21,  // 46: pilab.pivirtd.v1.VMConfig.disks:type_name -> pilab.pivirtd.v1.DiskConfig
-	22,  // 47: pilab.pivirtd.v1.VMConfig.networks:type_name -> pilab.pivirtd.v1.NetworkConfig
-	94,  // 48: pilab.pivirtd.v1.VMConfig.efi:type_name -> pilab.pivirtd.v1.EFIConfig
-	139, // 49: pilab.pivirtd.v1.VMConfig.labels:type_name -> pilab.pivirtd.v1.VMConfig.LabelsEntry
-	61,  // 50: pilab.pivirtd.v1.PrepareIncomingRequest.config:type_name -> pilab.pivirtd.v1.VMConfig
-	63,  // 51: pilab.pivirtd.v1.PrepareIncomingResponse.disk_exports:type_name -> pilab.pivirtd.v1.MigrationDiskExport
-	63,  // 52: pilab.pivirtd.v1.MigrateVMRequest.disk_exports:type_name -> pilab.pivirtd.v1.MigrationDiskExport
-	140, // 53: pilab.pivirtd.v1.CreateStoragePoolRequest.options:type_name -> pilab.pivirtd.v1.CreateStoragePoolRequest.OptionsEntry
-	77,  // 54: pilab.pivirtd.v1.StoragePoolResponse.pool:type_name -> pilab.pivirtd.v1.StoragePool
-	77,  // 55: pilab.pivirtd.v1.ListStoragePoolsResponse.pools:type_name -> pilab.pivirtd.v1.StoragePool
-	141, // 56: pilab.pivirtd.v1.StoragePool.options:type_name -> pilab.pivirtd.v1.StoragePool.OptionsEntry
-	93,  // 57: pilab.pivirtd.v1.NetworkResponse.device:type_name -> pilab.pivirtd.v1.NetworkDevice
-	91,  // 58: pilab.pivirtd.v1.ListTAPDevicesResponse.taps:type_name -> pilab.pivirtd.v1.TAPDevice
-	92,  // 59: pilab.pivirtd.v1.ListBridgesResponse.bridges:type_name -> pilab.pivirtd.v1.Bridge
-	91,  // 60: pilab.pivirtd.v1.NetworkDevice.tap:type_name -> pilab.pivirtd.v1.TAPDevice
-	92,  // 61: pilab.pivirtd.v1.NetworkDevice.bridge:type_name -> pilab.pivirtd.v1.Bridge
-	142, // 62: pilab.pivirtd.v1.SetLabelsRequest.labels:type_name -> pilab.pivirtd.v1.SetLabelsRequest.LabelsEntry
-	143, // 63: pilab.pivirtd.v1.GetLabelsResponse.labels:type_name -> pilab.pivirtd.v1.GetLabelsResponse.LabelsEntry
-	105, // 64: pilab.pivirtd.v1.GetVMStatusResponse.conditions:type_name -> pilab.pivirtd.v1.VMCondition
-	106, // 65: pilab.pivirtd.v1.GetVMStatusResponse.events:type_name -> pilab.pivirtd.v1.VMEvent
-	60,  // 66: pilab.pivirtd.v1.GetVMStatusResponse.jobs:type_name -> pilab.pivirtd.v1.VMJobStatus
-	21,  // 67: pilab.pivirtd.v1.AttachDiskRequest.disk:type_name -> pilab.pivirtd.v1.DiskConfig
-	22,  // 68: pilab.pivirtd.v1.AttachNICRequest.nic:type_name -> pilab.pivirtd.v1.NetworkConfig
-	120, // 69: pilab.pivirtd.v1.GetSnapshotTreeResponse.roots:type_name -> pilab.pivirtd.v1.SnapshotNode
-	52,  // 70: pilab.pivirtd.v1.SnapshotNode.snapshot:type_name -> pilab.pivirtd.v1.SnapshotInfo
-	120, // 71: pilab.pivirtd.v1.SnapshotNode.children:type_name -> pilab.pivirtd.v1.SnapshotNode
-	123, // 72: pilab.pivirtd.v1.GetGuestInfoResponse.interfaces:type_name -> pilab.pivirtd.v1.GuestNetworkInterface
-	131, // 73: pilab.pivirtd.v1.CustomizeOSRequest.users:type_name -> pilab.pivirtd.v1.UserSpec
-	135, // 74: pilab.pivirtd.v1.ListAdoptableDevicesResponse.devices:type_name -> pilab.pivirtd.v1.AdoptableDevice
-	0,   // 75: pilab.pivirtd.v1.PivirtdService.CreateVM:input_type -> pilab.pivirtd.v1.CreateVMRequest
-	1,   // 76: pilab.pivirtd.v1.PivirtdService.ApplyVM:input_type -> pilab.pivirtd.v1.ApplyVMRequest
-	2,   // 77: pilab.pivirtd.v1.PivirtdService.StartVM:input_type -> pilab.pivirtd.v1.StartVMRequest
-	3,   // 78: pilab.pivirtd.v1.PivirtdService.StopVM:input_type -> pilab.pivirtd.v1.StopVMRequest
-	4,   // 79: pilab.pivirtd.v1.PivirtdService.PauseVM:input_type -> pilab.pivirtd.v1.PauseVMRequest
-	5,   // 80: pilab.pivirtd.v1.PivirtdService.ResumeVM:input_type -> pilab.pivirtd.v1.ResumeVMRequest
-	6,   // 81: pilab.pivirtd.v1.PivirtdService.RebootVM:input_type -> pilab.pivirtd.v1.RebootVMRequest
-	7,   // 82: pilab.pivirtd.v1.PivirtdService.DeleteVM:input_type -> pilab.pivirtd.v1.DeleteVMRequest
-	11,  // 83: pilab.pivirtd.v1.PivirtdService.ListVMs:input_type -> pilab.pivirtd.v1.ListVMsRequest
-	10,  // 84: pilab.pivirtd.v1.PivirtdService.GetVM:input_type -> pilab.pivirtd.v1.GetVMRequest
-	24,  // 85: pilab.pivirtd.v1.PivirtdService.GetVMStats:input_type -> pilab.pivirtd.v1.GetVMStatsRequest
-	30,  // 86: pilab.pivirtd.v1.PivirtdService.StreamVMStats:input_type -> pilab.pivirtd.v1.StreamVMStatsRequest
-	8,   // 87: pilab.pivirtd.v1.PivirtdService.UpdateVMMemory:input_type -> pilab.pivirtd.v1.UpdateVMMemoryRequest
-	9,   // 88: pilab.pivirtd.v1.PivirtdService.UpdateVMCpu:input_type -> pilab.pivirtd.v1.UpdateVMCpuRequest
-	38,  // 89: pilab.pivirtd.v1.PivirtdService.ExecuteQMP:input_type -> pilab.pivirtd.v1.ExecuteQMPRequest
-	40,  // 90: pilab.pivirtd.v1.PivirtdService.StreamQMPEvents:input_type -> pilab.pivirtd.v1.StreamQMPRequest
-	42,  // 91: pilab.pivirtd.v1.PivirtdService.CreateSnapshot:input_type -> pilab.pivirtd.v1.CreateSnapshotRequest
-	43,  // 92: pilab.pivirtd.v1.PivirtdService.ListSnapshots:input_type -> pilab.pivirtd.v1.ListSnapshotsRequest
-	45,  // 93: pilab.pivirtd.v1.PivirtdService.RestoreSnapshot:input_type -> pilab.pivirtd.v1.RestoreSnapshotRequest
-	46,  // 94: pilab.pivirtd.v1.PivirtdService.DeleteSnapshot:input_type -> pilab.pivirtd.v1.DeleteSnapshotRequest
-	49,  // 95: pilab.pivirtd.v1.PivirtdService.ConsolidateSnapshot:input_type -> pilab.pivirtd.v1.ConsolidateSnapshotRequest
-	50,  // 96: pilab.pivirtd.v1.PivirtdService.GetSnapshotStatus:input_type -> pilab.pivirtd.v1.GetSnapshotStatusRequest
-	53,  // 97: pilab.pivirtd.v1.PivirtdService.CloneVM:input_type -> pilab.pivirtd.v1.CloneVMRequest
-	54,  // 98: pilab.pivirtd.v1.PivirtdService.CloneSnapshot:input_type -> pilab.pivirtd.v1.CloneSnapshotRequest
-	62,  // 99: pilab.pivirtd.v1.PivirtdService.PrepareIncoming:input_type -> pilab.pivirtd.v1.PrepareIncomingRequest
-	67,  // 100: pilab.pivirtd.v1.PivirtdService.MigrateVM:input_type -> pilab.pivirtd.v1.MigrateVMRequest
-	65,  // 101: pilab.pivirtd.v1.PivirtdService.FinalizeMigration:input_type -> pilab.pivirtd.v1.FinalizeMigrationRequest
-	66,  // 102: pilab.pivirtd.v1.PivirtdService.AbortIncoming:input_type -> pilab.pivirtd.v1.AbortIncomingRequest
-	69,  // 103: pilab.pivirtd.v1.PivirtdService.GetMigrationStatus:input_type -> pilab.pivirtd.v1.GetMigrationStatusRequest
-	71,  // 104: pilab.pivirtd.v1.PivirtdService.CreateStoragePool:input_type -> pilab.pivirtd.v1.CreateStoragePoolRequest
-	73,  // 105: pilab.pivirtd.v1.PivirtdService.ListStoragePools:input_type -> pilab.pivirtd.v1.ListStoragePoolsRequest
-	75,  // 106: pilab.pivirtd.v1.PivirtdService.DeleteStoragePool:input_type -> pilab.pivirtd.v1.DeleteStoragePoolRequest
-	78,  // 107: pilab.pivirtd.v1.PivirtdService.GetStoragePool:input_type -> pilab.pivirtd.v1.GetStoragePoolRequest
-	79,  // 108: pilab.pivirtd.v1.PivirtdService.ActivateStoragePool:input_type -> pilab.pivirtd.v1.ActivateStoragePoolRequest
-	80,  // 109: pilab.pivirtd.v1.PivirtdService.DeactivateStoragePool:input_type -> pilab.pivirtd.v1.DeactivateStoragePoolRequest
-	81,  // 110: pilab.pivirtd.v1.PivirtdService.CreateTAPDevice:input_type -> pilab.pivirtd.v1.CreateTAPDeviceRequest
-	88,  // 111: pilab.pivirtd.v1.PivirtdService.DeleteTAPDevice:input_type -> pilab.pivirtd.v1.DeleteTAPDeviceRequest
-	84,  // 112: pilab.pivirtd.v1.PivirtdService.ListTAPDevices:input_type -> pilab.pivirtd.v1.ListTAPDevicesRequest
-	82,  // 113: pilab.pivirtd.v1.PivirtdService.CreateBridge:input_type -> pilab.pivirtd.v1.CreateBridgeRequest
-	89,  // 114: pilab.pivirtd.v1.PivirtdService.DeleteBridge:input_type -> pilab.pivirtd.v1.DeleteBridgeRequest
-	86,  // 115: pilab.pivirtd.v1.PivirtdService.ListBridges:input_type -> pilab.pivirtd.v1.ListBridgesRequest
-	133, // 116: pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces:input_type -> pilab.pivirtd.v1.ListNetworkNamespacesRequest
-	136, // 117: pilab.pivirtd.v1.PivirtdService.ListAdoptableDevices:input_type -> pilab.pivirtd.v1.ListAdoptableDevicesRequest
-	95,  // 118: pilab.pivirtd.v1.PivirtdService.SetLabels:input_type -> pilab.pivirtd.v1.SetLabelsRequest
-	97,  // 119: pilab.pivirtd.v1.PivirtdService.GetLabels:input_type -> pilab.pivirtd.v1.GetLabelsRequest
-	99,  // 120: pilab.pivirtd.v1.PivirtdService.DeleteLabel:input_type -> pilab.pivirtd.v1.DeleteLabelRequest
-	101, // 121: pilab.pivirtd.v1.PivirtdService.SetProvisioning:input_type -> pilab.pivirtd.v1.SetProvisioningRequest
-	103, // 122: pilab.pivirtd.v1.PivirtdService.GetVMStatus:input_type -> pilab.pivirtd.v1.GetVMStatusRequest
-	55,  // 123: pilab.pivirtd.v1.PivirtdService.StartDiskMove:input_type -> pilab.pivirtd.v1.StartDiskMoveRequest
-	56,  // 124: pilab.pivirtd.v1.PivirtdService.GetDiskMoveStatus:input_type -> pilab.pivirtd.v1.GetDiskMoveStatusRequest
-	57,  // 125: pilab.pivirtd.v1.PivirtdService.CancelDiskMove:input_type -> pilab.pivirtd.v1.CancelDiskMoveRequest
-	108, // 126: pilab.pivirtd.v1.PivirtdService.AttachDisk:input_type -> pilab.pivirtd.v1.AttachDiskRequest
-	109, // 127: pilab.pivirtd.v1.PivirtdService.DetachDisk:input_type -> pilab.pivirtd.v1.DetachDiskRequest
-	110, // 128: pilab.pivirtd.v1.PivirtdService.AttachNIC:input_type -> pilab.pivirtd.v1.AttachNICRequest
-	111, // 129: pilab.pivirtd.v1.PivirtdService.DetachNIC:input_type -> pilab.pivirtd.v1.DetachNICRequest
-	112, // 130: pilab.pivirtd.v1.PivirtdService.ResizeDisk:input_type -> pilab.pivirtd.v1.ResizeDiskRequest
-	113, // 131: pilab.pivirtd.v1.PivirtdService.SetVNCPassword:input_type -> pilab.pivirtd.v1.SetVNCPasswordRequest
-	114, // 132: pilab.pivirtd.v1.PivirtdService.SetLinkState:input_type -> pilab.pivirtd.v1.SetLinkStateRequest
-	115, // 133: pilab.pivirtd.v1.PivirtdService.RenameVM:input_type -> pilab.pivirtd.v1.RenameVMRequest
-	116, // 134: pilab.pivirtd.v1.PivirtdService.ChangeISO:input_type -> pilab.pivirtd.v1.ChangeISORequest
-	117, // 135: pilab.pivirtd.v1.PivirtdService.EjectISO:input_type -> pilab.pivirtd.v1.EjectISORequest
-	118, // 136: pilab.pivirtd.v1.PivirtdService.GetSnapshotTree:input_type -> pilab.pivirtd.v1.GetSnapshotTreeRequest
-	121, // 137: pilab.pivirtd.v1.PivirtdService.GetGuestInfo:input_type -> pilab.pivirtd.v1.GetGuestInfoRequest
-	124, // 138: pilab.pivirtd.v1.PivirtdService.GuestExec:input_type -> pilab.pivirtd.v1.GuestExecRequest
-	126, // 139: pilab.pivirtd.v1.PivirtdService.GetGuestExecStatus:input_type -> pilab.pivirtd.v1.GetGuestExecStatusRequest
-	128, // 140: pilab.pivirtd.v1.PivirtdService.SetGuestHostname:input_type -> pilab.pivirtd.v1.SetGuestHostnameRequest
-	130, // 141: pilab.pivirtd.v1.PivirtdService.CustomizeOS:input_type -> pilab.pivirtd.v1.CustomizeOSRequest
-	147, // 142: pilab.pivirtd.v1.PivirtdService.SubscribeEvents:input_type -> pilab.pivirtd.v1.SubscribeEventsRequest
-	147, // 143: pilab.pivirtd.v1.PivirtdService.GetHostResource:input_type -> pilab.pivirtd.v1.SubscribeEventsRequest
-	12,  // 144: pilab.pivirtd.v1.PivirtdService.CreateVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 145: pilab.pivirtd.v1.PivirtdService.ApplyVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 146: pilab.pivirtd.v1.PivirtdService.StartVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 147: pilab.pivirtd.v1.PivirtdService.StopVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 148: pilab.pivirtd.v1.PivirtdService.PauseVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 149: pilab.pivirtd.v1.PivirtdService.ResumeVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 150: pilab.pivirtd.v1.PivirtdService.RebootVM:output_type -> pilab.pivirtd.v1.VMResponse
-	13,  // 151: pilab.pivirtd.v1.PivirtdService.DeleteVM:output_type -> pilab.pivirtd.v1.DeleteVMResponse
-	14,  // 152: pilab.pivirtd.v1.PivirtdService.ListVMs:output_type -> pilab.pivirtd.v1.ListVMsResponse
-	12,  // 153: pilab.pivirtd.v1.PivirtdService.GetVM:output_type -> pilab.pivirtd.v1.VMResponse
-	25,  // 154: pilab.pivirtd.v1.PivirtdService.GetVMStats:output_type -> pilab.pivirtd.v1.VMStatsResponse
-	31,  // 155: pilab.pivirtd.v1.PivirtdService.StreamVMStats:output_type -> pilab.pivirtd.v1.VMStatsBatch
-	12,  // 156: pilab.pivirtd.v1.PivirtdService.UpdateVMMemory:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 157: pilab.pivirtd.v1.PivirtdService.UpdateVMCpu:output_type -> pilab.pivirtd.v1.VMResponse
-	39,  // 158: pilab.pivirtd.v1.PivirtdService.ExecuteQMP:output_type -> pilab.pivirtd.v1.ExecuteQMPResponse
-	41,  // 159: pilab.pivirtd.v1.PivirtdService.StreamQMPEvents:output_type -> pilab.pivirtd.v1.QMPEvent
-	47,  // 160: pilab.pivirtd.v1.PivirtdService.CreateSnapshot:output_type -> pilab.pivirtd.v1.SnapshotResponse
-	44,  // 161: pilab.pivirtd.v1.PivirtdService.ListSnapshots:output_type -> pilab.pivirtd.v1.ListSnapshotsResponse
-	47,  // 162: pilab.pivirtd.v1.PivirtdService.RestoreSnapshot:output_type -> pilab.pivirtd.v1.SnapshotResponse
-	48,  // 163: pilab.pivirtd.v1.PivirtdService.DeleteSnapshot:output_type -> pilab.pivirtd.v1.DeleteSnapshotResponse
-	47,  // 164: pilab.pivirtd.v1.PivirtdService.ConsolidateSnapshot:output_type -> pilab.pivirtd.v1.SnapshotResponse
-	51,  // 165: pilab.pivirtd.v1.PivirtdService.GetSnapshotStatus:output_type -> pilab.pivirtd.v1.SnapshotStatusResponse
-	12,  // 166: pilab.pivirtd.v1.PivirtdService.CloneVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 167: pilab.pivirtd.v1.PivirtdService.CloneSnapshot:output_type -> pilab.pivirtd.v1.VMResponse
-	64,  // 168: pilab.pivirtd.v1.PivirtdService.PrepareIncoming:output_type -> pilab.pivirtd.v1.PrepareIncomingResponse
-	68,  // 169: pilab.pivirtd.v1.PivirtdService.MigrateVM:output_type -> pilab.pivirtd.v1.MigrateVMResponse
-	12,  // 170: pilab.pivirtd.v1.PivirtdService.FinalizeMigration:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 171: pilab.pivirtd.v1.PivirtdService.AbortIncoming:output_type -> pilab.pivirtd.v1.VMResponse
-	70,  // 172: pilab.pivirtd.v1.PivirtdService.GetMigrationStatus:output_type -> pilab.pivirtd.v1.MigrationStatusResponse
-	72,  // 173: pilab.pivirtd.v1.PivirtdService.CreateStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
-	74,  // 174: pilab.pivirtd.v1.PivirtdService.ListStoragePools:output_type -> pilab.pivirtd.v1.ListStoragePoolsResponse
-	76,  // 175: pilab.pivirtd.v1.PivirtdService.DeleteStoragePool:output_type -> pilab.pivirtd.v1.DeleteStoragePoolResponse
-	72,  // 176: pilab.pivirtd.v1.PivirtdService.GetStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
-	72,  // 177: pilab.pivirtd.v1.PivirtdService.ActivateStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
-	72,  // 178: pilab.pivirtd.v1.PivirtdService.DeactivateStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
-	83,  // 179: pilab.pivirtd.v1.PivirtdService.CreateTAPDevice:output_type -> pilab.pivirtd.v1.NetworkResponse
-	90,  // 180: pilab.pivirtd.v1.PivirtdService.DeleteTAPDevice:output_type -> pilab.pivirtd.v1.DeleteNetworkResponse
-	85,  // 181: pilab.pivirtd.v1.PivirtdService.ListTAPDevices:output_type -> pilab.pivirtd.v1.ListTAPDevicesResponse
-	83,  // 182: pilab.pivirtd.v1.PivirtdService.CreateBridge:output_type -> pilab.pivirtd.v1.NetworkResponse
-	90,  // 183: pilab.pivirtd.v1.PivirtdService.DeleteBridge:output_type -> pilab.pivirtd.v1.DeleteNetworkResponse
-	87,  // 184: pilab.pivirtd.v1.PivirtdService.ListBridges:output_type -> pilab.pivirtd.v1.ListBridgesResponse
-	134, // 185: pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces:output_type -> pilab.pivirtd.v1.ListNetworkNamespacesResponse
-	137, // 186: pilab.pivirtd.v1.PivirtdService.ListAdoptableDevices:output_type -> pilab.pivirtd.v1.ListAdoptableDevicesResponse
-	96,  // 187: pilab.pivirtd.v1.PivirtdService.SetLabels:output_type -> pilab.pivirtd.v1.SetLabelsResponse
-	98,  // 188: pilab.pivirtd.v1.PivirtdService.GetLabels:output_type -> pilab.pivirtd.v1.GetLabelsResponse
-	100, // 189: pilab.pivirtd.v1.PivirtdService.DeleteLabel:output_type -> pilab.pivirtd.v1.DeleteLabelResponse
-	102, // 190: pilab.pivirtd.v1.PivirtdService.SetProvisioning:output_type -> pilab.pivirtd.v1.SetProvisioningResponse
-	104, // 191: pilab.pivirtd.v1.PivirtdService.GetVMStatus:output_type -> pilab.pivirtd.v1.GetVMStatusResponse
-	59,  // 192: pilab.pivirtd.v1.PivirtdService.StartDiskMove:output_type -> pilab.pivirtd.v1.DiskMoveStatusResponse
-	59,  // 193: pilab.pivirtd.v1.PivirtdService.GetDiskMoveStatus:output_type -> pilab.pivirtd.v1.DiskMoveStatusResponse
-	58,  // 194: pilab.pivirtd.v1.PivirtdService.CancelDiskMove:output_type -> pilab.pivirtd.v1.DiskMoveResponse
-	12,  // 195: pilab.pivirtd.v1.PivirtdService.AttachDisk:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 196: pilab.pivirtd.v1.PivirtdService.DetachDisk:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 197: pilab.pivirtd.v1.PivirtdService.AttachNIC:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 198: pilab.pivirtd.v1.PivirtdService.DetachNIC:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 199: pilab.pivirtd.v1.PivirtdService.ResizeDisk:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 200: pilab.pivirtd.v1.PivirtdService.SetVNCPassword:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 201: pilab.pivirtd.v1.PivirtdService.SetLinkState:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 202: pilab.pivirtd.v1.PivirtdService.RenameVM:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 203: pilab.pivirtd.v1.PivirtdService.ChangeISO:output_type -> pilab.pivirtd.v1.VMResponse
-	12,  // 204: pilab.pivirtd.v1.PivirtdService.EjectISO:output_type -> pilab.pivirtd.v1.VMResponse
-	119, // 205: pilab.pivirtd.v1.PivirtdService.GetSnapshotTree:output_type -> pilab.pivirtd.v1.GetSnapshotTreeResponse
-	122, // 206: pilab.pivirtd.v1.PivirtdService.GetGuestInfo:output_type -> pilab.pivirtd.v1.GetGuestInfoResponse
-	125, // 207: pilab.pivirtd.v1.PivirtdService.GuestExec:output_type -> pilab.pivirtd.v1.GuestExecResponse
-	127, // 208: pilab.pivirtd.v1.PivirtdService.GetGuestExecStatus:output_type -> pilab.pivirtd.v1.GetGuestExecStatusResponse
-	129, // 209: pilab.pivirtd.v1.PivirtdService.SetGuestHostname:output_type -> pilab.pivirtd.v1.SetGuestHostnameResponse
-	132, // 210: pilab.pivirtd.v1.PivirtdService.CustomizeOS:output_type -> pilab.pivirtd.v1.CustomizeOSResponse
-	148, // 211: pilab.pivirtd.v1.PivirtdService.SubscribeEvents:output_type -> pilab.pivirtd.v1.HostEvent
-	149, // 212: pilab.pivirtd.v1.PivirtdService.GetHostResource:output_type -> pilab.pivirtd.v1.HostResourceReport
-	144, // [144:213] is the sub-list for method output_type
-	75,  // [75:144] is the sub-list for method input_type
-	75,  // [75:75] is the sub-list for extension type_name
-	75,  // [75:75] is the sub-list for extension extendee
-	0,   // [0:75] is the sub-list for field type_name
+	21,  // 0: pilab.pivirtd.v1.CreateVMRequest.cpu:type_name -> pilab.pivirtd.v1.CPUConfig
+	22,  // 1: pilab.pivirtd.v1.CreateVMRequest.disks:type_name -> pilab.pivirtd.v1.DiskConfig
+	23,  // 2: pilab.pivirtd.v1.CreateVMRequest.networks:type_name -> pilab.pivirtd.v1.NetworkConfig
+	24,  // 3: pilab.pivirtd.v1.CreateVMRequest.graphics:type_name -> pilab.pivirtd.v1.GraphicsConfig
+	95,  // 4: pilab.pivirtd.v1.CreateVMRequest.efi:type_name -> pilab.pivirtd.v1.EFIConfig
+	108, // 5: pilab.pivirtd.v1.CreateVMRequest.resources:type_name -> pilab.pivirtd.v1.ResourceSpec
+	16,  // 6: pilab.pivirtd.v1.VMResponse.vm:type_name -> pilab.pivirtd.v1.VMInfo
+	16,  // 7: pilab.pivirtd.v1.ListVMsResponse.vms:type_name -> pilab.pivirtd.v1.VMInfo
+	21,  // 8: pilab.pivirtd.v1.VMInfo.cpu:type_name -> pilab.pivirtd.v1.CPUConfig
+	22,  // 9: pilab.pivirtd.v1.VMInfo.disks:type_name -> pilab.pivirtd.v1.DiskConfig
+	23,  // 10: pilab.pivirtd.v1.VMInfo.networks:type_name -> pilab.pivirtd.v1.NetworkConfig
+	145, // 11: pilab.pivirtd.v1.VMInfo.created_at:type_name -> google.protobuf.Timestamp
+	145, // 12: pilab.pivirtd.v1.VMInfo.updated_at:type_name -> google.protobuf.Timestamp
+	95,  // 13: pilab.pivirtd.v1.VMInfo.efi:type_name -> pilab.pivirtd.v1.EFIConfig
+	139, // 14: pilab.pivirtd.v1.VMInfo.labels:type_name -> pilab.pivirtd.v1.VMInfo.LabelsEntry
+	20,  // 15: pilab.pivirtd.v1.VMInfo.host_devices:type_name -> pilab.pivirtd.v1.HostPCIDevice
+	17,  // 16: pilab.pivirtd.v1.CPUConfig.pinning:type_name -> pilab.pivirtd.v1.CPUPinning
+	18,  // 17: pilab.pivirtd.v1.CPUConfig.numa:type_name -> pilab.pivirtd.v1.NUMACellConfig
+	19,  // 18: pilab.pivirtd.v1.CPUConfig.hugepages:type_name -> pilab.pivirtd.v1.HugePagesConfig
+	27,  // 19: pilab.pivirtd.v1.VMStatsResponse.cpu_stats:type_name -> pilab.pivirtd.v1.CPUStats
+	28,  // 20: pilab.pivirtd.v1.VMStatsResponse.memory_stats:type_name -> pilab.pivirtd.v1.MemoryStats
+	29,  // 21: pilab.pivirtd.v1.VMStatsResponse.disk_stats:type_name -> pilab.pivirtd.v1.DiskStats
+	30,  // 22: pilab.pivirtd.v1.VMStatsResponse.network_stats:type_name -> pilab.pivirtd.v1.NetworkStats
+	145, // 23: pilab.pivirtd.v1.VMStatsResponse.timestamp:type_name -> google.protobuf.Timestamp
+	145, // 24: pilab.pivirtd.v1.VMStatsBatch.at:type_name -> google.protobuf.Timestamp
+	26,  // 25: pilab.pivirtd.v1.VMStatsBatch.vms:type_name -> pilab.pivirtd.v1.VMStatsResponse
+	35,  // 26: pilab.pivirtd.v1.VMStatsBatch.host_stats:type_name -> pilab.pivirtd.v1.HostStats
+	38,  // 27: pilab.pivirtd.v1.HostStats.pressure:type_name -> pilab.pivirtd.v1.HostPressure
+	33,  // 28: pilab.pivirtd.v1.HostStats.disks:type_name -> pilab.pivirtd.v1.HostDiskStat
+	34,  // 29: pilab.pivirtd.v1.HostStats.nics:type_name -> pilab.pivirtd.v1.HostNetStat
+	36,  // 30: pilab.pivirtd.v1.PSIStats.some:type_name -> pilab.pivirtd.v1.PSIPressure
+	36,  // 31: pilab.pivirtd.v1.PSIStats.full:type_name -> pilab.pivirtd.v1.PSIPressure
+	37,  // 32: pilab.pivirtd.v1.HostPressure.cpu:type_name -> pilab.pivirtd.v1.PSIStats
+	37,  // 33: pilab.pivirtd.v1.HostPressure.memory:type_name -> pilab.pivirtd.v1.PSIStats
+	37,  // 34: pilab.pivirtd.v1.HostPressure.io:type_name -> pilab.pivirtd.v1.PSIStats
+	145, // 35: pilab.pivirtd.v1.QMPEvent.timestamp:type_name -> google.protobuf.Timestamp
+	146, // 36: pilab.pivirtd.v1.CreateSnapshotRequest.retain_for:type_name -> google.protobuf.Duration
+	53,  // 37: pilab.pivirtd.v1.ListSnapshotsResponse.snapshots:type_name -> pilab.pivirtd.v1.SnapshotInfo
+	53,  // 38: pilab.pivirtd.v1.SnapshotResponse.snapshot:type_name -> pilab.pivirtd.v1.SnapshotInfo
+	61,  // 39: pilab.pivirtd.v1.SnapshotStatusResponse.job:type_name -> pilab.pivirtd.v1.VMJobStatus
+	145, // 40: pilab.pivirtd.v1.SnapshotInfo.date:type_name -> google.protobuf.Timestamp
+	147, // 41: pilab.pivirtd.v1.SnapshotInfo.state:type_name -> pilab.common.v1.SnapshotState
+	61,  // 42: pilab.pivirtd.v1.DiskMoveResponse.job:type_name -> pilab.pivirtd.v1.VMJobStatus
+	61,  // 43: pilab.pivirtd.v1.DiskMoveStatusResponse.job:type_name -> pilab.pivirtd.v1.VMJobStatus
+	145, // 44: pilab.pivirtd.v1.VMJobStatus.started_at:type_name -> google.protobuf.Timestamp
+	21,  // 45: pilab.pivirtd.v1.VMConfig.cpu:type_name -> pilab.pivirtd.v1.CPUConfig
+	22,  // 46: pilab.pivirtd.v1.VMConfig.disks:type_name -> pilab.pivirtd.v1.DiskConfig
+	23,  // 47: pilab.pivirtd.v1.VMConfig.networks:type_name -> pilab.pivirtd.v1.NetworkConfig
+	95,  // 48: pilab.pivirtd.v1.VMConfig.efi:type_name -> pilab.pivirtd.v1.EFIConfig
+	140, // 49: pilab.pivirtd.v1.VMConfig.labels:type_name -> pilab.pivirtd.v1.VMConfig.LabelsEntry
+	62,  // 50: pilab.pivirtd.v1.PrepareIncomingRequest.config:type_name -> pilab.pivirtd.v1.VMConfig
+	0,   // 51: pilab.pivirtd.v1.PrepareIncomingRequest.phase:type_name -> pilab.pivirtd.v1.IncomingPhase
+	64,  // 52: pilab.pivirtd.v1.PrepareIncomingResponse.disk_exports:type_name -> pilab.pivirtd.v1.MigrationDiskExport
+	64,  // 53: pilab.pivirtd.v1.MigrateVMRequest.disk_exports:type_name -> pilab.pivirtd.v1.MigrationDiskExport
+	141, // 54: pilab.pivirtd.v1.CreateStoragePoolRequest.options:type_name -> pilab.pivirtd.v1.CreateStoragePoolRequest.OptionsEntry
+	78,  // 55: pilab.pivirtd.v1.StoragePoolResponse.pool:type_name -> pilab.pivirtd.v1.StoragePool
+	78,  // 56: pilab.pivirtd.v1.ListStoragePoolsResponse.pools:type_name -> pilab.pivirtd.v1.StoragePool
+	142, // 57: pilab.pivirtd.v1.StoragePool.options:type_name -> pilab.pivirtd.v1.StoragePool.OptionsEntry
+	94,  // 58: pilab.pivirtd.v1.NetworkResponse.device:type_name -> pilab.pivirtd.v1.NetworkDevice
+	92,  // 59: pilab.pivirtd.v1.ListTAPDevicesResponse.taps:type_name -> pilab.pivirtd.v1.TAPDevice
+	93,  // 60: pilab.pivirtd.v1.ListBridgesResponse.bridges:type_name -> pilab.pivirtd.v1.Bridge
+	92,  // 61: pilab.pivirtd.v1.NetworkDevice.tap:type_name -> pilab.pivirtd.v1.TAPDevice
+	93,  // 62: pilab.pivirtd.v1.NetworkDevice.bridge:type_name -> pilab.pivirtd.v1.Bridge
+	143, // 63: pilab.pivirtd.v1.SetLabelsRequest.labels:type_name -> pilab.pivirtd.v1.SetLabelsRequest.LabelsEntry
+	144, // 64: pilab.pivirtd.v1.GetLabelsResponse.labels:type_name -> pilab.pivirtd.v1.GetLabelsResponse.LabelsEntry
+	106, // 65: pilab.pivirtd.v1.GetVMStatusResponse.conditions:type_name -> pilab.pivirtd.v1.VMCondition
+	107, // 66: pilab.pivirtd.v1.GetVMStatusResponse.events:type_name -> pilab.pivirtd.v1.VMEvent
+	61,  // 67: pilab.pivirtd.v1.GetVMStatusResponse.jobs:type_name -> pilab.pivirtd.v1.VMJobStatus
+	22,  // 68: pilab.pivirtd.v1.AttachDiskRequest.disk:type_name -> pilab.pivirtd.v1.DiskConfig
+	23,  // 69: pilab.pivirtd.v1.AttachNICRequest.nic:type_name -> pilab.pivirtd.v1.NetworkConfig
+	121, // 70: pilab.pivirtd.v1.GetSnapshotTreeResponse.roots:type_name -> pilab.pivirtd.v1.SnapshotNode
+	53,  // 71: pilab.pivirtd.v1.SnapshotNode.snapshot:type_name -> pilab.pivirtd.v1.SnapshotInfo
+	121, // 72: pilab.pivirtd.v1.SnapshotNode.children:type_name -> pilab.pivirtd.v1.SnapshotNode
+	124, // 73: pilab.pivirtd.v1.GetGuestInfoResponse.interfaces:type_name -> pilab.pivirtd.v1.GuestNetworkInterface
+	132, // 74: pilab.pivirtd.v1.CustomizeOSRequest.users:type_name -> pilab.pivirtd.v1.UserSpec
+	136, // 75: pilab.pivirtd.v1.ListAdoptableDevicesResponse.devices:type_name -> pilab.pivirtd.v1.AdoptableDevice
+	1,   // 76: pilab.pivirtd.v1.PivirtdService.CreateVM:input_type -> pilab.pivirtd.v1.CreateVMRequest
+	2,   // 77: pilab.pivirtd.v1.PivirtdService.ApplyVM:input_type -> pilab.pivirtd.v1.ApplyVMRequest
+	3,   // 78: pilab.pivirtd.v1.PivirtdService.StartVM:input_type -> pilab.pivirtd.v1.StartVMRequest
+	4,   // 79: pilab.pivirtd.v1.PivirtdService.StopVM:input_type -> pilab.pivirtd.v1.StopVMRequest
+	5,   // 80: pilab.pivirtd.v1.PivirtdService.PauseVM:input_type -> pilab.pivirtd.v1.PauseVMRequest
+	6,   // 81: pilab.pivirtd.v1.PivirtdService.ResumeVM:input_type -> pilab.pivirtd.v1.ResumeVMRequest
+	7,   // 82: pilab.pivirtd.v1.PivirtdService.RebootVM:input_type -> pilab.pivirtd.v1.RebootVMRequest
+	8,   // 83: pilab.pivirtd.v1.PivirtdService.DeleteVM:input_type -> pilab.pivirtd.v1.DeleteVMRequest
+	12,  // 84: pilab.pivirtd.v1.PivirtdService.ListVMs:input_type -> pilab.pivirtd.v1.ListVMsRequest
+	11,  // 85: pilab.pivirtd.v1.PivirtdService.GetVM:input_type -> pilab.pivirtd.v1.GetVMRequest
+	25,  // 86: pilab.pivirtd.v1.PivirtdService.GetVMStats:input_type -> pilab.pivirtd.v1.GetVMStatsRequest
+	31,  // 87: pilab.pivirtd.v1.PivirtdService.StreamVMStats:input_type -> pilab.pivirtd.v1.StreamVMStatsRequest
+	9,   // 88: pilab.pivirtd.v1.PivirtdService.UpdateVMMemory:input_type -> pilab.pivirtd.v1.UpdateVMMemoryRequest
+	10,  // 89: pilab.pivirtd.v1.PivirtdService.UpdateVMCpu:input_type -> pilab.pivirtd.v1.UpdateVMCpuRequest
+	39,  // 90: pilab.pivirtd.v1.PivirtdService.ExecuteQMP:input_type -> pilab.pivirtd.v1.ExecuteQMPRequest
+	41,  // 91: pilab.pivirtd.v1.PivirtdService.StreamQMPEvents:input_type -> pilab.pivirtd.v1.StreamQMPRequest
+	43,  // 92: pilab.pivirtd.v1.PivirtdService.CreateSnapshot:input_type -> pilab.pivirtd.v1.CreateSnapshotRequest
+	44,  // 93: pilab.pivirtd.v1.PivirtdService.ListSnapshots:input_type -> pilab.pivirtd.v1.ListSnapshotsRequest
+	46,  // 94: pilab.pivirtd.v1.PivirtdService.RestoreSnapshot:input_type -> pilab.pivirtd.v1.RestoreSnapshotRequest
+	47,  // 95: pilab.pivirtd.v1.PivirtdService.DeleteSnapshot:input_type -> pilab.pivirtd.v1.DeleteSnapshotRequest
+	50,  // 96: pilab.pivirtd.v1.PivirtdService.ConsolidateSnapshot:input_type -> pilab.pivirtd.v1.ConsolidateSnapshotRequest
+	51,  // 97: pilab.pivirtd.v1.PivirtdService.GetSnapshotStatus:input_type -> pilab.pivirtd.v1.GetSnapshotStatusRequest
+	54,  // 98: pilab.pivirtd.v1.PivirtdService.CloneVM:input_type -> pilab.pivirtd.v1.CloneVMRequest
+	55,  // 99: pilab.pivirtd.v1.PivirtdService.CloneSnapshot:input_type -> pilab.pivirtd.v1.CloneSnapshotRequest
+	63,  // 100: pilab.pivirtd.v1.PivirtdService.PrepareIncoming:input_type -> pilab.pivirtd.v1.PrepareIncomingRequest
+	68,  // 101: pilab.pivirtd.v1.PivirtdService.MigrateVM:input_type -> pilab.pivirtd.v1.MigrateVMRequest
+	66,  // 102: pilab.pivirtd.v1.PivirtdService.FinalizeMigration:input_type -> pilab.pivirtd.v1.FinalizeMigrationRequest
+	67,  // 103: pilab.pivirtd.v1.PivirtdService.AbortIncoming:input_type -> pilab.pivirtd.v1.AbortIncomingRequest
+	70,  // 104: pilab.pivirtd.v1.PivirtdService.GetMigrationStatus:input_type -> pilab.pivirtd.v1.GetMigrationStatusRequest
+	72,  // 105: pilab.pivirtd.v1.PivirtdService.CreateStoragePool:input_type -> pilab.pivirtd.v1.CreateStoragePoolRequest
+	74,  // 106: pilab.pivirtd.v1.PivirtdService.ListStoragePools:input_type -> pilab.pivirtd.v1.ListStoragePoolsRequest
+	76,  // 107: pilab.pivirtd.v1.PivirtdService.DeleteStoragePool:input_type -> pilab.pivirtd.v1.DeleteStoragePoolRequest
+	79,  // 108: pilab.pivirtd.v1.PivirtdService.GetStoragePool:input_type -> pilab.pivirtd.v1.GetStoragePoolRequest
+	80,  // 109: pilab.pivirtd.v1.PivirtdService.ActivateStoragePool:input_type -> pilab.pivirtd.v1.ActivateStoragePoolRequest
+	81,  // 110: pilab.pivirtd.v1.PivirtdService.DeactivateStoragePool:input_type -> pilab.pivirtd.v1.DeactivateStoragePoolRequest
+	82,  // 111: pilab.pivirtd.v1.PivirtdService.CreateTAPDevice:input_type -> pilab.pivirtd.v1.CreateTAPDeviceRequest
+	89,  // 112: pilab.pivirtd.v1.PivirtdService.DeleteTAPDevice:input_type -> pilab.pivirtd.v1.DeleteTAPDeviceRequest
+	85,  // 113: pilab.pivirtd.v1.PivirtdService.ListTAPDevices:input_type -> pilab.pivirtd.v1.ListTAPDevicesRequest
+	83,  // 114: pilab.pivirtd.v1.PivirtdService.CreateBridge:input_type -> pilab.pivirtd.v1.CreateBridgeRequest
+	90,  // 115: pilab.pivirtd.v1.PivirtdService.DeleteBridge:input_type -> pilab.pivirtd.v1.DeleteBridgeRequest
+	87,  // 116: pilab.pivirtd.v1.PivirtdService.ListBridges:input_type -> pilab.pivirtd.v1.ListBridgesRequest
+	134, // 117: pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces:input_type -> pilab.pivirtd.v1.ListNetworkNamespacesRequest
+	137, // 118: pilab.pivirtd.v1.PivirtdService.ListAdoptableDevices:input_type -> pilab.pivirtd.v1.ListAdoptableDevicesRequest
+	96,  // 119: pilab.pivirtd.v1.PivirtdService.SetLabels:input_type -> pilab.pivirtd.v1.SetLabelsRequest
+	98,  // 120: pilab.pivirtd.v1.PivirtdService.GetLabels:input_type -> pilab.pivirtd.v1.GetLabelsRequest
+	100, // 121: pilab.pivirtd.v1.PivirtdService.DeleteLabel:input_type -> pilab.pivirtd.v1.DeleteLabelRequest
+	102, // 122: pilab.pivirtd.v1.PivirtdService.SetProvisioning:input_type -> pilab.pivirtd.v1.SetProvisioningRequest
+	104, // 123: pilab.pivirtd.v1.PivirtdService.GetVMStatus:input_type -> pilab.pivirtd.v1.GetVMStatusRequest
+	56,  // 124: pilab.pivirtd.v1.PivirtdService.StartDiskMove:input_type -> pilab.pivirtd.v1.StartDiskMoveRequest
+	57,  // 125: pilab.pivirtd.v1.PivirtdService.GetDiskMoveStatus:input_type -> pilab.pivirtd.v1.GetDiskMoveStatusRequest
+	58,  // 126: pilab.pivirtd.v1.PivirtdService.CancelDiskMove:input_type -> pilab.pivirtd.v1.CancelDiskMoveRequest
+	109, // 127: pilab.pivirtd.v1.PivirtdService.AttachDisk:input_type -> pilab.pivirtd.v1.AttachDiskRequest
+	110, // 128: pilab.pivirtd.v1.PivirtdService.DetachDisk:input_type -> pilab.pivirtd.v1.DetachDiskRequest
+	111, // 129: pilab.pivirtd.v1.PivirtdService.AttachNIC:input_type -> pilab.pivirtd.v1.AttachNICRequest
+	112, // 130: pilab.pivirtd.v1.PivirtdService.DetachNIC:input_type -> pilab.pivirtd.v1.DetachNICRequest
+	113, // 131: pilab.pivirtd.v1.PivirtdService.ResizeDisk:input_type -> pilab.pivirtd.v1.ResizeDiskRequest
+	114, // 132: pilab.pivirtd.v1.PivirtdService.SetVNCPassword:input_type -> pilab.pivirtd.v1.SetVNCPasswordRequest
+	115, // 133: pilab.pivirtd.v1.PivirtdService.SetLinkState:input_type -> pilab.pivirtd.v1.SetLinkStateRequest
+	116, // 134: pilab.pivirtd.v1.PivirtdService.RenameVM:input_type -> pilab.pivirtd.v1.RenameVMRequest
+	117, // 135: pilab.pivirtd.v1.PivirtdService.ChangeISO:input_type -> pilab.pivirtd.v1.ChangeISORequest
+	118, // 136: pilab.pivirtd.v1.PivirtdService.EjectISO:input_type -> pilab.pivirtd.v1.EjectISORequest
+	119, // 137: pilab.pivirtd.v1.PivirtdService.GetSnapshotTree:input_type -> pilab.pivirtd.v1.GetSnapshotTreeRequest
+	122, // 138: pilab.pivirtd.v1.PivirtdService.GetGuestInfo:input_type -> pilab.pivirtd.v1.GetGuestInfoRequest
+	125, // 139: pilab.pivirtd.v1.PivirtdService.GuestExec:input_type -> pilab.pivirtd.v1.GuestExecRequest
+	127, // 140: pilab.pivirtd.v1.PivirtdService.GetGuestExecStatus:input_type -> pilab.pivirtd.v1.GetGuestExecStatusRequest
+	129, // 141: pilab.pivirtd.v1.PivirtdService.SetGuestHostname:input_type -> pilab.pivirtd.v1.SetGuestHostnameRequest
+	131, // 142: pilab.pivirtd.v1.PivirtdService.CustomizeOS:input_type -> pilab.pivirtd.v1.CustomizeOSRequest
+	148, // 143: pilab.pivirtd.v1.PivirtdService.SubscribeEvents:input_type -> pilab.pivirtd.v1.SubscribeEventsRequest
+	148, // 144: pilab.pivirtd.v1.PivirtdService.GetHostResource:input_type -> pilab.pivirtd.v1.SubscribeEventsRequest
+	13,  // 145: pilab.pivirtd.v1.PivirtdService.CreateVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 146: pilab.pivirtd.v1.PivirtdService.ApplyVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 147: pilab.pivirtd.v1.PivirtdService.StartVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 148: pilab.pivirtd.v1.PivirtdService.StopVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 149: pilab.pivirtd.v1.PivirtdService.PauseVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 150: pilab.pivirtd.v1.PivirtdService.ResumeVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 151: pilab.pivirtd.v1.PivirtdService.RebootVM:output_type -> pilab.pivirtd.v1.VMResponse
+	14,  // 152: pilab.pivirtd.v1.PivirtdService.DeleteVM:output_type -> pilab.pivirtd.v1.DeleteVMResponse
+	15,  // 153: pilab.pivirtd.v1.PivirtdService.ListVMs:output_type -> pilab.pivirtd.v1.ListVMsResponse
+	13,  // 154: pilab.pivirtd.v1.PivirtdService.GetVM:output_type -> pilab.pivirtd.v1.VMResponse
+	26,  // 155: pilab.pivirtd.v1.PivirtdService.GetVMStats:output_type -> pilab.pivirtd.v1.VMStatsResponse
+	32,  // 156: pilab.pivirtd.v1.PivirtdService.StreamVMStats:output_type -> pilab.pivirtd.v1.VMStatsBatch
+	13,  // 157: pilab.pivirtd.v1.PivirtdService.UpdateVMMemory:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 158: pilab.pivirtd.v1.PivirtdService.UpdateVMCpu:output_type -> pilab.pivirtd.v1.VMResponse
+	40,  // 159: pilab.pivirtd.v1.PivirtdService.ExecuteQMP:output_type -> pilab.pivirtd.v1.ExecuteQMPResponse
+	42,  // 160: pilab.pivirtd.v1.PivirtdService.StreamQMPEvents:output_type -> pilab.pivirtd.v1.QMPEvent
+	48,  // 161: pilab.pivirtd.v1.PivirtdService.CreateSnapshot:output_type -> pilab.pivirtd.v1.SnapshotResponse
+	45,  // 162: pilab.pivirtd.v1.PivirtdService.ListSnapshots:output_type -> pilab.pivirtd.v1.ListSnapshotsResponse
+	48,  // 163: pilab.pivirtd.v1.PivirtdService.RestoreSnapshot:output_type -> pilab.pivirtd.v1.SnapshotResponse
+	49,  // 164: pilab.pivirtd.v1.PivirtdService.DeleteSnapshot:output_type -> pilab.pivirtd.v1.DeleteSnapshotResponse
+	48,  // 165: pilab.pivirtd.v1.PivirtdService.ConsolidateSnapshot:output_type -> pilab.pivirtd.v1.SnapshotResponse
+	52,  // 166: pilab.pivirtd.v1.PivirtdService.GetSnapshotStatus:output_type -> pilab.pivirtd.v1.SnapshotStatusResponse
+	13,  // 167: pilab.pivirtd.v1.PivirtdService.CloneVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 168: pilab.pivirtd.v1.PivirtdService.CloneSnapshot:output_type -> pilab.pivirtd.v1.VMResponse
+	65,  // 169: pilab.pivirtd.v1.PivirtdService.PrepareIncoming:output_type -> pilab.pivirtd.v1.PrepareIncomingResponse
+	69,  // 170: pilab.pivirtd.v1.PivirtdService.MigrateVM:output_type -> pilab.pivirtd.v1.MigrateVMResponse
+	13,  // 171: pilab.pivirtd.v1.PivirtdService.FinalizeMigration:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 172: pilab.pivirtd.v1.PivirtdService.AbortIncoming:output_type -> pilab.pivirtd.v1.VMResponse
+	71,  // 173: pilab.pivirtd.v1.PivirtdService.GetMigrationStatus:output_type -> pilab.pivirtd.v1.MigrationStatusResponse
+	73,  // 174: pilab.pivirtd.v1.PivirtdService.CreateStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
+	75,  // 175: pilab.pivirtd.v1.PivirtdService.ListStoragePools:output_type -> pilab.pivirtd.v1.ListStoragePoolsResponse
+	77,  // 176: pilab.pivirtd.v1.PivirtdService.DeleteStoragePool:output_type -> pilab.pivirtd.v1.DeleteStoragePoolResponse
+	73,  // 177: pilab.pivirtd.v1.PivirtdService.GetStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
+	73,  // 178: pilab.pivirtd.v1.PivirtdService.ActivateStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
+	73,  // 179: pilab.pivirtd.v1.PivirtdService.DeactivateStoragePool:output_type -> pilab.pivirtd.v1.StoragePoolResponse
+	84,  // 180: pilab.pivirtd.v1.PivirtdService.CreateTAPDevice:output_type -> pilab.pivirtd.v1.NetworkResponse
+	91,  // 181: pilab.pivirtd.v1.PivirtdService.DeleteTAPDevice:output_type -> pilab.pivirtd.v1.DeleteNetworkResponse
+	86,  // 182: pilab.pivirtd.v1.PivirtdService.ListTAPDevices:output_type -> pilab.pivirtd.v1.ListTAPDevicesResponse
+	84,  // 183: pilab.pivirtd.v1.PivirtdService.CreateBridge:output_type -> pilab.pivirtd.v1.NetworkResponse
+	91,  // 184: pilab.pivirtd.v1.PivirtdService.DeleteBridge:output_type -> pilab.pivirtd.v1.DeleteNetworkResponse
+	88,  // 185: pilab.pivirtd.v1.PivirtdService.ListBridges:output_type -> pilab.pivirtd.v1.ListBridgesResponse
+	135, // 186: pilab.pivirtd.v1.PivirtdService.ListNetworkNamespaces:output_type -> pilab.pivirtd.v1.ListNetworkNamespacesResponse
+	138, // 187: pilab.pivirtd.v1.PivirtdService.ListAdoptableDevices:output_type -> pilab.pivirtd.v1.ListAdoptableDevicesResponse
+	97,  // 188: pilab.pivirtd.v1.PivirtdService.SetLabels:output_type -> pilab.pivirtd.v1.SetLabelsResponse
+	99,  // 189: pilab.pivirtd.v1.PivirtdService.GetLabels:output_type -> pilab.pivirtd.v1.GetLabelsResponse
+	101, // 190: pilab.pivirtd.v1.PivirtdService.DeleteLabel:output_type -> pilab.pivirtd.v1.DeleteLabelResponse
+	103, // 191: pilab.pivirtd.v1.PivirtdService.SetProvisioning:output_type -> pilab.pivirtd.v1.SetProvisioningResponse
+	105, // 192: pilab.pivirtd.v1.PivirtdService.GetVMStatus:output_type -> pilab.pivirtd.v1.GetVMStatusResponse
+	60,  // 193: pilab.pivirtd.v1.PivirtdService.StartDiskMove:output_type -> pilab.pivirtd.v1.DiskMoveStatusResponse
+	60,  // 194: pilab.pivirtd.v1.PivirtdService.GetDiskMoveStatus:output_type -> pilab.pivirtd.v1.DiskMoveStatusResponse
+	59,  // 195: pilab.pivirtd.v1.PivirtdService.CancelDiskMove:output_type -> pilab.pivirtd.v1.DiskMoveResponse
+	13,  // 196: pilab.pivirtd.v1.PivirtdService.AttachDisk:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 197: pilab.pivirtd.v1.PivirtdService.DetachDisk:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 198: pilab.pivirtd.v1.PivirtdService.AttachNIC:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 199: pilab.pivirtd.v1.PivirtdService.DetachNIC:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 200: pilab.pivirtd.v1.PivirtdService.ResizeDisk:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 201: pilab.pivirtd.v1.PivirtdService.SetVNCPassword:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 202: pilab.pivirtd.v1.PivirtdService.SetLinkState:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 203: pilab.pivirtd.v1.PivirtdService.RenameVM:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 204: pilab.pivirtd.v1.PivirtdService.ChangeISO:output_type -> pilab.pivirtd.v1.VMResponse
+	13,  // 205: pilab.pivirtd.v1.PivirtdService.EjectISO:output_type -> pilab.pivirtd.v1.VMResponse
+	120, // 206: pilab.pivirtd.v1.PivirtdService.GetSnapshotTree:output_type -> pilab.pivirtd.v1.GetSnapshotTreeResponse
+	123, // 207: pilab.pivirtd.v1.PivirtdService.GetGuestInfo:output_type -> pilab.pivirtd.v1.GetGuestInfoResponse
+	126, // 208: pilab.pivirtd.v1.PivirtdService.GuestExec:output_type -> pilab.pivirtd.v1.GuestExecResponse
+	128, // 209: pilab.pivirtd.v1.PivirtdService.GetGuestExecStatus:output_type -> pilab.pivirtd.v1.GetGuestExecStatusResponse
+	130, // 210: pilab.pivirtd.v1.PivirtdService.SetGuestHostname:output_type -> pilab.pivirtd.v1.SetGuestHostnameResponse
+	133, // 211: pilab.pivirtd.v1.PivirtdService.CustomizeOS:output_type -> pilab.pivirtd.v1.CustomizeOSResponse
+	149, // 212: pilab.pivirtd.v1.PivirtdService.SubscribeEvents:output_type -> pilab.pivirtd.v1.HostEvent
+	150, // 213: pilab.pivirtd.v1.PivirtdService.GetHostResource:output_type -> pilab.pivirtd.v1.HostResourceReport
+	145, // [145:214] is the sub-list for method output_type
+	76,  // [76:145] is the sub-list for method input_type
+	76,  // [76:76] is the sub-list for extension type_name
+	76,  // [76:76] is the sub-list for extension extendee
+	0,   // [0:76] is the sub-list for field type_name
 }
 
 func init() { file_pilab_pivirtd_v1_pivirtd_proto_init() }
@@ -9945,13 +10022,14 @@ func file_pilab_pivirtd_v1_pivirtd_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_pivirtd_v1_pivirtd_proto_rawDesc), len(file_pilab_pivirtd_v1_pivirtd_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   144,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_pilab_pivirtd_v1_pivirtd_proto_goTypes,
 		DependencyIndexes: file_pilab_pivirtd_v1_pivirtd_proto_depIdxs,
+		EnumInfos:         file_pilab_pivirtd_v1_pivirtd_proto_enumTypes,
 		MessageInfos:      file_pilab_pivirtd_v1_pivirtd_proto_msgTypes,
 	}.Build()
 	File_pilab_pivirtd_v1_pivirtd_proto = out.File
