@@ -118,6 +118,9 @@ message ZfsDatastoreBacking {
 // create, extend or remove VGs: `create` only creates the thin pool inside the
 // given VG when it is missing. Existing pools are reused as-is, so their
 // settings in this request are ignored.
+//
+// When `create` is true, `size` is required; a create without a size is
+// rejected rather than defaulting to the free space of the volume group.
 message LvmThinDatastoreBacking {
   // Existing volume group that owns the thin pool, e.g. "vg_fast". Must
   // already exist on the host.
@@ -126,8 +129,8 @@ message LvmThinDatastoreBacking {
   string thin_pool = 2;
   // Create the thin pool if it is missing. Never creates the volume group.
   bool create = 3;
-  // Size for a newly created thin pool, e.g. "100G". Empty uses all free
-  // extents in the volume group.
+  // Size for a newly created thin pool, e.g. "100G". Required when create is
+  // true; ignored for an existing pool.
   string size = 4;
   // Chunk size for a newly created thin pool, e.g. "128k".
   string chunk_size = 5;

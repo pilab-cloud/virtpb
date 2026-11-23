@@ -599,6 +599,9 @@ func (x *ZfsDatastoreBacking) GetVolblocksize() string {
 // create, extend or remove VGs: `create` only creates the thin pool inside the
 // given VG when it is missing. Existing pools are reused as-is, so their
 // settings in this request are ignored.
+//
+// When `create` is true, `size` is required; a create without a size is
+// rejected rather than defaulting to the free space of the volume group.
 type LvmThinDatastoreBacking struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Existing volume group that owns the thin pool, e.g. "vg_fast". Must
@@ -608,8 +611,8 @@ type LvmThinDatastoreBacking struct {
 	ThinPool string `protobuf:"bytes,2,opt,name=thin_pool,json=thinPool,proto3" json:"thin_pool,omitempty"`
 	// Create the thin pool if it is missing. Never creates the volume group.
 	Create bool `protobuf:"varint,3,opt,name=create,proto3" json:"create,omitempty"`
-	// Size for a newly created thin pool, e.g. "100G". Empty uses all free
-	// extents in the volume group.
+	// Size for a newly created thin pool, e.g. "100G". Required when create is
+	// true; ignored for an existing pool.
 	Size string `protobuf:"bytes,4,opt,name=size,proto3" json:"size,omitempty"`
 	// Chunk size for a newly created thin pool, e.g. "128k".
 	ChunkSize     string `protobuf:"bytes,5,opt,name=chunk_size,json=chunkSize,proto3" json:"chunk_size,omitempty"`
