@@ -419,6 +419,9 @@ message MigrationOptions {
   int64 downtime_limit_ms = 4;
   bool postcopy = 5;
   bool multifd = 6;
+  // storage_mode is "STORAGE_COPY" when the disks must be mirrored to the
+  // destination (local storage), "SHARED_ZERO_COPY" when they are shared.
+  string storage_mode = 7;
 }
 
 message InitiateMigrationRequest {
@@ -438,11 +441,19 @@ message PrepareForMigrationRequest {
   string uid = 4;
   map<string, string> labels = 5;
   int64 generation = 6;
+  // storage_mode carries the director's decision for the disks:
+  // "STORAGE_COPY" makes the destination create local disks for mirroring,
+  // "SHARED_ZERO_COPY" keeps the shared-storage behaviour.
+  string storage_mode = 7;
 }
 
 message PrepareForMigrationResponse {
   string migration_uri = 1;
   string prepare_token = 2;
+  // disk_exports lists the disks the destination prepared and exposes over
+  // NBD. Empty means the disks are already reachable from the destination
+  // (shared storage) and no mirroring is needed.
+  repeated pilab.pivirtd.v1.MigrationDiskExport disk_exports = 3;
 }
 
 message ConfirmMigrationRequest {

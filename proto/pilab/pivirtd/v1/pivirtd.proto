@@ -275,6 +275,10 @@ message DiskConfig {
   string bus = 5;  // virtio, ide, scsi
   bool readonly = 6;
   bool cache = 7;
+  // size_bytes is the exact virtual size. A storage migration needs it: a
+  // mirror refuses a target whose virtual size differs by even a byte, and
+  // size_gb cannot express a disk that is not a whole number of GiB.
+  int64 size_bytes = 8;
 }
 
 message NetworkConfig {
@@ -606,10 +610,29 @@ message VMConfig {
 message PrepareIncomingRequest {
   VMConfig config = 1;
   string listen_address = 2;
+  // mirror_disks asks the destination to create its own disk files and expose
+  // them over NBD on the migration network, so the source can copy the disks
+  // without shared storage. When false the destination expects to open the
+  // source's disks directly, as today.
+  bool mirror_disks = 3;
+}
+
+// MigrationDiskExport is one disk the destination created and exposes over its
+// built-in NBD server, so the source can mirror into it without shared
+// storage. The NBD listener binds to the node's migration address and the
+// reserved live-migration port range, never to the storage path.
+message MigrationDiskExport {
+  string device = 1;       // driveN as seen by the source QEMU
+  string export_name = 2;  // NBD export name
+  string uri = 3;          // nbd:<migration-address>:<port>:<export_name>
+  string path = 4;         // disk file created on the destination
 }
 
 message PrepareIncomingResponse {
   string uri = 1;  // "tcp:<addr>:<port>"
+  // disk_exports is empty when the destination sees the source's disks
+  // directly (shared storage); otherwise the source must mirror each one.
+  repeated MigrationDiskExport disk_exports = 2;
 }
 
 message FinalizeMigrationRequest {
@@ -630,6 +653,16 @@ message MigrateVMRequest {
   int64 downtime_limit_ms = 6;
   bool postcopy = 7;
   bool multifd = 8;
+
+  // Storage migration: disk_exports are the destination disks to mirror into
+  // before the RAM stream switches the VM over. Empty means the destination
+  // sees the source's disks (shared storage).
+  repeated MigrationDiskExport disk_exports = 9;
+  // mirror_speed_bytes_sec caps each drive-mirror job (the migration class
+  // rate, not the storage class).
+  int64 mirror_speed_bytes_sec = 10;
+  // mirror_timeout_seconds bounds the convergence wait; zero means 6 hours.
+  int64 mirror_timeout_seconds = 11;
 }
 
 message MigrateVMResponse {
