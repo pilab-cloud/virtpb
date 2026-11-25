@@ -4781,7 +4781,11 @@ type MigrateVMRequest struct {
 	MirrorOnly bool `protobuf:"varint,12,opt,name=mirror_only,json=mirrorOnly,proto3" json:"mirror_only,omitempty"`
 	// skip_mirror runs only the RAM stream, for the call that follows a
 	// successful mirror_only.
-	SkipMirror    bool `protobuf:"varint,13,opt,name=skip_mirror,json=skipMirror,proto3" json:"skip_mirror,omitempty"`
+	SkipMirror bool `protobuf:"varint,13,opt,name=skip_mirror,json=skipMirror,proto3" json:"skip_mirror,omitempty"`
+	// cancel_mirror drops the block jobs a mirror_only call left running and
+	// lets the guest write again. It is the cleanup for a storage migration that
+	// failed after its copy but before the destination took over.
+	CancelMirror  bool `protobuf:"varint,14,opt,name=cancel_mirror,json=cancelMirror,proto3" json:"cancel_mirror,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4903,6 +4907,13 @@ func (x *MigrateVMRequest) GetMirrorOnly() bool {
 func (x *MigrateVMRequest) GetSkipMirror() bool {
 	if x != nil {
 		return x.SkipMirror
+	}
+	return false
+}
+
+func (x *MigrateVMRequest) GetCancelMirror() bool {
+	if x != nil {
+		return x.CancelMirror
 	}
 	return false
 }
@@ -9260,7 +9271,7 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12\x16\n" +
 	"\x06delete\x18\x02 \x01(\bR\x06delete\"/\n" +
 	"\x14AbortIncomingRequest\x12\x17\n" +
-	"\avm_name\x18\x01 \x01(\tR\x06vmName\"\xa2\x04\n" +
+	"\avm_name\x18\x01 \x01(\tR\x06vmName\"\xc7\x04\n" +
 	"\x10MigrateVMRequest\x12\x17\n" +
 	"\avm_name\x18\x01 \x01(\tR\x06vmName\x12'\n" +
 	"\x0fdestination_uri\x18\x02 \x01(\tR\x0edestinationUri\x12 \n" +
@@ -9277,7 +9288,8 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\vmirror_only\x18\f \x01(\bR\n" +
 	"mirrorOnly\x12\x1f\n" +
 	"\vskip_mirror\x18\r \x01(\bR\n" +
-	"skipMirror\"C\n" +
+	"skipMirror\x12#\n" +
+	"\rcancel_mirror\x18\x0e \x01(\bR\fcancelMirror\"C\n" +
 	"\x11MigrateVMResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\"4\n" +

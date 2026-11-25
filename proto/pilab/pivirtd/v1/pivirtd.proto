@@ -691,6 +691,10 @@ message MigrateVMRequest {
   // skip_mirror runs only the RAM stream, for the call that follows a
   // successful mirror_only.
   bool skip_mirror = 13;
+  // cancel_mirror drops the block jobs a mirror_only call left running and
+  // lets the guest write again. It is the cleanup for a storage migration that
+  // failed after its copy but before the destination took over.
+  bool cancel_mirror = 14;
 }
 
 message MigrateVMResponse {

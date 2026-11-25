@@ -435,6 +435,11 @@ message InitiateMigrationResponse {
 }
 
 message PrepareForMigrationRequest {
+  // phase is which half of a storage migration the destination performs:
+  // INCOMING_PHASE_DISKS creates and exposes the disks while no VM exists,
+  // INCOMING_PHASE_START starts the VM once the source has copied into them.
+  // UNSPECIFIED is a migration without disk copying.
+
   string vm_id = 1;
   string source_host = 2;
   pilab.pivirtd.v1.VMConfig config = 3;
@@ -445,6 +450,7 @@ message PrepareForMigrationRequest {
   // "STORAGE_COPY" makes the destination create local disks for mirroring,
   // "SHARED_ZERO_COPY" keeps the shared-storage behaviour.
   string storage_mode = 7;
+  pilab.pivirtd.v1.IncomingPhase phase = 8;
 }
 
 message PrepareForMigrationResponse {
