@@ -159,6 +159,11 @@ message StoragePoolSummary {
   // qos is the pool-level default disk QoS the datastore carries. Unset means
   // the platform baseline.
   pilab.core.v1.DiskQoSConfig qos = 7;
+  // shared reports that this pool is visible to more than one host and is the
+  // same storage on each of them (a shared volume group or an exported
+  // filesystem). A host-local pool never sets it, even when another host has
+  // a pool of the same name.
+  bool shared = 8;
 }
 
 // ==================== Event Streaming ====================
