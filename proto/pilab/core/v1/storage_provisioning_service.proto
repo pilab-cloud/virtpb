@@ -890,6 +890,623 @@ message DeleteRaidSetResponse {
   string message = 2;
 }
 
+
+// ==========================================
+// Pool Performance Monitoring
+// ==========================================
+
+// StorageIoStats is one device's or pool's I/O counters over the sampling
+// interval. Rates are computed from the kernel's cumulative counters, so the
+// host needs two samples; the first call may return rates of 0 with
+// sampled_at set.
+message StorageIoStats {
+  // id is the device path or the pool name, matching kind.
+  string id = 1;
+  // kind is "device" or "pool".
+  string kind = 2;
+  // pool is the pool this device belongs to, when known.
+  string pool = 3;
+  int64 read_iops = 4;
+  int64 write_iops = 5;
+  int64 read_bytes_per_sec = 6;
+  int64 write_bytes_per_sec = 7;
+  double read_latency_ms = 8;
+  double write_latency_ms = 9;
+  int64 queue_depth = 10;
+  int64 io_errors = 11;
+  // util_percent is the share of the interval the device was busy.
+  double util_percent = 12;
+  // members lists a pool's member devices.
+  repeated string members = 13;
+  google.protobuf.Timestamp sampled_at = 14;
+  // source names where the numbers came from: "diskstats", "zpool iostat",
+  // "rbd perf", "qmp blockstats".
+  string source = 15;
+}
+
+message GetStorageIoRequest {
+  string node_id = 1;
+  // pool narrows the answer to one pool; empty means every pool and device.
+  string pool = 2;
+}
+
+message GetStorageIoResponse {
+  repeated StorageIoStats samples = 1;
+  google.protobuf.Timestamp sampled_at = 2;
+  // interval_ms is how long the rates were measured over.
+  int64 interval_ms = 3;
+  repeated string issues = 4;
+}
+
+// ==========================================
+// Maintenance and Tuning
+// ==========================================
+
+enum StorageMaintenanceKind {
+  STORAGE_MAINTENANCE_KIND_UNSPECIFIED = 0;
+  STORAGE_MAINTENANCE_KIND_SCRUB = 1;
+  STORAGE_MAINTENANCE_KIND_TRIM = 2;
+  STORAGE_MAINTENANCE_KIND_REPAIR = 3;
+  STORAGE_MAINTENANCE_KIND_REBALANCE = 4;
+  STORAGE_MAINTENANCE_KIND_VERIFY = 5;
+}
+
+enum StorageMaintenanceState {
+  STORAGE_MAINTENANCE_STATE_UNSPECIFIED = 0;
+  STORAGE_MAINTENANCE_STATE_QUEUED = 1;
+  STORAGE_MAINTENANCE_STATE_RUNNING = 2;
+  STORAGE_MAINTENANCE_STATE_COMPLETED = 3;
+  STORAGE_MAINTENANCE_STATE_FAILED = 4;
+  STORAGE_MAINTENANCE_STATE_CANCELED = 5;
+  // SKIPPED means the task did not run: busy pool, unsupported, or a
+  // previous task still running.
+  STORAGE_MAINTENANCE_STATE_SKIPPED = 6;
+}
+
+message StorageMaintenanceTask {
+  string id = 1;
+  string node_id = 2;
+  string pool = 3;
+  StorageMaintenanceKind kind = 4;
+  StorageMaintenanceState state = 5;
+  double progress_percent = 6;
+  google.protobuf.Timestamp started_at = 7;
+  google.protobuf.Timestamp finished_at = 8;
+  string error = 9;
+  string message = 10;
+  bool cancelable = 11;
+  // trigger is "manual" or "schedule".
+  string trigger = 12;
+}
+
+message StartStorageMaintenanceRequest {
+  string node_id = 1;
+  string pool = 2;
+  StorageMaintenanceKind kind = 3;
+  // priority is the kernel's rebuild/scrub speed class: 1 (low) to 3 (high),
+  // 0 leaves the host's setting alone.
+  int32 priority = 4;
+  // max_duration_seconds stops the task when it runs too long; 0 means no
+  // limit.
+  int64 max_duration_seconds = 5;
+}
+
+message StartStorageMaintenanceResponse {
+  StorageMaintenanceTask task = 1;
+}
+
+message ListStorageMaintenanceTasksRequest {
+  string node_id = 1;
+  string pool = 2;
+  // limit caps the history returned, newest first. 0 means 50.
+  int32 limit = 3;
+}
+
+message ListStorageMaintenanceTasksResponse {
+  repeated StorageMaintenanceTask tasks = 1;
+}
+
+message CancelStorageMaintenanceRequest {
+  string node_id = 1;
+  string task_id = 2;
+}
+
+message CancelStorageMaintenanceResponse {
+  StorageMaintenanceTask task = 1;
+}
+
+// StorageMaintenancePolicy schedules recurring maintenance on a pool. It is
+// stored on the pool, so the host owns the timing and the director only
+// declares intent.
+message StorageMaintenancePolicy {
+  // scrub_interval_hours runs a scrub this often; 0 disables it.
+  int64 scrub_interval_hours = 1;
+  // trim_interval_hours runs a discard pass this often; 0 disables it.
+  int64 trim_interval_hours = 2;
+  // max_duration_seconds caps a scheduled task; 0 means no limit.
+  int64 max_duration_seconds = 3;
+  // skip_if_busy skips a run while another maintenance task is running.
+  bool skip_if_busy = 4;
+  // priority is the speed class for scheduled tasks.
+  int32 priority = 5;
+}
+
+// StorageTuningKnob is one tunable setting the backend can actually change.
+message StorageTuningKnob {
+  // key is a stable name, e.g. "io_scheduler", "read_ahead_kb",
+  // "write_cache", "compression", "dedup".
+  string key = 1;
+  string value = 2;
+  // supported is false when this host cannot change the knob; reason says
+  // why (missing kernel feature, backend does not expose it, ...).
+  bool supported = 3;
+  string reason = 4;
+  // choices lists the accepted values, when the knob is enumerated.
+  repeated string choices = 5;
+  // kind is "host" for device settings and "pool" for backend settings.
+  string kind = 6;
+  bool reboot_required = 7;
+}
+
+message GetStorageTuningRequest {
+  string node_id = 1;
+  string pool = 2;
+  // device narrows the answer to one member device; empty means the pool.
+  string device = 3;
+}
+
+message GetStorageTuningResponse {
+  repeated StorageTuningKnob knobs = 1;
+  string device = 2;
+}
+
+message SetStorageTuningRequest {
+  string node_id = 1;
+  string pool = 2;
+  string device = 3;
+  map<string, string> values = 4;
+}
+
+message SetStorageTuningResponse {
+  repeated StorageTuningKnob knobs = 1;
+  repeated string applied = 2;
+  repeated string rejected = 3;
+  string message = 4;
+}
+
+// ==========================================
+// Snapshots and Backups
+// ==========================================
+
+message StorageSnapshot {
+  string id = 1;
+  string node_id = 2;
+  string pool = 3;
+  // volume is the volume the snapshot belongs to; empty for pool-wide
+  // (recursive) snapshots.
+  string volume = 4;
+  string name = 5;
+  google.protobuf.Timestamp created_at = 6;
+  int64 size_bytes = 7;
+  int64 used_bytes = 8;
+  string description = 9;
+  // backend is "zfs", "lvmthin", "rbd" or "qcow2".
+  string backend = 10;
+  // parent names the previous snapshot in an incremental chain.
+  string parent = 11;
+  bool recursive = 12;
+}
+
+message ListStorageSnapshotsRequest {
+  string node_id = 1;
+  string pool = 2;
+  string volume = 3;
+}
+
+message ListStorageSnapshotsResponse {
+  repeated StorageSnapshot snapshots = 1;
+}
+
+message CreateStorageSnapshotRequest {
+  string node_id = 1;
+  string pool = 2;
+  string volume = 3;
+  // name is the snapshot's own name, without the pool prefix.
+  string name = 4;
+  string description = 5;
+  // recursive snapshots the dataset and its children (ZFS only).
+  bool recursive = 6;
+  // quiesce freezes the guest filesystem through the guest agent first.
+  bool quiesce = 7;
+}
+
+message CreateStorageSnapshotResponse {
+  bool success = 1;
+  string message = 2;
+  StorageSnapshot snapshot = 3;
+}
+
+message DeleteStorageSnapshotRequest {
+  string node_id = 1;
+  string pool = 2;
+  string volume = 3;
+  string name = 4;
+  // force deletes the snapshot and its dependent clones/snapshots.
+  bool force = 5;
+}
+
+message DeleteStorageSnapshotResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RestoreStorageSnapshotRequest {
+  string node_id = 1;
+  string pool = 2;
+  string volume = 3;
+  string name = 4;
+  // dry_run reports what the restore would do without doing it.
+  bool dry_run = 5;
+}
+
+message RestoreStorageSnapshotResponse {
+  bool success = 1;
+  string message = 2;
+  bool dry_run = 3;
+  repeated string steps = 4;
+  // blockers are reasons the restore cannot proceed, e.g. a running VM.
+  repeated string blockers = 5;
+}
+
+message StorageSnapshotPolicy {
+  string pool = 1;
+  string volume = 2;
+  // prefix goes in front of the timestamp in each snapshot name.
+  string prefix = 3;
+  // interval_minutes is how often a snapshot is taken; 0 disables the policy.
+  int64 interval_minutes = 4;
+  // retain is how many snapshots to keep; the oldest are pruned.
+  int32 retain = 5;
+  bool recursive = 6;
+  // skip_if_busy skips a snapshot while a backup or maintenance runs.
+  bool skip_if_busy = 7;
+  bool enabled = 8;
+}
+
+// StorageBackup describes one backup run and where its data went.
+message StorageBackup {
+  string id = 1;
+  string node_id = 2;
+  string pool = 3;
+  string volume = 4;
+  // target is the backup destination, e.g. an NFS path or a restic repo.
+  string target = 5;
+  // kind is "full" or "incremental".
+  string kind = 6;
+  string state = 7;
+  double progress_percent = 8;
+  int64 bytes_transferred = 9;
+  int64 bytes_total = 10;
+  google.protobuf.Timestamp started_at = 11;
+  google.protobuf.Timestamp finished_at = 12;
+  string error = 13;
+  string message = 14;
+  // mechanism names the tool used: "zfs send", "rbd export-diff",
+  // "qemu-img convert", "restic".
+  string mechanism = 15;
+}
+
+message StartStorageBackupRequest {
+  string node_id = 1;
+  string pool = 2;
+  string volume = 3;
+  string snapshot = 4;
+  string target = 5;
+  bool incremental = 6;
+  bool compress = 7;
+  bool encrypt = 8;
+  // quiesce freezes the guest filesystem first.
+  bool quiesce = 9;
+}
+
+message StartStorageBackupResponse {
+  StorageBackup backup = 1;
+}
+
+message ListStorageBackupsRequest {
+  string node_id = 1;
+  string pool = 2;
+  int32 limit = 3;
+}
+
+message ListStorageBackupsResponse {
+  repeated StorageBackup backups = 1;
+}
+
+message RestoreStorageBackupRequest {
+  string node_id = 1;
+  string backup_id = 2;
+  string volume = 3;
+  bool dry_run = 4;
+}
+
+message RestoreStorageBackupResponse {
+  bool success = 1;
+  string message = 2;
+  bool dry_run = 3;
+  repeated string blockers = 4;
+}
+
+message CancelStorageBackupRequest {
+  string node_id = 1;
+  string backup_id = 2;
+}
+
+message CancelStorageBackupResponse {
+  StorageBackup backup = 1;
+}
+
+message ApplyRetentionRequest {
+  string node_id = 1;
+  string pool = 2;
+  string volume = 3;
+  string prefix = 4;
+  int32 retain = 5;
+  // dry_run lists what would be deleted.
+  bool dry_run = 6;
+}
+
+message ApplyRetentionResponse {
+  bool success = 1;
+  string message = 2;
+  repeated string deleted = 3;
+  repeated string kept = 4;
+}
+
+// ==========================================
+// Encryption and Key Management
+// ==========================================
+
+enum StorageEncryptionMode {
+  STORAGE_ENCRYPTION_MODE_UNSPECIFIED = 0;
+  STORAGE_ENCRYPTION_MODE_NONE = 1;
+  STORAGE_ENCRYPTION_MODE_LUKS2 = 2;
+  STORAGE_ENCRYPTION_MODE_ZFS_NATIVE = 3;
+  STORAGE_ENCRYPTION_MODE_RBD = 4;
+}
+
+enum StorageKeyProvider {
+  STORAGE_KEY_PROVIDER_UNSPECIFIED = 0;
+  // The key lives in the kernel keyring, loaded at unlock.
+  STORAGE_KEY_PROVIDER_KERNEL_KEYRING = 1;
+  STORAGE_KEY_PROVIDER_TPM2 = 2;
+  STORAGE_KEY_PROVIDER_PKCS11 = 3;
+  STORAGE_KEY_PROVIDER_VAULT_KMIP = 4;
+  // The operator supplies a passphrase at unlock; it is never stored.
+  STORAGE_KEY_PROVIDER_PASSPHRASE = 5;
+}
+
+message StorageEncryption {
+  string pool = 1;
+  StorageEncryptionMode mode = 2;
+  StorageKeyProvider provider = 3;
+  // locked is true when the datastore is encrypted but its key is not
+  // loaded, so its volumes cannot be opened.
+  bool locked = 4;
+  // key_id identifies the key version without revealing it.
+  string key_id = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp rotated_at = 7;
+  // supported lists the modes this host can use for this pool.
+  repeated StorageEncryptionMode supported_modes = 8;
+  // supported_providers lists the key providers available on this host.
+  repeated StorageKeyProvider supported_providers = 9;
+  string message = 10;
+}
+
+message GetStorageEncryptionRequest {
+  string node_id = 1;
+  string pool = 2;
+}
+
+message GetStorageEncryptionResponse {
+  StorageEncryption encryption = 1;
+}
+
+message EnableStorageEncryptionRequest {
+  string node_id = 1;
+  string pool = 2;
+  StorageEncryptionMode mode = 3;
+  StorageKeyProvider provider = 4;
+  // passphrase is used only when provider is PASSPHRASE; it is never stored
+  // and never returned.
+  string passphrase = 5;
+}
+
+message EnableStorageEncryptionResponse {
+  bool success = 1;
+  string message = 2;
+  StorageEncryption encryption = 3;
+}
+
+message DisableStorageEncryptionRequest {
+  string node_id = 1;
+  string pool = 2;
+  // passphrase unlocks the pool for the operation when it is locked.
+  string passphrase = 3;
+}
+
+message DisableStorageEncryptionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message StorageKeyRequest {
+  string node_id = 1;
+  string pool = 2;
+  string passphrase = 3;
+}
+
+message StorageKeyResponse {
+  bool success = 1;
+  string message = 2;
+  StorageEncryption encryption = 3;
+}
+
+// StorageKeyBackup is an opaque, already-encrypted key blob. The control
+// plane stores it without being able to read it.
+message StorageKeyBackup {
+  string pool = 1;
+  string key_id = 2;
+  string wrapped_key = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message BackupStorageKeyRequest {
+  string node_id = 1;
+  string pool = 2;
+  // passphrase wraps the exported key; empty uses the provider's own wrapping.
+  string passphrase = 3;
+}
+
+message BackupStorageKeyResponse {
+  bool success = 1;
+  string message = 2;
+  StorageKeyBackup backup = 3;
+}
+
+message VerifyStorageKeyRequest {
+  string node_id = 1;
+  string pool = 2;
+  StorageKeyBackup backup = 3;
+  string passphrase = 4;
+}
+
+message VerifyStorageKeyResponse {
+  bool success = 1;
+  string message = 2;
+  string key_id = 3;
+}
+
+// ==========================================
+// Pool Access Control and Events
+// ==========================================
+
+enum StorageAccessLevel {
+  STORAGE_ACCESS_LEVEL_UNSPECIFIED = 0;
+  STORAGE_ACCESS_LEVEL_READ = 1;
+  STORAGE_ACCESS_LEVEL_WRITE = 2;
+  STORAGE_ACCESS_LEVEL_ADMIN = 3;
+}
+
+enum StoragePrincipalKind {
+  STORAGE_PRINCIPAL_KIND_UNSPECIFIED = 0;
+  STORAGE_PRINCIPAL_KIND_USER = 1;
+  STORAGE_PRINCIPAL_KIND_GROUP = 2;
+  STORAGE_PRINCIPAL_KIND_HOST = 3;
+  STORAGE_PRINCIPAL_KIND_APPLICATION = 4;
+}
+
+message StorageAccessRule {
+  string id = 1;
+  string pool = 2;
+  StoragePrincipalKind principal_kind = 3;
+  string principal = 4;
+  StorageAccessLevel level = 5;
+  google.protobuf.Timestamp expires_at = 6;
+  bool enabled = 7;
+  string note = 8;
+  // enforced_by says how the rule is enforced: "posix", "nfs-export",
+  // "chap", "ceph-auth", "zfs-allow" or "control-plane" when the backend
+  // cannot express it.
+  string enforced_by = 9;
+  google.protobuf.Timestamp created_at = 10;
+  string created_by = 11;
+}
+
+message ListStorageAccessRulesRequest {
+  string node_id = 1;
+  string pool = 2;
+}
+
+message ListStorageAccessRulesResponse {
+  repeated StorageAccessRule rules = 1;
+}
+
+message SetStorageAccessRuleRequest {
+  string node_id = 1;
+  StorageAccessRule rule = 2;
+}
+
+message SetStorageAccessRuleResponse {
+  StorageAccessRule rule = 1;
+}
+
+message DeleteStorageAccessRuleRequest {
+  string node_id = 1;
+  string id = 2;
+}
+
+message DeleteStorageAccessRuleResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message StorageEvent {
+  string id = 1;
+  string node_id = 2;
+  string pool = 3;
+  // kind is "device", "raid", "zfs", "lvm", "smart", "audit" or "kernel".
+  string kind = 4;
+  // severity is "info", "warning", "error" or "critical".
+  string severity = 5;
+  string message = 6;
+  // source names the collector: "udev", "mdadm", "zpool", "smartd",
+  // "journald", "audit".
+  string source = 7;
+  google.protobuf.Timestamp at = 8;
+  bool acknowledged = 9;
+  string acknowledged_by = 10;
+  google.protobuf.Timestamp acknowledged_at = 11;
+  map<string, string> fields = 12;
+}
+
+message ListStorageEventsRequest {
+  string node_id = 1;
+  string pool = 2;
+  // since is the oldest event to return; zero means the recent window.
+  google.protobuf.Timestamp since = 3;
+  repeated string kinds = 4;
+  repeated string severities = 5;
+  bool unacknowledged_only = 6;
+  int32 limit = 7;
+}
+
+message ListStorageEventsResponse {
+  repeated StorageEvent events = 1;
+}
+
+message AcknowledgeStorageEventsRequest {
+  string node_id = 1;
+  repeated string ids = 2;
+  // acknowledge_all_older_than acknowledges everything before this time.
+  google.protobuf.Timestamp acknowledge_all_older_than = 3;
+}
+
+message AcknowledgeStorageEventsResponse {
+  int32 acknowledged = 1;
+}
+
+message ClearStorageEventsRequest {
+  string node_id = 1;
+  repeated string ids = 2;
+  google.protobuf.Timestamp clear_all_older_than = 3;
+}
+
+message ClearStorageEventsResponse {
+  int32 cleared = 1;
+}
+
 // ---------------- Service ----------------
 
 service StorageProvisioningService {
@@ -952,6 +1569,45 @@ service StorageProvisioningService {
   rpc RemoveRaidMember(RemoveRaidMemberRequest) returns (RemoveRaidMemberResponse);
   rpc ReplaceRaidMember(ReplaceRaidMemberRequest) returns (ReplaceRaidMemberResponse);
   rpc DeleteRaidSet(DeleteRaidSetRequest) returns (DeleteRaidSetResponse);
+
+  // Pool Performance Monitoring
+  rpc GetStorageIo(GetStorageIoRequest) returns (GetStorageIoResponse);
+
+  // Maintenance and Tuning
+  rpc StartStorageMaintenance(StartStorageMaintenanceRequest) returns (StartStorageMaintenanceResponse);
+  rpc ListStorageMaintenanceTasks(ListStorageMaintenanceTasksRequest) returns (ListStorageMaintenanceTasksResponse);
+  rpc CancelStorageMaintenance(CancelStorageMaintenanceRequest) returns (CancelStorageMaintenanceResponse);
+  rpc GetStorageTuning(GetStorageTuningRequest) returns (GetStorageTuningResponse);
+  rpc SetStorageTuning(SetStorageTuningRequest) returns (SetStorageTuningResponse);
+
+  // Snapshots and Backups
+  rpc ListStorageSnapshots(ListStorageSnapshotsRequest) returns (ListStorageSnapshotsResponse);
+  rpc CreateStorageSnapshot(CreateStorageSnapshotRequest) returns (CreateStorageSnapshotResponse);
+  rpc DeleteStorageSnapshot(DeleteStorageSnapshotRequest) returns (DeleteStorageSnapshotResponse);
+  rpc RestoreStorageSnapshot(RestoreStorageSnapshotRequest) returns (RestoreStorageSnapshotResponse);
+  rpc StartStorageBackup(StartStorageBackupRequest) returns (StartStorageBackupResponse);
+  rpc ListStorageBackups(ListStorageBackupsRequest) returns (ListStorageBackupsResponse);
+  rpc RestoreStorageBackup(RestoreStorageBackupRequest) returns (RestoreStorageBackupResponse);
+  rpc CancelStorageBackup(CancelStorageBackupRequest) returns (CancelStorageBackupResponse);
+  rpc ApplyRetention(ApplyRetentionRequest) returns (ApplyRetentionResponse);
+
+  // Encryption and Key Management
+  rpc GetStorageEncryption(GetStorageEncryptionRequest) returns (GetStorageEncryptionResponse);
+  rpc EnableStorageEncryption(EnableStorageEncryptionRequest) returns (EnableStorageEncryptionResponse);
+  rpc DisableStorageEncryption(DisableStorageEncryptionRequest) returns (DisableStorageEncryptionResponse);
+  rpc LockStoragePool(StorageKeyRequest) returns (StorageKeyResponse);
+  rpc UnlockStoragePool(StorageKeyRequest) returns (StorageKeyResponse);
+  rpc RotateStorageKey(StorageKeyRequest) returns (StorageKeyResponse);
+  rpc BackupStorageKey(BackupStorageKeyRequest) returns (BackupStorageKeyResponse);
+  rpc VerifyStorageKey(VerifyStorageKeyRequest) returns (VerifyStorageKeyResponse);
+
+  // Pool Access Control and Events
+  rpc ListStorageAccessRules(ListStorageAccessRulesRequest) returns (ListStorageAccessRulesResponse);
+  rpc SetStorageAccessRule(SetStorageAccessRuleRequest) returns (SetStorageAccessRuleResponse);
+  rpc DeleteStorageAccessRule(DeleteStorageAccessRuleRequest) returns (DeleteStorageAccessRuleResponse);
+  rpc ListStorageEvents(ListStorageEventsRequest) returns (ListStorageEventsResponse);
+  rpc AcknowledgeStorageEvents(AcknowledgeStorageEventsRequest) returns (AcknowledgeStorageEventsResponse);
+  rpc ClearStorageEvents(ClearStorageEventsRequest) returns (ClearStorageEventsResponse);
 
   // Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
   rpc CheckMigrationStorage(CheckMigrationStorageRequest) returns (CheckMigrationStorageResponse);

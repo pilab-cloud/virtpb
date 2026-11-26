@@ -19,51 +19,80 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	StorageProvisioningService_ListDevices_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListDevices"
-	StorageProvisioningService_RescanDevices_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/RescanDevices"
-	StorageProvisioningService_InitializeDisk_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/InitializeDisk"
-	StorageProvisioningService_WipeDisk_FullMethodName              = "/pilab.core.v1.StorageProvisioningService/WipeDisk"
-	StorageProvisioningService_GetDiskHealth_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/GetDiskHealth"
-	StorageProvisioningService_CreatePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreatePartition"
-	StorageProvisioningService_DeletePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/DeletePartition"
-	StorageProvisioningService_FormatPartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/FormatPartition"
-	StorageProvisioningService_ResizePartition_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/ResizePartition"
-	StorageProvisioningService_MountFilesystem_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/MountFilesystem"
-	StorageProvisioningService_UnmountFilesystem_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/UnmountFilesystem"
-	StorageProvisioningService_ListLvm_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/ListLvm"
-	StorageProvisioningService_CreateLvmPv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmPv"
-	StorageProvisioningService_RemoveLvmPv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmPv"
-	StorageProvisioningService_CreateLvmVg_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmVg"
-	StorageProvisioningService_RemoveLvmVg_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmVg"
-	StorageProvisioningService_CreateLvmLv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmLv"
-	StorageProvisioningService_RemoveLvmLv_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/RemoveLvmLv"
-	StorageProvisioningService_CreateLvmThinPool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/CreateLvmThinPool"
-	StorageProvisioningService_ListZfs_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/ListZfs"
-	StorageProvisioningService_CreateZpool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateZpool"
-	StorageProvisioningService_DestroyZpool_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/DestroyZpool"
-	StorageProvisioningService_CreateZfsDataset_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/CreateZfsDataset"
-	StorageProvisioningService_DestroyZfsDataset_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/DestroyZfsDataset"
-	StorageProvisioningService_CreateZfsZvol_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/CreateZfsZvol"
-	StorageProvisioningService_ListStoragePools_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/ListStoragePools"
-	StorageProvisioningService_GetStoragePool_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/GetStoragePool"
-	StorageProvisioningService_CreateStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/CreateStoragePool"
-	StorageProvisioningService_UpdateStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/UpdateStoragePool"
-	StorageProvisioningService_DeleteStoragePool_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/DeleteStoragePool"
-	StorageProvisioningService_CreateVolume_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/CreateVolume"
-	StorageProvisioningService_DeleteVolume_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/DeleteVolume"
-	StorageProvisioningService_ResizeVolume_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/ResizeVolume"
-	StorageProvisioningService_ListVolumes_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListVolumes"
-	StorageProvisioningService_SetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/SetDiskQoS"
-	StorageProvisioningService_GetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/GetDiskQoS"
-	StorageProvisioningService_ListRaidSets_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/ListRaidSets"
-	StorageProvisioningService_CreateRaidSet_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/CreateRaidSet"
-	StorageProvisioningService_AssembleRaidSet_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/AssembleRaidSet"
-	StorageProvisioningService_GrowRaidSet_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/GrowRaidSet"
-	StorageProvisioningService_FailRaidMember_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/FailRaidMember"
-	StorageProvisioningService_RemoveRaidMember_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/RemoveRaidMember"
-	StorageProvisioningService_ReplaceRaidMember_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/ReplaceRaidMember"
-	StorageProvisioningService_DeleteRaidSet_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/DeleteRaidSet"
-	StorageProvisioningService_CheckMigrationStorage_FullMethodName = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
+	StorageProvisioningService_ListDevices_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/ListDevices"
+	StorageProvisioningService_RescanDevices_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/RescanDevices"
+	StorageProvisioningService_InitializeDisk_FullMethodName              = "/pilab.core.v1.StorageProvisioningService/InitializeDisk"
+	StorageProvisioningService_WipeDisk_FullMethodName                    = "/pilab.core.v1.StorageProvisioningService/WipeDisk"
+	StorageProvisioningService_GetDiskHealth_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/GetDiskHealth"
+	StorageProvisioningService_CreatePartition_FullMethodName             = "/pilab.core.v1.StorageProvisioningService/CreatePartition"
+	StorageProvisioningService_DeletePartition_FullMethodName             = "/pilab.core.v1.StorageProvisioningService/DeletePartition"
+	StorageProvisioningService_FormatPartition_FullMethodName             = "/pilab.core.v1.StorageProvisioningService/FormatPartition"
+	StorageProvisioningService_ResizePartition_FullMethodName             = "/pilab.core.v1.StorageProvisioningService/ResizePartition"
+	StorageProvisioningService_MountFilesystem_FullMethodName             = "/pilab.core.v1.StorageProvisioningService/MountFilesystem"
+	StorageProvisioningService_UnmountFilesystem_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/UnmountFilesystem"
+	StorageProvisioningService_ListLvm_FullMethodName                     = "/pilab.core.v1.StorageProvisioningService/ListLvm"
+	StorageProvisioningService_CreateLvmPv_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/CreateLvmPv"
+	StorageProvisioningService_RemoveLvmPv_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/RemoveLvmPv"
+	StorageProvisioningService_CreateLvmVg_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/CreateLvmVg"
+	StorageProvisioningService_RemoveLvmVg_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/RemoveLvmVg"
+	StorageProvisioningService_CreateLvmLv_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/CreateLvmLv"
+	StorageProvisioningService_RemoveLvmLv_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/RemoveLvmLv"
+	StorageProvisioningService_CreateLvmThinPool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateLvmThinPool"
+	StorageProvisioningService_ListZfs_FullMethodName                     = "/pilab.core.v1.StorageProvisioningService/ListZfs"
+	StorageProvisioningService_CreateZpool_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/CreateZpool"
+	StorageProvisioningService_DestroyZpool_FullMethodName                = "/pilab.core.v1.StorageProvisioningService/DestroyZpool"
+	StorageProvisioningService_CreateZfsDataset_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/CreateZfsDataset"
+	StorageProvisioningService_DestroyZfsDataset_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/DestroyZfsDataset"
+	StorageProvisioningService_CreateZfsZvol_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/CreateZfsZvol"
+	StorageProvisioningService_ListStoragePools_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/ListStoragePools"
+	StorageProvisioningService_GetStoragePool_FullMethodName              = "/pilab.core.v1.StorageProvisioningService/GetStoragePool"
+	StorageProvisioningService_CreateStoragePool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/CreateStoragePool"
+	StorageProvisioningService_UpdateStoragePool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/UpdateStoragePool"
+	StorageProvisioningService_DeleteStoragePool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/DeleteStoragePool"
+	StorageProvisioningService_CreateVolume_FullMethodName                = "/pilab.core.v1.StorageProvisioningService/CreateVolume"
+	StorageProvisioningService_DeleteVolume_FullMethodName                = "/pilab.core.v1.StorageProvisioningService/DeleteVolume"
+	StorageProvisioningService_ResizeVolume_FullMethodName                = "/pilab.core.v1.StorageProvisioningService/ResizeVolume"
+	StorageProvisioningService_ListVolumes_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/ListVolumes"
+	StorageProvisioningService_SetDiskQoS_FullMethodName                  = "/pilab.core.v1.StorageProvisioningService/SetDiskQoS"
+	StorageProvisioningService_GetDiskQoS_FullMethodName                  = "/pilab.core.v1.StorageProvisioningService/GetDiskQoS"
+	StorageProvisioningService_ListRaidSets_FullMethodName                = "/pilab.core.v1.StorageProvisioningService/ListRaidSets"
+	StorageProvisioningService_CreateRaidSet_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/CreateRaidSet"
+	StorageProvisioningService_AssembleRaidSet_FullMethodName             = "/pilab.core.v1.StorageProvisioningService/AssembleRaidSet"
+	StorageProvisioningService_GrowRaidSet_FullMethodName                 = "/pilab.core.v1.StorageProvisioningService/GrowRaidSet"
+	StorageProvisioningService_FailRaidMember_FullMethodName              = "/pilab.core.v1.StorageProvisioningService/FailRaidMember"
+	StorageProvisioningService_RemoveRaidMember_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/RemoveRaidMember"
+	StorageProvisioningService_ReplaceRaidMember_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ReplaceRaidMember"
+	StorageProvisioningService_DeleteRaidSet_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/DeleteRaidSet"
+	StorageProvisioningService_GetStorageIo_FullMethodName                = "/pilab.core.v1.StorageProvisioningService/GetStorageIo"
+	StorageProvisioningService_StartStorageMaintenance_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/StartStorageMaintenance"
+	StorageProvisioningService_ListStorageMaintenanceTasks_FullMethodName = "/pilab.core.v1.StorageProvisioningService/ListStorageMaintenanceTasks"
+	StorageProvisioningService_CancelStorageMaintenance_FullMethodName    = "/pilab.core.v1.StorageProvisioningService/CancelStorageMaintenance"
+	StorageProvisioningService_GetStorageTuning_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/GetStorageTuning"
+	StorageProvisioningService_SetStorageTuning_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/SetStorageTuning"
+	StorageProvisioningService_ListStorageSnapshots_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/ListStorageSnapshots"
+	StorageProvisioningService_CreateStorageSnapshot_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CreateStorageSnapshot"
+	StorageProvisioningService_DeleteStorageSnapshot_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/DeleteStorageSnapshot"
+	StorageProvisioningService_RestoreStorageSnapshot_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/RestoreStorageSnapshot"
+	StorageProvisioningService_StartStorageBackup_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/StartStorageBackup"
+	StorageProvisioningService_ListStorageBackups_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/ListStorageBackups"
+	StorageProvisioningService_RestoreStorageBackup_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/RestoreStorageBackup"
+	StorageProvisioningService_CancelStorageBackup_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/CancelStorageBackup"
+	StorageProvisioningService_ApplyRetention_FullMethodName              = "/pilab.core.v1.StorageProvisioningService/ApplyRetention"
+	StorageProvisioningService_GetStorageEncryption_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/GetStorageEncryption"
+	StorageProvisioningService_EnableStorageEncryption_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/EnableStorageEncryption"
+	StorageProvisioningService_DisableStorageEncryption_FullMethodName    = "/pilab.core.v1.StorageProvisioningService/DisableStorageEncryption"
+	StorageProvisioningService_LockStoragePool_FullMethodName             = "/pilab.core.v1.StorageProvisioningService/LockStoragePool"
+	StorageProvisioningService_UnlockStoragePool_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/UnlockStoragePool"
+	StorageProvisioningService_RotateStorageKey_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/RotateStorageKey"
+	StorageProvisioningService_BackupStorageKey_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/BackupStorageKey"
+	StorageProvisioningService_VerifyStorageKey_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/VerifyStorageKey"
+	StorageProvisioningService_ListStorageAccessRules_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/ListStorageAccessRules"
+	StorageProvisioningService_SetStorageAccessRule_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/SetStorageAccessRule"
+	StorageProvisioningService_DeleteStorageAccessRule_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/DeleteStorageAccessRule"
+	StorageProvisioningService_ListStorageEvents_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListStorageEvents"
+	StorageProvisioningService_AcknowledgeStorageEvents_FullMethodName    = "/pilab.core.v1.StorageProvisioningService/AcknowledgeStorageEvents"
+	StorageProvisioningService_ClearStorageEvents_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/ClearStorageEvents"
+	StorageProvisioningService_CheckMigrationStorage_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
 )
 
 // StorageProvisioningServiceClient is the client API for StorageProvisioningService service.
@@ -122,6 +151,40 @@ type StorageProvisioningServiceClient interface {
 	RemoveRaidMember(ctx context.Context, in *RemoveRaidMemberRequest, opts ...grpc.CallOption) (*RemoveRaidMemberResponse, error)
 	ReplaceRaidMember(ctx context.Context, in *ReplaceRaidMemberRequest, opts ...grpc.CallOption) (*ReplaceRaidMemberResponse, error)
 	DeleteRaidSet(ctx context.Context, in *DeleteRaidSetRequest, opts ...grpc.CallOption) (*DeleteRaidSetResponse, error)
+	// Pool Performance Monitoring
+	GetStorageIo(ctx context.Context, in *GetStorageIoRequest, opts ...grpc.CallOption) (*GetStorageIoResponse, error)
+	// Maintenance and Tuning
+	StartStorageMaintenance(ctx context.Context, in *StartStorageMaintenanceRequest, opts ...grpc.CallOption) (*StartStorageMaintenanceResponse, error)
+	ListStorageMaintenanceTasks(ctx context.Context, in *ListStorageMaintenanceTasksRequest, opts ...grpc.CallOption) (*ListStorageMaintenanceTasksResponse, error)
+	CancelStorageMaintenance(ctx context.Context, in *CancelStorageMaintenanceRequest, opts ...grpc.CallOption) (*CancelStorageMaintenanceResponse, error)
+	GetStorageTuning(ctx context.Context, in *GetStorageTuningRequest, opts ...grpc.CallOption) (*GetStorageTuningResponse, error)
+	SetStorageTuning(ctx context.Context, in *SetStorageTuningRequest, opts ...grpc.CallOption) (*SetStorageTuningResponse, error)
+	// Snapshots and Backups
+	ListStorageSnapshots(ctx context.Context, in *ListStorageSnapshotsRequest, opts ...grpc.CallOption) (*ListStorageSnapshotsResponse, error)
+	CreateStorageSnapshot(ctx context.Context, in *CreateStorageSnapshotRequest, opts ...grpc.CallOption) (*CreateStorageSnapshotResponse, error)
+	DeleteStorageSnapshot(ctx context.Context, in *DeleteStorageSnapshotRequest, opts ...grpc.CallOption) (*DeleteStorageSnapshotResponse, error)
+	RestoreStorageSnapshot(ctx context.Context, in *RestoreStorageSnapshotRequest, opts ...grpc.CallOption) (*RestoreStorageSnapshotResponse, error)
+	StartStorageBackup(ctx context.Context, in *StartStorageBackupRequest, opts ...grpc.CallOption) (*StartStorageBackupResponse, error)
+	ListStorageBackups(ctx context.Context, in *ListStorageBackupsRequest, opts ...grpc.CallOption) (*ListStorageBackupsResponse, error)
+	RestoreStorageBackup(ctx context.Context, in *RestoreStorageBackupRequest, opts ...grpc.CallOption) (*RestoreStorageBackupResponse, error)
+	CancelStorageBackup(ctx context.Context, in *CancelStorageBackupRequest, opts ...grpc.CallOption) (*CancelStorageBackupResponse, error)
+	ApplyRetention(ctx context.Context, in *ApplyRetentionRequest, opts ...grpc.CallOption) (*ApplyRetentionResponse, error)
+	// Encryption and Key Management
+	GetStorageEncryption(ctx context.Context, in *GetStorageEncryptionRequest, opts ...grpc.CallOption) (*GetStorageEncryptionResponse, error)
+	EnableStorageEncryption(ctx context.Context, in *EnableStorageEncryptionRequest, opts ...grpc.CallOption) (*EnableStorageEncryptionResponse, error)
+	DisableStorageEncryption(ctx context.Context, in *DisableStorageEncryptionRequest, opts ...grpc.CallOption) (*DisableStorageEncryptionResponse, error)
+	LockStoragePool(ctx context.Context, in *StorageKeyRequest, opts ...grpc.CallOption) (*StorageKeyResponse, error)
+	UnlockStoragePool(ctx context.Context, in *StorageKeyRequest, opts ...grpc.CallOption) (*StorageKeyResponse, error)
+	RotateStorageKey(ctx context.Context, in *StorageKeyRequest, opts ...grpc.CallOption) (*StorageKeyResponse, error)
+	BackupStorageKey(ctx context.Context, in *BackupStorageKeyRequest, opts ...grpc.CallOption) (*BackupStorageKeyResponse, error)
+	VerifyStorageKey(ctx context.Context, in *VerifyStorageKeyRequest, opts ...grpc.CallOption) (*VerifyStorageKeyResponse, error)
+	// Pool Access Control and Events
+	ListStorageAccessRules(ctx context.Context, in *ListStorageAccessRulesRequest, opts ...grpc.CallOption) (*ListStorageAccessRulesResponse, error)
+	SetStorageAccessRule(ctx context.Context, in *SetStorageAccessRuleRequest, opts ...grpc.CallOption) (*SetStorageAccessRuleResponse, error)
+	DeleteStorageAccessRule(ctx context.Context, in *DeleteStorageAccessRuleRequest, opts ...grpc.CallOption) (*DeleteStorageAccessRuleResponse, error)
+	ListStorageEvents(ctx context.Context, in *ListStorageEventsRequest, opts ...grpc.CallOption) (*ListStorageEventsResponse, error)
+	AcknowledgeStorageEvents(ctx context.Context, in *AcknowledgeStorageEventsRequest, opts ...grpc.CallOption) (*AcknowledgeStorageEventsResponse, error)
+	ClearStorageEvents(ctx context.Context, in *ClearStorageEventsRequest, opts ...grpc.CallOption) (*ClearStorageEventsResponse, error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error)
 }
@@ -574,6 +637,296 @@ func (c *storageProvisioningServiceClient) DeleteRaidSet(ctx context.Context, in
 	return out, nil
 }
 
+func (c *storageProvisioningServiceClient) GetStorageIo(ctx context.Context, in *GetStorageIoRequest, opts ...grpc.CallOption) (*GetStorageIoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetStorageIoResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_GetStorageIo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) StartStorageMaintenance(ctx context.Context, in *StartStorageMaintenanceRequest, opts ...grpc.CallOption) (*StartStorageMaintenanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartStorageMaintenanceResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_StartStorageMaintenance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ListStorageMaintenanceTasks(ctx context.Context, in *ListStorageMaintenanceTasksRequest, opts ...grpc.CallOption) (*ListStorageMaintenanceTasksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStorageMaintenanceTasksResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListStorageMaintenanceTasks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) CancelStorageMaintenance(ctx context.Context, in *CancelStorageMaintenanceRequest, opts ...grpc.CallOption) (*CancelStorageMaintenanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CancelStorageMaintenanceResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CancelStorageMaintenance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) GetStorageTuning(ctx context.Context, in *GetStorageTuningRequest, opts ...grpc.CallOption) (*GetStorageTuningResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetStorageTuningResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_GetStorageTuning_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) SetStorageTuning(ctx context.Context, in *SetStorageTuningRequest, opts ...grpc.CallOption) (*SetStorageTuningResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetStorageTuningResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_SetStorageTuning_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ListStorageSnapshots(ctx context.Context, in *ListStorageSnapshotsRequest, opts ...grpc.CallOption) (*ListStorageSnapshotsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStorageSnapshotsResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListStorageSnapshots_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) CreateStorageSnapshot(ctx context.Context, in *CreateStorageSnapshotRequest, opts ...grpc.CallOption) (*CreateStorageSnapshotResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateStorageSnapshotResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CreateStorageSnapshot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) DeleteStorageSnapshot(ctx context.Context, in *DeleteStorageSnapshotRequest, opts ...grpc.CallOption) (*DeleteStorageSnapshotResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteStorageSnapshotResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_DeleteStorageSnapshot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) RestoreStorageSnapshot(ctx context.Context, in *RestoreStorageSnapshotRequest, opts ...grpc.CallOption) (*RestoreStorageSnapshotResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RestoreStorageSnapshotResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_RestoreStorageSnapshot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) StartStorageBackup(ctx context.Context, in *StartStorageBackupRequest, opts ...grpc.CallOption) (*StartStorageBackupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartStorageBackupResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_StartStorageBackup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ListStorageBackups(ctx context.Context, in *ListStorageBackupsRequest, opts ...grpc.CallOption) (*ListStorageBackupsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStorageBackupsResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListStorageBackups_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) RestoreStorageBackup(ctx context.Context, in *RestoreStorageBackupRequest, opts ...grpc.CallOption) (*RestoreStorageBackupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RestoreStorageBackupResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_RestoreStorageBackup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) CancelStorageBackup(ctx context.Context, in *CancelStorageBackupRequest, opts ...grpc.CallOption) (*CancelStorageBackupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CancelStorageBackupResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CancelStorageBackup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ApplyRetention(ctx context.Context, in *ApplyRetentionRequest, opts ...grpc.CallOption) (*ApplyRetentionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ApplyRetentionResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ApplyRetention_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) GetStorageEncryption(ctx context.Context, in *GetStorageEncryptionRequest, opts ...grpc.CallOption) (*GetStorageEncryptionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetStorageEncryptionResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_GetStorageEncryption_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) EnableStorageEncryption(ctx context.Context, in *EnableStorageEncryptionRequest, opts ...grpc.CallOption) (*EnableStorageEncryptionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EnableStorageEncryptionResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_EnableStorageEncryption_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) DisableStorageEncryption(ctx context.Context, in *DisableStorageEncryptionRequest, opts ...grpc.CallOption) (*DisableStorageEncryptionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DisableStorageEncryptionResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_DisableStorageEncryption_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) LockStoragePool(ctx context.Context, in *StorageKeyRequest, opts ...grpc.CallOption) (*StorageKeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StorageKeyResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_LockStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) UnlockStoragePool(ctx context.Context, in *StorageKeyRequest, opts ...grpc.CallOption) (*StorageKeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StorageKeyResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_UnlockStoragePool_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) RotateStorageKey(ctx context.Context, in *StorageKeyRequest, opts ...grpc.CallOption) (*StorageKeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StorageKeyResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_RotateStorageKey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) BackupStorageKey(ctx context.Context, in *BackupStorageKeyRequest, opts ...grpc.CallOption) (*BackupStorageKeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BackupStorageKeyResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_BackupStorageKey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) VerifyStorageKey(ctx context.Context, in *VerifyStorageKeyRequest, opts ...grpc.CallOption) (*VerifyStorageKeyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyStorageKeyResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_VerifyStorageKey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ListStorageAccessRules(ctx context.Context, in *ListStorageAccessRulesRequest, opts ...grpc.CallOption) (*ListStorageAccessRulesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStorageAccessRulesResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListStorageAccessRules_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) SetStorageAccessRule(ctx context.Context, in *SetStorageAccessRuleRequest, opts ...grpc.CallOption) (*SetStorageAccessRuleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetStorageAccessRuleResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_SetStorageAccessRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) DeleteStorageAccessRule(ctx context.Context, in *DeleteStorageAccessRuleRequest, opts ...grpc.CallOption) (*DeleteStorageAccessRuleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteStorageAccessRuleResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_DeleteStorageAccessRule_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ListStorageEvents(ctx context.Context, in *ListStorageEventsRequest, opts ...grpc.CallOption) (*ListStorageEventsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStorageEventsResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListStorageEvents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) AcknowledgeStorageEvents(ctx context.Context, in *AcknowledgeStorageEventsRequest, opts ...grpc.CallOption) (*AcknowledgeStorageEventsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AcknowledgeStorageEventsResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_AcknowledgeStorageEvents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ClearStorageEvents(ctx context.Context, in *ClearStorageEventsRequest, opts ...grpc.CallOption) (*ClearStorageEventsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ClearStorageEventsResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ClearStorageEvents_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CheckMigrationStorageResponse)
@@ -640,6 +993,40 @@ type StorageProvisioningServiceServer interface {
 	RemoveRaidMember(context.Context, *RemoveRaidMemberRequest) (*RemoveRaidMemberResponse, error)
 	ReplaceRaidMember(context.Context, *ReplaceRaidMemberRequest) (*ReplaceRaidMemberResponse, error)
 	DeleteRaidSet(context.Context, *DeleteRaidSetRequest) (*DeleteRaidSetResponse, error)
+	// Pool Performance Monitoring
+	GetStorageIo(context.Context, *GetStorageIoRequest) (*GetStorageIoResponse, error)
+	// Maintenance and Tuning
+	StartStorageMaintenance(context.Context, *StartStorageMaintenanceRequest) (*StartStorageMaintenanceResponse, error)
+	ListStorageMaintenanceTasks(context.Context, *ListStorageMaintenanceTasksRequest) (*ListStorageMaintenanceTasksResponse, error)
+	CancelStorageMaintenance(context.Context, *CancelStorageMaintenanceRequest) (*CancelStorageMaintenanceResponse, error)
+	GetStorageTuning(context.Context, *GetStorageTuningRequest) (*GetStorageTuningResponse, error)
+	SetStorageTuning(context.Context, *SetStorageTuningRequest) (*SetStorageTuningResponse, error)
+	// Snapshots and Backups
+	ListStorageSnapshots(context.Context, *ListStorageSnapshotsRequest) (*ListStorageSnapshotsResponse, error)
+	CreateStorageSnapshot(context.Context, *CreateStorageSnapshotRequest) (*CreateStorageSnapshotResponse, error)
+	DeleteStorageSnapshot(context.Context, *DeleteStorageSnapshotRequest) (*DeleteStorageSnapshotResponse, error)
+	RestoreStorageSnapshot(context.Context, *RestoreStorageSnapshotRequest) (*RestoreStorageSnapshotResponse, error)
+	StartStorageBackup(context.Context, *StartStorageBackupRequest) (*StartStorageBackupResponse, error)
+	ListStorageBackups(context.Context, *ListStorageBackupsRequest) (*ListStorageBackupsResponse, error)
+	RestoreStorageBackup(context.Context, *RestoreStorageBackupRequest) (*RestoreStorageBackupResponse, error)
+	CancelStorageBackup(context.Context, *CancelStorageBackupRequest) (*CancelStorageBackupResponse, error)
+	ApplyRetention(context.Context, *ApplyRetentionRequest) (*ApplyRetentionResponse, error)
+	// Encryption and Key Management
+	GetStorageEncryption(context.Context, *GetStorageEncryptionRequest) (*GetStorageEncryptionResponse, error)
+	EnableStorageEncryption(context.Context, *EnableStorageEncryptionRequest) (*EnableStorageEncryptionResponse, error)
+	DisableStorageEncryption(context.Context, *DisableStorageEncryptionRequest) (*DisableStorageEncryptionResponse, error)
+	LockStoragePool(context.Context, *StorageKeyRequest) (*StorageKeyResponse, error)
+	UnlockStoragePool(context.Context, *StorageKeyRequest) (*StorageKeyResponse, error)
+	RotateStorageKey(context.Context, *StorageKeyRequest) (*StorageKeyResponse, error)
+	BackupStorageKey(context.Context, *BackupStorageKeyRequest) (*BackupStorageKeyResponse, error)
+	VerifyStorageKey(context.Context, *VerifyStorageKeyRequest) (*VerifyStorageKeyResponse, error)
+	// Pool Access Control and Events
+	ListStorageAccessRules(context.Context, *ListStorageAccessRulesRequest) (*ListStorageAccessRulesResponse, error)
+	SetStorageAccessRule(context.Context, *SetStorageAccessRuleRequest) (*SetStorageAccessRuleResponse, error)
+	DeleteStorageAccessRule(context.Context, *DeleteStorageAccessRuleRequest) (*DeleteStorageAccessRuleResponse, error)
+	ListStorageEvents(context.Context, *ListStorageEventsRequest) (*ListStorageEventsResponse, error)
+	AcknowledgeStorageEvents(context.Context, *AcknowledgeStorageEventsRequest) (*AcknowledgeStorageEventsResponse, error)
+	ClearStorageEvents(context.Context, *ClearStorageEventsRequest) (*ClearStorageEventsResponse, error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error)
 	mustEmbedUnimplementedStorageProvisioningServiceServer()
@@ -783,6 +1170,93 @@ func (UnimplementedStorageProvisioningServiceServer) ReplaceRaidMember(context.C
 }
 func (UnimplementedStorageProvisioningServiceServer) DeleteRaidSet(context.Context, *DeleteRaidSetRequest) (*DeleteRaidSetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteRaidSet not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) GetStorageIo(context.Context, *GetStorageIoRequest) (*GetStorageIoResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetStorageIo not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) StartStorageMaintenance(context.Context, *StartStorageMaintenanceRequest) (*StartStorageMaintenanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method StartStorageMaintenance not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListStorageMaintenanceTasks(context.Context, *ListStorageMaintenanceTasksRequest) (*ListStorageMaintenanceTasksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStorageMaintenanceTasks not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CancelStorageMaintenance(context.Context, *CancelStorageMaintenanceRequest) (*CancelStorageMaintenanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CancelStorageMaintenance not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) GetStorageTuning(context.Context, *GetStorageTuningRequest) (*GetStorageTuningResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetStorageTuning not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) SetStorageTuning(context.Context, *SetStorageTuningRequest) (*SetStorageTuningResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetStorageTuning not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListStorageSnapshots(context.Context, *ListStorageSnapshotsRequest) (*ListStorageSnapshotsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStorageSnapshots not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CreateStorageSnapshot(context.Context, *CreateStorageSnapshotRequest) (*CreateStorageSnapshotResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateStorageSnapshot not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) DeleteStorageSnapshot(context.Context, *DeleteStorageSnapshotRequest) (*DeleteStorageSnapshotResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteStorageSnapshot not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) RestoreStorageSnapshot(context.Context, *RestoreStorageSnapshotRequest) (*RestoreStorageSnapshotResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RestoreStorageSnapshot not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) StartStorageBackup(context.Context, *StartStorageBackupRequest) (*StartStorageBackupResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method StartStorageBackup not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListStorageBackups(context.Context, *ListStorageBackupsRequest) (*ListStorageBackupsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStorageBackups not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) RestoreStorageBackup(context.Context, *RestoreStorageBackupRequest) (*RestoreStorageBackupResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RestoreStorageBackup not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CancelStorageBackup(context.Context, *CancelStorageBackupRequest) (*CancelStorageBackupResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CancelStorageBackup not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ApplyRetention(context.Context, *ApplyRetentionRequest) (*ApplyRetentionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ApplyRetention not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) GetStorageEncryption(context.Context, *GetStorageEncryptionRequest) (*GetStorageEncryptionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetStorageEncryption not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) EnableStorageEncryption(context.Context, *EnableStorageEncryptionRequest) (*EnableStorageEncryptionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method EnableStorageEncryption not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) DisableStorageEncryption(context.Context, *DisableStorageEncryptionRequest) (*DisableStorageEncryptionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DisableStorageEncryption not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) LockStoragePool(context.Context, *StorageKeyRequest) (*StorageKeyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method LockStoragePool not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) UnlockStoragePool(context.Context, *StorageKeyRequest) (*StorageKeyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnlockStoragePool not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) RotateStorageKey(context.Context, *StorageKeyRequest) (*StorageKeyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RotateStorageKey not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) BackupStorageKey(context.Context, *BackupStorageKeyRequest) (*BackupStorageKeyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BackupStorageKey not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) VerifyStorageKey(context.Context, *VerifyStorageKeyRequest) (*VerifyStorageKeyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method VerifyStorageKey not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListStorageAccessRules(context.Context, *ListStorageAccessRulesRequest) (*ListStorageAccessRulesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStorageAccessRules not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) SetStorageAccessRule(context.Context, *SetStorageAccessRuleRequest) (*SetStorageAccessRuleResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetStorageAccessRule not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) DeleteStorageAccessRule(context.Context, *DeleteStorageAccessRuleRequest) (*DeleteStorageAccessRuleResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteStorageAccessRule not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListStorageEvents(context.Context, *ListStorageEventsRequest) (*ListStorageEventsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStorageEvents not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) AcknowledgeStorageEvents(context.Context, *AcknowledgeStorageEventsRequest) (*AcknowledgeStorageEventsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AcknowledgeStorageEvents not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ClearStorageEvents(context.Context, *ClearStorageEventsRequest) (*ClearStorageEventsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ClearStorageEvents not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckMigrationStorage not implemented")
@@ -1601,6 +2075,528 @@ func _StorageProvisioningService_DeleteRaidSet_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageProvisioningService_GetStorageIo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStorageIoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).GetStorageIo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_GetStorageIo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).GetStorageIo(ctx, req.(*GetStorageIoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_StartStorageMaintenance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartStorageMaintenanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).StartStorageMaintenance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_StartStorageMaintenance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).StartStorageMaintenance(ctx, req.(*StartStorageMaintenanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ListStorageMaintenanceTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStorageMaintenanceTasksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListStorageMaintenanceTasks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListStorageMaintenanceTasks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListStorageMaintenanceTasks(ctx, req.(*ListStorageMaintenanceTasksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_CancelStorageMaintenance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelStorageMaintenanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CancelStorageMaintenance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CancelStorageMaintenance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CancelStorageMaintenance(ctx, req.(*CancelStorageMaintenanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_GetStorageTuning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStorageTuningRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).GetStorageTuning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_GetStorageTuning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).GetStorageTuning(ctx, req.(*GetStorageTuningRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_SetStorageTuning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetStorageTuningRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).SetStorageTuning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_SetStorageTuning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).SetStorageTuning(ctx, req.(*SetStorageTuningRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ListStorageSnapshots_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStorageSnapshotsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListStorageSnapshots(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListStorageSnapshots_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListStorageSnapshots(ctx, req.(*ListStorageSnapshotsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_CreateStorageSnapshot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateStorageSnapshotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CreateStorageSnapshot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CreateStorageSnapshot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CreateStorageSnapshot(ctx, req.(*CreateStorageSnapshotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_DeleteStorageSnapshot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteStorageSnapshotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).DeleteStorageSnapshot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_DeleteStorageSnapshot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).DeleteStorageSnapshot(ctx, req.(*DeleteStorageSnapshotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_RestoreStorageSnapshot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreStorageSnapshotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).RestoreStorageSnapshot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_RestoreStorageSnapshot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).RestoreStorageSnapshot(ctx, req.(*RestoreStorageSnapshotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_StartStorageBackup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartStorageBackupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).StartStorageBackup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_StartStorageBackup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).StartStorageBackup(ctx, req.(*StartStorageBackupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ListStorageBackups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStorageBackupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListStorageBackups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListStorageBackups_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListStorageBackups(ctx, req.(*ListStorageBackupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_RestoreStorageBackup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreStorageBackupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).RestoreStorageBackup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_RestoreStorageBackup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).RestoreStorageBackup(ctx, req.(*RestoreStorageBackupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_CancelStorageBackup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelStorageBackupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CancelStorageBackup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CancelStorageBackup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CancelStorageBackup(ctx, req.(*CancelStorageBackupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ApplyRetention_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyRetentionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ApplyRetention(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ApplyRetention_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ApplyRetention(ctx, req.(*ApplyRetentionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_GetStorageEncryption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStorageEncryptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).GetStorageEncryption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_GetStorageEncryption_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).GetStorageEncryption(ctx, req.(*GetStorageEncryptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_EnableStorageEncryption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnableStorageEncryptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).EnableStorageEncryption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_EnableStorageEncryption_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).EnableStorageEncryption(ctx, req.(*EnableStorageEncryptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_DisableStorageEncryption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DisableStorageEncryptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).DisableStorageEncryption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_DisableStorageEncryption_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).DisableStorageEncryption(ctx, req.(*DisableStorageEncryptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_LockStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StorageKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).LockStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_LockStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).LockStoragePool(ctx, req.(*StorageKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_UnlockStoragePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StorageKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).UnlockStoragePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_UnlockStoragePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).UnlockStoragePool(ctx, req.(*StorageKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_RotateStorageKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StorageKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).RotateStorageKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_RotateStorageKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).RotateStorageKey(ctx, req.(*StorageKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_BackupStorageKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BackupStorageKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).BackupStorageKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_BackupStorageKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).BackupStorageKey(ctx, req.(*BackupStorageKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_VerifyStorageKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyStorageKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).VerifyStorageKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_VerifyStorageKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).VerifyStorageKey(ctx, req.(*VerifyStorageKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ListStorageAccessRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStorageAccessRulesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListStorageAccessRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListStorageAccessRules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListStorageAccessRules(ctx, req.(*ListStorageAccessRulesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_SetStorageAccessRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetStorageAccessRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).SetStorageAccessRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_SetStorageAccessRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).SetStorageAccessRule(ctx, req.(*SetStorageAccessRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_DeleteStorageAccessRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteStorageAccessRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).DeleteStorageAccessRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_DeleteStorageAccessRule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).DeleteStorageAccessRule(ctx, req.(*DeleteStorageAccessRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ListStorageEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStorageEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListStorageEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListStorageEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListStorageEvents(ctx, req.(*ListStorageEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_AcknowledgeStorageEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcknowledgeStorageEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).AcknowledgeStorageEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_AcknowledgeStorageEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).AcknowledgeStorageEvents(ctx, req.(*AcknowledgeStorageEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ClearStorageEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClearStorageEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ClearStorageEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ClearStorageEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ClearStorageEvents(ctx, req.(*ClearStorageEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageProvisioningService_CheckMigrationStorage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckMigrationStorageRequest)
 	if err := dec(in); err != nil {
@@ -1801,6 +2797,122 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteRaidSet",
 			Handler:    _StorageProvisioningService_DeleteRaidSet_Handler,
+		},
+		{
+			MethodName: "GetStorageIo",
+			Handler:    _StorageProvisioningService_GetStorageIo_Handler,
+		},
+		{
+			MethodName: "StartStorageMaintenance",
+			Handler:    _StorageProvisioningService_StartStorageMaintenance_Handler,
+		},
+		{
+			MethodName: "ListStorageMaintenanceTasks",
+			Handler:    _StorageProvisioningService_ListStorageMaintenanceTasks_Handler,
+		},
+		{
+			MethodName: "CancelStorageMaintenance",
+			Handler:    _StorageProvisioningService_CancelStorageMaintenance_Handler,
+		},
+		{
+			MethodName: "GetStorageTuning",
+			Handler:    _StorageProvisioningService_GetStorageTuning_Handler,
+		},
+		{
+			MethodName: "SetStorageTuning",
+			Handler:    _StorageProvisioningService_SetStorageTuning_Handler,
+		},
+		{
+			MethodName: "ListStorageSnapshots",
+			Handler:    _StorageProvisioningService_ListStorageSnapshots_Handler,
+		},
+		{
+			MethodName: "CreateStorageSnapshot",
+			Handler:    _StorageProvisioningService_CreateStorageSnapshot_Handler,
+		},
+		{
+			MethodName: "DeleteStorageSnapshot",
+			Handler:    _StorageProvisioningService_DeleteStorageSnapshot_Handler,
+		},
+		{
+			MethodName: "RestoreStorageSnapshot",
+			Handler:    _StorageProvisioningService_RestoreStorageSnapshot_Handler,
+		},
+		{
+			MethodName: "StartStorageBackup",
+			Handler:    _StorageProvisioningService_StartStorageBackup_Handler,
+		},
+		{
+			MethodName: "ListStorageBackups",
+			Handler:    _StorageProvisioningService_ListStorageBackups_Handler,
+		},
+		{
+			MethodName: "RestoreStorageBackup",
+			Handler:    _StorageProvisioningService_RestoreStorageBackup_Handler,
+		},
+		{
+			MethodName: "CancelStorageBackup",
+			Handler:    _StorageProvisioningService_CancelStorageBackup_Handler,
+		},
+		{
+			MethodName: "ApplyRetention",
+			Handler:    _StorageProvisioningService_ApplyRetention_Handler,
+		},
+		{
+			MethodName: "GetStorageEncryption",
+			Handler:    _StorageProvisioningService_GetStorageEncryption_Handler,
+		},
+		{
+			MethodName: "EnableStorageEncryption",
+			Handler:    _StorageProvisioningService_EnableStorageEncryption_Handler,
+		},
+		{
+			MethodName: "DisableStorageEncryption",
+			Handler:    _StorageProvisioningService_DisableStorageEncryption_Handler,
+		},
+		{
+			MethodName: "LockStoragePool",
+			Handler:    _StorageProvisioningService_LockStoragePool_Handler,
+		},
+		{
+			MethodName: "UnlockStoragePool",
+			Handler:    _StorageProvisioningService_UnlockStoragePool_Handler,
+		},
+		{
+			MethodName: "RotateStorageKey",
+			Handler:    _StorageProvisioningService_RotateStorageKey_Handler,
+		},
+		{
+			MethodName: "BackupStorageKey",
+			Handler:    _StorageProvisioningService_BackupStorageKey_Handler,
+		},
+		{
+			MethodName: "VerifyStorageKey",
+			Handler:    _StorageProvisioningService_VerifyStorageKey_Handler,
+		},
+		{
+			MethodName: "ListStorageAccessRules",
+			Handler:    _StorageProvisioningService_ListStorageAccessRules_Handler,
+		},
+		{
+			MethodName: "SetStorageAccessRule",
+			Handler:    _StorageProvisioningService_SetStorageAccessRule_Handler,
+		},
+		{
+			MethodName: "DeleteStorageAccessRule",
+			Handler:    _StorageProvisioningService_DeleteStorageAccessRule_Handler,
+		},
+		{
+			MethodName: "ListStorageEvents",
+			Handler:    _StorageProvisioningService_ListStorageEvents_Handler,
+		},
+		{
+			MethodName: "AcknowledgeStorageEvents",
+			Handler:    _StorageProvisioningService_AcknowledgeStorageEvents_Handler,
+		},
+		{
+			MethodName: "ClearStorageEvents",
+			Handler:    _StorageProvisioningService_ClearStorageEvents_Handler,
 		},
 		{
 			MethodName: "CheckMigrationStorage",
