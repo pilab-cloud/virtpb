@@ -709,6 +709,187 @@ message CheckMigrationStorageResponse {
   string recommendation = 4;
 }
 
+
+// ==========================================
+// Software RAID (mdadm)
+// ==========================================
+
+enum RaidLevel {
+  RAID_LEVEL_UNSPECIFIED = 0;
+  RAID_LEVEL_LINEAR = 1;
+  RAID_LEVEL_0 = 2;
+  RAID_LEVEL_1 = 3;
+  RAID_LEVEL_5 = 4;
+  RAID_LEVEL_6 = 5;
+  RAID_LEVEL_10 = 6;
+}
+
+enum RaidState {
+  RAID_STATE_UNSPECIFIED = 0;
+  RAID_STATE_ACTIVE = 1;
+  // Running with fewer members than the level expects.
+  RAID_STATE_DEGRADED = 2;
+  // A member is being rebuilt or a reshape is in progress.
+  RAID_STATE_RECOVERING = 3;
+  RAID_STATE_FAILED = 4;
+  // Assembled or defined, but not started.
+  RAID_STATE_INACTIVE = 5;
+}
+
+message RaidMember {
+  // device is the member's block device, e.g. /dev/sdb.
+  string device = 1;
+  // role is the member's position in the array, as mdadm reports it.
+  int32 role = 2;
+  // state is mdadm's own word: "active", "spare", "faulty", "removed", ...
+  string state = 3;
+  bool failed = 4;
+  bool write_mostly = 5;
+  // rebuild_percent is the member's own recovery progress, when it is the one
+  // being rebuilt.
+  double rebuild_percent = 6;
+}
+
+message RaidSet {
+  // name is the array's name: mdadm's /dev/md/<name>, or the kernel's mdN.
+  string name = 1;
+  // device is the array's block device, e.g. /dev/md0.
+  string device = 2;
+  RaidLevel level = 3;
+  RaidState state = 4;
+  // raid_devices is how many members the array is defined to have.
+  int32 raid_devices = 5;
+  int64 size_bytes = 6;
+  int64 chunk_size_kb = 7;
+  repeated RaidMember members = 8;
+  // rebuild_percent is the overall resync/reshape progress, 100 when idle.
+  double rebuild_percent = 9;
+  // operation names what the kernel is doing now ("resync", "recovery",
+  // "reshape", "check", "repair") and is empty when idle.
+  string operation = 10;
+  google.protobuf.Timestamp created_at = 11;
+  // message explains a state that needs the operator's attention.
+  string message = 12;
+  // warnings are the array's caveats, e.g. the RAID5 write hole.
+  repeated string warnings = 13;
+  // in_use is true when a filesystem, LV or zpool is using the array.
+  bool in_use = 14;
+  repeated string used_by = 15;
+}
+
+message ListRaidSetsRequest {
+  string node_id = 1;
+}
+
+message ListRaidSetsResponse {
+  string node_id = 1;
+  repeated RaidSet sets = 2;
+  // mdadm_available is false when the host has no mdadm, so the UI can say
+  // why the list is empty rather than showing "no arrays".
+  bool mdadm_available = 3;
+  string message = 4;
+}
+
+message CreateRaidSetRequest {
+  string node_id = 1;
+  // name is the array name (mdadm --name); empty lets the kernel pick mdN.
+  string name = 2;
+  RaidLevel level = 3;
+  // devices are the member block devices, in order.
+  repeated string devices = 4;
+  int32 chunk_size_kb = 5;
+  // force allows reusing members that carry another signature.
+  bool force = 6;
+}
+
+message CreateRaidSetResponse {
+  bool success = 1;
+  string message = 2;
+  RaidSet set = 3;
+}
+
+message AssembleRaidSetRequest {
+  string node_id = 1;
+  // name or device identifies the array to assemble.
+  string name = 2;
+  repeated string devices = 3;
+  bool force = 4;
+}
+
+message AssembleRaidSetResponse {
+  bool success = 1;
+  string message = 2;
+  RaidSet set = 3;
+}
+
+message GrowRaidSetRequest {
+  string node_id = 1;
+  string name = 2;
+  // devices are the members to add.
+  repeated string devices = 3;
+  // size_max grows the array to the largest usable size after adding.
+  bool size_max = 4;
+}
+
+message GrowRaidSetResponse {
+  bool success = 1;
+  string message = 2;
+  RaidSet set = 3;
+}
+
+message FailRaidMemberRequest {
+  string node_id = 1;
+  string name = 2;
+  string device = 3;
+}
+
+message FailRaidMemberResponse {
+  bool success = 1;
+  string message = 2;
+  RaidSet set = 3;
+}
+
+message RemoveRaidMemberRequest {
+  string node_id = 1;
+  string name = 2;
+  string device = 3;
+}
+
+message RemoveRaidMemberResponse {
+  bool success = 1;
+  string message = 2;
+  RaidSet set = 3;
+}
+
+message ReplaceRaidMemberRequest {
+  string node_id = 1;
+  string name = 2;
+  // device is the failed member to replace.
+  string device = 3;
+  // replacement is the new member. It replaces the failed one in place.
+  string replacement = 4;
+}
+
+message ReplaceRaidMemberResponse {
+  bool success = 1;
+  string message = 2;
+  RaidSet set = 3;
+}
+
+message DeleteRaidSetRequest {
+  string node_id = 1;
+  string name = 2;
+  // stop only stops the array and keeps its metadata.
+  bool stop_only = 3;
+  // force deletes an array that is in use (unmounted or not).
+  bool force = 4;
+}
+
+message DeleteRaidSetResponse {
+  bool success = 1;
+  string message = 2;
+}
+
 // ---------------- Service ----------------
 
 service StorageProvisioningService {
@@ -761,6 +942,16 @@ service StorageProvisioningService {
   // Inheritable QoS & Live Throttling (QEMU iotune)
   rpc SetDiskQoS(SetDiskQoSRequest) returns (SetDiskQoSResponse);
   rpc GetDiskQoS(GetDiskQoSRequest) returns (GetDiskQoSResponse);
+
+  // Software RAID (mdadm)
+  rpc ListRaidSets(ListRaidSetsRequest) returns (ListRaidSetsResponse);
+  rpc CreateRaidSet(CreateRaidSetRequest) returns (CreateRaidSetResponse);
+  rpc AssembleRaidSet(AssembleRaidSetRequest) returns (AssembleRaidSetResponse);
+  rpc GrowRaidSet(GrowRaidSetRequest) returns (GrowRaidSetResponse);
+  rpc FailRaidMember(FailRaidMemberRequest) returns (FailRaidMemberResponse);
+  rpc RemoveRaidMember(RemoveRaidMemberRequest) returns (RemoveRaidMemberResponse);
+  rpc ReplaceRaidMember(ReplaceRaidMemberRequest) returns (ReplaceRaidMemberResponse);
+  rpc DeleteRaidSet(DeleteRaidSetRequest) returns (DeleteRaidSetResponse);
 
   // Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
   rpc CheckMigrationStorage(CheckMigrationStorageRequest) returns (CheckMigrationStorageResponse);
