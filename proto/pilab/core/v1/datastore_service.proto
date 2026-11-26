@@ -5,6 +5,7 @@ package pilab.cloud.core.v1;
 option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1";
 
 import "google/protobuf/timestamp.proto";
+import "pilab/core/v1/storage_provisioning_service.proto";
 
 // DatastoreService is the director's cluster-wide view of storage: every
 // datastore the hosts report, which hosts are connected to it, its capacity
@@ -25,6 +26,10 @@ service DatastoreService {
   // TestDatastore probes an existing datastore against its hosts and reports
   // what each host currently sees.
   rpc TestDatastore(TestDatastoreRequest) returns (TestDatastoreResponse);
+  // SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
+  // follows it; a disk with its own override is unaffected. A running VM's
+  // throttling is updated live where the host supports it.
+  rpc SetDatastoreQoS(SetDatastoreQoSRequest) returns (SetDatastoreQoSResponse);
 }
 
 enum DatastoreHealth {
@@ -62,6 +67,33 @@ message Datastore {
   repeated DatastoreHost hosts = 10;
   repeated string clusters = 11;
   google.protobuf.Timestamp last_report_at = 12;
+  // default_qos is the pool-level disk QoS every disk inherits unless it
+  // overrides it. Unset means the platform baseline.
+  pilab.core.v1.DiskQoSConfig default_qos = 13;
+  // capabilities is what the backing backend can actually do on this
+  // datastore. The UI only offers actions listed here.
+  repeated DatastoreCapability capabilities = 14;
+}
+
+// DatastoreCapability is a storage feature a datastore's backend supports.
+enum DatastoreCapability {
+  DATASTORE_CAPABILITY_UNSPECIFIED = 0;
+  // Thin-provisioned volumes (LVM-thin, ZFS zvols, qcow2 files).
+  DATASTORE_CAPABILITY_THIN = 1;
+  // Ad-hoc and policy-driven snapshots.
+  DATASTORE_CAPABILITY_SNAPSHOTS = 2;
+  // Visible to more than one host; disks migrate without a copy.
+  DATASTORE_CAPABILITY_SHARED = 3;
+  // Per-disk I/O throttling can be applied.
+  DATASTORE_CAPABILITY_QOS = 4;
+  // Disks move between hosts without a block copy.
+  DATASTORE_CAPABILITY_ZERO_COPY = 5;
+  // Volume encryption at rest is available.
+  DATASTORE_CAPABILITY_ENCRYPTION = 6;
+  // Discard/TRIM can be passed through to the backend.
+  DATASTORE_CAPABILITY_TRIM = 7;
+  // Scrub, repair or rebalance maintenance can run.
+  DATASTORE_CAPABILITY_MAINTENANCE = 8;
 }
 
 message ListDatastoresRequest {
@@ -203,4 +235,18 @@ message DeleteDatastoreRequest {
 
 message DatastoreOperationResponse {
   repeated DatastoreOperation operations = 1;
+}
+
+message SetDatastoreQoSRequest {
+  string id = 1;
+  // qos is the pool default. Fields left at zero fall back to the platform
+  // baseline; io_weight 0 also means default.
+  pilab.core.v1.DiskQoSConfig qos = 2;
+  // clear removes the pool default instead, so inheriting disks return to the
+  // platform baseline.
+  bool clear = 3;
+}
+
+message SetDatastoreQoSResponse {
+  Datastore datastore = 1;
 }

@@ -27,6 +27,7 @@ const (
 	DatastoreService_DeactivateDatastore_FullMethodName = "/pilab.cloud.core.v1.DatastoreService/DeactivateDatastore"
 	DatastoreService_ValidateDatastore_FullMethodName   = "/pilab.cloud.core.v1.DatastoreService/ValidateDatastore"
 	DatastoreService_TestDatastore_FullMethodName       = "/pilab.cloud.core.v1.DatastoreService/TestDatastore"
+	DatastoreService_SetDatastoreQoS_FullMethodName     = "/pilab.cloud.core.v1.DatastoreService/SetDatastoreQoS"
 )
 
 // DatastoreServiceClient is the client API for DatastoreService service.
@@ -52,6 +53,10 @@ type DatastoreServiceClient interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(ctx context.Context, in *TestDatastoreRequest, opts ...grpc.CallOption) (*TestDatastoreResponse, error)
+	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
+	// follows it; a disk with its own override is unaffected. A running VM's
+	// throttling is updated live where the host supports it.
+	SetDatastoreQoS(ctx context.Context, in *SetDatastoreQoSRequest, opts ...grpc.CallOption) (*SetDatastoreQoSResponse, error)
 }
 
 type datastoreServiceClient struct {
@@ -142,6 +147,16 @@ func (c *datastoreServiceClient) TestDatastore(ctx context.Context, in *TestData
 	return out, nil
 }
 
+func (c *datastoreServiceClient) SetDatastoreQoS(ctx context.Context, in *SetDatastoreQoSRequest, opts ...grpc.CallOption) (*SetDatastoreQoSResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetDatastoreQoSResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_SetDatastoreQoS_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DatastoreServiceServer is the server API for DatastoreService service.
 // All implementations must embed UnimplementedDatastoreServiceServer
 // for forward compatibility.
@@ -165,6 +180,10 @@ type DatastoreServiceServer interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(context.Context, *TestDatastoreRequest) (*TestDatastoreResponse, error)
+	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
+	// follows it; a disk with its own override is unaffected. A running VM's
+	// throttling is updated live where the host supports it.
+	SetDatastoreQoS(context.Context, *SetDatastoreQoSRequest) (*SetDatastoreQoSResponse, error)
 	mustEmbedUnimplementedDatastoreServiceServer()
 }
 
@@ -198,6 +217,9 @@ func (UnimplementedDatastoreServiceServer) ValidateDatastore(context.Context, *C
 }
 func (UnimplementedDatastoreServiceServer) TestDatastore(context.Context, *TestDatastoreRequest) (*TestDatastoreResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method TestDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) SetDatastoreQoS(context.Context, *SetDatastoreQoSRequest) (*SetDatastoreQoSResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetDatastoreQoS not implemented")
 }
 func (UnimplementedDatastoreServiceServer) mustEmbedUnimplementedDatastoreServiceServer() {}
 func (UnimplementedDatastoreServiceServer) testEmbeddedByValue()                          {}
@@ -364,6 +386,24 @@ func _DatastoreService_TestDatastore_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatastoreService_SetDatastoreQoS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDatastoreQoSRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).SetDatastoreQoS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_SetDatastoreQoS_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).SetDatastoreQoS(ctx, req.(*SetDatastoreQoSRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DatastoreService_ServiceDesc is the grpc.ServiceDesc for DatastoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -402,6 +442,10 @@ var DatastoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TestDatastore",
 			Handler:    _DatastoreService_TestDatastore_Handler,
+		},
+		{
+			MethodName: "SetDatastoreQoS",
+			Handler:    _DatastoreService_SetDatastoreQoS_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

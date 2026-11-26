@@ -7,6 +7,7 @@ syntax = "proto3";
 package pilab.director.v2;
 
 import "google/protobuf/timestamp.proto";
+import "pilab/core/v1/storage_provisioning_service.proto";
 import "pilab/director/v2/node_service.proto";
 import "pilab/director/v2/task_service.proto";
 import "pilab/pivirtd/v1/host_resource.proto";
@@ -41,6 +42,19 @@ service HostAdminService {
 
   // DeleteDisk removes a standalone disk image created by CreateDisk.
   rpc DeleteDisk(DeleteDiskRequest) returns (DeleteDiskResponse);
+
+  // ResizeDisk grows a standalone disk image. Shrinking is refused: a
+  // filesystem may already fill the disk.
+  rpc ResizeDisk(ResizeDiskRequest) returns (ResizeDiskResponse);
+
+  // SetDiskQoS sets a VirtualDisk's own QoS override, or clears it so the
+  // disk follows its pool default again. A running VM's throttling is
+  // updated live where the backend supports it.
+  rpc SetDiskQoS(SetDiskQoSRequest) returns (SetDiskQoSResponse);
+
+  // GetDiskQoS returns the QoS the disk will actually get: its own override
+  // or the inherited pool default, and which of the two it is.
+  rpc GetDiskQoS(GetDiskQoSRequest) returns (GetDiskQoSResponse);
 
   // RebootHost reboots the hypervisor through its agent. The host should be
   // in maintenance unless force is set.
@@ -202,6 +216,59 @@ message DeleteDiskRequest {
 
 message DeleteDiskResponse {
   ResourceOutcome outcome = 1;
+}
+
+message ResizeDiskRequest {
+  string host_id = 1;
+  string name = 2;
+  // size_gb is the disk's new total size, not the amount to add.
+  int32 size_gb = 3;
+  int32 timeout_seconds = 4;
+}
+
+message ResizeDiskResponse {
+  ResourceOutcome outcome = 1;
+}
+
+// DiskQoS is a disk's effective throttling and where it came from.
+message DiskQoS {
+  // effective is the configuration the disk is limited to.
+  pilab.core.v1.DiskQoSConfig effective = 1;
+  // inherited is true when the disk has no override and follows the pool
+  // default (or the platform baseline when the pool has none).
+  bool inherited = 2;
+  // pool_default_qos is what the disk would inherit, when it has a pool.
+  pilab.core.v1.DiskQoSConfig pool_default_qos = 3;
+  // live is true when the running VM's throttling was updated right away,
+  // rather than only stored for the next start.
+  bool live = 4;
+  // message explains a partial outcome, such as a stored change that a
+  // running VM could not receive.
+  string message = 5;
+}
+
+message SetDiskQoSRequest {
+  string host_id = 1;
+  string disk = 2;
+  // qos is the disk's own override. Ignored when inherit is true.
+  pilab.core.v1.DiskQoSConfig qos = 3;
+  // inherit clears the override so the disk follows its pool default.
+  bool inherit = 4;
+  int32 timeout_seconds = 5;
+}
+
+message SetDiskQoSResponse {
+  DiskQoS qos = 1;
+  ResourceOutcome outcome = 2;
+}
+
+message GetDiskQoSRequest {
+  string host_id = 1;
+  string disk = 2;
+}
+
+message GetDiskQoSResponse {
+  DiskQoS qos = 1;
 }
 
 message RebootHostRequest {
