@@ -902,7 +902,12 @@ type StoragePoolSummary struct {
 	MountPath      string                 `protobuf:"bytes,6,opt,name=mount_path,json=mountPath,proto3" json:"mount_path,omitempty"`
 	// qos is the pool-level default disk QoS the datastore carries. Unset means
 	// the platform baseline.
-	Qos           *v1.DiskQoSConfig `protobuf:"bytes,7,opt,name=qos,proto3" json:"qos,omitempty"`
+	Qos *v1.DiskQoSConfig `protobuf:"bytes,7,opt,name=qos,proto3" json:"qos,omitempty"`
+	// shared reports that this pool is visible to more than one host and is the
+	// same storage on each of them (a shared volume group or an exported
+	// filesystem). A host-local pool never sets it, even when another host has
+	// a pool of the same name.
+	Shared        bool `protobuf:"varint,8,opt,name=shared,proto3" json:"shared,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -984,6 +989,13 @@ func (x *StoragePoolSummary) GetQos() *v1.DiskQoSConfig {
 		return x.Qos
 	}
 	return nil
+}
+
+func (x *StoragePoolSummary) GetShared() bool {
+	if x != nil {
+		return x.Shared
+	}
+	return false
 }
 
 // SubscribeEventsRequest is an empty request to subscribe to VM events.
@@ -1774,7 +1786,7 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x0eStorageSummary\x12(\n" +
 	"\x10pool_total_bytes\x18\x01 \x01(\x03R\x0epoolTotalBytes\x120\n" +
 	"\x14pool_available_bytes\x18\x02 \x01(\x03R\x12poolAvailableBytes\x12&\n" +
-	"\x0fpool_used_bytes\x18\x03 \x01(\x03R\rpoolUsedBytes\"\xe5\x01\n" +
+	"\x0fpool_used_bytes\x18\x03 \x01(\x03R\rpoolUsedBytes\"\xfd\x01\n" +
 	"\x12StoragePoolSummary\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1f\n" +
@@ -1784,7 +1796,8 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x04name\x18\x05 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"mount_path\x18\x06 \x01(\tR\tmountPath\x12.\n" +
-	"\x03qos\x18\a \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\"\x18\n" +
+	"\x03qos\x18\a \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x12\x16\n" +
+	"\x06shared\x18\b \x01(\bR\x06shared\"\x18\n" +
 	"\x16SubscribeEventsRequest\"\xa3\x05\n" +
 	"\tHostEvent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x123\n" +
