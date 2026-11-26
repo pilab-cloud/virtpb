@@ -166,6 +166,93 @@ const (
 	// StorageProvisioningServiceDeleteRaidSetProcedure is the fully-qualified name of the
 	// StorageProvisioningService's DeleteRaidSet RPC.
 	StorageProvisioningServiceDeleteRaidSetProcedure = "/pilab.core.v1.StorageProvisioningService/DeleteRaidSet"
+	// StorageProvisioningServiceGetStorageIoProcedure is the fully-qualified name of the
+	// StorageProvisioningService's GetStorageIo RPC.
+	StorageProvisioningServiceGetStorageIoProcedure = "/pilab.core.v1.StorageProvisioningService/GetStorageIo"
+	// StorageProvisioningServiceStartStorageMaintenanceProcedure is the fully-qualified name of the
+	// StorageProvisioningService's StartStorageMaintenance RPC.
+	StorageProvisioningServiceStartStorageMaintenanceProcedure = "/pilab.core.v1.StorageProvisioningService/StartStorageMaintenance"
+	// StorageProvisioningServiceListStorageMaintenanceTasksProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListStorageMaintenanceTasks RPC.
+	StorageProvisioningServiceListStorageMaintenanceTasksProcedure = "/pilab.core.v1.StorageProvisioningService/ListStorageMaintenanceTasks"
+	// StorageProvisioningServiceCancelStorageMaintenanceProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CancelStorageMaintenance RPC.
+	StorageProvisioningServiceCancelStorageMaintenanceProcedure = "/pilab.core.v1.StorageProvisioningService/CancelStorageMaintenance"
+	// StorageProvisioningServiceGetStorageTuningProcedure is the fully-qualified name of the
+	// StorageProvisioningService's GetStorageTuning RPC.
+	StorageProvisioningServiceGetStorageTuningProcedure = "/pilab.core.v1.StorageProvisioningService/GetStorageTuning"
+	// StorageProvisioningServiceSetStorageTuningProcedure is the fully-qualified name of the
+	// StorageProvisioningService's SetStorageTuning RPC.
+	StorageProvisioningServiceSetStorageTuningProcedure = "/pilab.core.v1.StorageProvisioningService/SetStorageTuning"
+	// StorageProvisioningServiceListStorageSnapshotsProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListStorageSnapshots RPC.
+	StorageProvisioningServiceListStorageSnapshotsProcedure = "/pilab.core.v1.StorageProvisioningService/ListStorageSnapshots"
+	// StorageProvisioningServiceCreateStorageSnapshotProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CreateStorageSnapshot RPC.
+	StorageProvisioningServiceCreateStorageSnapshotProcedure = "/pilab.core.v1.StorageProvisioningService/CreateStorageSnapshot"
+	// StorageProvisioningServiceDeleteStorageSnapshotProcedure is the fully-qualified name of the
+	// StorageProvisioningService's DeleteStorageSnapshot RPC.
+	StorageProvisioningServiceDeleteStorageSnapshotProcedure = "/pilab.core.v1.StorageProvisioningService/DeleteStorageSnapshot"
+	// StorageProvisioningServiceRestoreStorageSnapshotProcedure is the fully-qualified name of the
+	// StorageProvisioningService's RestoreStorageSnapshot RPC.
+	StorageProvisioningServiceRestoreStorageSnapshotProcedure = "/pilab.core.v1.StorageProvisioningService/RestoreStorageSnapshot"
+	// StorageProvisioningServiceStartStorageBackupProcedure is the fully-qualified name of the
+	// StorageProvisioningService's StartStorageBackup RPC.
+	StorageProvisioningServiceStartStorageBackupProcedure = "/pilab.core.v1.StorageProvisioningService/StartStorageBackup"
+	// StorageProvisioningServiceListStorageBackupsProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListStorageBackups RPC.
+	StorageProvisioningServiceListStorageBackupsProcedure = "/pilab.core.v1.StorageProvisioningService/ListStorageBackups"
+	// StorageProvisioningServiceRestoreStorageBackupProcedure is the fully-qualified name of the
+	// StorageProvisioningService's RestoreStorageBackup RPC.
+	StorageProvisioningServiceRestoreStorageBackupProcedure = "/pilab.core.v1.StorageProvisioningService/RestoreStorageBackup"
+	// StorageProvisioningServiceCancelStorageBackupProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CancelStorageBackup RPC.
+	StorageProvisioningServiceCancelStorageBackupProcedure = "/pilab.core.v1.StorageProvisioningService/CancelStorageBackup"
+	// StorageProvisioningServiceApplyRetentionProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ApplyRetention RPC.
+	StorageProvisioningServiceApplyRetentionProcedure = "/pilab.core.v1.StorageProvisioningService/ApplyRetention"
+	// StorageProvisioningServiceGetStorageEncryptionProcedure is the fully-qualified name of the
+	// StorageProvisioningService's GetStorageEncryption RPC.
+	StorageProvisioningServiceGetStorageEncryptionProcedure = "/pilab.core.v1.StorageProvisioningService/GetStorageEncryption"
+	// StorageProvisioningServiceEnableStorageEncryptionProcedure is the fully-qualified name of the
+	// StorageProvisioningService's EnableStorageEncryption RPC.
+	StorageProvisioningServiceEnableStorageEncryptionProcedure = "/pilab.core.v1.StorageProvisioningService/EnableStorageEncryption"
+	// StorageProvisioningServiceDisableStorageEncryptionProcedure is the fully-qualified name of the
+	// StorageProvisioningService's DisableStorageEncryption RPC.
+	StorageProvisioningServiceDisableStorageEncryptionProcedure = "/pilab.core.v1.StorageProvisioningService/DisableStorageEncryption"
+	// StorageProvisioningServiceLockStoragePoolProcedure is the fully-qualified name of the
+	// StorageProvisioningService's LockStoragePool RPC.
+	StorageProvisioningServiceLockStoragePoolProcedure = "/pilab.core.v1.StorageProvisioningService/LockStoragePool"
+	// StorageProvisioningServiceUnlockStoragePoolProcedure is the fully-qualified name of the
+	// StorageProvisioningService's UnlockStoragePool RPC.
+	StorageProvisioningServiceUnlockStoragePoolProcedure = "/pilab.core.v1.StorageProvisioningService/UnlockStoragePool"
+	// StorageProvisioningServiceRotateStorageKeyProcedure is the fully-qualified name of the
+	// StorageProvisioningService's RotateStorageKey RPC.
+	StorageProvisioningServiceRotateStorageKeyProcedure = "/pilab.core.v1.StorageProvisioningService/RotateStorageKey"
+	// StorageProvisioningServiceBackupStorageKeyProcedure is the fully-qualified name of the
+	// StorageProvisioningService's BackupStorageKey RPC.
+	StorageProvisioningServiceBackupStorageKeyProcedure = "/pilab.core.v1.StorageProvisioningService/BackupStorageKey"
+	// StorageProvisioningServiceVerifyStorageKeyProcedure is the fully-qualified name of the
+	// StorageProvisioningService's VerifyStorageKey RPC.
+	StorageProvisioningServiceVerifyStorageKeyProcedure = "/pilab.core.v1.StorageProvisioningService/VerifyStorageKey"
+	// StorageProvisioningServiceListStorageAccessRulesProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListStorageAccessRules RPC.
+	StorageProvisioningServiceListStorageAccessRulesProcedure = "/pilab.core.v1.StorageProvisioningService/ListStorageAccessRules"
+	// StorageProvisioningServiceSetStorageAccessRuleProcedure is the fully-qualified name of the
+	// StorageProvisioningService's SetStorageAccessRule RPC.
+	StorageProvisioningServiceSetStorageAccessRuleProcedure = "/pilab.core.v1.StorageProvisioningService/SetStorageAccessRule"
+	// StorageProvisioningServiceDeleteStorageAccessRuleProcedure is the fully-qualified name of the
+	// StorageProvisioningService's DeleteStorageAccessRule RPC.
+	StorageProvisioningServiceDeleteStorageAccessRuleProcedure = "/pilab.core.v1.StorageProvisioningService/DeleteStorageAccessRule"
+	// StorageProvisioningServiceListStorageEventsProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListStorageEvents RPC.
+	StorageProvisioningServiceListStorageEventsProcedure = "/pilab.core.v1.StorageProvisioningService/ListStorageEvents"
+	// StorageProvisioningServiceAcknowledgeStorageEventsProcedure is the fully-qualified name of the
+	// StorageProvisioningService's AcknowledgeStorageEvents RPC.
+	StorageProvisioningServiceAcknowledgeStorageEventsProcedure = "/pilab.core.v1.StorageProvisioningService/AcknowledgeStorageEvents"
+	// StorageProvisioningServiceClearStorageEventsProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ClearStorageEvents RPC.
+	StorageProvisioningServiceClearStorageEventsProcedure = "/pilab.core.v1.StorageProvisioningService/ClearStorageEvents"
 	// StorageProvisioningServiceCheckMigrationStorageProcedure is the fully-qualified name of the
 	// StorageProvisioningService's CheckMigrationStorage RPC.
 	StorageProvisioningServiceCheckMigrationStorageProcedure = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
@@ -226,6 +313,40 @@ type StorageProvisioningServiceClient interface {
 	RemoveRaidMember(context.Context, *connect.Request[v1.RemoveRaidMemberRequest]) (*connect.Response[v1.RemoveRaidMemberResponse], error)
 	ReplaceRaidMember(context.Context, *connect.Request[v1.ReplaceRaidMemberRequest]) (*connect.Response[v1.ReplaceRaidMemberResponse], error)
 	DeleteRaidSet(context.Context, *connect.Request[v1.DeleteRaidSetRequest]) (*connect.Response[v1.DeleteRaidSetResponse], error)
+	// Pool Performance Monitoring
+	GetStorageIo(context.Context, *connect.Request[v1.GetStorageIoRequest]) (*connect.Response[v1.GetStorageIoResponse], error)
+	// Maintenance and Tuning
+	StartStorageMaintenance(context.Context, *connect.Request[v1.StartStorageMaintenanceRequest]) (*connect.Response[v1.StartStorageMaintenanceResponse], error)
+	ListStorageMaintenanceTasks(context.Context, *connect.Request[v1.ListStorageMaintenanceTasksRequest]) (*connect.Response[v1.ListStorageMaintenanceTasksResponse], error)
+	CancelStorageMaintenance(context.Context, *connect.Request[v1.CancelStorageMaintenanceRequest]) (*connect.Response[v1.CancelStorageMaintenanceResponse], error)
+	GetStorageTuning(context.Context, *connect.Request[v1.GetStorageTuningRequest]) (*connect.Response[v1.GetStorageTuningResponse], error)
+	SetStorageTuning(context.Context, *connect.Request[v1.SetStorageTuningRequest]) (*connect.Response[v1.SetStorageTuningResponse], error)
+	// Snapshots and Backups
+	ListStorageSnapshots(context.Context, *connect.Request[v1.ListStorageSnapshotsRequest]) (*connect.Response[v1.ListStorageSnapshotsResponse], error)
+	CreateStorageSnapshot(context.Context, *connect.Request[v1.CreateStorageSnapshotRequest]) (*connect.Response[v1.CreateStorageSnapshotResponse], error)
+	DeleteStorageSnapshot(context.Context, *connect.Request[v1.DeleteStorageSnapshotRequest]) (*connect.Response[v1.DeleteStorageSnapshotResponse], error)
+	RestoreStorageSnapshot(context.Context, *connect.Request[v1.RestoreStorageSnapshotRequest]) (*connect.Response[v1.RestoreStorageSnapshotResponse], error)
+	StartStorageBackup(context.Context, *connect.Request[v1.StartStorageBackupRequest]) (*connect.Response[v1.StartStorageBackupResponse], error)
+	ListStorageBackups(context.Context, *connect.Request[v1.ListStorageBackupsRequest]) (*connect.Response[v1.ListStorageBackupsResponse], error)
+	RestoreStorageBackup(context.Context, *connect.Request[v1.RestoreStorageBackupRequest]) (*connect.Response[v1.RestoreStorageBackupResponse], error)
+	CancelStorageBackup(context.Context, *connect.Request[v1.CancelStorageBackupRequest]) (*connect.Response[v1.CancelStorageBackupResponse], error)
+	ApplyRetention(context.Context, *connect.Request[v1.ApplyRetentionRequest]) (*connect.Response[v1.ApplyRetentionResponse], error)
+	// Encryption and Key Management
+	GetStorageEncryption(context.Context, *connect.Request[v1.GetStorageEncryptionRequest]) (*connect.Response[v1.GetStorageEncryptionResponse], error)
+	EnableStorageEncryption(context.Context, *connect.Request[v1.EnableStorageEncryptionRequest]) (*connect.Response[v1.EnableStorageEncryptionResponse], error)
+	DisableStorageEncryption(context.Context, *connect.Request[v1.DisableStorageEncryptionRequest]) (*connect.Response[v1.DisableStorageEncryptionResponse], error)
+	LockStoragePool(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error)
+	UnlockStoragePool(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error)
+	RotateStorageKey(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error)
+	BackupStorageKey(context.Context, *connect.Request[v1.BackupStorageKeyRequest]) (*connect.Response[v1.BackupStorageKeyResponse], error)
+	VerifyStorageKey(context.Context, *connect.Request[v1.VerifyStorageKeyRequest]) (*connect.Response[v1.VerifyStorageKeyResponse], error)
+	// Pool Access Control and Events
+	ListStorageAccessRules(context.Context, *connect.Request[v1.ListStorageAccessRulesRequest]) (*connect.Response[v1.ListStorageAccessRulesResponse], error)
+	SetStorageAccessRule(context.Context, *connect.Request[v1.SetStorageAccessRuleRequest]) (*connect.Response[v1.SetStorageAccessRuleResponse], error)
+	DeleteStorageAccessRule(context.Context, *connect.Request[v1.DeleteStorageAccessRuleRequest]) (*connect.Response[v1.DeleteStorageAccessRuleResponse], error)
+	ListStorageEvents(context.Context, *connect.Request[v1.ListStorageEventsRequest]) (*connect.Response[v1.ListStorageEventsResponse], error)
+	AcknowledgeStorageEvents(context.Context, *connect.Request[v1.AcknowledgeStorageEventsRequest]) (*connect.Response[v1.AcknowledgeStorageEventsResponse], error)
+	ClearStorageEvents(context.Context, *connect.Request[v1.ClearStorageEventsRequest]) (*connect.Response[v1.ClearStorageEventsResponse], error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
@@ -505,6 +626,180 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteRaidSet")),
 			connect.WithClientOptions(opts...),
 		),
+		getStorageIo: connect.NewClient[v1.GetStorageIoRequest, v1.GetStorageIoResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceGetStorageIoProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStorageIo")),
+			connect.WithClientOptions(opts...),
+		),
+		startStorageMaintenance: connect.NewClient[v1.StartStorageMaintenanceRequest, v1.StartStorageMaintenanceResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceStartStorageMaintenanceProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("StartStorageMaintenance")),
+			connect.WithClientOptions(opts...),
+		),
+		listStorageMaintenanceTasks: connect.NewClient[v1.ListStorageMaintenanceTasksRequest, v1.ListStorageMaintenanceTasksResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListStorageMaintenanceTasksProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageMaintenanceTasks")),
+			connect.WithClientOptions(opts...),
+		),
+		cancelStorageMaintenance: connect.NewClient[v1.CancelStorageMaintenanceRequest, v1.CancelStorageMaintenanceResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCancelStorageMaintenanceProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CancelStorageMaintenance")),
+			connect.WithClientOptions(opts...),
+		),
+		getStorageTuning: connect.NewClient[v1.GetStorageTuningRequest, v1.GetStorageTuningResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceGetStorageTuningProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStorageTuning")),
+			connect.WithClientOptions(opts...),
+		),
+		setStorageTuning: connect.NewClient[v1.SetStorageTuningRequest, v1.SetStorageTuningResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceSetStorageTuningProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("SetStorageTuning")),
+			connect.WithClientOptions(opts...),
+		),
+		listStorageSnapshots: connect.NewClient[v1.ListStorageSnapshotsRequest, v1.ListStorageSnapshotsResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListStorageSnapshotsProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageSnapshots")),
+			connect.WithClientOptions(opts...),
+		),
+		createStorageSnapshot: connect.NewClient[v1.CreateStorageSnapshotRequest, v1.CreateStorageSnapshotResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCreateStorageSnapshotProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateStorageSnapshot")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteStorageSnapshot: connect.NewClient[v1.DeleteStorageSnapshotRequest, v1.DeleteStorageSnapshotResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceDeleteStorageSnapshotProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStorageSnapshot")),
+			connect.WithClientOptions(opts...),
+		),
+		restoreStorageSnapshot: connect.NewClient[v1.RestoreStorageSnapshotRequest, v1.RestoreStorageSnapshotResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceRestoreStorageSnapshotProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("RestoreStorageSnapshot")),
+			connect.WithClientOptions(opts...),
+		),
+		startStorageBackup: connect.NewClient[v1.StartStorageBackupRequest, v1.StartStorageBackupResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceStartStorageBackupProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("StartStorageBackup")),
+			connect.WithClientOptions(opts...),
+		),
+		listStorageBackups: connect.NewClient[v1.ListStorageBackupsRequest, v1.ListStorageBackupsResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListStorageBackupsProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageBackups")),
+			connect.WithClientOptions(opts...),
+		),
+		restoreStorageBackup: connect.NewClient[v1.RestoreStorageBackupRequest, v1.RestoreStorageBackupResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceRestoreStorageBackupProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("RestoreStorageBackup")),
+			connect.WithClientOptions(opts...),
+		),
+		cancelStorageBackup: connect.NewClient[v1.CancelStorageBackupRequest, v1.CancelStorageBackupResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCancelStorageBackupProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CancelStorageBackup")),
+			connect.WithClientOptions(opts...),
+		),
+		applyRetention: connect.NewClient[v1.ApplyRetentionRequest, v1.ApplyRetentionResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceApplyRetentionProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ApplyRetention")),
+			connect.WithClientOptions(opts...),
+		),
+		getStorageEncryption: connect.NewClient[v1.GetStorageEncryptionRequest, v1.GetStorageEncryptionResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceGetStorageEncryptionProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStorageEncryption")),
+			connect.WithClientOptions(opts...),
+		),
+		enableStorageEncryption: connect.NewClient[v1.EnableStorageEncryptionRequest, v1.EnableStorageEncryptionResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceEnableStorageEncryptionProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("EnableStorageEncryption")),
+			connect.WithClientOptions(opts...),
+		),
+		disableStorageEncryption: connect.NewClient[v1.DisableStorageEncryptionRequest, v1.DisableStorageEncryptionResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceDisableStorageEncryptionProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("DisableStorageEncryption")),
+			connect.WithClientOptions(opts...),
+		),
+		lockStoragePool: connect.NewClient[v1.StorageKeyRequest, v1.StorageKeyResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceLockStoragePoolProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("LockStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		unlockStoragePool: connect.NewClient[v1.StorageKeyRequest, v1.StorageKeyResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceUnlockStoragePoolProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("UnlockStoragePool")),
+			connect.WithClientOptions(opts...),
+		),
+		rotateStorageKey: connect.NewClient[v1.StorageKeyRequest, v1.StorageKeyResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceRotateStorageKeyProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("RotateStorageKey")),
+			connect.WithClientOptions(opts...),
+		),
+		backupStorageKey: connect.NewClient[v1.BackupStorageKeyRequest, v1.BackupStorageKeyResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceBackupStorageKeyProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("BackupStorageKey")),
+			connect.WithClientOptions(opts...),
+		),
+		verifyStorageKey: connect.NewClient[v1.VerifyStorageKeyRequest, v1.VerifyStorageKeyResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceVerifyStorageKeyProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("VerifyStorageKey")),
+			connect.WithClientOptions(opts...),
+		),
+		listStorageAccessRules: connect.NewClient[v1.ListStorageAccessRulesRequest, v1.ListStorageAccessRulesResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListStorageAccessRulesProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageAccessRules")),
+			connect.WithClientOptions(opts...),
+		),
+		setStorageAccessRule: connect.NewClient[v1.SetStorageAccessRuleRequest, v1.SetStorageAccessRuleResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceSetStorageAccessRuleProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("SetStorageAccessRule")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteStorageAccessRule: connect.NewClient[v1.DeleteStorageAccessRuleRequest, v1.DeleteStorageAccessRuleResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceDeleteStorageAccessRuleProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStorageAccessRule")),
+			connect.WithClientOptions(opts...),
+		),
+		listStorageEvents: connect.NewClient[v1.ListStorageEventsRequest, v1.ListStorageEventsResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListStorageEventsProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageEvents")),
+			connect.WithClientOptions(opts...),
+		),
+		acknowledgeStorageEvents: connect.NewClient[v1.AcknowledgeStorageEventsRequest, v1.AcknowledgeStorageEventsResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceAcknowledgeStorageEventsProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("AcknowledgeStorageEvents")),
+			connect.WithClientOptions(opts...),
+		),
+		clearStorageEvents: connect.NewClient[v1.ClearStorageEventsRequest, v1.ClearStorageEventsResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceClearStorageEventsProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ClearStorageEvents")),
+			connect.WithClientOptions(opts...),
+		),
 		checkMigrationStorage: connect.NewClient[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse](
 			httpClient,
 			baseURL+StorageProvisioningServiceCheckMigrationStorageProcedure,
@@ -516,51 +811,80 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 
 // storageProvisioningServiceClient implements StorageProvisioningServiceClient.
 type storageProvisioningServiceClient struct {
-	listDevices           *connect.Client[v1.ListDevicesRequest, v1.ListDevicesResponse]
-	rescanDevices         *connect.Client[v1.RescanDevicesRequest, v1.RescanDevicesResponse]
-	initializeDisk        *connect.Client[v1.InitializeDiskRequest, v1.InitializeDiskResponse]
-	wipeDisk              *connect.Client[v1.WipeDiskRequest, v1.WipeDiskResponse]
-	getDiskHealth         *connect.Client[v1.GetDiskHealthRequest, v1.GetDiskHealthResponse]
-	createPartition       *connect.Client[v1.CreatePartitionRequest, v1.CreatePartitionResponse]
-	deletePartition       *connect.Client[v1.DeletePartitionRequest, v1.DeletePartitionResponse]
-	formatPartition       *connect.Client[v1.FormatPartitionRequest, v1.FormatPartitionResponse]
-	resizePartition       *connect.Client[v1.ResizePartitionRequest, v1.ResizePartitionResponse]
-	mountFilesystem       *connect.Client[v1.MountFilesystemRequest, v1.MountFilesystemResponse]
-	unmountFilesystem     *connect.Client[v1.UnmountFilesystemRequest, v1.UnmountFilesystemResponse]
-	listLvm               *connect.Client[v1.ListLvmRequest, v1.ListLvmResponse]
-	createLvmPv           *connect.Client[v1.CreateLvmPvRequest, v1.CreateLvmPvResponse]
-	removeLvmPv           *connect.Client[v1.RemoveLvmPvRequest, v1.RemoveLvmPvResponse]
-	createLvmVg           *connect.Client[v1.CreateLvmVgRequest, v1.CreateLvmVgResponse]
-	removeLvmVg           *connect.Client[v1.RemoveLvmVgRequest, v1.RemoveLvmVgResponse]
-	createLvmLv           *connect.Client[v1.CreateLvmLvRequest, v1.CreateLvmLvResponse]
-	removeLvmLv           *connect.Client[v1.RemoveLvmLvRequest, v1.RemoveLvmLvResponse]
-	createLvmThinPool     *connect.Client[v1.CreateLvmThinPoolRequest, v1.CreateLvmThinPoolResponse]
-	listZfs               *connect.Client[v1.ListZfsRequest, v1.ListZfsResponse]
-	createZpool           *connect.Client[v1.CreateZpoolRequest, v1.CreateZpoolResponse]
-	destroyZpool          *connect.Client[v1.DestroyZpoolRequest, v1.DestroyZpoolResponse]
-	createZfsDataset      *connect.Client[v1.CreateZfsDatasetRequest, v1.CreateZfsDatasetResponse]
-	destroyZfsDataset     *connect.Client[v1.DestroyZfsDatasetRequest, v1.DestroyZfsDatasetResponse]
-	createZfsZvol         *connect.Client[v1.CreateZfsZvolRequest, v1.CreateZfsZvolResponse]
-	listStoragePools      *connect.Client[v1.ListStoragePoolsRequest, v1.ListStoragePoolsResponse]
-	getStoragePool        *connect.Client[v1.GetStoragePoolRequest, v1.GetStoragePoolResponse]
-	createStoragePool     *connect.Client[v1.CreateStoragePoolRequest, v1.CreateStoragePoolResponse]
-	updateStoragePool     *connect.Client[v1.UpdateStoragePoolRequest, v1.UpdateStoragePoolResponse]
-	deleteStoragePool     *connect.Client[v1.DeleteStoragePoolRequest, v1.DeleteStoragePoolResponse]
-	createVolume          *connect.Client[v1.CreateVolumeRequest, v1.CreateVolumeResponse]
-	deleteVolume          *connect.Client[v1.DeleteVolumeRequest, v1.DeleteVolumeResponse]
-	resizeVolume          *connect.Client[v1.ResizeVolumeRequest, v1.ResizeVolumeResponse]
-	listVolumes           *connect.Client[v1.ListVolumesRequest, v1.ListVolumesResponse]
-	setDiskQoS            *connect.Client[v1.SetDiskQoSRequest, v1.SetDiskQoSResponse]
-	getDiskQoS            *connect.Client[v1.GetDiskQoSRequest, v1.GetDiskQoSResponse]
-	listRaidSets          *connect.Client[v1.ListRaidSetsRequest, v1.ListRaidSetsResponse]
-	createRaidSet         *connect.Client[v1.CreateRaidSetRequest, v1.CreateRaidSetResponse]
-	assembleRaidSet       *connect.Client[v1.AssembleRaidSetRequest, v1.AssembleRaidSetResponse]
-	growRaidSet           *connect.Client[v1.GrowRaidSetRequest, v1.GrowRaidSetResponse]
-	failRaidMember        *connect.Client[v1.FailRaidMemberRequest, v1.FailRaidMemberResponse]
-	removeRaidMember      *connect.Client[v1.RemoveRaidMemberRequest, v1.RemoveRaidMemberResponse]
-	replaceRaidMember     *connect.Client[v1.ReplaceRaidMemberRequest, v1.ReplaceRaidMemberResponse]
-	deleteRaidSet         *connect.Client[v1.DeleteRaidSetRequest, v1.DeleteRaidSetResponse]
-	checkMigrationStorage *connect.Client[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse]
+	listDevices                 *connect.Client[v1.ListDevicesRequest, v1.ListDevicesResponse]
+	rescanDevices               *connect.Client[v1.RescanDevicesRequest, v1.RescanDevicesResponse]
+	initializeDisk              *connect.Client[v1.InitializeDiskRequest, v1.InitializeDiskResponse]
+	wipeDisk                    *connect.Client[v1.WipeDiskRequest, v1.WipeDiskResponse]
+	getDiskHealth               *connect.Client[v1.GetDiskHealthRequest, v1.GetDiskHealthResponse]
+	createPartition             *connect.Client[v1.CreatePartitionRequest, v1.CreatePartitionResponse]
+	deletePartition             *connect.Client[v1.DeletePartitionRequest, v1.DeletePartitionResponse]
+	formatPartition             *connect.Client[v1.FormatPartitionRequest, v1.FormatPartitionResponse]
+	resizePartition             *connect.Client[v1.ResizePartitionRequest, v1.ResizePartitionResponse]
+	mountFilesystem             *connect.Client[v1.MountFilesystemRequest, v1.MountFilesystemResponse]
+	unmountFilesystem           *connect.Client[v1.UnmountFilesystemRequest, v1.UnmountFilesystemResponse]
+	listLvm                     *connect.Client[v1.ListLvmRequest, v1.ListLvmResponse]
+	createLvmPv                 *connect.Client[v1.CreateLvmPvRequest, v1.CreateLvmPvResponse]
+	removeLvmPv                 *connect.Client[v1.RemoveLvmPvRequest, v1.RemoveLvmPvResponse]
+	createLvmVg                 *connect.Client[v1.CreateLvmVgRequest, v1.CreateLvmVgResponse]
+	removeLvmVg                 *connect.Client[v1.RemoveLvmVgRequest, v1.RemoveLvmVgResponse]
+	createLvmLv                 *connect.Client[v1.CreateLvmLvRequest, v1.CreateLvmLvResponse]
+	removeLvmLv                 *connect.Client[v1.RemoveLvmLvRequest, v1.RemoveLvmLvResponse]
+	createLvmThinPool           *connect.Client[v1.CreateLvmThinPoolRequest, v1.CreateLvmThinPoolResponse]
+	listZfs                     *connect.Client[v1.ListZfsRequest, v1.ListZfsResponse]
+	createZpool                 *connect.Client[v1.CreateZpoolRequest, v1.CreateZpoolResponse]
+	destroyZpool                *connect.Client[v1.DestroyZpoolRequest, v1.DestroyZpoolResponse]
+	createZfsDataset            *connect.Client[v1.CreateZfsDatasetRequest, v1.CreateZfsDatasetResponse]
+	destroyZfsDataset           *connect.Client[v1.DestroyZfsDatasetRequest, v1.DestroyZfsDatasetResponse]
+	createZfsZvol               *connect.Client[v1.CreateZfsZvolRequest, v1.CreateZfsZvolResponse]
+	listStoragePools            *connect.Client[v1.ListStoragePoolsRequest, v1.ListStoragePoolsResponse]
+	getStoragePool              *connect.Client[v1.GetStoragePoolRequest, v1.GetStoragePoolResponse]
+	createStoragePool           *connect.Client[v1.CreateStoragePoolRequest, v1.CreateStoragePoolResponse]
+	updateStoragePool           *connect.Client[v1.UpdateStoragePoolRequest, v1.UpdateStoragePoolResponse]
+	deleteStoragePool           *connect.Client[v1.DeleteStoragePoolRequest, v1.DeleteStoragePoolResponse]
+	createVolume                *connect.Client[v1.CreateVolumeRequest, v1.CreateVolumeResponse]
+	deleteVolume                *connect.Client[v1.DeleteVolumeRequest, v1.DeleteVolumeResponse]
+	resizeVolume                *connect.Client[v1.ResizeVolumeRequest, v1.ResizeVolumeResponse]
+	listVolumes                 *connect.Client[v1.ListVolumesRequest, v1.ListVolumesResponse]
+	setDiskQoS                  *connect.Client[v1.SetDiskQoSRequest, v1.SetDiskQoSResponse]
+	getDiskQoS                  *connect.Client[v1.GetDiskQoSRequest, v1.GetDiskQoSResponse]
+	listRaidSets                *connect.Client[v1.ListRaidSetsRequest, v1.ListRaidSetsResponse]
+	createRaidSet               *connect.Client[v1.CreateRaidSetRequest, v1.CreateRaidSetResponse]
+	assembleRaidSet             *connect.Client[v1.AssembleRaidSetRequest, v1.AssembleRaidSetResponse]
+	growRaidSet                 *connect.Client[v1.GrowRaidSetRequest, v1.GrowRaidSetResponse]
+	failRaidMember              *connect.Client[v1.FailRaidMemberRequest, v1.FailRaidMemberResponse]
+	removeRaidMember            *connect.Client[v1.RemoveRaidMemberRequest, v1.RemoveRaidMemberResponse]
+	replaceRaidMember           *connect.Client[v1.ReplaceRaidMemberRequest, v1.ReplaceRaidMemberResponse]
+	deleteRaidSet               *connect.Client[v1.DeleteRaidSetRequest, v1.DeleteRaidSetResponse]
+	getStorageIo                *connect.Client[v1.GetStorageIoRequest, v1.GetStorageIoResponse]
+	startStorageMaintenance     *connect.Client[v1.StartStorageMaintenanceRequest, v1.StartStorageMaintenanceResponse]
+	listStorageMaintenanceTasks *connect.Client[v1.ListStorageMaintenanceTasksRequest, v1.ListStorageMaintenanceTasksResponse]
+	cancelStorageMaintenance    *connect.Client[v1.CancelStorageMaintenanceRequest, v1.CancelStorageMaintenanceResponse]
+	getStorageTuning            *connect.Client[v1.GetStorageTuningRequest, v1.GetStorageTuningResponse]
+	setStorageTuning            *connect.Client[v1.SetStorageTuningRequest, v1.SetStorageTuningResponse]
+	listStorageSnapshots        *connect.Client[v1.ListStorageSnapshotsRequest, v1.ListStorageSnapshotsResponse]
+	createStorageSnapshot       *connect.Client[v1.CreateStorageSnapshotRequest, v1.CreateStorageSnapshotResponse]
+	deleteStorageSnapshot       *connect.Client[v1.DeleteStorageSnapshotRequest, v1.DeleteStorageSnapshotResponse]
+	restoreStorageSnapshot      *connect.Client[v1.RestoreStorageSnapshotRequest, v1.RestoreStorageSnapshotResponse]
+	startStorageBackup          *connect.Client[v1.StartStorageBackupRequest, v1.StartStorageBackupResponse]
+	listStorageBackups          *connect.Client[v1.ListStorageBackupsRequest, v1.ListStorageBackupsResponse]
+	restoreStorageBackup        *connect.Client[v1.RestoreStorageBackupRequest, v1.RestoreStorageBackupResponse]
+	cancelStorageBackup         *connect.Client[v1.CancelStorageBackupRequest, v1.CancelStorageBackupResponse]
+	applyRetention              *connect.Client[v1.ApplyRetentionRequest, v1.ApplyRetentionResponse]
+	getStorageEncryption        *connect.Client[v1.GetStorageEncryptionRequest, v1.GetStorageEncryptionResponse]
+	enableStorageEncryption     *connect.Client[v1.EnableStorageEncryptionRequest, v1.EnableStorageEncryptionResponse]
+	disableStorageEncryption    *connect.Client[v1.DisableStorageEncryptionRequest, v1.DisableStorageEncryptionResponse]
+	lockStoragePool             *connect.Client[v1.StorageKeyRequest, v1.StorageKeyResponse]
+	unlockStoragePool           *connect.Client[v1.StorageKeyRequest, v1.StorageKeyResponse]
+	rotateStorageKey            *connect.Client[v1.StorageKeyRequest, v1.StorageKeyResponse]
+	backupStorageKey            *connect.Client[v1.BackupStorageKeyRequest, v1.BackupStorageKeyResponse]
+	verifyStorageKey            *connect.Client[v1.VerifyStorageKeyRequest, v1.VerifyStorageKeyResponse]
+	listStorageAccessRules      *connect.Client[v1.ListStorageAccessRulesRequest, v1.ListStorageAccessRulesResponse]
+	setStorageAccessRule        *connect.Client[v1.SetStorageAccessRuleRequest, v1.SetStorageAccessRuleResponse]
+	deleteStorageAccessRule     *connect.Client[v1.DeleteStorageAccessRuleRequest, v1.DeleteStorageAccessRuleResponse]
+	listStorageEvents           *connect.Client[v1.ListStorageEventsRequest, v1.ListStorageEventsResponse]
+	acknowledgeStorageEvents    *connect.Client[v1.AcknowledgeStorageEventsRequest, v1.AcknowledgeStorageEventsResponse]
+	clearStorageEvents          *connect.Client[v1.ClearStorageEventsRequest, v1.ClearStorageEventsResponse]
+	checkMigrationStorage       *connect.Client[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse]
 }
 
 // ListDevices calls pilab.core.v1.StorageProvisioningService.ListDevices.
@@ -783,6 +1107,152 @@ func (c *storageProvisioningServiceClient) DeleteRaidSet(ctx context.Context, re
 	return c.deleteRaidSet.CallUnary(ctx, req)
 }
 
+// GetStorageIo calls pilab.core.v1.StorageProvisioningService.GetStorageIo.
+func (c *storageProvisioningServiceClient) GetStorageIo(ctx context.Context, req *connect.Request[v1.GetStorageIoRequest]) (*connect.Response[v1.GetStorageIoResponse], error) {
+	return c.getStorageIo.CallUnary(ctx, req)
+}
+
+// StartStorageMaintenance calls pilab.core.v1.StorageProvisioningService.StartStorageMaintenance.
+func (c *storageProvisioningServiceClient) StartStorageMaintenance(ctx context.Context, req *connect.Request[v1.StartStorageMaintenanceRequest]) (*connect.Response[v1.StartStorageMaintenanceResponse], error) {
+	return c.startStorageMaintenance.CallUnary(ctx, req)
+}
+
+// ListStorageMaintenanceTasks calls
+// pilab.core.v1.StorageProvisioningService.ListStorageMaintenanceTasks.
+func (c *storageProvisioningServiceClient) ListStorageMaintenanceTasks(ctx context.Context, req *connect.Request[v1.ListStorageMaintenanceTasksRequest]) (*connect.Response[v1.ListStorageMaintenanceTasksResponse], error) {
+	return c.listStorageMaintenanceTasks.CallUnary(ctx, req)
+}
+
+// CancelStorageMaintenance calls pilab.core.v1.StorageProvisioningService.CancelStorageMaintenance.
+func (c *storageProvisioningServiceClient) CancelStorageMaintenance(ctx context.Context, req *connect.Request[v1.CancelStorageMaintenanceRequest]) (*connect.Response[v1.CancelStorageMaintenanceResponse], error) {
+	return c.cancelStorageMaintenance.CallUnary(ctx, req)
+}
+
+// GetStorageTuning calls pilab.core.v1.StorageProvisioningService.GetStorageTuning.
+func (c *storageProvisioningServiceClient) GetStorageTuning(ctx context.Context, req *connect.Request[v1.GetStorageTuningRequest]) (*connect.Response[v1.GetStorageTuningResponse], error) {
+	return c.getStorageTuning.CallUnary(ctx, req)
+}
+
+// SetStorageTuning calls pilab.core.v1.StorageProvisioningService.SetStorageTuning.
+func (c *storageProvisioningServiceClient) SetStorageTuning(ctx context.Context, req *connect.Request[v1.SetStorageTuningRequest]) (*connect.Response[v1.SetStorageTuningResponse], error) {
+	return c.setStorageTuning.CallUnary(ctx, req)
+}
+
+// ListStorageSnapshots calls pilab.core.v1.StorageProvisioningService.ListStorageSnapshots.
+func (c *storageProvisioningServiceClient) ListStorageSnapshots(ctx context.Context, req *connect.Request[v1.ListStorageSnapshotsRequest]) (*connect.Response[v1.ListStorageSnapshotsResponse], error) {
+	return c.listStorageSnapshots.CallUnary(ctx, req)
+}
+
+// CreateStorageSnapshot calls pilab.core.v1.StorageProvisioningService.CreateStorageSnapshot.
+func (c *storageProvisioningServiceClient) CreateStorageSnapshot(ctx context.Context, req *connect.Request[v1.CreateStorageSnapshotRequest]) (*connect.Response[v1.CreateStorageSnapshotResponse], error) {
+	return c.createStorageSnapshot.CallUnary(ctx, req)
+}
+
+// DeleteStorageSnapshot calls pilab.core.v1.StorageProvisioningService.DeleteStorageSnapshot.
+func (c *storageProvisioningServiceClient) DeleteStorageSnapshot(ctx context.Context, req *connect.Request[v1.DeleteStorageSnapshotRequest]) (*connect.Response[v1.DeleteStorageSnapshotResponse], error) {
+	return c.deleteStorageSnapshot.CallUnary(ctx, req)
+}
+
+// RestoreStorageSnapshot calls pilab.core.v1.StorageProvisioningService.RestoreStorageSnapshot.
+func (c *storageProvisioningServiceClient) RestoreStorageSnapshot(ctx context.Context, req *connect.Request[v1.RestoreStorageSnapshotRequest]) (*connect.Response[v1.RestoreStorageSnapshotResponse], error) {
+	return c.restoreStorageSnapshot.CallUnary(ctx, req)
+}
+
+// StartStorageBackup calls pilab.core.v1.StorageProvisioningService.StartStorageBackup.
+func (c *storageProvisioningServiceClient) StartStorageBackup(ctx context.Context, req *connect.Request[v1.StartStorageBackupRequest]) (*connect.Response[v1.StartStorageBackupResponse], error) {
+	return c.startStorageBackup.CallUnary(ctx, req)
+}
+
+// ListStorageBackups calls pilab.core.v1.StorageProvisioningService.ListStorageBackups.
+func (c *storageProvisioningServiceClient) ListStorageBackups(ctx context.Context, req *connect.Request[v1.ListStorageBackupsRequest]) (*connect.Response[v1.ListStorageBackupsResponse], error) {
+	return c.listStorageBackups.CallUnary(ctx, req)
+}
+
+// RestoreStorageBackup calls pilab.core.v1.StorageProvisioningService.RestoreStorageBackup.
+func (c *storageProvisioningServiceClient) RestoreStorageBackup(ctx context.Context, req *connect.Request[v1.RestoreStorageBackupRequest]) (*connect.Response[v1.RestoreStorageBackupResponse], error) {
+	return c.restoreStorageBackup.CallUnary(ctx, req)
+}
+
+// CancelStorageBackup calls pilab.core.v1.StorageProvisioningService.CancelStorageBackup.
+func (c *storageProvisioningServiceClient) CancelStorageBackup(ctx context.Context, req *connect.Request[v1.CancelStorageBackupRequest]) (*connect.Response[v1.CancelStorageBackupResponse], error) {
+	return c.cancelStorageBackup.CallUnary(ctx, req)
+}
+
+// ApplyRetention calls pilab.core.v1.StorageProvisioningService.ApplyRetention.
+func (c *storageProvisioningServiceClient) ApplyRetention(ctx context.Context, req *connect.Request[v1.ApplyRetentionRequest]) (*connect.Response[v1.ApplyRetentionResponse], error) {
+	return c.applyRetention.CallUnary(ctx, req)
+}
+
+// GetStorageEncryption calls pilab.core.v1.StorageProvisioningService.GetStorageEncryption.
+func (c *storageProvisioningServiceClient) GetStorageEncryption(ctx context.Context, req *connect.Request[v1.GetStorageEncryptionRequest]) (*connect.Response[v1.GetStorageEncryptionResponse], error) {
+	return c.getStorageEncryption.CallUnary(ctx, req)
+}
+
+// EnableStorageEncryption calls pilab.core.v1.StorageProvisioningService.EnableStorageEncryption.
+func (c *storageProvisioningServiceClient) EnableStorageEncryption(ctx context.Context, req *connect.Request[v1.EnableStorageEncryptionRequest]) (*connect.Response[v1.EnableStorageEncryptionResponse], error) {
+	return c.enableStorageEncryption.CallUnary(ctx, req)
+}
+
+// DisableStorageEncryption calls pilab.core.v1.StorageProvisioningService.DisableStorageEncryption.
+func (c *storageProvisioningServiceClient) DisableStorageEncryption(ctx context.Context, req *connect.Request[v1.DisableStorageEncryptionRequest]) (*connect.Response[v1.DisableStorageEncryptionResponse], error) {
+	return c.disableStorageEncryption.CallUnary(ctx, req)
+}
+
+// LockStoragePool calls pilab.core.v1.StorageProvisioningService.LockStoragePool.
+func (c *storageProvisioningServiceClient) LockStoragePool(ctx context.Context, req *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error) {
+	return c.lockStoragePool.CallUnary(ctx, req)
+}
+
+// UnlockStoragePool calls pilab.core.v1.StorageProvisioningService.UnlockStoragePool.
+func (c *storageProvisioningServiceClient) UnlockStoragePool(ctx context.Context, req *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error) {
+	return c.unlockStoragePool.CallUnary(ctx, req)
+}
+
+// RotateStorageKey calls pilab.core.v1.StorageProvisioningService.RotateStorageKey.
+func (c *storageProvisioningServiceClient) RotateStorageKey(ctx context.Context, req *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error) {
+	return c.rotateStorageKey.CallUnary(ctx, req)
+}
+
+// BackupStorageKey calls pilab.core.v1.StorageProvisioningService.BackupStorageKey.
+func (c *storageProvisioningServiceClient) BackupStorageKey(ctx context.Context, req *connect.Request[v1.BackupStorageKeyRequest]) (*connect.Response[v1.BackupStorageKeyResponse], error) {
+	return c.backupStorageKey.CallUnary(ctx, req)
+}
+
+// VerifyStorageKey calls pilab.core.v1.StorageProvisioningService.VerifyStorageKey.
+func (c *storageProvisioningServiceClient) VerifyStorageKey(ctx context.Context, req *connect.Request[v1.VerifyStorageKeyRequest]) (*connect.Response[v1.VerifyStorageKeyResponse], error) {
+	return c.verifyStorageKey.CallUnary(ctx, req)
+}
+
+// ListStorageAccessRules calls pilab.core.v1.StorageProvisioningService.ListStorageAccessRules.
+func (c *storageProvisioningServiceClient) ListStorageAccessRules(ctx context.Context, req *connect.Request[v1.ListStorageAccessRulesRequest]) (*connect.Response[v1.ListStorageAccessRulesResponse], error) {
+	return c.listStorageAccessRules.CallUnary(ctx, req)
+}
+
+// SetStorageAccessRule calls pilab.core.v1.StorageProvisioningService.SetStorageAccessRule.
+func (c *storageProvisioningServiceClient) SetStorageAccessRule(ctx context.Context, req *connect.Request[v1.SetStorageAccessRuleRequest]) (*connect.Response[v1.SetStorageAccessRuleResponse], error) {
+	return c.setStorageAccessRule.CallUnary(ctx, req)
+}
+
+// DeleteStorageAccessRule calls pilab.core.v1.StorageProvisioningService.DeleteStorageAccessRule.
+func (c *storageProvisioningServiceClient) DeleteStorageAccessRule(ctx context.Context, req *connect.Request[v1.DeleteStorageAccessRuleRequest]) (*connect.Response[v1.DeleteStorageAccessRuleResponse], error) {
+	return c.deleteStorageAccessRule.CallUnary(ctx, req)
+}
+
+// ListStorageEvents calls pilab.core.v1.StorageProvisioningService.ListStorageEvents.
+func (c *storageProvisioningServiceClient) ListStorageEvents(ctx context.Context, req *connect.Request[v1.ListStorageEventsRequest]) (*connect.Response[v1.ListStorageEventsResponse], error) {
+	return c.listStorageEvents.CallUnary(ctx, req)
+}
+
+// AcknowledgeStorageEvents calls pilab.core.v1.StorageProvisioningService.AcknowledgeStorageEvents.
+func (c *storageProvisioningServiceClient) AcknowledgeStorageEvents(ctx context.Context, req *connect.Request[v1.AcknowledgeStorageEventsRequest]) (*connect.Response[v1.AcknowledgeStorageEventsResponse], error) {
+	return c.acknowledgeStorageEvents.CallUnary(ctx, req)
+}
+
+// ClearStorageEvents calls pilab.core.v1.StorageProvisioningService.ClearStorageEvents.
+func (c *storageProvisioningServiceClient) ClearStorageEvents(ctx context.Context, req *connect.Request[v1.ClearStorageEventsRequest]) (*connect.Response[v1.ClearStorageEventsResponse], error) {
+	return c.clearStorageEvents.CallUnary(ctx, req)
+}
+
 // CheckMigrationStorage calls pilab.core.v1.StorageProvisioningService.CheckMigrationStorage.
 func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, req *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
 	return c.checkMigrationStorage.CallUnary(ctx, req)
@@ -843,6 +1313,40 @@ type StorageProvisioningServiceHandler interface {
 	RemoveRaidMember(context.Context, *connect.Request[v1.RemoveRaidMemberRequest]) (*connect.Response[v1.RemoveRaidMemberResponse], error)
 	ReplaceRaidMember(context.Context, *connect.Request[v1.ReplaceRaidMemberRequest]) (*connect.Response[v1.ReplaceRaidMemberResponse], error)
 	DeleteRaidSet(context.Context, *connect.Request[v1.DeleteRaidSetRequest]) (*connect.Response[v1.DeleteRaidSetResponse], error)
+	// Pool Performance Monitoring
+	GetStorageIo(context.Context, *connect.Request[v1.GetStorageIoRequest]) (*connect.Response[v1.GetStorageIoResponse], error)
+	// Maintenance and Tuning
+	StartStorageMaintenance(context.Context, *connect.Request[v1.StartStorageMaintenanceRequest]) (*connect.Response[v1.StartStorageMaintenanceResponse], error)
+	ListStorageMaintenanceTasks(context.Context, *connect.Request[v1.ListStorageMaintenanceTasksRequest]) (*connect.Response[v1.ListStorageMaintenanceTasksResponse], error)
+	CancelStorageMaintenance(context.Context, *connect.Request[v1.CancelStorageMaintenanceRequest]) (*connect.Response[v1.CancelStorageMaintenanceResponse], error)
+	GetStorageTuning(context.Context, *connect.Request[v1.GetStorageTuningRequest]) (*connect.Response[v1.GetStorageTuningResponse], error)
+	SetStorageTuning(context.Context, *connect.Request[v1.SetStorageTuningRequest]) (*connect.Response[v1.SetStorageTuningResponse], error)
+	// Snapshots and Backups
+	ListStorageSnapshots(context.Context, *connect.Request[v1.ListStorageSnapshotsRequest]) (*connect.Response[v1.ListStorageSnapshotsResponse], error)
+	CreateStorageSnapshot(context.Context, *connect.Request[v1.CreateStorageSnapshotRequest]) (*connect.Response[v1.CreateStorageSnapshotResponse], error)
+	DeleteStorageSnapshot(context.Context, *connect.Request[v1.DeleteStorageSnapshotRequest]) (*connect.Response[v1.DeleteStorageSnapshotResponse], error)
+	RestoreStorageSnapshot(context.Context, *connect.Request[v1.RestoreStorageSnapshotRequest]) (*connect.Response[v1.RestoreStorageSnapshotResponse], error)
+	StartStorageBackup(context.Context, *connect.Request[v1.StartStorageBackupRequest]) (*connect.Response[v1.StartStorageBackupResponse], error)
+	ListStorageBackups(context.Context, *connect.Request[v1.ListStorageBackupsRequest]) (*connect.Response[v1.ListStorageBackupsResponse], error)
+	RestoreStorageBackup(context.Context, *connect.Request[v1.RestoreStorageBackupRequest]) (*connect.Response[v1.RestoreStorageBackupResponse], error)
+	CancelStorageBackup(context.Context, *connect.Request[v1.CancelStorageBackupRequest]) (*connect.Response[v1.CancelStorageBackupResponse], error)
+	ApplyRetention(context.Context, *connect.Request[v1.ApplyRetentionRequest]) (*connect.Response[v1.ApplyRetentionResponse], error)
+	// Encryption and Key Management
+	GetStorageEncryption(context.Context, *connect.Request[v1.GetStorageEncryptionRequest]) (*connect.Response[v1.GetStorageEncryptionResponse], error)
+	EnableStorageEncryption(context.Context, *connect.Request[v1.EnableStorageEncryptionRequest]) (*connect.Response[v1.EnableStorageEncryptionResponse], error)
+	DisableStorageEncryption(context.Context, *connect.Request[v1.DisableStorageEncryptionRequest]) (*connect.Response[v1.DisableStorageEncryptionResponse], error)
+	LockStoragePool(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error)
+	UnlockStoragePool(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error)
+	RotateStorageKey(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error)
+	BackupStorageKey(context.Context, *connect.Request[v1.BackupStorageKeyRequest]) (*connect.Response[v1.BackupStorageKeyResponse], error)
+	VerifyStorageKey(context.Context, *connect.Request[v1.VerifyStorageKeyRequest]) (*connect.Response[v1.VerifyStorageKeyResponse], error)
+	// Pool Access Control and Events
+	ListStorageAccessRules(context.Context, *connect.Request[v1.ListStorageAccessRulesRequest]) (*connect.Response[v1.ListStorageAccessRulesResponse], error)
+	SetStorageAccessRule(context.Context, *connect.Request[v1.SetStorageAccessRuleRequest]) (*connect.Response[v1.SetStorageAccessRuleResponse], error)
+	DeleteStorageAccessRule(context.Context, *connect.Request[v1.DeleteStorageAccessRuleRequest]) (*connect.Response[v1.DeleteStorageAccessRuleResponse], error)
+	ListStorageEvents(context.Context, *connect.Request[v1.ListStorageEventsRequest]) (*connect.Response[v1.ListStorageEventsResponse], error)
+	AcknowledgeStorageEvents(context.Context, *connect.Request[v1.AcknowledgeStorageEventsRequest]) (*connect.Response[v1.AcknowledgeStorageEventsResponse], error)
+	ClearStorageEvents(context.Context, *connect.Request[v1.ClearStorageEventsRequest]) (*connect.Response[v1.ClearStorageEventsResponse], error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
@@ -1118,6 +1622,180 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteRaidSet")),
 		connect.WithHandlerOptions(opts...),
 	)
+	storageProvisioningServiceGetStorageIoHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceGetStorageIoProcedure,
+		svc.GetStorageIo,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStorageIo")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceStartStorageMaintenanceHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceStartStorageMaintenanceProcedure,
+		svc.StartStorageMaintenance,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("StartStorageMaintenance")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceListStorageMaintenanceTasksHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListStorageMaintenanceTasksProcedure,
+		svc.ListStorageMaintenanceTasks,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageMaintenanceTasks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceCancelStorageMaintenanceHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCancelStorageMaintenanceProcedure,
+		svc.CancelStorageMaintenance,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CancelStorageMaintenance")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceGetStorageTuningHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceGetStorageTuningProcedure,
+		svc.GetStorageTuning,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStorageTuning")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceSetStorageTuningHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceSetStorageTuningProcedure,
+		svc.SetStorageTuning,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("SetStorageTuning")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceListStorageSnapshotsHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListStorageSnapshotsProcedure,
+		svc.ListStorageSnapshots,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageSnapshots")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceCreateStorageSnapshotHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCreateStorageSnapshotProcedure,
+		svc.CreateStorageSnapshot,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateStorageSnapshot")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceDeleteStorageSnapshotHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceDeleteStorageSnapshotProcedure,
+		svc.DeleteStorageSnapshot,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStorageSnapshot")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceRestoreStorageSnapshotHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceRestoreStorageSnapshotProcedure,
+		svc.RestoreStorageSnapshot,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("RestoreStorageSnapshot")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceStartStorageBackupHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceStartStorageBackupProcedure,
+		svc.StartStorageBackup,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("StartStorageBackup")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceListStorageBackupsHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListStorageBackupsProcedure,
+		svc.ListStorageBackups,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageBackups")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceRestoreStorageBackupHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceRestoreStorageBackupProcedure,
+		svc.RestoreStorageBackup,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("RestoreStorageBackup")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceCancelStorageBackupHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCancelStorageBackupProcedure,
+		svc.CancelStorageBackup,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CancelStorageBackup")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceApplyRetentionHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceApplyRetentionProcedure,
+		svc.ApplyRetention,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ApplyRetention")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceGetStorageEncryptionHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceGetStorageEncryptionProcedure,
+		svc.GetStorageEncryption,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("GetStorageEncryption")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceEnableStorageEncryptionHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceEnableStorageEncryptionProcedure,
+		svc.EnableStorageEncryption,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("EnableStorageEncryption")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceDisableStorageEncryptionHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceDisableStorageEncryptionProcedure,
+		svc.DisableStorageEncryption,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("DisableStorageEncryption")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceLockStoragePoolHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceLockStoragePoolProcedure,
+		svc.LockStoragePool,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("LockStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceUnlockStoragePoolHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceUnlockStoragePoolProcedure,
+		svc.UnlockStoragePool,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("UnlockStoragePool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceRotateStorageKeyHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceRotateStorageKeyProcedure,
+		svc.RotateStorageKey,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("RotateStorageKey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceBackupStorageKeyHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceBackupStorageKeyProcedure,
+		svc.BackupStorageKey,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("BackupStorageKey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceVerifyStorageKeyHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceVerifyStorageKeyProcedure,
+		svc.VerifyStorageKey,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("VerifyStorageKey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceListStorageAccessRulesHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListStorageAccessRulesProcedure,
+		svc.ListStorageAccessRules,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageAccessRules")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceSetStorageAccessRuleHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceSetStorageAccessRuleProcedure,
+		svc.SetStorageAccessRule,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("SetStorageAccessRule")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceDeleteStorageAccessRuleHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceDeleteStorageAccessRuleProcedure,
+		svc.DeleteStorageAccessRule,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteStorageAccessRule")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceListStorageEventsHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListStorageEventsProcedure,
+		svc.ListStorageEvents,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListStorageEvents")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceAcknowledgeStorageEventsHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceAcknowledgeStorageEventsProcedure,
+		svc.AcknowledgeStorageEvents,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("AcknowledgeStorageEvents")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceClearStorageEventsHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceClearStorageEventsProcedure,
+		svc.ClearStorageEvents,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ClearStorageEvents")),
+		connect.WithHandlerOptions(opts...),
+	)
 	storageProvisioningServiceCheckMigrationStorageHandler := connect.NewUnaryHandler(
 		StorageProvisioningServiceCheckMigrationStorageProcedure,
 		svc.CheckMigrationStorage,
@@ -1214,6 +1892,64 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 			storageProvisioningServiceReplaceRaidMemberHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceDeleteRaidSetProcedure:
 			storageProvisioningServiceDeleteRaidSetHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceGetStorageIoProcedure:
+			storageProvisioningServiceGetStorageIoHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceStartStorageMaintenanceProcedure:
+			storageProvisioningServiceStartStorageMaintenanceHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListStorageMaintenanceTasksProcedure:
+			storageProvisioningServiceListStorageMaintenanceTasksHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCancelStorageMaintenanceProcedure:
+			storageProvisioningServiceCancelStorageMaintenanceHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceGetStorageTuningProcedure:
+			storageProvisioningServiceGetStorageTuningHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceSetStorageTuningProcedure:
+			storageProvisioningServiceSetStorageTuningHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListStorageSnapshotsProcedure:
+			storageProvisioningServiceListStorageSnapshotsHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCreateStorageSnapshotProcedure:
+			storageProvisioningServiceCreateStorageSnapshotHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceDeleteStorageSnapshotProcedure:
+			storageProvisioningServiceDeleteStorageSnapshotHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceRestoreStorageSnapshotProcedure:
+			storageProvisioningServiceRestoreStorageSnapshotHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceStartStorageBackupProcedure:
+			storageProvisioningServiceStartStorageBackupHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListStorageBackupsProcedure:
+			storageProvisioningServiceListStorageBackupsHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceRestoreStorageBackupProcedure:
+			storageProvisioningServiceRestoreStorageBackupHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCancelStorageBackupProcedure:
+			storageProvisioningServiceCancelStorageBackupHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceApplyRetentionProcedure:
+			storageProvisioningServiceApplyRetentionHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceGetStorageEncryptionProcedure:
+			storageProvisioningServiceGetStorageEncryptionHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceEnableStorageEncryptionProcedure:
+			storageProvisioningServiceEnableStorageEncryptionHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceDisableStorageEncryptionProcedure:
+			storageProvisioningServiceDisableStorageEncryptionHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceLockStoragePoolProcedure:
+			storageProvisioningServiceLockStoragePoolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceUnlockStoragePoolProcedure:
+			storageProvisioningServiceUnlockStoragePoolHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceRotateStorageKeyProcedure:
+			storageProvisioningServiceRotateStorageKeyHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceBackupStorageKeyProcedure:
+			storageProvisioningServiceBackupStorageKeyHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceVerifyStorageKeyProcedure:
+			storageProvisioningServiceVerifyStorageKeyHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListStorageAccessRulesProcedure:
+			storageProvisioningServiceListStorageAccessRulesHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceSetStorageAccessRuleProcedure:
+			storageProvisioningServiceSetStorageAccessRuleHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceDeleteStorageAccessRuleProcedure:
+			storageProvisioningServiceDeleteStorageAccessRuleHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListStorageEventsProcedure:
+			storageProvisioningServiceListStorageEventsHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceAcknowledgeStorageEventsProcedure:
+			storageProvisioningServiceAcknowledgeStorageEventsHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceClearStorageEventsProcedure:
+			storageProvisioningServiceClearStorageEventsHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceCheckMigrationStorageProcedure:
 			storageProvisioningServiceCheckMigrationStorageHandler.ServeHTTP(w, r)
 		default:
@@ -1399,6 +2135,122 @@ func (UnimplementedStorageProvisioningServiceHandler) ReplaceRaidMember(context.
 
 func (UnimplementedStorageProvisioningServiceHandler) DeleteRaidSet(context.Context, *connect.Request[v1.DeleteRaidSetRequest]) (*connect.Response[v1.DeleteRaidSetResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DeleteRaidSet is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) GetStorageIo(context.Context, *connect.Request[v1.GetStorageIoRequest]) (*connect.Response[v1.GetStorageIoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GetStorageIo is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) StartStorageMaintenance(context.Context, *connect.Request[v1.StartStorageMaintenanceRequest]) (*connect.Response[v1.StartStorageMaintenanceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.StartStorageMaintenance is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListStorageMaintenanceTasks(context.Context, *connect.Request[v1.ListStorageMaintenanceTasksRequest]) (*connect.Response[v1.ListStorageMaintenanceTasksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListStorageMaintenanceTasks is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CancelStorageMaintenance(context.Context, *connect.Request[v1.CancelStorageMaintenanceRequest]) (*connect.Response[v1.CancelStorageMaintenanceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CancelStorageMaintenance is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) GetStorageTuning(context.Context, *connect.Request[v1.GetStorageTuningRequest]) (*connect.Response[v1.GetStorageTuningResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GetStorageTuning is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) SetStorageTuning(context.Context, *connect.Request[v1.SetStorageTuningRequest]) (*connect.Response[v1.SetStorageTuningResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.SetStorageTuning is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListStorageSnapshots(context.Context, *connect.Request[v1.ListStorageSnapshotsRequest]) (*connect.Response[v1.ListStorageSnapshotsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListStorageSnapshots is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CreateStorageSnapshot(context.Context, *connect.Request[v1.CreateStorageSnapshotRequest]) (*connect.Response[v1.CreateStorageSnapshotResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CreateStorageSnapshot is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) DeleteStorageSnapshot(context.Context, *connect.Request[v1.DeleteStorageSnapshotRequest]) (*connect.Response[v1.DeleteStorageSnapshotResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DeleteStorageSnapshot is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) RestoreStorageSnapshot(context.Context, *connect.Request[v1.RestoreStorageSnapshotRequest]) (*connect.Response[v1.RestoreStorageSnapshotResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.RestoreStorageSnapshot is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) StartStorageBackup(context.Context, *connect.Request[v1.StartStorageBackupRequest]) (*connect.Response[v1.StartStorageBackupResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.StartStorageBackup is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListStorageBackups(context.Context, *connect.Request[v1.ListStorageBackupsRequest]) (*connect.Response[v1.ListStorageBackupsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListStorageBackups is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) RestoreStorageBackup(context.Context, *connect.Request[v1.RestoreStorageBackupRequest]) (*connect.Response[v1.RestoreStorageBackupResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.RestoreStorageBackup is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CancelStorageBackup(context.Context, *connect.Request[v1.CancelStorageBackupRequest]) (*connect.Response[v1.CancelStorageBackupResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CancelStorageBackup is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ApplyRetention(context.Context, *connect.Request[v1.ApplyRetentionRequest]) (*connect.Response[v1.ApplyRetentionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ApplyRetention is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) GetStorageEncryption(context.Context, *connect.Request[v1.GetStorageEncryptionRequest]) (*connect.Response[v1.GetStorageEncryptionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GetStorageEncryption is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) EnableStorageEncryption(context.Context, *connect.Request[v1.EnableStorageEncryptionRequest]) (*connect.Response[v1.EnableStorageEncryptionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.EnableStorageEncryption is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) DisableStorageEncryption(context.Context, *connect.Request[v1.DisableStorageEncryptionRequest]) (*connect.Response[v1.DisableStorageEncryptionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DisableStorageEncryption is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) LockStoragePool(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.LockStoragePool is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) UnlockStoragePool(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.UnlockStoragePool is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) RotateStorageKey(context.Context, *connect.Request[v1.StorageKeyRequest]) (*connect.Response[v1.StorageKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.RotateStorageKey is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) BackupStorageKey(context.Context, *connect.Request[v1.BackupStorageKeyRequest]) (*connect.Response[v1.BackupStorageKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.BackupStorageKey is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) VerifyStorageKey(context.Context, *connect.Request[v1.VerifyStorageKeyRequest]) (*connect.Response[v1.VerifyStorageKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.VerifyStorageKey is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListStorageAccessRules(context.Context, *connect.Request[v1.ListStorageAccessRulesRequest]) (*connect.Response[v1.ListStorageAccessRulesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListStorageAccessRules is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) SetStorageAccessRule(context.Context, *connect.Request[v1.SetStorageAccessRuleRequest]) (*connect.Response[v1.SetStorageAccessRuleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.SetStorageAccessRule is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) DeleteStorageAccessRule(context.Context, *connect.Request[v1.DeleteStorageAccessRuleRequest]) (*connect.Response[v1.DeleteStorageAccessRuleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DeleteStorageAccessRule is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListStorageEvents(context.Context, *connect.Request[v1.ListStorageEventsRequest]) (*connect.Response[v1.ListStorageEventsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListStorageEvents is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) AcknowledgeStorageEvents(context.Context, *connect.Request[v1.AcknowledgeStorageEventsRequest]) (*connect.Response[v1.AcknowledgeStorageEventsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.AcknowledgeStorageEvents is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ClearStorageEvents(context.Context, *connect.Request[v1.ClearStorageEventsRequest]) (*connect.Response[v1.ClearStorageEventsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ClearStorageEvents is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
