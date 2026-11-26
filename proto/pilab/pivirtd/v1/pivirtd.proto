@@ -708,6 +708,8 @@ message StoragePool {
   // qos is the pool-level default disk QoS stored on the pool. Empty means
   // the platform baseline applies.
   pilab.core.v1.DiskQoSConfig qos = 14;
+  // shared reports that this pool is the same storage on more than one host.
+  bool shared = 15;
   // desired_active is the stored intent, which differs from active when a
   // pool failed to come up or went away underneath the daemon.
   bool desired_active = 13;
