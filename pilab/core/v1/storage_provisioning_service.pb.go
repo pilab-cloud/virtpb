@@ -295,6 +295,9 @@ const (
 	StoragePoolDriver_STORAGE_POOL_DRIVER_LVM_THIN    StoragePoolDriver = 4 // LVM Thin pool
 	StoragePoolDriver_STORAGE_POOL_DRIVER_NFS         StoragePoolDriver = 5 // NFSv4 mount
 	StoragePoolDriver_STORAGE_POOL_DRIVER_ISCSI       StoragePoolDriver = 6 // iSCSI target/LUN
+	// Thick LVM volume group. Shared=true means the VG is one LUN visible to
+	// every host of the cluster, and only the lock holder may mutate it.
+	StoragePoolDriver_STORAGE_POOL_DRIVER_LVM StoragePoolDriver = 7
 )
 
 // Enum value maps for StoragePoolDriver.
@@ -307,6 +310,7 @@ var (
 		4: "STORAGE_POOL_DRIVER_LVM_THIN",
 		5: "STORAGE_POOL_DRIVER_NFS",
 		6: "STORAGE_POOL_DRIVER_ISCSI",
+		7: "STORAGE_POOL_DRIVER_LVM",
 	}
 	StoragePoolDriver_value = map[string]int32{
 		"STORAGE_POOL_DRIVER_UNSPECIFIED": 0,
@@ -316,6 +320,7 @@ var (
 		"STORAGE_POOL_DRIVER_LVM_THIN":    4,
 		"STORAGE_POOL_DRIVER_NFS":         5,
 		"STORAGE_POOL_DRIVER_ISCSI":       6,
+		"STORAGE_POOL_DRIVER_LVM":         7,
 	}
 )
 
@@ -5898,13 +5903,15 @@ func (x *StorageVolume) GetCreatedAt() *timestamppb.Timestamp {
 }
 
 type CreateVolumeRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`             // Target node if node-local pool, or empty for cluster-shared
-	PoolName      string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`       // e.g. "ceph-shared"
-	VolumeName    string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"` // e.g. "vm-test-disk0"
-	SizeMb        int64                  `protobuf:"varint,4,opt,name=size_mb,json=sizeMb,proto3" json:"size_mb,omitempty"`
-	Format        string                 `protobuf:"bytes,5,opt,name=format,proto3" json:"format,omitempty"` // "raw", "qcow2" (default: "raw" for Ceph, "qcow2" for Dir)
-	Qos           *DiskQoSConfig         `protobuf:"bytes,6,opt,name=qos,proto3" json:"qos,omitempty"`       // Optional QoS overrides; if nil/zero, inherits pool.default_qos
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	NodeId     string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`             // Target node if node-local pool, or empty for cluster-shared
+	PoolName   string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`       // e.g. "ceph-shared"
+	VolumeName string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"` // e.g. "vm-test-disk0"
+	SizeMb     int64                  `protobuf:"varint,4,opt,name=size_mb,json=sizeMb,proto3" json:"size_mb,omitempty"`
+	Format     string                 `protobuf:"bytes,5,opt,name=format,proto3" json:"format,omitempty"` // "raw", "qcow2" (default: "raw" for Ceph, "qcow2" for Dir)
+	Qos        *DiskQoSConfig         `protobuf:"bytes,6,opt,name=qos,proto3" json:"qos,omitempty"`       // Optional QoS overrides; if nil/zero, inherits pool.default_qos
+	// fencing is required for a shared volume group and ignored otherwise.
+	Fencing       *StorageFencing `protobuf:"bytes,7,opt,name=fencing,proto3" json:"fencing,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5981,6 +5988,13 @@ func (x *CreateVolumeRequest) GetQos() *DiskQoSConfig {
 	return nil
 }
 
+func (x *CreateVolumeRequest) GetFencing() *StorageFencing {
+	if x != nil {
+		return x.Fencing
+	}
+	return nil
+}
+
 type CreateVolumeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
@@ -6042,11 +6056,13 @@ func (x *CreateVolumeResponse) GetVolume() *StorageVolume {
 }
 
 type DeleteVolumeRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
-	PoolName      string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`
-	VolumeName    string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"`
-	Force         bool                   `protobuf:"varint,4,opt,name=force,proto3" json:"force,omitempty"`
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	NodeId     string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	PoolName   string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`
+	VolumeName string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"`
+	Force      bool                   `protobuf:"varint,4,opt,name=force,proto3" json:"force,omitempty"`
+	// fencing is required for a shared volume group and ignored otherwise.
+	Fencing       *StorageFencing `protobuf:"bytes,5,opt,name=fencing,proto3" json:"fencing,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6109,6 +6125,13 @@ func (x *DeleteVolumeRequest) GetForce() bool {
 	return false
 }
 
+func (x *DeleteVolumeRequest) GetFencing() *StorageFencing {
+	if x != nil {
+		return x.Fencing
+	}
+	return nil
+}
+
 type DeleteVolumeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
@@ -6162,11 +6185,13 @@ func (x *DeleteVolumeResponse) GetMessage() string {
 }
 
 type ResizeVolumeRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
-	PoolName      string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`
-	VolumeName    string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"`
-	NewSizeMb     int64                  `protobuf:"varint,4,opt,name=new_size_mb,json=newSizeMb,proto3" json:"new_size_mb,omitempty"`
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	NodeId     string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	PoolName   string                 `protobuf:"bytes,2,opt,name=pool_name,json=poolName,proto3" json:"pool_name,omitempty"`
+	VolumeName string                 `protobuf:"bytes,3,opt,name=volume_name,json=volumeName,proto3" json:"volume_name,omitempty"`
+	NewSizeMb  int64                  `protobuf:"varint,4,opt,name=new_size_mb,json=newSizeMb,proto3" json:"new_size_mb,omitempty"`
+	// fencing is required for a shared volume group and ignored otherwise.
+	Fencing       *StorageFencing `protobuf:"bytes,5,opt,name=fencing,proto3" json:"fencing,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6227,6 +6252,13 @@ func (x *ResizeVolumeRequest) GetNewSizeMb() int64 {
 		return x.NewSizeMb
 	}
 	return 0
+}
+
+func (x *ResizeVolumeRequest) GetFencing() *StorageFencing {
+	if x != nil {
+		return x.Fencing
+	}
+	return nil
 }
 
 type ResizeVolumeResponse struct {
@@ -12680,6 +12712,346 @@ func (x *ClearStorageEventsResponse) GetCleared() int32 {
 	return 0
 }
 
+// SharedLvmHost is one host's view of a volume group that is supposed to be
+// shared: whether it can see the VG, which backing LUN it sees, and whether
+// every path to it is healthy.
+type SharedLvmHost struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	NodeId    string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	VgVisible bool                   `protobuf:"varint,2,opt,name=vg_visible,json=vgVisible,proto3" json:"vg_visible,omitempty"`
+	// vg_uuid is the volume group's UUID. It must match on every host.
+	VgUuid string `protobuf:"bytes,3,opt,name=vg_uuid,json=vgUuid,proto3" json:"vg_uuid,omitempty"`
+	// wwid is the SCSI WWID of the backing LUN. It must match on every host;
+	// a different value means the hosts are looking at different disks.
+	Wwid string `protobuf:"bytes,4,opt,name=wwid,proto3" json:"wwid,omitempty"`
+	// devices are the PVs the host sees in the VG.
+	Devices []*LvmPhysicalVolume `protobuf:"bytes,5,rep,name=devices,proto3" json:"devices,omitempty"`
+	// paths is how many block paths the host has to the LUN (multipath).
+	Paths     int32 `protobuf:"varint,6,opt,name=paths,proto3" json:"paths,omitempty"`
+	Multipath bool  `protobuf:"varint,7,opt,name=multipath,proto3" json:"multipath,omitempty"`
+	// issues explain why this host cannot take part.
+	Issues        []string `protobuf:"bytes,8,rep,name=issues,proto3" json:"issues,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SharedLvmHost) Reset() {
+	*x = SharedLvmHost{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[173]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SharedLvmHost) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SharedLvmHost) ProtoMessage() {}
+
+func (x *SharedLvmHost) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[173]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SharedLvmHost.ProtoReflect.Descriptor instead.
+func (*SharedLvmHost) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{173}
+}
+
+func (x *SharedLvmHost) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *SharedLvmHost) GetVgVisible() bool {
+	if x != nil {
+		return x.VgVisible
+	}
+	return false
+}
+
+func (x *SharedLvmHost) GetVgUuid() string {
+	if x != nil {
+		return x.VgUuid
+	}
+	return ""
+}
+
+func (x *SharedLvmHost) GetWwid() string {
+	if x != nil {
+		return x.Wwid
+	}
+	return ""
+}
+
+func (x *SharedLvmHost) GetDevices() []*LvmPhysicalVolume {
+	if x != nil {
+		return x.Devices
+	}
+	return nil
+}
+
+func (x *SharedLvmHost) GetPaths() int32 {
+	if x != nil {
+		return x.Paths
+	}
+	return 0
+}
+
+func (x *SharedLvmHost) GetMultipath() bool {
+	if x != nil {
+		return x.Multipath
+	}
+	return false
+}
+
+func (x *SharedLvmHost) GetIssues() []string {
+	if x != nil {
+		return x.Issues
+	}
+	return nil
+}
+
+type LvmPhysicalVolume struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Device    string                 `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
+	PvUuid    string                 `protobuf:"bytes,2,opt,name=pv_uuid,json=pvUuid,proto3" json:"pv_uuid,omitempty"`
+	SizeBytes int64                  `protobuf:"varint,3,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
+	// state is "active" or "missing".
+	State         string `protobuf:"bytes,4,opt,name=state,proto3" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LvmPhysicalVolume) Reset() {
+	*x = LvmPhysicalVolume{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[174]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LvmPhysicalVolume) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LvmPhysicalVolume) ProtoMessage() {}
+
+func (x *LvmPhysicalVolume) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[174]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LvmPhysicalVolume.ProtoReflect.Descriptor instead.
+func (*LvmPhysicalVolume) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{174}
+}
+
+func (x *LvmPhysicalVolume) GetDevice() string {
+	if x != nil {
+		return x.Device
+	}
+	return ""
+}
+
+func (x *LvmPhysicalVolume) GetPvUuid() string {
+	if x != nil {
+		return x.PvUuid
+	}
+	return ""
+}
+
+func (x *LvmPhysicalVolume) GetSizeBytes() int64 {
+	if x != nil {
+		return x.SizeBytes
+	}
+	return 0
+}
+
+func (x *LvmPhysicalVolume) GetState() string {
+	if x != nil {
+		return x.State
+	}
+	return ""
+}
+
+type ScanSharedLvmRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	VgName        string                 `protobuf:"bytes,2,opt,name=vg_name,json=vgName,proto3" json:"vg_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ScanSharedLvmRequest) Reset() {
+	*x = ScanSharedLvmRequest{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[175]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScanSharedLvmRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScanSharedLvmRequest) ProtoMessage() {}
+
+func (x *ScanSharedLvmRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[175]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScanSharedLvmRequest.ProtoReflect.Descriptor instead.
+func (*ScanSharedLvmRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{175}
+}
+
+func (x *ScanSharedLvmRequest) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *ScanSharedLvmRequest) GetVgName() string {
+	if x != nil {
+		return x.VgName
+	}
+	return ""
+}
+
+type ScanSharedLvmResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Host  *SharedLvmHost         `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
+	// issues are pre-flight failures for this host, already phrased for an
+	// operator.
+	Issues        []string `protobuf:"bytes,2,rep,name=issues,proto3" json:"issues,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ScanSharedLvmResponse) Reset() {
+	*x = ScanSharedLvmResponse{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[176]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScanSharedLvmResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScanSharedLvmResponse) ProtoMessage() {}
+
+func (x *ScanSharedLvmResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[176]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScanSharedLvmResponse.ProtoReflect.Descriptor instead.
+func (*ScanSharedLvmResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{176}
+}
+
+func (x *ScanSharedLvmResponse) GetHost() *SharedLvmHost {
+	if x != nil {
+		return x.Host
+	}
+	return nil
+}
+
+func (x *ScanSharedLvmResponse) GetIssues() []string {
+	if x != nil {
+		return x.Issues
+	}
+	return nil
+}
+
+// Shared Lvm mutations carry the director's fencing token. A host refuses a
+// mutation on a shared VG without a token it issued and that is still valid,
+// so two directors (or a stale one) cannot both write.
+type StorageFencing struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Token string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	// ttl_seconds is how long the caller's lease has left.
+	TtlSeconds    int64 `protobuf:"varint,2,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StorageFencing) Reset() {
+	*x = StorageFencing{}
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[177]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StorageFencing) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StorageFencing) ProtoMessage() {}
+
+func (x *StorageFencing) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_storage_provisioning_service_proto_msgTypes[177]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StorageFencing.ProtoReflect.Descriptor instead.
+func (*StorageFencing) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP(), []int{177}
+}
+
+func (x *StorageFencing) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *StorageFencing) GetTtlSeconds() int64 {
+	if x != nil {
+		return x.TtlSeconds
+	}
+	return 0
+}
+
 var File_pilab_core_v1_storage_provisioning_service_proto protoreflect.FileDescriptor
 
 const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
@@ -13102,7 +13474,7 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	" \x01(\bR\bisShared\x12.\n" +
 	"\x03qos\x18\v \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x129\n" +
 	"\n" +
-	"created_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xcd\x01\n" +
+	"created_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x86\x02\n" +
 	"\x13CreateVolumeRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
 	"\tpool_name\x18\x02 \x01(\tR\bpoolName\x12\x1f\n" +
@@ -13110,26 +13482,29 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"volumeName\x12\x17\n" +
 	"\asize_mb\x18\x04 \x01(\x03R\x06sizeMb\x12\x16\n" +
 	"\x06format\x18\x05 \x01(\tR\x06format\x12.\n" +
-	"\x03qos\x18\x06 \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\"\x80\x01\n" +
+	"\x03qos\x18\x06 \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x127\n" +
+	"\afencing\x18\a \x01(\v2\x1d.pilab.core.v1.StorageFencingR\afencing\"\x80\x01\n" +
 	"\x14CreateVolumeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x124\n" +
-	"\x06volume\x18\x03 \x01(\v2\x1c.pilab.core.v1.StorageVolumeR\x06volume\"\x82\x01\n" +
+	"\x06volume\x18\x03 \x01(\v2\x1c.pilab.core.v1.StorageVolumeR\x06volume\"\xbb\x01\n" +
 	"\x13DeleteVolumeRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
 	"\tpool_name\x18\x02 \x01(\tR\bpoolName\x12\x1f\n" +
 	"\vvolume_name\x18\x03 \x01(\tR\n" +
 	"volumeName\x12\x14\n" +
-	"\x05force\x18\x04 \x01(\bR\x05force\"J\n" +
+	"\x05force\x18\x04 \x01(\bR\x05force\x127\n" +
+	"\afencing\x18\x05 \x01(\v2\x1d.pilab.core.v1.StorageFencingR\afencing\"J\n" +
 	"\x14DeleteVolumeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\x8c\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xc5\x01\n" +
 	"\x13ResizeVolumeRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
 	"\tpool_name\x18\x02 \x01(\tR\bpoolName\x12\x1f\n" +
 	"\vvolume_name\x18\x03 \x01(\tR\n" +
 	"volumeName\x12\x1e\n" +
-	"\vnew_size_mb\x18\x04 \x01(\x03R\tnewSizeMb\"\x80\x01\n" +
+	"\vnew_size_mb\x18\x04 \x01(\x03R\tnewSizeMb\x127\n" +
+	"\afencing\x18\x05 \x01(\v2\x1d.pilab.core.v1.StorageFencingR\afencing\"\x80\x01\n" +
 	"\x14ResizeVolumeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x124\n" +
@@ -13659,7 +14034,33 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x03ids\x18\x02 \x03(\tR\x03ids\x12K\n" +
 	"\x14clear_all_older_than\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x11clearAllOlderThan\"6\n" +
 	"\x1aClearStorageEventsResponse\x12\x18\n" +
-	"\acleared\x18\x01 \x01(\x05R\acleared*v\n" +
+	"\acleared\x18\x01 \x01(\x05R\acleared\"\xfc\x01\n" +
+	"\rSharedLvmHost\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1d\n" +
+	"\n" +
+	"vg_visible\x18\x02 \x01(\bR\tvgVisible\x12\x17\n" +
+	"\avg_uuid\x18\x03 \x01(\tR\x06vgUuid\x12\x12\n" +
+	"\x04wwid\x18\x04 \x01(\tR\x04wwid\x12:\n" +
+	"\adevices\x18\x05 \x03(\v2 .pilab.core.v1.LvmPhysicalVolumeR\adevices\x12\x14\n" +
+	"\x05paths\x18\x06 \x01(\x05R\x05paths\x12\x1c\n" +
+	"\tmultipath\x18\a \x01(\bR\tmultipath\x12\x16\n" +
+	"\x06issues\x18\b \x03(\tR\x06issues\"y\n" +
+	"\x11LvmPhysicalVolume\x12\x16\n" +
+	"\x06device\x18\x01 \x01(\tR\x06device\x12\x17\n" +
+	"\apv_uuid\x18\x02 \x01(\tR\x06pvUuid\x12\x1d\n" +
+	"\n" +
+	"size_bytes\x18\x03 \x01(\x03R\tsizeBytes\x12\x14\n" +
+	"\x05state\x18\x04 \x01(\tR\x05state\"H\n" +
+	"\x14ScanSharedLvmRequest\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x17\n" +
+	"\avg_name\x18\x02 \x01(\tR\x06vgName\"a\n" +
+	"\x15ScanSharedLvmResponse\x120\n" +
+	"\x04host\x18\x01 \x01(\v2\x1c.pilab.core.v1.SharedLvmHostR\x04host\x12\x16\n" +
+	"\x06issues\x18\x02 \x03(\tR\x06issues\"G\n" +
+	"\x0eStorageFencing\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\x1f\n" +
+	"\vttl_seconds\x18\x02 \x01(\x03R\n" +
+	"ttlSeconds*v\n" +
 	"\x12PartitionTableType\x12$\n" +
 	" PARTITION_TABLE_TYPE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PARTITION_TABLE_TYPE_GPT\x10\x01\x12\x1c\n" +
@@ -13685,7 +14086,7 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x10StoragePoolScope\x12\"\n" +
 	"\x1eSTORAGE_POOL_SCOPE_UNSPECIFIED\x10\x00\x12!\n" +
 	"\x1dSTORAGE_POOL_SCOPE_NODE_LOCAL\x10\x01\x12%\n" +
-	"!STORAGE_POOL_SCOPE_CLUSTER_SHARED\x10\x02*\xf2\x01\n" +
+	"!STORAGE_POOL_SCOPE_CLUSTER_SHARED\x10\x02*\x8f\x02\n" +
 	"\x11StoragePoolDriver\x12#\n" +
 	"\x1fSTORAGE_POOL_DRIVER_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cSTORAGE_POOL_DRIVER_CEPH_RBD\x10\x01\x12\x1b\n" +
@@ -13693,7 +14094,8 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x17STORAGE_POOL_DRIVER_ZFS\x10\x03\x12 \n" +
 	"\x1cSTORAGE_POOL_DRIVER_LVM_THIN\x10\x04\x12\x1b\n" +
 	"\x17STORAGE_POOL_DRIVER_NFS\x10\x05\x12\x1d\n" +
-	"\x19STORAGE_POOL_DRIVER_ISCSI\x10\x06*\x94\x01\n" +
+	"\x19STORAGE_POOL_DRIVER_ISCSI\x10\x06\x12\x1b\n" +
+	"\x17STORAGE_POOL_DRIVER_LVM\x10\a*\x94\x01\n" +
 	"\x14MigrationStorageMode\x12&\n" +
 	"\"MIGRATION_STORAGE_MODE_UNSPECIFIED\x10\x00\x12+\n" +
 	"'MIGRATION_STORAGE_MODE_SHARED_ZERO_COPY\x10\x01\x12'\n" +
@@ -13751,7 +14153,7 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x1bSTORAGE_PRINCIPAL_KIND_USER\x10\x01\x12 \n" +
 	"\x1cSTORAGE_PRINCIPAL_KIND_GROUP\x10\x02\x12\x1f\n" +
 	"\x1bSTORAGE_PRINCIPAL_KIND_HOST\x10\x03\x12&\n" +
-	"\"STORAGE_PRINCIPAL_KIND_APPLICATION\x10\x042\xe09\n" +
+	"\"STORAGE_PRINCIPAL_KIND_APPLICATION\x10\x042\xbc:\n" +
 	"\x1aStorageProvisioningService\x12T\n" +
 	"\vListDevices\x12!.pilab.core.v1.ListDevicesRequest\x1a\".pilab.core.v1.ListDevicesResponse\x12Z\n" +
 	"\rRescanDevices\x12#.pilab.core.v1.RescanDevicesRequest\x1a$.pilab.core.v1.RescanDevicesResponse\x12]\n" +
@@ -13827,7 +14229,8 @@ const file_pilab_core_v1_storage_provisioning_service_proto_rawDesc = "" +
 	"\x17DeleteStorageAccessRule\x12-.pilab.core.v1.DeleteStorageAccessRuleRequest\x1a..pilab.core.v1.DeleteStorageAccessRuleResponse\x12f\n" +
 	"\x11ListStorageEvents\x12'.pilab.core.v1.ListStorageEventsRequest\x1a(.pilab.core.v1.ListStorageEventsResponse\x12{\n" +
 	"\x18AcknowledgeStorageEvents\x12..pilab.core.v1.AcknowledgeStorageEventsRequest\x1a/.pilab.core.v1.AcknowledgeStorageEventsResponse\x12i\n" +
-	"\x12ClearStorageEvents\x12(.pilab.core.v1.ClearStorageEventsRequest\x1a).pilab.core.v1.ClearStorageEventsResponse\x12r\n" +
+	"\x12ClearStorageEvents\x12(.pilab.core.v1.ClearStorageEventsRequest\x1a).pilab.core.v1.ClearStorageEventsResponse\x12Z\n" +
+	"\rScanSharedLvm\x12#.pilab.core.v1.ScanSharedLvmRequest\x1a$.pilab.core.v1.ScanSharedLvmResponse\x12r\n" +
 	"\x15CheckMigrationStorage\x12+.pilab.core.v1.CheckMigrationStorageRequest\x1a,.pilab.core.v1.CheckMigrationStorageResponseB2Z0go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1b\x06proto3"
 
 var (
@@ -13843,7 +14246,7 @@ func file_pilab_core_v1_storage_provisioning_service_proto_rawDescGZIP() []byte 
 }
 
 var file_pilab_core_v1_storage_provisioning_service_proto_enumTypes = make([]protoimpl.EnumInfo, 15)
-var file_pilab_core_v1_storage_provisioning_service_proto_msgTypes = make([]protoimpl.MessageInfo, 177)
+var file_pilab_core_v1_storage_provisioning_service_proto_msgTypes = make([]protoimpl.MessageInfo, 182)
 var file_pilab_core_v1_storage_provisioning_service_proto_goTypes = []any{
 	(PartitionTableType)(0),                     // 0: pilab.core.v1.PartitionTableType
 	(PartitionType)(0),                          // 1: pilab.core.v1.PartitionType
@@ -14033,11 +14436,16 @@ var file_pilab_core_v1_storage_provisioning_service_proto_goTypes = []any{
 	(*AcknowledgeStorageEventsResponse)(nil),    // 185: pilab.core.v1.AcknowledgeStorageEventsResponse
 	(*ClearStorageEventsRequest)(nil),           // 186: pilab.core.v1.ClearStorageEventsRequest
 	(*ClearStorageEventsResponse)(nil),          // 187: pilab.core.v1.ClearStorageEventsResponse
-	nil,                                         // 188: pilab.core.v1.CreateZpoolRequest.PropertiesEntry
-	nil,                                         // 189: pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
-	nil,                                         // 190: pilab.core.v1.SetStorageTuningRequest.ValuesEntry
-	nil,                                         // 191: pilab.core.v1.StorageEvent.FieldsEntry
-	(*timestamppb.Timestamp)(nil),               // 192: google.protobuf.Timestamp
+	(*SharedLvmHost)(nil),                       // 188: pilab.core.v1.SharedLvmHost
+	(*LvmPhysicalVolume)(nil),                   // 189: pilab.core.v1.LvmPhysicalVolume
+	(*ScanSharedLvmRequest)(nil),                // 190: pilab.core.v1.ScanSharedLvmRequest
+	(*ScanSharedLvmResponse)(nil),               // 191: pilab.core.v1.ScanSharedLvmResponse
+	(*StorageFencing)(nil),                      // 192: pilab.core.v1.StorageFencing
+	nil,                                         // 193: pilab.core.v1.CreateZpoolRequest.PropertiesEntry
+	nil,                                         // 194: pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
+	nil,                                         // 195: pilab.core.v1.SetStorageTuningRequest.ValuesEntry
+	nil,                                         // 196: pilab.core.v1.StorageEvent.FieldsEntry
+	(*timestamppb.Timestamp)(nil),               // 197: google.protobuf.Timestamp
 }
 var file_pilab_core_v1_storage_provisioning_service_proto_depIdxs = []int32{
 	15,  // 0: pilab.core.v1.BlockDevice.children:type_name -> pilab.core.v1.BlockDevice
@@ -14053,8 +14461,8 @@ var file_pilab_core_v1_storage_provisioning_service_proto_depIdxs = []int32{
 	58,  // 10: pilab.core.v1.ListZfsResponse.pools:type_name -> pilab.core.v1.ZfsPool
 	59,  // 11: pilab.core.v1.ListZfsResponse.datasets:type_name -> pilab.core.v1.ZfsDataset
 	3,   // 12: pilab.core.v1.CreateZpoolRequest.raid_type:type_name -> pilab.core.v1.ZfsRaidType
-	188, // 13: pilab.core.v1.CreateZpoolRequest.properties:type_name -> pilab.core.v1.CreateZpoolRequest.PropertiesEntry
-	189, // 14: pilab.core.v1.CreateZfsDatasetRequest.properties:type_name -> pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
+	193, // 13: pilab.core.v1.CreateZpoolRequest.properties:type_name -> pilab.core.v1.CreateZpoolRequest.PropertiesEntry
+	194, // 14: pilab.core.v1.CreateZfsDatasetRequest.properties:type_name -> pilab.core.v1.CreateZfsDatasetRequest.PropertiesEntry
 	4,   // 15: pilab.core.v1.StoragePoolDescriptor.scope:type_name -> pilab.core.v1.StoragePoolScope
 	5,   // 16: pilab.core.v1.StoragePoolDescriptor.driver:type_name -> pilab.core.v1.StoragePoolDriver
 	72,  // 17: pilab.core.v1.StoragePoolDescriptor.default_qos:type_name -> pilab.core.v1.DiskQoSConfig
@@ -14071,232 +14479,239 @@ var file_pilab_core_v1_storage_provisioning_service_proto_depIdxs = []int32{
 	78,  // 28: pilab.core.v1.UpdateStoragePoolResponse.pool:type_name -> pilab.core.v1.StoragePoolDescriptor
 	5,   // 29: pilab.core.v1.StorageVolume.driver:type_name -> pilab.core.v1.StoragePoolDriver
 	72,  // 30: pilab.core.v1.StorageVolume.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	192, // 31: pilab.core.v1.StorageVolume.created_at:type_name -> google.protobuf.Timestamp
+	197, // 31: pilab.core.v1.StorageVolume.created_at:type_name -> google.protobuf.Timestamp
 	72,  // 32: pilab.core.v1.CreateVolumeRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	89,  // 33: pilab.core.v1.CreateVolumeResponse.volume:type_name -> pilab.core.v1.StorageVolume
-	89,  // 34: pilab.core.v1.ResizeVolumeResponse.volume:type_name -> pilab.core.v1.StorageVolume
-	89,  // 35: pilab.core.v1.ListVolumesResponse.volumes:type_name -> pilab.core.v1.StorageVolume
-	72,  // 36: pilab.core.v1.SetDiskQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	72,  // 37: pilab.core.v1.SetDiskQoSResponse.applied_qos:type_name -> pilab.core.v1.DiskQoSConfig
-	72,  // 38: pilab.core.v1.GetDiskQoSResponse.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	15,  // 39: pilab.core.v1.CheckMigrationStorageRequest.disks:type_name -> pilab.core.v1.BlockDevice
-	6,   // 40: pilab.core.v1.CheckMigrationStorageResponse.mode:type_name -> pilab.core.v1.MigrationStorageMode
-	102, // 41: pilab.core.v1.CheckMigrationStorageResponse.non_shared_disks:type_name -> pilab.core.v1.NonSharedDiskInfo
-	7,   // 42: pilab.core.v1.RaidSet.level:type_name -> pilab.core.v1.RaidLevel
-	8,   // 43: pilab.core.v1.RaidSet.state:type_name -> pilab.core.v1.RaidState
-	105, // 44: pilab.core.v1.RaidSet.members:type_name -> pilab.core.v1.RaidMember
-	192, // 45: pilab.core.v1.RaidSet.created_at:type_name -> google.protobuf.Timestamp
-	106, // 46: pilab.core.v1.ListRaidSetsResponse.sets:type_name -> pilab.core.v1.RaidSet
-	7,   // 47: pilab.core.v1.CreateRaidSetRequest.level:type_name -> pilab.core.v1.RaidLevel
-	106, // 48: pilab.core.v1.CreateRaidSetResponse.set:type_name -> pilab.core.v1.RaidSet
-	106, // 49: pilab.core.v1.AssembleRaidSetResponse.set:type_name -> pilab.core.v1.RaidSet
-	106, // 50: pilab.core.v1.GrowRaidSetResponse.set:type_name -> pilab.core.v1.RaidSet
-	106, // 51: pilab.core.v1.FailRaidMemberResponse.set:type_name -> pilab.core.v1.RaidSet
-	106, // 52: pilab.core.v1.RemoveRaidMemberResponse.set:type_name -> pilab.core.v1.RaidSet
-	106, // 53: pilab.core.v1.ReplaceRaidMemberResponse.set:type_name -> pilab.core.v1.RaidSet
-	192, // 54: pilab.core.v1.StorageIoStats.sampled_at:type_name -> google.protobuf.Timestamp
-	123, // 55: pilab.core.v1.GetStorageIoResponse.samples:type_name -> pilab.core.v1.StorageIoStats
-	192, // 56: pilab.core.v1.GetStorageIoResponse.sampled_at:type_name -> google.protobuf.Timestamp
-	9,   // 57: pilab.core.v1.StorageMaintenanceTask.kind:type_name -> pilab.core.v1.StorageMaintenanceKind
-	10,  // 58: pilab.core.v1.StorageMaintenanceTask.state:type_name -> pilab.core.v1.StorageMaintenanceState
-	192, // 59: pilab.core.v1.StorageMaintenanceTask.started_at:type_name -> google.protobuf.Timestamp
-	192, // 60: pilab.core.v1.StorageMaintenanceTask.finished_at:type_name -> google.protobuf.Timestamp
-	9,   // 61: pilab.core.v1.StartStorageMaintenanceRequest.kind:type_name -> pilab.core.v1.StorageMaintenanceKind
-	126, // 62: pilab.core.v1.StartStorageMaintenanceResponse.task:type_name -> pilab.core.v1.StorageMaintenanceTask
-	126, // 63: pilab.core.v1.ListStorageMaintenanceTasksResponse.tasks:type_name -> pilab.core.v1.StorageMaintenanceTask
-	126, // 64: pilab.core.v1.CancelStorageMaintenanceResponse.task:type_name -> pilab.core.v1.StorageMaintenanceTask
-	134, // 65: pilab.core.v1.GetStorageTuningResponse.knobs:type_name -> pilab.core.v1.StorageTuningKnob
-	190, // 66: pilab.core.v1.SetStorageTuningRequest.values:type_name -> pilab.core.v1.SetStorageTuningRequest.ValuesEntry
-	134, // 67: pilab.core.v1.SetStorageTuningResponse.knobs:type_name -> pilab.core.v1.StorageTuningKnob
-	192, // 68: pilab.core.v1.StorageSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	139, // 69: pilab.core.v1.ListStorageSnapshotsResponse.snapshots:type_name -> pilab.core.v1.StorageSnapshot
-	139, // 70: pilab.core.v1.CreateStorageSnapshotResponse.snapshot:type_name -> pilab.core.v1.StorageSnapshot
-	192, // 71: pilab.core.v1.StorageBackup.started_at:type_name -> google.protobuf.Timestamp
-	192, // 72: pilab.core.v1.StorageBackup.finished_at:type_name -> google.protobuf.Timestamp
-	149, // 73: pilab.core.v1.StartStorageBackupResponse.backup:type_name -> pilab.core.v1.StorageBackup
-	149, // 74: pilab.core.v1.ListStorageBackupsResponse.backups:type_name -> pilab.core.v1.StorageBackup
-	149, // 75: pilab.core.v1.CancelStorageBackupResponse.backup:type_name -> pilab.core.v1.StorageBackup
-	11,  // 76: pilab.core.v1.StorageEncryption.mode:type_name -> pilab.core.v1.StorageEncryptionMode
-	12,  // 77: pilab.core.v1.StorageEncryption.provider:type_name -> pilab.core.v1.StorageKeyProvider
-	192, // 78: pilab.core.v1.StorageEncryption.created_at:type_name -> google.protobuf.Timestamp
-	192, // 79: pilab.core.v1.StorageEncryption.rotated_at:type_name -> google.protobuf.Timestamp
-	11,  // 80: pilab.core.v1.StorageEncryption.supported_modes:type_name -> pilab.core.v1.StorageEncryptionMode
-	12,  // 81: pilab.core.v1.StorageEncryption.supported_providers:type_name -> pilab.core.v1.StorageKeyProvider
-	160, // 82: pilab.core.v1.GetStorageEncryptionResponse.encryption:type_name -> pilab.core.v1.StorageEncryption
-	11,  // 83: pilab.core.v1.EnableStorageEncryptionRequest.mode:type_name -> pilab.core.v1.StorageEncryptionMode
-	12,  // 84: pilab.core.v1.EnableStorageEncryptionRequest.provider:type_name -> pilab.core.v1.StorageKeyProvider
-	160, // 85: pilab.core.v1.EnableStorageEncryptionResponse.encryption:type_name -> pilab.core.v1.StorageEncryption
-	160, // 86: pilab.core.v1.StorageKeyResponse.encryption:type_name -> pilab.core.v1.StorageEncryption
-	192, // 87: pilab.core.v1.StorageKeyBackup.created_at:type_name -> google.protobuf.Timestamp
-	169, // 88: pilab.core.v1.BackupStorageKeyResponse.backup:type_name -> pilab.core.v1.StorageKeyBackup
-	169, // 89: pilab.core.v1.VerifyStorageKeyRequest.backup:type_name -> pilab.core.v1.StorageKeyBackup
-	14,  // 90: pilab.core.v1.StorageAccessRule.principal_kind:type_name -> pilab.core.v1.StoragePrincipalKind
-	13,  // 91: pilab.core.v1.StorageAccessRule.level:type_name -> pilab.core.v1.StorageAccessLevel
-	192, // 92: pilab.core.v1.StorageAccessRule.expires_at:type_name -> google.protobuf.Timestamp
-	192, // 93: pilab.core.v1.StorageAccessRule.created_at:type_name -> google.protobuf.Timestamp
-	174, // 94: pilab.core.v1.ListStorageAccessRulesResponse.rules:type_name -> pilab.core.v1.StorageAccessRule
-	174, // 95: pilab.core.v1.SetStorageAccessRuleRequest.rule:type_name -> pilab.core.v1.StorageAccessRule
-	174, // 96: pilab.core.v1.SetStorageAccessRuleResponse.rule:type_name -> pilab.core.v1.StorageAccessRule
-	192, // 97: pilab.core.v1.StorageEvent.at:type_name -> google.protobuf.Timestamp
-	192, // 98: pilab.core.v1.StorageEvent.acknowledged_at:type_name -> google.protobuf.Timestamp
-	191, // 99: pilab.core.v1.StorageEvent.fields:type_name -> pilab.core.v1.StorageEvent.FieldsEntry
-	192, // 100: pilab.core.v1.ListStorageEventsRequest.since:type_name -> google.protobuf.Timestamp
-	181, // 101: pilab.core.v1.ListStorageEventsResponse.events:type_name -> pilab.core.v1.StorageEvent
-	192, // 102: pilab.core.v1.AcknowledgeStorageEventsRequest.acknowledge_all_older_than:type_name -> google.protobuf.Timestamp
-	192, // 103: pilab.core.v1.ClearStorageEventsRequest.clear_all_older_than:type_name -> google.protobuf.Timestamp
-	16,  // 104: pilab.core.v1.StorageProvisioningService.ListDevices:input_type -> pilab.core.v1.ListDevicesRequest
-	22,  // 105: pilab.core.v1.StorageProvisioningService.RescanDevices:input_type -> pilab.core.v1.RescanDevicesRequest
-	18,  // 106: pilab.core.v1.StorageProvisioningService.InitializeDisk:input_type -> pilab.core.v1.InitializeDiskRequest
-	20,  // 107: pilab.core.v1.StorageProvisioningService.WipeDisk:input_type -> pilab.core.v1.WipeDiskRequest
-	25,  // 108: pilab.core.v1.StorageProvisioningService.GetDiskHealth:input_type -> pilab.core.v1.GetDiskHealthRequest
-	27,  // 109: pilab.core.v1.StorageProvisioningService.CreatePartition:input_type -> pilab.core.v1.CreatePartitionRequest
-	29,  // 110: pilab.core.v1.StorageProvisioningService.DeletePartition:input_type -> pilab.core.v1.DeletePartitionRequest
-	31,  // 111: pilab.core.v1.StorageProvisioningService.FormatPartition:input_type -> pilab.core.v1.FormatPartitionRequest
-	37,  // 112: pilab.core.v1.StorageProvisioningService.ResizePartition:input_type -> pilab.core.v1.ResizePartitionRequest
-	33,  // 113: pilab.core.v1.StorageProvisioningService.MountFilesystem:input_type -> pilab.core.v1.MountFilesystemRequest
-	35,  // 114: pilab.core.v1.StorageProvisioningService.UnmountFilesystem:input_type -> pilab.core.v1.UnmountFilesystemRequest
-	42,  // 115: pilab.core.v1.StorageProvisioningService.ListLvm:input_type -> pilab.core.v1.ListLvmRequest
-	44,  // 116: pilab.core.v1.StorageProvisioningService.CreateLvmPv:input_type -> pilab.core.v1.CreateLvmPvRequest
-	46,  // 117: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:input_type -> pilab.core.v1.RemoveLvmPvRequest
-	48,  // 118: pilab.core.v1.StorageProvisioningService.CreateLvmVg:input_type -> pilab.core.v1.CreateLvmVgRequest
-	50,  // 119: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:input_type -> pilab.core.v1.RemoveLvmVgRequest
-	52,  // 120: pilab.core.v1.StorageProvisioningService.CreateLvmLv:input_type -> pilab.core.v1.CreateLvmLvRequest
-	54,  // 121: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:input_type -> pilab.core.v1.RemoveLvmLvRequest
-	56,  // 122: pilab.core.v1.StorageProvisioningService.CreateLvmThinPool:input_type -> pilab.core.v1.CreateLvmThinPoolRequest
-	60,  // 123: pilab.core.v1.StorageProvisioningService.ListZfs:input_type -> pilab.core.v1.ListZfsRequest
-	62,  // 124: pilab.core.v1.StorageProvisioningService.CreateZpool:input_type -> pilab.core.v1.CreateZpoolRequest
-	64,  // 125: pilab.core.v1.StorageProvisioningService.DestroyZpool:input_type -> pilab.core.v1.DestroyZpoolRequest
-	66,  // 126: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:input_type -> pilab.core.v1.CreateZfsDatasetRequest
-	68,  // 127: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:input_type -> pilab.core.v1.DestroyZfsDatasetRequest
-	70,  // 128: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:input_type -> pilab.core.v1.CreateZfsZvolRequest
-	79,  // 129: pilab.core.v1.StorageProvisioningService.ListStoragePools:input_type -> pilab.core.v1.ListStoragePoolsRequest
-	81,  // 130: pilab.core.v1.StorageProvisioningService.GetStoragePool:input_type -> pilab.core.v1.GetStoragePoolRequest
-	83,  // 131: pilab.core.v1.StorageProvisioningService.CreateStoragePool:input_type -> pilab.core.v1.CreateStoragePoolRequest
-	85,  // 132: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:input_type -> pilab.core.v1.UpdateStoragePoolRequest
-	87,  // 133: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:input_type -> pilab.core.v1.DeleteStoragePoolRequest
-	90,  // 134: pilab.core.v1.StorageProvisioningService.CreateVolume:input_type -> pilab.core.v1.CreateVolumeRequest
-	92,  // 135: pilab.core.v1.StorageProvisioningService.DeleteVolume:input_type -> pilab.core.v1.DeleteVolumeRequest
-	94,  // 136: pilab.core.v1.StorageProvisioningService.ResizeVolume:input_type -> pilab.core.v1.ResizeVolumeRequest
-	96,  // 137: pilab.core.v1.StorageProvisioningService.ListVolumes:input_type -> pilab.core.v1.ListVolumesRequest
-	98,  // 138: pilab.core.v1.StorageProvisioningService.SetDiskQoS:input_type -> pilab.core.v1.SetDiskQoSRequest
-	100, // 139: pilab.core.v1.StorageProvisioningService.GetDiskQoS:input_type -> pilab.core.v1.GetDiskQoSRequest
-	107, // 140: pilab.core.v1.StorageProvisioningService.ListRaidSets:input_type -> pilab.core.v1.ListRaidSetsRequest
-	109, // 141: pilab.core.v1.StorageProvisioningService.CreateRaidSet:input_type -> pilab.core.v1.CreateRaidSetRequest
-	111, // 142: pilab.core.v1.StorageProvisioningService.AssembleRaidSet:input_type -> pilab.core.v1.AssembleRaidSetRequest
-	113, // 143: pilab.core.v1.StorageProvisioningService.GrowRaidSet:input_type -> pilab.core.v1.GrowRaidSetRequest
-	115, // 144: pilab.core.v1.StorageProvisioningService.FailRaidMember:input_type -> pilab.core.v1.FailRaidMemberRequest
-	117, // 145: pilab.core.v1.StorageProvisioningService.RemoveRaidMember:input_type -> pilab.core.v1.RemoveRaidMemberRequest
-	119, // 146: pilab.core.v1.StorageProvisioningService.ReplaceRaidMember:input_type -> pilab.core.v1.ReplaceRaidMemberRequest
-	121, // 147: pilab.core.v1.StorageProvisioningService.DeleteRaidSet:input_type -> pilab.core.v1.DeleteRaidSetRequest
-	124, // 148: pilab.core.v1.StorageProvisioningService.GetStorageIo:input_type -> pilab.core.v1.GetStorageIoRequest
-	127, // 149: pilab.core.v1.StorageProvisioningService.StartStorageMaintenance:input_type -> pilab.core.v1.StartStorageMaintenanceRequest
-	129, // 150: pilab.core.v1.StorageProvisioningService.ListStorageMaintenanceTasks:input_type -> pilab.core.v1.ListStorageMaintenanceTasksRequest
-	131, // 151: pilab.core.v1.StorageProvisioningService.CancelStorageMaintenance:input_type -> pilab.core.v1.CancelStorageMaintenanceRequest
-	135, // 152: pilab.core.v1.StorageProvisioningService.GetStorageTuning:input_type -> pilab.core.v1.GetStorageTuningRequest
-	137, // 153: pilab.core.v1.StorageProvisioningService.SetStorageTuning:input_type -> pilab.core.v1.SetStorageTuningRequest
-	140, // 154: pilab.core.v1.StorageProvisioningService.ListStorageSnapshots:input_type -> pilab.core.v1.ListStorageSnapshotsRequest
-	142, // 155: pilab.core.v1.StorageProvisioningService.CreateStorageSnapshot:input_type -> pilab.core.v1.CreateStorageSnapshotRequest
-	144, // 156: pilab.core.v1.StorageProvisioningService.DeleteStorageSnapshot:input_type -> pilab.core.v1.DeleteStorageSnapshotRequest
-	146, // 157: pilab.core.v1.StorageProvisioningService.RestoreStorageSnapshot:input_type -> pilab.core.v1.RestoreStorageSnapshotRequest
-	150, // 158: pilab.core.v1.StorageProvisioningService.StartStorageBackup:input_type -> pilab.core.v1.StartStorageBackupRequest
-	152, // 159: pilab.core.v1.StorageProvisioningService.ListStorageBackups:input_type -> pilab.core.v1.ListStorageBackupsRequest
-	154, // 160: pilab.core.v1.StorageProvisioningService.RestoreStorageBackup:input_type -> pilab.core.v1.RestoreStorageBackupRequest
-	156, // 161: pilab.core.v1.StorageProvisioningService.CancelStorageBackup:input_type -> pilab.core.v1.CancelStorageBackupRequest
-	158, // 162: pilab.core.v1.StorageProvisioningService.ApplyRetention:input_type -> pilab.core.v1.ApplyRetentionRequest
-	161, // 163: pilab.core.v1.StorageProvisioningService.GetStorageEncryption:input_type -> pilab.core.v1.GetStorageEncryptionRequest
-	163, // 164: pilab.core.v1.StorageProvisioningService.EnableStorageEncryption:input_type -> pilab.core.v1.EnableStorageEncryptionRequest
-	165, // 165: pilab.core.v1.StorageProvisioningService.DisableStorageEncryption:input_type -> pilab.core.v1.DisableStorageEncryptionRequest
-	167, // 166: pilab.core.v1.StorageProvisioningService.LockStoragePool:input_type -> pilab.core.v1.StorageKeyRequest
-	167, // 167: pilab.core.v1.StorageProvisioningService.UnlockStoragePool:input_type -> pilab.core.v1.StorageKeyRequest
-	167, // 168: pilab.core.v1.StorageProvisioningService.RotateStorageKey:input_type -> pilab.core.v1.StorageKeyRequest
-	170, // 169: pilab.core.v1.StorageProvisioningService.BackupStorageKey:input_type -> pilab.core.v1.BackupStorageKeyRequest
-	172, // 170: pilab.core.v1.StorageProvisioningService.VerifyStorageKey:input_type -> pilab.core.v1.VerifyStorageKeyRequest
-	175, // 171: pilab.core.v1.StorageProvisioningService.ListStorageAccessRules:input_type -> pilab.core.v1.ListStorageAccessRulesRequest
-	177, // 172: pilab.core.v1.StorageProvisioningService.SetStorageAccessRule:input_type -> pilab.core.v1.SetStorageAccessRuleRequest
-	179, // 173: pilab.core.v1.StorageProvisioningService.DeleteStorageAccessRule:input_type -> pilab.core.v1.DeleteStorageAccessRuleRequest
-	182, // 174: pilab.core.v1.StorageProvisioningService.ListStorageEvents:input_type -> pilab.core.v1.ListStorageEventsRequest
-	184, // 175: pilab.core.v1.StorageProvisioningService.AcknowledgeStorageEvents:input_type -> pilab.core.v1.AcknowledgeStorageEventsRequest
-	186, // 176: pilab.core.v1.StorageProvisioningService.ClearStorageEvents:input_type -> pilab.core.v1.ClearStorageEventsRequest
-	103, // 177: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:input_type -> pilab.core.v1.CheckMigrationStorageRequest
-	17,  // 178: pilab.core.v1.StorageProvisioningService.ListDevices:output_type -> pilab.core.v1.ListDevicesResponse
-	23,  // 179: pilab.core.v1.StorageProvisioningService.RescanDevices:output_type -> pilab.core.v1.RescanDevicesResponse
-	19,  // 180: pilab.core.v1.StorageProvisioningService.InitializeDisk:output_type -> pilab.core.v1.InitializeDiskResponse
-	21,  // 181: pilab.core.v1.StorageProvisioningService.WipeDisk:output_type -> pilab.core.v1.WipeDiskResponse
-	26,  // 182: pilab.core.v1.StorageProvisioningService.GetDiskHealth:output_type -> pilab.core.v1.GetDiskHealthResponse
-	28,  // 183: pilab.core.v1.StorageProvisioningService.CreatePartition:output_type -> pilab.core.v1.CreatePartitionResponse
-	30,  // 184: pilab.core.v1.StorageProvisioningService.DeletePartition:output_type -> pilab.core.v1.DeletePartitionResponse
-	32,  // 185: pilab.core.v1.StorageProvisioningService.FormatPartition:output_type -> pilab.core.v1.FormatPartitionResponse
-	38,  // 186: pilab.core.v1.StorageProvisioningService.ResizePartition:output_type -> pilab.core.v1.ResizePartitionResponse
-	34,  // 187: pilab.core.v1.StorageProvisioningService.MountFilesystem:output_type -> pilab.core.v1.MountFilesystemResponse
-	36,  // 188: pilab.core.v1.StorageProvisioningService.UnmountFilesystem:output_type -> pilab.core.v1.UnmountFilesystemResponse
-	43,  // 189: pilab.core.v1.StorageProvisioningService.ListLvm:output_type -> pilab.core.v1.ListLvmResponse
-	45,  // 190: pilab.core.v1.StorageProvisioningService.CreateLvmPv:output_type -> pilab.core.v1.CreateLvmPvResponse
-	47,  // 191: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:output_type -> pilab.core.v1.RemoveLvmPvResponse
-	49,  // 192: pilab.core.v1.StorageProvisioningService.CreateLvmVg:output_type -> pilab.core.v1.CreateLvmVgResponse
-	51,  // 193: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:output_type -> pilab.core.v1.RemoveLvmVgResponse
-	53,  // 194: pilab.core.v1.StorageProvisioningService.CreateLvmLv:output_type -> pilab.core.v1.CreateLvmLvResponse
-	55,  // 195: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:output_type -> pilab.core.v1.RemoveLvmLvResponse
-	57,  // 196: pilab.core.v1.StorageProvisioningService.CreateLvmThinPool:output_type -> pilab.core.v1.CreateLvmThinPoolResponse
-	61,  // 197: pilab.core.v1.StorageProvisioningService.ListZfs:output_type -> pilab.core.v1.ListZfsResponse
-	63,  // 198: pilab.core.v1.StorageProvisioningService.CreateZpool:output_type -> pilab.core.v1.CreateZpoolResponse
-	65,  // 199: pilab.core.v1.StorageProvisioningService.DestroyZpool:output_type -> pilab.core.v1.DestroyZpoolResponse
-	67,  // 200: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:output_type -> pilab.core.v1.CreateZfsDatasetResponse
-	69,  // 201: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:output_type -> pilab.core.v1.DestroyZfsDatasetResponse
-	71,  // 202: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:output_type -> pilab.core.v1.CreateZfsZvolResponse
-	80,  // 203: pilab.core.v1.StorageProvisioningService.ListStoragePools:output_type -> pilab.core.v1.ListStoragePoolsResponse
-	82,  // 204: pilab.core.v1.StorageProvisioningService.GetStoragePool:output_type -> pilab.core.v1.GetStoragePoolResponse
-	84,  // 205: pilab.core.v1.StorageProvisioningService.CreateStoragePool:output_type -> pilab.core.v1.CreateStoragePoolResponse
-	86,  // 206: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:output_type -> pilab.core.v1.UpdateStoragePoolResponse
-	88,  // 207: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:output_type -> pilab.core.v1.DeleteStoragePoolResponse
-	91,  // 208: pilab.core.v1.StorageProvisioningService.CreateVolume:output_type -> pilab.core.v1.CreateVolumeResponse
-	93,  // 209: pilab.core.v1.StorageProvisioningService.DeleteVolume:output_type -> pilab.core.v1.DeleteVolumeResponse
-	95,  // 210: pilab.core.v1.StorageProvisioningService.ResizeVolume:output_type -> pilab.core.v1.ResizeVolumeResponse
-	97,  // 211: pilab.core.v1.StorageProvisioningService.ListVolumes:output_type -> pilab.core.v1.ListVolumesResponse
-	99,  // 212: pilab.core.v1.StorageProvisioningService.SetDiskQoS:output_type -> pilab.core.v1.SetDiskQoSResponse
-	101, // 213: pilab.core.v1.StorageProvisioningService.GetDiskQoS:output_type -> pilab.core.v1.GetDiskQoSResponse
-	108, // 214: pilab.core.v1.StorageProvisioningService.ListRaidSets:output_type -> pilab.core.v1.ListRaidSetsResponse
-	110, // 215: pilab.core.v1.StorageProvisioningService.CreateRaidSet:output_type -> pilab.core.v1.CreateRaidSetResponse
-	112, // 216: pilab.core.v1.StorageProvisioningService.AssembleRaidSet:output_type -> pilab.core.v1.AssembleRaidSetResponse
-	114, // 217: pilab.core.v1.StorageProvisioningService.GrowRaidSet:output_type -> pilab.core.v1.GrowRaidSetResponse
-	116, // 218: pilab.core.v1.StorageProvisioningService.FailRaidMember:output_type -> pilab.core.v1.FailRaidMemberResponse
-	118, // 219: pilab.core.v1.StorageProvisioningService.RemoveRaidMember:output_type -> pilab.core.v1.RemoveRaidMemberResponse
-	120, // 220: pilab.core.v1.StorageProvisioningService.ReplaceRaidMember:output_type -> pilab.core.v1.ReplaceRaidMemberResponse
-	122, // 221: pilab.core.v1.StorageProvisioningService.DeleteRaidSet:output_type -> pilab.core.v1.DeleteRaidSetResponse
-	125, // 222: pilab.core.v1.StorageProvisioningService.GetStorageIo:output_type -> pilab.core.v1.GetStorageIoResponse
-	128, // 223: pilab.core.v1.StorageProvisioningService.StartStorageMaintenance:output_type -> pilab.core.v1.StartStorageMaintenanceResponse
-	130, // 224: pilab.core.v1.StorageProvisioningService.ListStorageMaintenanceTasks:output_type -> pilab.core.v1.ListStorageMaintenanceTasksResponse
-	132, // 225: pilab.core.v1.StorageProvisioningService.CancelStorageMaintenance:output_type -> pilab.core.v1.CancelStorageMaintenanceResponse
-	136, // 226: pilab.core.v1.StorageProvisioningService.GetStorageTuning:output_type -> pilab.core.v1.GetStorageTuningResponse
-	138, // 227: pilab.core.v1.StorageProvisioningService.SetStorageTuning:output_type -> pilab.core.v1.SetStorageTuningResponse
-	141, // 228: pilab.core.v1.StorageProvisioningService.ListStorageSnapshots:output_type -> pilab.core.v1.ListStorageSnapshotsResponse
-	143, // 229: pilab.core.v1.StorageProvisioningService.CreateStorageSnapshot:output_type -> pilab.core.v1.CreateStorageSnapshotResponse
-	145, // 230: pilab.core.v1.StorageProvisioningService.DeleteStorageSnapshot:output_type -> pilab.core.v1.DeleteStorageSnapshotResponse
-	147, // 231: pilab.core.v1.StorageProvisioningService.RestoreStorageSnapshot:output_type -> pilab.core.v1.RestoreStorageSnapshotResponse
-	151, // 232: pilab.core.v1.StorageProvisioningService.StartStorageBackup:output_type -> pilab.core.v1.StartStorageBackupResponse
-	153, // 233: pilab.core.v1.StorageProvisioningService.ListStorageBackups:output_type -> pilab.core.v1.ListStorageBackupsResponse
-	155, // 234: pilab.core.v1.StorageProvisioningService.RestoreStorageBackup:output_type -> pilab.core.v1.RestoreStorageBackupResponse
-	157, // 235: pilab.core.v1.StorageProvisioningService.CancelStorageBackup:output_type -> pilab.core.v1.CancelStorageBackupResponse
-	159, // 236: pilab.core.v1.StorageProvisioningService.ApplyRetention:output_type -> pilab.core.v1.ApplyRetentionResponse
-	162, // 237: pilab.core.v1.StorageProvisioningService.GetStorageEncryption:output_type -> pilab.core.v1.GetStorageEncryptionResponse
-	164, // 238: pilab.core.v1.StorageProvisioningService.EnableStorageEncryption:output_type -> pilab.core.v1.EnableStorageEncryptionResponse
-	166, // 239: pilab.core.v1.StorageProvisioningService.DisableStorageEncryption:output_type -> pilab.core.v1.DisableStorageEncryptionResponse
-	168, // 240: pilab.core.v1.StorageProvisioningService.LockStoragePool:output_type -> pilab.core.v1.StorageKeyResponse
-	168, // 241: pilab.core.v1.StorageProvisioningService.UnlockStoragePool:output_type -> pilab.core.v1.StorageKeyResponse
-	168, // 242: pilab.core.v1.StorageProvisioningService.RotateStorageKey:output_type -> pilab.core.v1.StorageKeyResponse
-	171, // 243: pilab.core.v1.StorageProvisioningService.BackupStorageKey:output_type -> pilab.core.v1.BackupStorageKeyResponse
-	173, // 244: pilab.core.v1.StorageProvisioningService.VerifyStorageKey:output_type -> pilab.core.v1.VerifyStorageKeyResponse
-	176, // 245: pilab.core.v1.StorageProvisioningService.ListStorageAccessRules:output_type -> pilab.core.v1.ListStorageAccessRulesResponse
-	178, // 246: pilab.core.v1.StorageProvisioningService.SetStorageAccessRule:output_type -> pilab.core.v1.SetStorageAccessRuleResponse
-	180, // 247: pilab.core.v1.StorageProvisioningService.DeleteStorageAccessRule:output_type -> pilab.core.v1.DeleteStorageAccessRuleResponse
-	183, // 248: pilab.core.v1.StorageProvisioningService.ListStorageEvents:output_type -> pilab.core.v1.ListStorageEventsResponse
-	185, // 249: pilab.core.v1.StorageProvisioningService.AcknowledgeStorageEvents:output_type -> pilab.core.v1.AcknowledgeStorageEventsResponse
-	187, // 250: pilab.core.v1.StorageProvisioningService.ClearStorageEvents:output_type -> pilab.core.v1.ClearStorageEventsResponse
-	104, // 251: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:output_type -> pilab.core.v1.CheckMigrationStorageResponse
-	178, // [178:252] is the sub-list for method output_type
-	104, // [104:178] is the sub-list for method input_type
-	104, // [104:104] is the sub-list for extension type_name
-	104, // [104:104] is the sub-list for extension extendee
-	0,   // [0:104] is the sub-list for field type_name
+	192, // 33: pilab.core.v1.CreateVolumeRequest.fencing:type_name -> pilab.core.v1.StorageFencing
+	89,  // 34: pilab.core.v1.CreateVolumeResponse.volume:type_name -> pilab.core.v1.StorageVolume
+	192, // 35: pilab.core.v1.DeleteVolumeRequest.fencing:type_name -> pilab.core.v1.StorageFencing
+	192, // 36: pilab.core.v1.ResizeVolumeRequest.fencing:type_name -> pilab.core.v1.StorageFencing
+	89,  // 37: pilab.core.v1.ResizeVolumeResponse.volume:type_name -> pilab.core.v1.StorageVolume
+	89,  // 38: pilab.core.v1.ListVolumesResponse.volumes:type_name -> pilab.core.v1.StorageVolume
+	72,  // 39: pilab.core.v1.SetDiskQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	72,  // 40: pilab.core.v1.SetDiskQoSResponse.applied_qos:type_name -> pilab.core.v1.DiskQoSConfig
+	72,  // 41: pilab.core.v1.GetDiskQoSResponse.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	15,  // 42: pilab.core.v1.CheckMigrationStorageRequest.disks:type_name -> pilab.core.v1.BlockDevice
+	6,   // 43: pilab.core.v1.CheckMigrationStorageResponse.mode:type_name -> pilab.core.v1.MigrationStorageMode
+	102, // 44: pilab.core.v1.CheckMigrationStorageResponse.non_shared_disks:type_name -> pilab.core.v1.NonSharedDiskInfo
+	7,   // 45: pilab.core.v1.RaidSet.level:type_name -> pilab.core.v1.RaidLevel
+	8,   // 46: pilab.core.v1.RaidSet.state:type_name -> pilab.core.v1.RaidState
+	105, // 47: pilab.core.v1.RaidSet.members:type_name -> pilab.core.v1.RaidMember
+	197, // 48: pilab.core.v1.RaidSet.created_at:type_name -> google.protobuf.Timestamp
+	106, // 49: pilab.core.v1.ListRaidSetsResponse.sets:type_name -> pilab.core.v1.RaidSet
+	7,   // 50: pilab.core.v1.CreateRaidSetRequest.level:type_name -> pilab.core.v1.RaidLevel
+	106, // 51: pilab.core.v1.CreateRaidSetResponse.set:type_name -> pilab.core.v1.RaidSet
+	106, // 52: pilab.core.v1.AssembleRaidSetResponse.set:type_name -> pilab.core.v1.RaidSet
+	106, // 53: pilab.core.v1.GrowRaidSetResponse.set:type_name -> pilab.core.v1.RaidSet
+	106, // 54: pilab.core.v1.FailRaidMemberResponse.set:type_name -> pilab.core.v1.RaidSet
+	106, // 55: pilab.core.v1.RemoveRaidMemberResponse.set:type_name -> pilab.core.v1.RaidSet
+	106, // 56: pilab.core.v1.ReplaceRaidMemberResponse.set:type_name -> pilab.core.v1.RaidSet
+	197, // 57: pilab.core.v1.StorageIoStats.sampled_at:type_name -> google.protobuf.Timestamp
+	123, // 58: pilab.core.v1.GetStorageIoResponse.samples:type_name -> pilab.core.v1.StorageIoStats
+	197, // 59: pilab.core.v1.GetStorageIoResponse.sampled_at:type_name -> google.protobuf.Timestamp
+	9,   // 60: pilab.core.v1.StorageMaintenanceTask.kind:type_name -> pilab.core.v1.StorageMaintenanceKind
+	10,  // 61: pilab.core.v1.StorageMaintenanceTask.state:type_name -> pilab.core.v1.StorageMaintenanceState
+	197, // 62: pilab.core.v1.StorageMaintenanceTask.started_at:type_name -> google.protobuf.Timestamp
+	197, // 63: pilab.core.v1.StorageMaintenanceTask.finished_at:type_name -> google.protobuf.Timestamp
+	9,   // 64: pilab.core.v1.StartStorageMaintenanceRequest.kind:type_name -> pilab.core.v1.StorageMaintenanceKind
+	126, // 65: pilab.core.v1.StartStorageMaintenanceResponse.task:type_name -> pilab.core.v1.StorageMaintenanceTask
+	126, // 66: pilab.core.v1.ListStorageMaintenanceTasksResponse.tasks:type_name -> pilab.core.v1.StorageMaintenanceTask
+	126, // 67: pilab.core.v1.CancelStorageMaintenanceResponse.task:type_name -> pilab.core.v1.StorageMaintenanceTask
+	134, // 68: pilab.core.v1.GetStorageTuningResponse.knobs:type_name -> pilab.core.v1.StorageTuningKnob
+	195, // 69: pilab.core.v1.SetStorageTuningRequest.values:type_name -> pilab.core.v1.SetStorageTuningRequest.ValuesEntry
+	134, // 70: pilab.core.v1.SetStorageTuningResponse.knobs:type_name -> pilab.core.v1.StorageTuningKnob
+	197, // 71: pilab.core.v1.StorageSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	139, // 72: pilab.core.v1.ListStorageSnapshotsResponse.snapshots:type_name -> pilab.core.v1.StorageSnapshot
+	139, // 73: pilab.core.v1.CreateStorageSnapshotResponse.snapshot:type_name -> pilab.core.v1.StorageSnapshot
+	197, // 74: pilab.core.v1.StorageBackup.started_at:type_name -> google.protobuf.Timestamp
+	197, // 75: pilab.core.v1.StorageBackup.finished_at:type_name -> google.protobuf.Timestamp
+	149, // 76: pilab.core.v1.StartStorageBackupResponse.backup:type_name -> pilab.core.v1.StorageBackup
+	149, // 77: pilab.core.v1.ListStorageBackupsResponse.backups:type_name -> pilab.core.v1.StorageBackup
+	149, // 78: pilab.core.v1.CancelStorageBackupResponse.backup:type_name -> pilab.core.v1.StorageBackup
+	11,  // 79: pilab.core.v1.StorageEncryption.mode:type_name -> pilab.core.v1.StorageEncryptionMode
+	12,  // 80: pilab.core.v1.StorageEncryption.provider:type_name -> pilab.core.v1.StorageKeyProvider
+	197, // 81: pilab.core.v1.StorageEncryption.created_at:type_name -> google.protobuf.Timestamp
+	197, // 82: pilab.core.v1.StorageEncryption.rotated_at:type_name -> google.protobuf.Timestamp
+	11,  // 83: pilab.core.v1.StorageEncryption.supported_modes:type_name -> pilab.core.v1.StorageEncryptionMode
+	12,  // 84: pilab.core.v1.StorageEncryption.supported_providers:type_name -> pilab.core.v1.StorageKeyProvider
+	160, // 85: pilab.core.v1.GetStorageEncryptionResponse.encryption:type_name -> pilab.core.v1.StorageEncryption
+	11,  // 86: pilab.core.v1.EnableStorageEncryptionRequest.mode:type_name -> pilab.core.v1.StorageEncryptionMode
+	12,  // 87: pilab.core.v1.EnableStorageEncryptionRequest.provider:type_name -> pilab.core.v1.StorageKeyProvider
+	160, // 88: pilab.core.v1.EnableStorageEncryptionResponse.encryption:type_name -> pilab.core.v1.StorageEncryption
+	160, // 89: pilab.core.v1.StorageKeyResponse.encryption:type_name -> pilab.core.v1.StorageEncryption
+	197, // 90: pilab.core.v1.StorageKeyBackup.created_at:type_name -> google.protobuf.Timestamp
+	169, // 91: pilab.core.v1.BackupStorageKeyResponse.backup:type_name -> pilab.core.v1.StorageKeyBackup
+	169, // 92: pilab.core.v1.VerifyStorageKeyRequest.backup:type_name -> pilab.core.v1.StorageKeyBackup
+	14,  // 93: pilab.core.v1.StorageAccessRule.principal_kind:type_name -> pilab.core.v1.StoragePrincipalKind
+	13,  // 94: pilab.core.v1.StorageAccessRule.level:type_name -> pilab.core.v1.StorageAccessLevel
+	197, // 95: pilab.core.v1.StorageAccessRule.expires_at:type_name -> google.protobuf.Timestamp
+	197, // 96: pilab.core.v1.StorageAccessRule.created_at:type_name -> google.protobuf.Timestamp
+	174, // 97: pilab.core.v1.ListStorageAccessRulesResponse.rules:type_name -> pilab.core.v1.StorageAccessRule
+	174, // 98: pilab.core.v1.SetStorageAccessRuleRequest.rule:type_name -> pilab.core.v1.StorageAccessRule
+	174, // 99: pilab.core.v1.SetStorageAccessRuleResponse.rule:type_name -> pilab.core.v1.StorageAccessRule
+	197, // 100: pilab.core.v1.StorageEvent.at:type_name -> google.protobuf.Timestamp
+	197, // 101: pilab.core.v1.StorageEvent.acknowledged_at:type_name -> google.protobuf.Timestamp
+	196, // 102: pilab.core.v1.StorageEvent.fields:type_name -> pilab.core.v1.StorageEvent.FieldsEntry
+	197, // 103: pilab.core.v1.ListStorageEventsRequest.since:type_name -> google.protobuf.Timestamp
+	181, // 104: pilab.core.v1.ListStorageEventsResponse.events:type_name -> pilab.core.v1.StorageEvent
+	197, // 105: pilab.core.v1.AcknowledgeStorageEventsRequest.acknowledge_all_older_than:type_name -> google.protobuf.Timestamp
+	197, // 106: pilab.core.v1.ClearStorageEventsRequest.clear_all_older_than:type_name -> google.protobuf.Timestamp
+	189, // 107: pilab.core.v1.SharedLvmHost.devices:type_name -> pilab.core.v1.LvmPhysicalVolume
+	188, // 108: pilab.core.v1.ScanSharedLvmResponse.host:type_name -> pilab.core.v1.SharedLvmHost
+	16,  // 109: pilab.core.v1.StorageProvisioningService.ListDevices:input_type -> pilab.core.v1.ListDevicesRequest
+	22,  // 110: pilab.core.v1.StorageProvisioningService.RescanDevices:input_type -> pilab.core.v1.RescanDevicesRequest
+	18,  // 111: pilab.core.v1.StorageProvisioningService.InitializeDisk:input_type -> pilab.core.v1.InitializeDiskRequest
+	20,  // 112: pilab.core.v1.StorageProvisioningService.WipeDisk:input_type -> pilab.core.v1.WipeDiskRequest
+	25,  // 113: pilab.core.v1.StorageProvisioningService.GetDiskHealth:input_type -> pilab.core.v1.GetDiskHealthRequest
+	27,  // 114: pilab.core.v1.StorageProvisioningService.CreatePartition:input_type -> pilab.core.v1.CreatePartitionRequest
+	29,  // 115: pilab.core.v1.StorageProvisioningService.DeletePartition:input_type -> pilab.core.v1.DeletePartitionRequest
+	31,  // 116: pilab.core.v1.StorageProvisioningService.FormatPartition:input_type -> pilab.core.v1.FormatPartitionRequest
+	37,  // 117: pilab.core.v1.StorageProvisioningService.ResizePartition:input_type -> pilab.core.v1.ResizePartitionRequest
+	33,  // 118: pilab.core.v1.StorageProvisioningService.MountFilesystem:input_type -> pilab.core.v1.MountFilesystemRequest
+	35,  // 119: pilab.core.v1.StorageProvisioningService.UnmountFilesystem:input_type -> pilab.core.v1.UnmountFilesystemRequest
+	42,  // 120: pilab.core.v1.StorageProvisioningService.ListLvm:input_type -> pilab.core.v1.ListLvmRequest
+	44,  // 121: pilab.core.v1.StorageProvisioningService.CreateLvmPv:input_type -> pilab.core.v1.CreateLvmPvRequest
+	46,  // 122: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:input_type -> pilab.core.v1.RemoveLvmPvRequest
+	48,  // 123: pilab.core.v1.StorageProvisioningService.CreateLvmVg:input_type -> pilab.core.v1.CreateLvmVgRequest
+	50,  // 124: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:input_type -> pilab.core.v1.RemoveLvmVgRequest
+	52,  // 125: pilab.core.v1.StorageProvisioningService.CreateLvmLv:input_type -> pilab.core.v1.CreateLvmLvRequest
+	54,  // 126: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:input_type -> pilab.core.v1.RemoveLvmLvRequest
+	56,  // 127: pilab.core.v1.StorageProvisioningService.CreateLvmThinPool:input_type -> pilab.core.v1.CreateLvmThinPoolRequest
+	60,  // 128: pilab.core.v1.StorageProvisioningService.ListZfs:input_type -> pilab.core.v1.ListZfsRequest
+	62,  // 129: pilab.core.v1.StorageProvisioningService.CreateZpool:input_type -> pilab.core.v1.CreateZpoolRequest
+	64,  // 130: pilab.core.v1.StorageProvisioningService.DestroyZpool:input_type -> pilab.core.v1.DestroyZpoolRequest
+	66,  // 131: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:input_type -> pilab.core.v1.CreateZfsDatasetRequest
+	68,  // 132: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:input_type -> pilab.core.v1.DestroyZfsDatasetRequest
+	70,  // 133: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:input_type -> pilab.core.v1.CreateZfsZvolRequest
+	79,  // 134: pilab.core.v1.StorageProvisioningService.ListStoragePools:input_type -> pilab.core.v1.ListStoragePoolsRequest
+	81,  // 135: pilab.core.v1.StorageProvisioningService.GetStoragePool:input_type -> pilab.core.v1.GetStoragePoolRequest
+	83,  // 136: pilab.core.v1.StorageProvisioningService.CreateStoragePool:input_type -> pilab.core.v1.CreateStoragePoolRequest
+	85,  // 137: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:input_type -> pilab.core.v1.UpdateStoragePoolRequest
+	87,  // 138: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:input_type -> pilab.core.v1.DeleteStoragePoolRequest
+	90,  // 139: pilab.core.v1.StorageProvisioningService.CreateVolume:input_type -> pilab.core.v1.CreateVolumeRequest
+	92,  // 140: pilab.core.v1.StorageProvisioningService.DeleteVolume:input_type -> pilab.core.v1.DeleteVolumeRequest
+	94,  // 141: pilab.core.v1.StorageProvisioningService.ResizeVolume:input_type -> pilab.core.v1.ResizeVolumeRequest
+	96,  // 142: pilab.core.v1.StorageProvisioningService.ListVolumes:input_type -> pilab.core.v1.ListVolumesRequest
+	98,  // 143: pilab.core.v1.StorageProvisioningService.SetDiskQoS:input_type -> pilab.core.v1.SetDiskQoSRequest
+	100, // 144: pilab.core.v1.StorageProvisioningService.GetDiskQoS:input_type -> pilab.core.v1.GetDiskQoSRequest
+	107, // 145: pilab.core.v1.StorageProvisioningService.ListRaidSets:input_type -> pilab.core.v1.ListRaidSetsRequest
+	109, // 146: pilab.core.v1.StorageProvisioningService.CreateRaidSet:input_type -> pilab.core.v1.CreateRaidSetRequest
+	111, // 147: pilab.core.v1.StorageProvisioningService.AssembleRaidSet:input_type -> pilab.core.v1.AssembleRaidSetRequest
+	113, // 148: pilab.core.v1.StorageProvisioningService.GrowRaidSet:input_type -> pilab.core.v1.GrowRaidSetRequest
+	115, // 149: pilab.core.v1.StorageProvisioningService.FailRaidMember:input_type -> pilab.core.v1.FailRaidMemberRequest
+	117, // 150: pilab.core.v1.StorageProvisioningService.RemoveRaidMember:input_type -> pilab.core.v1.RemoveRaidMemberRequest
+	119, // 151: pilab.core.v1.StorageProvisioningService.ReplaceRaidMember:input_type -> pilab.core.v1.ReplaceRaidMemberRequest
+	121, // 152: pilab.core.v1.StorageProvisioningService.DeleteRaidSet:input_type -> pilab.core.v1.DeleteRaidSetRequest
+	124, // 153: pilab.core.v1.StorageProvisioningService.GetStorageIo:input_type -> pilab.core.v1.GetStorageIoRequest
+	127, // 154: pilab.core.v1.StorageProvisioningService.StartStorageMaintenance:input_type -> pilab.core.v1.StartStorageMaintenanceRequest
+	129, // 155: pilab.core.v1.StorageProvisioningService.ListStorageMaintenanceTasks:input_type -> pilab.core.v1.ListStorageMaintenanceTasksRequest
+	131, // 156: pilab.core.v1.StorageProvisioningService.CancelStorageMaintenance:input_type -> pilab.core.v1.CancelStorageMaintenanceRequest
+	135, // 157: pilab.core.v1.StorageProvisioningService.GetStorageTuning:input_type -> pilab.core.v1.GetStorageTuningRequest
+	137, // 158: pilab.core.v1.StorageProvisioningService.SetStorageTuning:input_type -> pilab.core.v1.SetStorageTuningRequest
+	140, // 159: pilab.core.v1.StorageProvisioningService.ListStorageSnapshots:input_type -> pilab.core.v1.ListStorageSnapshotsRequest
+	142, // 160: pilab.core.v1.StorageProvisioningService.CreateStorageSnapshot:input_type -> pilab.core.v1.CreateStorageSnapshotRequest
+	144, // 161: pilab.core.v1.StorageProvisioningService.DeleteStorageSnapshot:input_type -> pilab.core.v1.DeleteStorageSnapshotRequest
+	146, // 162: pilab.core.v1.StorageProvisioningService.RestoreStorageSnapshot:input_type -> pilab.core.v1.RestoreStorageSnapshotRequest
+	150, // 163: pilab.core.v1.StorageProvisioningService.StartStorageBackup:input_type -> pilab.core.v1.StartStorageBackupRequest
+	152, // 164: pilab.core.v1.StorageProvisioningService.ListStorageBackups:input_type -> pilab.core.v1.ListStorageBackupsRequest
+	154, // 165: pilab.core.v1.StorageProvisioningService.RestoreStorageBackup:input_type -> pilab.core.v1.RestoreStorageBackupRequest
+	156, // 166: pilab.core.v1.StorageProvisioningService.CancelStorageBackup:input_type -> pilab.core.v1.CancelStorageBackupRequest
+	158, // 167: pilab.core.v1.StorageProvisioningService.ApplyRetention:input_type -> pilab.core.v1.ApplyRetentionRequest
+	161, // 168: pilab.core.v1.StorageProvisioningService.GetStorageEncryption:input_type -> pilab.core.v1.GetStorageEncryptionRequest
+	163, // 169: pilab.core.v1.StorageProvisioningService.EnableStorageEncryption:input_type -> pilab.core.v1.EnableStorageEncryptionRequest
+	165, // 170: pilab.core.v1.StorageProvisioningService.DisableStorageEncryption:input_type -> pilab.core.v1.DisableStorageEncryptionRequest
+	167, // 171: pilab.core.v1.StorageProvisioningService.LockStoragePool:input_type -> pilab.core.v1.StorageKeyRequest
+	167, // 172: pilab.core.v1.StorageProvisioningService.UnlockStoragePool:input_type -> pilab.core.v1.StorageKeyRequest
+	167, // 173: pilab.core.v1.StorageProvisioningService.RotateStorageKey:input_type -> pilab.core.v1.StorageKeyRequest
+	170, // 174: pilab.core.v1.StorageProvisioningService.BackupStorageKey:input_type -> pilab.core.v1.BackupStorageKeyRequest
+	172, // 175: pilab.core.v1.StorageProvisioningService.VerifyStorageKey:input_type -> pilab.core.v1.VerifyStorageKeyRequest
+	175, // 176: pilab.core.v1.StorageProvisioningService.ListStorageAccessRules:input_type -> pilab.core.v1.ListStorageAccessRulesRequest
+	177, // 177: pilab.core.v1.StorageProvisioningService.SetStorageAccessRule:input_type -> pilab.core.v1.SetStorageAccessRuleRequest
+	179, // 178: pilab.core.v1.StorageProvisioningService.DeleteStorageAccessRule:input_type -> pilab.core.v1.DeleteStorageAccessRuleRequest
+	182, // 179: pilab.core.v1.StorageProvisioningService.ListStorageEvents:input_type -> pilab.core.v1.ListStorageEventsRequest
+	184, // 180: pilab.core.v1.StorageProvisioningService.AcknowledgeStorageEvents:input_type -> pilab.core.v1.AcknowledgeStorageEventsRequest
+	186, // 181: pilab.core.v1.StorageProvisioningService.ClearStorageEvents:input_type -> pilab.core.v1.ClearStorageEventsRequest
+	190, // 182: pilab.core.v1.StorageProvisioningService.ScanSharedLvm:input_type -> pilab.core.v1.ScanSharedLvmRequest
+	103, // 183: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:input_type -> pilab.core.v1.CheckMigrationStorageRequest
+	17,  // 184: pilab.core.v1.StorageProvisioningService.ListDevices:output_type -> pilab.core.v1.ListDevicesResponse
+	23,  // 185: pilab.core.v1.StorageProvisioningService.RescanDevices:output_type -> pilab.core.v1.RescanDevicesResponse
+	19,  // 186: pilab.core.v1.StorageProvisioningService.InitializeDisk:output_type -> pilab.core.v1.InitializeDiskResponse
+	21,  // 187: pilab.core.v1.StorageProvisioningService.WipeDisk:output_type -> pilab.core.v1.WipeDiskResponse
+	26,  // 188: pilab.core.v1.StorageProvisioningService.GetDiskHealth:output_type -> pilab.core.v1.GetDiskHealthResponse
+	28,  // 189: pilab.core.v1.StorageProvisioningService.CreatePartition:output_type -> pilab.core.v1.CreatePartitionResponse
+	30,  // 190: pilab.core.v1.StorageProvisioningService.DeletePartition:output_type -> pilab.core.v1.DeletePartitionResponse
+	32,  // 191: pilab.core.v1.StorageProvisioningService.FormatPartition:output_type -> pilab.core.v1.FormatPartitionResponse
+	38,  // 192: pilab.core.v1.StorageProvisioningService.ResizePartition:output_type -> pilab.core.v1.ResizePartitionResponse
+	34,  // 193: pilab.core.v1.StorageProvisioningService.MountFilesystem:output_type -> pilab.core.v1.MountFilesystemResponse
+	36,  // 194: pilab.core.v1.StorageProvisioningService.UnmountFilesystem:output_type -> pilab.core.v1.UnmountFilesystemResponse
+	43,  // 195: pilab.core.v1.StorageProvisioningService.ListLvm:output_type -> pilab.core.v1.ListLvmResponse
+	45,  // 196: pilab.core.v1.StorageProvisioningService.CreateLvmPv:output_type -> pilab.core.v1.CreateLvmPvResponse
+	47,  // 197: pilab.core.v1.StorageProvisioningService.RemoveLvmPv:output_type -> pilab.core.v1.RemoveLvmPvResponse
+	49,  // 198: pilab.core.v1.StorageProvisioningService.CreateLvmVg:output_type -> pilab.core.v1.CreateLvmVgResponse
+	51,  // 199: pilab.core.v1.StorageProvisioningService.RemoveLvmVg:output_type -> pilab.core.v1.RemoveLvmVgResponse
+	53,  // 200: pilab.core.v1.StorageProvisioningService.CreateLvmLv:output_type -> pilab.core.v1.CreateLvmLvResponse
+	55,  // 201: pilab.core.v1.StorageProvisioningService.RemoveLvmLv:output_type -> pilab.core.v1.RemoveLvmLvResponse
+	57,  // 202: pilab.core.v1.StorageProvisioningService.CreateLvmThinPool:output_type -> pilab.core.v1.CreateLvmThinPoolResponse
+	61,  // 203: pilab.core.v1.StorageProvisioningService.ListZfs:output_type -> pilab.core.v1.ListZfsResponse
+	63,  // 204: pilab.core.v1.StorageProvisioningService.CreateZpool:output_type -> pilab.core.v1.CreateZpoolResponse
+	65,  // 205: pilab.core.v1.StorageProvisioningService.DestroyZpool:output_type -> pilab.core.v1.DestroyZpoolResponse
+	67,  // 206: pilab.core.v1.StorageProvisioningService.CreateZfsDataset:output_type -> pilab.core.v1.CreateZfsDatasetResponse
+	69,  // 207: pilab.core.v1.StorageProvisioningService.DestroyZfsDataset:output_type -> pilab.core.v1.DestroyZfsDatasetResponse
+	71,  // 208: pilab.core.v1.StorageProvisioningService.CreateZfsZvol:output_type -> pilab.core.v1.CreateZfsZvolResponse
+	80,  // 209: pilab.core.v1.StorageProvisioningService.ListStoragePools:output_type -> pilab.core.v1.ListStoragePoolsResponse
+	82,  // 210: pilab.core.v1.StorageProvisioningService.GetStoragePool:output_type -> pilab.core.v1.GetStoragePoolResponse
+	84,  // 211: pilab.core.v1.StorageProvisioningService.CreateStoragePool:output_type -> pilab.core.v1.CreateStoragePoolResponse
+	86,  // 212: pilab.core.v1.StorageProvisioningService.UpdateStoragePool:output_type -> pilab.core.v1.UpdateStoragePoolResponse
+	88,  // 213: pilab.core.v1.StorageProvisioningService.DeleteStoragePool:output_type -> pilab.core.v1.DeleteStoragePoolResponse
+	91,  // 214: pilab.core.v1.StorageProvisioningService.CreateVolume:output_type -> pilab.core.v1.CreateVolumeResponse
+	93,  // 215: pilab.core.v1.StorageProvisioningService.DeleteVolume:output_type -> pilab.core.v1.DeleteVolumeResponse
+	95,  // 216: pilab.core.v1.StorageProvisioningService.ResizeVolume:output_type -> pilab.core.v1.ResizeVolumeResponse
+	97,  // 217: pilab.core.v1.StorageProvisioningService.ListVolumes:output_type -> pilab.core.v1.ListVolumesResponse
+	99,  // 218: pilab.core.v1.StorageProvisioningService.SetDiskQoS:output_type -> pilab.core.v1.SetDiskQoSResponse
+	101, // 219: pilab.core.v1.StorageProvisioningService.GetDiskQoS:output_type -> pilab.core.v1.GetDiskQoSResponse
+	108, // 220: pilab.core.v1.StorageProvisioningService.ListRaidSets:output_type -> pilab.core.v1.ListRaidSetsResponse
+	110, // 221: pilab.core.v1.StorageProvisioningService.CreateRaidSet:output_type -> pilab.core.v1.CreateRaidSetResponse
+	112, // 222: pilab.core.v1.StorageProvisioningService.AssembleRaidSet:output_type -> pilab.core.v1.AssembleRaidSetResponse
+	114, // 223: pilab.core.v1.StorageProvisioningService.GrowRaidSet:output_type -> pilab.core.v1.GrowRaidSetResponse
+	116, // 224: pilab.core.v1.StorageProvisioningService.FailRaidMember:output_type -> pilab.core.v1.FailRaidMemberResponse
+	118, // 225: pilab.core.v1.StorageProvisioningService.RemoveRaidMember:output_type -> pilab.core.v1.RemoveRaidMemberResponse
+	120, // 226: pilab.core.v1.StorageProvisioningService.ReplaceRaidMember:output_type -> pilab.core.v1.ReplaceRaidMemberResponse
+	122, // 227: pilab.core.v1.StorageProvisioningService.DeleteRaidSet:output_type -> pilab.core.v1.DeleteRaidSetResponse
+	125, // 228: pilab.core.v1.StorageProvisioningService.GetStorageIo:output_type -> pilab.core.v1.GetStorageIoResponse
+	128, // 229: pilab.core.v1.StorageProvisioningService.StartStorageMaintenance:output_type -> pilab.core.v1.StartStorageMaintenanceResponse
+	130, // 230: pilab.core.v1.StorageProvisioningService.ListStorageMaintenanceTasks:output_type -> pilab.core.v1.ListStorageMaintenanceTasksResponse
+	132, // 231: pilab.core.v1.StorageProvisioningService.CancelStorageMaintenance:output_type -> pilab.core.v1.CancelStorageMaintenanceResponse
+	136, // 232: pilab.core.v1.StorageProvisioningService.GetStorageTuning:output_type -> pilab.core.v1.GetStorageTuningResponse
+	138, // 233: pilab.core.v1.StorageProvisioningService.SetStorageTuning:output_type -> pilab.core.v1.SetStorageTuningResponse
+	141, // 234: pilab.core.v1.StorageProvisioningService.ListStorageSnapshots:output_type -> pilab.core.v1.ListStorageSnapshotsResponse
+	143, // 235: pilab.core.v1.StorageProvisioningService.CreateStorageSnapshot:output_type -> pilab.core.v1.CreateStorageSnapshotResponse
+	145, // 236: pilab.core.v1.StorageProvisioningService.DeleteStorageSnapshot:output_type -> pilab.core.v1.DeleteStorageSnapshotResponse
+	147, // 237: pilab.core.v1.StorageProvisioningService.RestoreStorageSnapshot:output_type -> pilab.core.v1.RestoreStorageSnapshotResponse
+	151, // 238: pilab.core.v1.StorageProvisioningService.StartStorageBackup:output_type -> pilab.core.v1.StartStorageBackupResponse
+	153, // 239: pilab.core.v1.StorageProvisioningService.ListStorageBackups:output_type -> pilab.core.v1.ListStorageBackupsResponse
+	155, // 240: pilab.core.v1.StorageProvisioningService.RestoreStorageBackup:output_type -> pilab.core.v1.RestoreStorageBackupResponse
+	157, // 241: pilab.core.v1.StorageProvisioningService.CancelStorageBackup:output_type -> pilab.core.v1.CancelStorageBackupResponse
+	159, // 242: pilab.core.v1.StorageProvisioningService.ApplyRetention:output_type -> pilab.core.v1.ApplyRetentionResponse
+	162, // 243: pilab.core.v1.StorageProvisioningService.GetStorageEncryption:output_type -> pilab.core.v1.GetStorageEncryptionResponse
+	164, // 244: pilab.core.v1.StorageProvisioningService.EnableStorageEncryption:output_type -> pilab.core.v1.EnableStorageEncryptionResponse
+	166, // 245: pilab.core.v1.StorageProvisioningService.DisableStorageEncryption:output_type -> pilab.core.v1.DisableStorageEncryptionResponse
+	168, // 246: pilab.core.v1.StorageProvisioningService.LockStoragePool:output_type -> pilab.core.v1.StorageKeyResponse
+	168, // 247: pilab.core.v1.StorageProvisioningService.UnlockStoragePool:output_type -> pilab.core.v1.StorageKeyResponse
+	168, // 248: pilab.core.v1.StorageProvisioningService.RotateStorageKey:output_type -> pilab.core.v1.StorageKeyResponse
+	171, // 249: pilab.core.v1.StorageProvisioningService.BackupStorageKey:output_type -> pilab.core.v1.BackupStorageKeyResponse
+	173, // 250: pilab.core.v1.StorageProvisioningService.VerifyStorageKey:output_type -> pilab.core.v1.VerifyStorageKeyResponse
+	176, // 251: pilab.core.v1.StorageProvisioningService.ListStorageAccessRules:output_type -> pilab.core.v1.ListStorageAccessRulesResponse
+	178, // 252: pilab.core.v1.StorageProvisioningService.SetStorageAccessRule:output_type -> pilab.core.v1.SetStorageAccessRuleResponse
+	180, // 253: pilab.core.v1.StorageProvisioningService.DeleteStorageAccessRule:output_type -> pilab.core.v1.DeleteStorageAccessRuleResponse
+	183, // 254: pilab.core.v1.StorageProvisioningService.ListStorageEvents:output_type -> pilab.core.v1.ListStorageEventsResponse
+	185, // 255: pilab.core.v1.StorageProvisioningService.AcknowledgeStorageEvents:output_type -> pilab.core.v1.AcknowledgeStorageEventsResponse
+	187, // 256: pilab.core.v1.StorageProvisioningService.ClearStorageEvents:output_type -> pilab.core.v1.ClearStorageEventsResponse
+	191, // 257: pilab.core.v1.StorageProvisioningService.ScanSharedLvm:output_type -> pilab.core.v1.ScanSharedLvmResponse
+	104, // 258: pilab.core.v1.StorageProvisioningService.CheckMigrationStorage:output_type -> pilab.core.v1.CheckMigrationStorageResponse
+	184, // [184:259] is the sub-list for method output_type
+	109, // [109:184] is the sub-list for method input_type
+	109, // [109:109] is the sub-list for extension type_name
+	109, // [109:109] is the sub-list for extension extendee
+	0,   // [0:109] is the sub-list for field type_name
 }
 
 func init() { file_pilab_core_v1_storage_provisioning_service_proto_init() }
@@ -14317,7 +14732,7 @@ func file_pilab_core_v1_storage_provisioning_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_core_v1_storage_provisioning_service_proto_rawDesc), len(file_pilab_core_v1_storage_provisioning_service_proto_rawDesc)),
 			NumEnums:      15,
-			NumMessages:   177,
+			NumMessages:   182,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

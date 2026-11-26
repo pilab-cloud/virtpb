@@ -27,6 +27,9 @@ const (
 	DatastoreService_DeactivateDatastore_FullMethodName = "/pilab.cloud.core.v1.DatastoreService/DeactivateDatastore"
 	DatastoreService_ValidateDatastore_FullMethodName   = "/pilab.cloud.core.v1.DatastoreService/ValidateDatastore"
 	DatastoreService_TestDatastore_FullMethodName       = "/pilab.cloud.core.v1.DatastoreService/TestDatastore"
+	DatastoreService_AcquireStorageLock_FullMethodName  = "/pilab.cloud.core.v1.DatastoreService/AcquireStorageLock"
+	DatastoreService_RenewStorageLock_FullMethodName    = "/pilab.cloud.core.v1.DatastoreService/RenewStorageLock"
+	DatastoreService_ReleaseStorageLock_FullMethodName  = "/pilab.cloud.core.v1.DatastoreService/ReleaseStorageLock"
 	DatastoreService_SetDatastoreQoS_FullMethodName     = "/pilab.cloud.core.v1.DatastoreService/SetDatastoreQoS"
 )
 
@@ -53,6 +56,12 @@ type DatastoreServiceClient interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(ctx context.Context, in *TestDatastoreRequest, opts ...grpc.CallOption) (*TestDatastoreResponse, error)
+	// AcquireStorageLock takes the lease that permits mutating a shared
+	// volume group. Only the holder may create, delete or resize its volumes,
+	// and each host checks the token before writing.
+	AcquireStorageLock(ctx context.Context, in *AcquireStorageLockRequest, opts ...grpc.CallOption) (*AcquireStorageLockResponse, error)
+	RenewStorageLock(ctx context.Context, in *RenewStorageLockRequest, opts ...grpc.CallOption) (*AcquireStorageLockResponse, error)
+	ReleaseStorageLock(ctx context.Context, in *ReleaseStorageLockRequest, opts ...grpc.CallOption) (*ReleaseStorageLockResponse, error)
 	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
 	// follows it; a disk with its own override is unaffected. A running VM's
 	// throttling is updated live where the host supports it.
@@ -147,6 +156,36 @@ func (c *datastoreServiceClient) TestDatastore(ctx context.Context, in *TestData
 	return out, nil
 }
 
+func (c *datastoreServiceClient) AcquireStorageLock(ctx context.Context, in *AcquireStorageLockRequest, opts ...grpc.CallOption) (*AcquireStorageLockResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AcquireStorageLockResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_AcquireStorageLock_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreServiceClient) RenewStorageLock(ctx context.Context, in *RenewStorageLockRequest, opts ...grpc.CallOption) (*AcquireStorageLockResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AcquireStorageLockResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_RenewStorageLock_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreServiceClient) ReleaseStorageLock(ctx context.Context, in *ReleaseStorageLockRequest, opts ...grpc.CallOption) (*ReleaseStorageLockResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReleaseStorageLockResponse)
+	err := c.cc.Invoke(ctx, DatastoreService_ReleaseStorageLock_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *datastoreServiceClient) SetDatastoreQoS(ctx context.Context, in *SetDatastoreQoSRequest, opts ...grpc.CallOption) (*SetDatastoreQoSResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SetDatastoreQoSResponse)
@@ -180,6 +219,12 @@ type DatastoreServiceServer interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(context.Context, *TestDatastoreRequest) (*TestDatastoreResponse, error)
+	// AcquireStorageLock takes the lease that permits mutating a shared
+	// volume group. Only the holder may create, delete or resize its volumes,
+	// and each host checks the token before writing.
+	AcquireStorageLock(context.Context, *AcquireStorageLockRequest) (*AcquireStorageLockResponse, error)
+	RenewStorageLock(context.Context, *RenewStorageLockRequest) (*AcquireStorageLockResponse, error)
+	ReleaseStorageLock(context.Context, *ReleaseStorageLockRequest) (*ReleaseStorageLockResponse, error)
 	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
 	// follows it; a disk with its own override is unaffected. A running VM's
 	// throttling is updated live where the host supports it.
@@ -217,6 +262,15 @@ func (UnimplementedDatastoreServiceServer) ValidateDatastore(context.Context, *C
 }
 func (UnimplementedDatastoreServiceServer) TestDatastore(context.Context, *TestDatastoreRequest) (*TestDatastoreResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method TestDatastore not implemented")
+}
+func (UnimplementedDatastoreServiceServer) AcquireStorageLock(context.Context, *AcquireStorageLockRequest) (*AcquireStorageLockResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AcquireStorageLock not implemented")
+}
+func (UnimplementedDatastoreServiceServer) RenewStorageLock(context.Context, *RenewStorageLockRequest) (*AcquireStorageLockResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RenewStorageLock not implemented")
+}
+func (UnimplementedDatastoreServiceServer) ReleaseStorageLock(context.Context, *ReleaseStorageLockRequest) (*ReleaseStorageLockResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReleaseStorageLock not implemented")
 }
 func (UnimplementedDatastoreServiceServer) SetDatastoreQoS(context.Context, *SetDatastoreQoSRequest) (*SetDatastoreQoSResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetDatastoreQoS not implemented")
@@ -386,6 +440,60 @@ func _DatastoreService_TestDatastore_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatastoreService_AcquireStorageLock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcquireStorageLockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).AcquireStorageLock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_AcquireStorageLock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).AcquireStorageLock(ctx, req.(*AcquireStorageLockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatastoreService_RenewStorageLock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenewStorageLockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).RenewStorageLock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_RenewStorageLock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).RenewStorageLock(ctx, req.(*RenewStorageLockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatastoreService_ReleaseStorageLock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReleaseStorageLockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatastoreServiceServer).ReleaseStorageLock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DatastoreService_ReleaseStorageLock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatastoreServiceServer).ReleaseStorageLock(ctx, req.(*ReleaseStorageLockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatastoreService_SetDatastoreQoS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetDatastoreQoSRequest)
 	if err := dec(in); err != nil {
@@ -442,6 +550,18 @@ var DatastoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TestDatastore",
 			Handler:    _DatastoreService_TestDatastore_Handler,
+		},
+		{
+			MethodName: "AcquireStorageLock",
+			Handler:    _DatastoreService_AcquireStorageLock_Handler,
+		},
+		{
+			MethodName: "RenewStorageLock",
+			Handler:    _DatastoreService_RenewStorageLock_Handler,
+		},
+		{
+			MethodName: "ReleaseStorageLock",
+			Handler:    _DatastoreService_ReleaseStorageLock_Handler,
 		},
 		{
 			MethodName: "SetDatastoreQoS",

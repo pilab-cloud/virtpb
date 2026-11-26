@@ -26,6 +26,13 @@ service DatastoreService {
   // TestDatastore probes an existing datastore against its hosts and reports
   // what each host currently sees.
   rpc TestDatastore(TestDatastoreRequest) returns (TestDatastoreResponse);
+  // AcquireStorageLock takes the lease that permits mutating a shared
+  // volume group. Only the holder may create, delete or resize its volumes,
+  // and each host checks the token before writing.
+  rpc AcquireStorageLock(AcquireStorageLockRequest) returns (AcquireStorageLockResponse);
+  rpc RenewStorageLock(RenewStorageLockRequest) returns (AcquireStorageLockResponse);
+  rpc ReleaseStorageLock(ReleaseStorageLockRequest) returns (ReleaseStorageLockResponse);
+
   // SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
   // follows it; a disk with its own override is unaffected. A running VM's
   // throttling is updated live where the host supports it.
@@ -235,6 +242,41 @@ message DeleteDatastoreRequest {
 
 message DatastoreOperationResponse {
   repeated DatastoreOperation operations = 1;
+}
+
+// StorageLock is a lease over one shared resource, such as a volume group.
+// expires_at is authoritative: a host may refuse a token whose lease has run
+// out even if the director has not released it.
+message StorageLock {
+  string token = 1;
+  // scope names what is locked, e.g. "vg:vg_shared".
+  string scope = 2;
+  google.protobuf.Timestamp acquired_at = 3;
+  google.protobuf.Timestamp expires_at = 4;
+  string holder = 5;
+}
+
+message AcquireStorageLockRequest {
+  string scope = 1;
+  // ttl_seconds is how long the lease lasts; 0 uses the director default.
+  int64 ttl_seconds = 2;
+}
+
+message AcquireStorageLockResponse {
+  StorageLock lock = 1;
+}
+
+message RenewStorageLockRequest {
+  string token = 1;
+  int64 ttl_seconds = 2;
+}
+
+message ReleaseStorageLockRequest {
+  string token = 1;
+}
+
+message ReleaseStorageLockResponse {
+  bool released = 1;
 }
 
 message SetDatastoreQoSRequest {

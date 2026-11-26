@@ -1372,6 +1372,323 @@ func (x *DatastoreOperationResponse) GetOperations() []*DatastoreOperation {
 	return nil
 }
 
+// StorageLock is a lease over one shared resource, such as a volume group.
+// expires_at is authoritative: a host may refuse a token whose lease has run
+// out even if the director has not released it.
+type StorageLock struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Token string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	// scope names what is locked, e.g. "vg:vg_shared".
+	Scope         string                 `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
+	AcquiredAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=acquired_at,json=acquiredAt,proto3" json:"acquired_at,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	Holder        string                 `protobuf:"bytes,5,opt,name=holder,proto3" json:"holder,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StorageLock) Reset() {
+	*x = StorageLock{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StorageLock) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StorageLock) ProtoMessage() {}
+
+func (x *StorageLock) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StorageLock.ProtoReflect.Descriptor instead.
+func (*StorageLock) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *StorageLock) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *StorageLock) GetScope() string {
+	if x != nil {
+		return x.Scope
+	}
+	return ""
+}
+
+func (x *StorageLock) GetAcquiredAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AcquiredAt
+	}
+	return nil
+}
+
+func (x *StorageLock) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+func (x *StorageLock) GetHolder() string {
+	if x != nil {
+		return x.Holder
+	}
+	return ""
+}
+
+type AcquireStorageLockRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Scope string                 `protobuf:"bytes,1,opt,name=scope,proto3" json:"scope,omitempty"`
+	// ttl_seconds is how long the lease lasts; 0 uses the director default.
+	TtlSeconds    int64 `protobuf:"varint,2,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcquireStorageLockRequest) Reset() {
+	*x = AcquireStorageLockRequest{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcquireStorageLockRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcquireStorageLockRequest) ProtoMessage() {}
+
+func (x *AcquireStorageLockRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcquireStorageLockRequest.ProtoReflect.Descriptor instead.
+func (*AcquireStorageLockRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *AcquireStorageLockRequest) GetScope() string {
+	if x != nil {
+		return x.Scope
+	}
+	return ""
+}
+
+func (x *AcquireStorageLockRequest) GetTtlSeconds() int64 {
+	if x != nil {
+		return x.TtlSeconds
+	}
+	return 0
+}
+
+type AcquireStorageLockResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Lock          *StorageLock           `protobuf:"bytes,1,opt,name=lock,proto3" json:"lock,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AcquireStorageLockResponse) Reset() {
+	*x = AcquireStorageLockResponse{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AcquireStorageLockResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AcquireStorageLockResponse) ProtoMessage() {}
+
+func (x *AcquireStorageLockResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AcquireStorageLockResponse.ProtoReflect.Descriptor instead.
+func (*AcquireStorageLockResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *AcquireStorageLockResponse) GetLock() *StorageLock {
+	if x != nil {
+		return x.Lock
+	}
+	return nil
+}
+
+type RenewStorageLockRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	TtlSeconds    int64                  `protobuf:"varint,2,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenewStorageLockRequest) Reset() {
+	*x = RenewStorageLockRequest{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenewStorageLockRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenewStorageLockRequest) ProtoMessage() {}
+
+func (x *RenewStorageLockRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenewStorageLockRequest.ProtoReflect.Descriptor instead.
+func (*RenewStorageLockRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *RenewStorageLockRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *RenewStorageLockRequest) GetTtlSeconds() int64 {
+	if x != nil {
+		return x.TtlSeconds
+	}
+	return 0
+}
+
+type ReleaseStorageLockRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseStorageLockRequest) Reset() {
+	*x = ReleaseStorageLockRequest{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseStorageLockRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseStorageLockRequest) ProtoMessage() {}
+
+func (x *ReleaseStorageLockRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseStorageLockRequest.ProtoReflect.Descriptor instead.
+func (*ReleaseStorageLockRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ReleaseStorageLockRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type ReleaseStorageLockResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Released      bool                   `protobuf:"varint,1,opt,name=released,proto3" json:"released,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseStorageLockResponse) Reset() {
+	*x = ReleaseStorageLockResponse{}
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseStorageLockResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseStorageLockResponse) ProtoMessage() {}
+
+func (x *ReleaseStorageLockResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseStorageLockResponse.ProtoReflect.Descriptor instead.
+func (*ReleaseStorageLockResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ReleaseStorageLockResponse) GetReleased() bool {
+	if x != nil {
+		return x.Released
+	}
+	return false
+}
+
 type SetDatastoreQoSRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -1387,7 +1704,7 @@ type SetDatastoreQoSRequest struct {
 
 func (x *SetDatastoreQoSRequest) Reset() {
 	*x = SetDatastoreQoSRequest{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[17]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1399,7 +1716,7 @@ func (x *SetDatastoreQoSRequest) String() string {
 func (*SetDatastoreQoSRequest) ProtoMessage() {}
 
 func (x *SetDatastoreQoSRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[17]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1412,7 +1729,7 @@ func (x *SetDatastoreQoSRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetDatastoreQoSRequest.ProtoReflect.Descriptor instead.
 func (*SetDatastoreQoSRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{17}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SetDatastoreQoSRequest) GetId() string {
@@ -1445,7 +1762,7 @@ type SetDatastoreQoSResponse struct {
 
 func (x *SetDatastoreQoSResponse) Reset() {
 	*x = SetDatastoreQoSResponse{}
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[18]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1457,7 +1774,7 @@ func (x *SetDatastoreQoSResponse) String() string {
 func (*SetDatastoreQoSResponse) ProtoMessage() {}
 
 func (x *SetDatastoreQoSResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[18]
+	mi := &file_pilab_core_v1_datastore_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1470,7 +1787,7 @@ func (x *SetDatastoreQoSResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetDatastoreQoSResponse.ProtoReflect.Descriptor instead.
 func (*SetDatastoreQoSResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{18}
+	return file_pilab_core_v1_datastore_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *SetDatastoreQoSResponse) GetDatastore() *Datastore {
@@ -1588,7 +1905,29 @@ const file_pilab_core_v1_datastore_service_proto_rawDesc = "" +
 	"\x1aDatastoreOperationResponse\x12G\n" +
 	"\n" +
 	"operations\x18\x01 \x03(\v2'.pilab.cloud.core.v1.DatastoreOperationR\n" +
-	"operations\"n\n" +
+	"operations\"\xc9\x01\n" +
+	"\vStorageLock\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\x14\n" +
+	"\x05scope\x18\x02 \x01(\tR\x05scope\x12;\n" +
+	"\vacquired_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"acquiredAt\x129\n" +
+	"\n" +
+	"expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x12\x16\n" +
+	"\x06holder\x18\x05 \x01(\tR\x06holder\"R\n" +
+	"\x19AcquireStorageLockRequest\x12\x14\n" +
+	"\x05scope\x18\x01 \x01(\tR\x05scope\x12\x1f\n" +
+	"\vttl_seconds\x18\x02 \x01(\x03R\n" +
+	"ttlSeconds\"R\n" +
+	"\x1aAcquireStorageLockResponse\x124\n" +
+	"\x04lock\x18\x01 \x01(\v2 .pilab.cloud.core.v1.StorageLockR\x04lock\"P\n" +
+	"\x17RenewStorageLockRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\x1f\n" +
+	"\vttl_seconds\x18\x02 \x01(\x03R\n" +
+	"ttlSeconds\"1\n" +
+	"\x19ReleaseStorageLockRequest\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"8\n" +
+	"\x1aReleaseStorageLockResponse\x12\x1a\n" +
+	"\breleased\x18\x01 \x01(\bR\breleased\"n\n" +
 	"\x16SetDatastoreQoSRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
 	"\x03qos\x18\x02 \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x12\x14\n" +
@@ -1609,7 +1948,8 @@ const file_pilab_core_v1_datastore_service_proto_rawDesc = "" +
 	"\x1eDATASTORE_CAPABILITY_ZERO_COPY\x10\x05\x12#\n" +
 	"\x1fDATASTORE_CAPABILITY_ENCRYPTION\x10\x06\x12\x1d\n" +
 	"\x19DATASTORE_CAPABILITY_TRIM\x10\a\x12$\n" +
-	" DATASTORE_CAPABILITY_MAINTENANCE\x10\b2\xef\a\n" +
+	" DATASTORE_CAPABILITY_MAINTENANCE\x10\b2\xd0\n" +
+	"\n" +
 	"\x10DatastoreService\x12i\n" +
 	"\x0eListDatastores\x12*.pilab.cloud.core.v1.ListDatastoresRequest\x1a+.pilab.cloud.core.v1.ListDatastoresResponse\x12c\n" +
 	"\fGetDatastore\x12(.pilab.cloud.core.v1.GetDatastoreRequest\x1a).pilab.cloud.core.v1.GetDatastoreResponse\x12l\n" +
@@ -1618,7 +1958,10 @@ const file_pilab_core_v1_datastore_service_proto_rawDesc = "" +
 	"\x11ActivateDatastore\x12*.pilab.cloud.core.v1.DatastoreHostsRequest\x1a/.pilab.cloud.core.v1.DatastoreOperationResponse\x12r\n" +
 	"\x13DeactivateDatastore\x12*.pilab.cloud.core.v1.DatastoreHostsRequest\x1a/.pilab.cloud.core.v1.DatastoreOperationResponse\x12p\n" +
 	"\x11ValidateDatastore\x12+.pilab.cloud.core.v1.CreateDatastoreRequest\x1a..pilab.cloud.core.v1.ValidateDatastoreResponse\x12f\n" +
-	"\rTestDatastore\x12).pilab.cloud.core.v1.TestDatastoreRequest\x1a*.pilab.cloud.core.v1.TestDatastoreResponse\x12l\n" +
+	"\rTestDatastore\x12).pilab.cloud.core.v1.TestDatastoreRequest\x1a*.pilab.cloud.core.v1.TestDatastoreResponse\x12u\n" +
+	"\x12AcquireStorageLock\x12..pilab.cloud.core.v1.AcquireStorageLockRequest\x1a/.pilab.cloud.core.v1.AcquireStorageLockResponse\x12q\n" +
+	"\x10RenewStorageLock\x12,.pilab.cloud.core.v1.RenewStorageLockRequest\x1a/.pilab.cloud.core.v1.AcquireStorageLockResponse\x12u\n" +
+	"\x12ReleaseStorageLock\x12..pilab.cloud.core.v1.ReleaseStorageLockRequest\x1a/.pilab.cloud.core.v1.ReleaseStorageLockResponse\x12l\n" +
 	"\x0fSetDatastoreQoS\x12+.pilab.cloud.core.v1.SetDatastoreQoSRequest\x1a,.pilab.cloud.core.v1.SetDatastoreQoSResponseB2Z0go.pilab.hu/cloud/virtpb/v3/pilab/core/v1;corev1b\x06proto3"
 
 var (
@@ -1634,7 +1977,7 @@ func file_pilab_core_v1_datastore_service_proto_rawDescGZIP() []byte {
 }
 
 var file_pilab_core_v1_datastore_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_pilab_core_v1_datastore_service_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_pilab_core_v1_datastore_service_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_pilab_core_v1_datastore_service_proto_goTypes = []any{
 	(DatastoreHealth)(0),               // 0: pilab.cloud.core.v1.DatastoreHealth
 	(DatastoreCapability)(0),           // 1: pilab.cloud.core.v1.DatastoreCapability
@@ -1655,52 +1998,67 @@ var file_pilab_core_v1_datastore_service_proto_goTypes = []any{
 	(*DatastoreHostsRequest)(nil),      // 16: pilab.cloud.core.v1.DatastoreHostsRequest
 	(*DeleteDatastoreRequest)(nil),     // 17: pilab.cloud.core.v1.DeleteDatastoreRequest
 	(*DatastoreOperationResponse)(nil), // 18: pilab.cloud.core.v1.DatastoreOperationResponse
-	(*SetDatastoreQoSRequest)(nil),     // 19: pilab.cloud.core.v1.SetDatastoreQoSRequest
-	(*SetDatastoreQoSResponse)(nil),    // 20: pilab.cloud.core.v1.SetDatastoreQoSResponse
-	nil,                                // 21: pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
-	(*timestamppb.Timestamp)(nil),      // 22: google.protobuf.Timestamp
-	(*DiskQoSConfig)(nil),              // 23: pilab.core.v1.DiskQoSConfig
+	(*StorageLock)(nil),                // 19: pilab.cloud.core.v1.StorageLock
+	(*AcquireStorageLockRequest)(nil),  // 20: pilab.cloud.core.v1.AcquireStorageLockRequest
+	(*AcquireStorageLockResponse)(nil), // 21: pilab.cloud.core.v1.AcquireStorageLockResponse
+	(*RenewStorageLockRequest)(nil),    // 22: pilab.cloud.core.v1.RenewStorageLockRequest
+	(*ReleaseStorageLockRequest)(nil),  // 23: pilab.cloud.core.v1.ReleaseStorageLockRequest
+	(*ReleaseStorageLockResponse)(nil), // 24: pilab.cloud.core.v1.ReleaseStorageLockResponse
+	(*SetDatastoreQoSRequest)(nil),     // 25: pilab.cloud.core.v1.SetDatastoreQoSRequest
+	(*SetDatastoreQoSResponse)(nil),    // 26: pilab.cloud.core.v1.SetDatastoreQoSResponse
+	nil,                                // 27: pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
+	(*timestamppb.Timestamp)(nil),      // 28: google.protobuf.Timestamp
+	(*DiskQoSConfig)(nil),              // 29: pilab.core.v1.DiskQoSConfig
 }
 var file_pilab_core_v1_datastore_service_proto_depIdxs = []int32{
 	0,  // 0: pilab.cloud.core.v1.Datastore.health:type_name -> pilab.cloud.core.v1.DatastoreHealth
 	2,  // 1: pilab.cloud.core.v1.Datastore.hosts:type_name -> pilab.cloud.core.v1.DatastoreHost
-	22, // 2: pilab.cloud.core.v1.Datastore.last_report_at:type_name -> google.protobuf.Timestamp
-	23, // 3: pilab.cloud.core.v1.Datastore.default_qos:type_name -> pilab.core.v1.DiskQoSConfig
+	28, // 2: pilab.cloud.core.v1.Datastore.last_report_at:type_name -> google.protobuf.Timestamp
+	29, // 3: pilab.cloud.core.v1.Datastore.default_qos:type_name -> pilab.core.v1.DiskQoSConfig
 	1,  // 4: pilab.cloud.core.v1.Datastore.capabilities:type_name -> pilab.cloud.core.v1.DatastoreCapability
 	3,  // 5: pilab.cloud.core.v1.ListDatastoresResponse.datastores:type_name -> pilab.cloud.core.v1.Datastore
 	3,  // 6: pilab.cloud.core.v1.GetDatastoreResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
-	21, // 7: pilab.cloud.core.v1.CreateDatastoreRequest.options:type_name -> pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
+	27, // 7: pilab.cloud.core.v1.CreateDatastoreRequest.options:type_name -> pilab.cloud.core.v1.CreateDatastoreRequest.OptionsEntry
 	8,  // 8: pilab.cloud.core.v1.CreateDatastoreRequest.zfs:type_name -> pilab.cloud.core.v1.ZfsDatastoreBacking
 	9,  // 9: pilab.cloud.core.v1.CreateDatastoreRequest.lvmthin:type_name -> pilab.cloud.core.v1.LvmThinDatastoreBacking
 	11, // 10: pilab.cloud.core.v1.CreateDatastoreResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
 	3,  // 11: pilab.cloud.core.v1.TestDatastoreResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
 	2,  // 12: pilab.cloud.core.v1.TestDatastoreResponse.hosts:type_name -> pilab.cloud.core.v1.DatastoreHost
 	11, // 13: pilab.cloud.core.v1.DatastoreOperationResponse.operations:type_name -> pilab.cloud.core.v1.DatastoreOperation
-	23, // 14: pilab.cloud.core.v1.SetDatastoreQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
-	3,  // 15: pilab.cloud.core.v1.SetDatastoreQoSResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
-	4,  // 16: pilab.cloud.core.v1.DatastoreService.ListDatastores:input_type -> pilab.cloud.core.v1.ListDatastoresRequest
-	6,  // 17: pilab.cloud.core.v1.DatastoreService.GetDatastore:input_type -> pilab.cloud.core.v1.GetDatastoreRequest
-	10, // 18: pilab.cloud.core.v1.DatastoreService.CreateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
-	17, // 19: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:input_type -> pilab.cloud.core.v1.DeleteDatastoreRequest
-	16, // 20: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
-	16, // 21: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
-	10, // 22: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
-	14, // 23: pilab.cloud.core.v1.DatastoreService.TestDatastore:input_type -> pilab.cloud.core.v1.TestDatastoreRequest
-	19, // 24: pilab.cloud.core.v1.DatastoreService.SetDatastoreQoS:input_type -> pilab.cloud.core.v1.SetDatastoreQoSRequest
-	5,  // 25: pilab.cloud.core.v1.DatastoreService.ListDatastores:output_type -> pilab.cloud.core.v1.ListDatastoresResponse
-	7,  // 26: pilab.cloud.core.v1.DatastoreService.GetDatastore:output_type -> pilab.cloud.core.v1.GetDatastoreResponse
-	12, // 27: pilab.cloud.core.v1.DatastoreService.CreateDatastore:output_type -> pilab.cloud.core.v1.CreateDatastoreResponse
-	18, // 28: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
-	18, // 29: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
-	18, // 30: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
-	13, // 31: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:output_type -> pilab.cloud.core.v1.ValidateDatastoreResponse
-	15, // 32: pilab.cloud.core.v1.DatastoreService.TestDatastore:output_type -> pilab.cloud.core.v1.TestDatastoreResponse
-	20, // 33: pilab.cloud.core.v1.DatastoreService.SetDatastoreQoS:output_type -> pilab.cloud.core.v1.SetDatastoreQoSResponse
-	25, // [25:34] is the sub-list for method output_type
-	16, // [16:25] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	28, // 14: pilab.cloud.core.v1.StorageLock.acquired_at:type_name -> google.protobuf.Timestamp
+	28, // 15: pilab.cloud.core.v1.StorageLock.expires_at:type_name -> google.protobuf.Timestamp
+	19, // 16: pilab.cloud.core.v1.AcquireStorageLockResponse.lock:type_name -> pilab.cloud.core.v1.StorageLock
+	29, // 17: pilab.cloud.core.v1.SetDatastoreQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	3,  // 18: pilab.cloud.core.v1.SetDatastoreQoSResponse.datastore:type_name -> pilab.cloud.core.v1.Datastore
+	4,  // 19: pilab.cloud.core.v1.DatastoreService.ListDatastores:input_type -> pilab.cloud.core.v1.ListDatastoresRequest
+	6,  // 20: pilab.cloud.core.v1.DatastoreService.GetDatastore:input_type -> pilab.cloud.core.v1.GetDatastoreRequest
+	10, // 21: pilab.cloud.core.v1.DatastoreService.CreateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
+	17, // 22: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:input_type -> pilab.cloud.core.v1.DeleteDatastoreRequest
+	16, // 23: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
+	16, // 24: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:input_type -> pilab.cloud.core.v1.DatastoreHostsRequest
+	10, // 25: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:input_type -> pilab.cloud.core.v1.CreateDatastoreRequest
+	14, // 26: pilab.cloud.core.v1.DatastoreService.TestDatastore:input_type -> pilab.cloud.core.v1.TestDatastoreRequest
+	20, // 27: pilab.cloud.core.v1.DatastoreService.AcquireStorageLock:input_type -> pilab.cloud.core.v1.AcquireStorageLockRequest
+	22, // 28: pilab.cloud.core.v1.DatastoreService.RenewStorageLock:input_type -> pilab.cloud.core.v1.RenewStorageLockRequest
+	23, // 29: pilab.cloud.core.v1.DatastoreService.ReleaseStorageLock:input_type -> pilab.cloud.core.v1.ReleaseStorageLockRequest
+	25, // 30: pilab.cloud.core.v1.DatastoreService.SetDatastoreQoS:input_type -> pilab.cloud.core.v1.SetDatastoreQoSRequest
+	5,  // 31: pilab.cloud.core.v1.DatastoreService.ListDatastores:output_type -> pilab.cloud.core.v1.ListDatastoresResponse
+	7,  // 32: pilab.cloud.core.v1.DatastoreService.GetDatastore:output_type -> pilab.cloud.core.v1.GetDatastoreResponse
+	12, // 33: pilab.cloud.core.v1.DatastoreService.CreateDatastore:output_type -> pilab.cloud.core.v1.CreateDatastoreResponse
+	18, // 34: pilab.cloud.core.v1.DatastoreService.DeleteDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	18, // 35: pilab.cloud.core.v1.DatastoreService.ActivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	18, // 36: pilab.cloud.core.v1.DatastoreService.DeactivateDatastore:output_type -> pilab.cloud.core.v1.DatastoreOperationResponse
+	13, // 37: pilab.cloud.core.v1.DatastoreService.ValidateDatastore:output_type -> pilab.cloud.core.v1.ValidateDatastoreResponse
+	15, // 38: pilab.cloud.core.v1.DatastoreService.TestDatastore:output_type -> pilab.cloud.core.v1.TestDatastoreResponse
+	21, // 39: pilab.cloud.core.v1.DatastoreService.AcquireStorageLock:output_type -> pilab.cloud.core.v1.AcquireStorageLockResponse
+	21, // 40: pilab.cloud.core.v1.DatastoreService.RenewStorageLock:output_type -> pilab.cloud.core.v1.AcquireStorageLockResponse
+	24, // 41: pilab.cloud.core.v1.DatastoreService.ReleaseStorageLock:output_type -> pilab.cloud.core.v1.ReleaseStorageLockResponse
+	26, // 42: pilab.cloud.core.v1.DatastoreService.SetDatastoreQoS:output_type -> pilab.cloud.core.v1.SetDatastoreQoSResponse
+	31, // [31:43] is the sub-list for method output_type
+	19, // [19:31] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_pilab_core_v1_datastore_service_proto_init() }
@@ -1719,7 +2077,7 @@ func file_pilab_core_v1_datastore_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_core_v1_datastore_service_proto_rawDesc), len(file_pilab_core_v1_datastore_service_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   20,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

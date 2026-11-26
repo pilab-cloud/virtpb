@@ -57,6 +57,15 @@ const (
 	// DatastoreServiceTestDatastoreProcedure is the fully-qualified name of the DatastoreService's
 	// TestDatastore RPC.
 	DatastoreServiceTestDatastoreProcedure = "/pilab.cloud.core.v1.DatastoreService/TestDatastore"
+	// DatastoreServiceAcquireStorageLockProcedure is the fully-qualified name of the DatastoreService's
+	// AcquireStorageLock RPC.
+	DatastoreServiceAcquireStorageLockProcedure = "/pilab.cloud.core.v1.DatastoreService/AcquireStorageLock"
+	// DatastoreServiceRenewStorageLockProcedure is the fully-qualified name of the DatastoreService's
+	// RenewStorageLock RPC.
+	DatastoreServiceRenewStorageLockProcedure = "/pilab.cloud.core.v1.DatastoreService/RenewStorageLock"
+	// DatastoreServiceReleaseStorageLockProcedure is the fully-qualified name of the DatastoreService's
+	// ReleaseStorageLock RPC.
+	DatastoreServiceReleaseStorageLockProcedure = "/pilab.cloud.core.v1.DatastoreService/ReleaseStorageLock"
 	// DatastoreServiceSetDatastoreQoSProcedure is the fully-qualified name of the DatastoreService's
 	// SetDatastoreQoS RPC.
 	DatastoreServiceSetDatastoreQoSProcedure = "/pilab.cloud.core.v1.DatastoreService/SetDatastoreQoS"
@@ -79,6 +88,12 @@ type DatastoreServiceClient interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(context.Context, *connect.Request[v1.TestDatastoreRequest]) (*connect.Response[v1.TestDatastoreResponse], error)
+	// AcquireStorageLock takes the lease that permits mutating a shared
+	// volume group. Only the holder may create, delete or resize its volumes,
+	// and each host checks the token before writing.
+	AcquireStorageLock(context.Context, *connect.Request[v1.AcquireStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error)
+	RenewStorageLock(context.Context, *connect.Request[v1.RenewStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error)
+	ReleaseStorageLock(context.Context, *connect.Request[v1.ReleaseStorageLockRequest]) (*connect.Response[v1.ReleaseStorageLockResponse], error)
 	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
 	// follows it; a disk with its own override is unaffected. A running VM's
 	// throttling is updated live where the host supports it.
@@ -144,6 +159,24 @@ func NewDatastoreServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(datastoreServiceMethods.ByName("TestDatastore")),
 			connect.WithClientOptions(opts...),
 		),
+		acquireStorageLock: connect.NewClient[v1.AcquireStorageLockRequest, v1.AcquireStorageLockResponse](
+			httpClient,
+			baseURL+DatastoreServiceAcquireStorageLockProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("AcquireStorageLock")),
+			connect.WithClientOptions(opts...),
+		),
+		renewStorageLock: connect.NewClient[v1.RenewStorageLockRequest, v1.AcquireStorageLockResponse](
+			httpClient,
+			baseURL+DatastoreServiceRenewStorageLockProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("RenewStorageLock")),
+			connect.WithClientOptions(opts...),
+		),
+		releaseStorageLock: connect.NewClient[v1.ReleaseStorageLockRequest, v1.ReleaseStorageLockResponse](
+			httpClient,
+			baseURL+DatastoreServiceReleaseStorageLockProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("ReleaseStorageLock")),
+			connect.WithClientOptions(opts...),
+		),
 		setDatastoreQoS: connect.NewClient[v1.SetDatastoreQoSRequest, v1.SetDatastoreQoSResponse](
 			httpClient,
 			baseURL+DatastoreServiceSetDatastoreQoSProcedure,
@@ -163,6 +196,9 @@ type datastoreServiceClient struct {
 	deactivateDatastore *connect.Client[v1.DatastoreHostsRequest, v1.DatastoreOperationResponse]
 	validateDatastore   *connect.Client[v1.CreateDatastoreRequest, v1.ValidateDatastoreResponse]
 	testDatastore       *connect.Client[v1.TestDatastoreRequest, v1.TestDatastoreResponse]
+	acquireStorageLock  *connect.Client[v1.AcquireStorageLockRequest, v1.AcquireStorageLockResponse]
+	renewStorageLock    *connect.Client[v1.RenewStorageLockRequest, v1.AcquireStorageLockResponse]
+	releaseStorageLock  *connect.Client[v1.ReleaseStorageLockRequest, v1.ReleaseStorageLockResponse]
 	setDatastoreQoS     *connect.Client[v1.SetDatastoreQoSRequest, v1.SetDatastoreQoSResponse]
 }
 
@@ -206,6 +242,21 @@ func (c *datastoreServiceClient) TestDatastore(ctx context.Context, req *connect
 	return c.testDatastore.CallUnary(ctx, req)
 }
 
+// AcquireStorageLock calls pilab.cloud.core.v1.DatastoreService.AcquireStorageLock.
+func (c *datastoreServiceClient) AcquireStorageLock(ctx context.Context, req *connect.Request[v1.AcquireStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error) {
+	return c.acquireStorageLock.CallUnary(ctx, req)
+}
+
+// RenewStorageLock calls pilab.cloud.core.v1.DatastoreService.RenewStorageLock.
+func (c *datastoreServiceClient) RenewStorageLock(ctx context.Context, req *connect.Request[v1.RenewStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error) {
+	return c.renewStorageLock.CallUnary(ctx, req)
+}
+
+// ReleaseStorageLock calls pilab.cloud.core.v1.DatastoreService.ReleaseStorageLock.
+func (c *datastoreServiceClient) ReleaseStorageLock(ctx context.Context, req *connect.Request[v1.ReleaseStorageLockRequest]) (*connect.Response[v1.ReleaseStorageLockResponse], error) {
+	return c.releaseStorageLock.CallUnary(ctx, req)
+}
+
 // SetDatastoreQoS calls pilab.cloud.core.v1.DatastoreService.SetDatastoreQoS.
 func (c *datastoreServiceClient) SetDatastoreQoS(ctx context.Context, req *connect.Request[v1.SetDatastoreQoSRequest]) (*connect.Response[v1.SetDatastoreQoSResponse], error) {
 	return c.setDatastoreQoS.CallUnary(ctx, req)
@@ -228,6 +279,12 @@ type DatastoreServiceHandler interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(context.Context, *connect.Request[v1.TestDatastoreRequest]) (*connect.Response[v1.TestDatastoreResponse], error)
+	// AcquireStorageLock takes the lease that permits mutating a shared
+	// volume group. Only the holder may create, delete or resize its volumes,
+	// and each host checks the token before writing.
+	AcquireStorageLock(context.Context, *connect.Request[v1.AcquireStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error)
+	RenewStorageLock(context.Context, *connect.Request[v1.RenewStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error)
+	ReleaseStorageLock(context.Context, *connect.Request[v1.ReleaseStorageLockRequest]) (*connect.Response[v1.ReleaseStorageLockResponse], error)
 	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
 	// follows it; a disk with its own override is unaffected. A running VM's
 	// throttling is updated live where the host supports it.
@@ -289,6 +346,24 @@ func NewDatastoreServiceHandler(svc DatastoreServiceHandler, opts ...connect.Han
 		connect.WithSchema(datastoreServiceMethods.ByName("TestDatastore")),
 		connect.WithHandlerOptions(opts...),
 	)
+	datastoreServiceAcquireStorageLockHandler := connect.NewUnaryHandler(
+		DatastoreServiceAcquireStorageLockProcedure,
+		svc.AcquireStorageLock,
+		connect.WithSchema(datastoreServiceMethods.ByName("AcquireStorageLock")),
+		connect.WithHandlerOptions(opts...),
+	)
+	datastoreServiceRenewStorageLockHandler := connect.NewUnaryHandler(
+		DatastoreServiceRenewStorageLockProcedure,
+		svc.RenewStorageLock,
+		connect.WithSchema(datastoreServiceMethods.ByName("RenewStorageLock")),
+		connect.WithHandlerOptions(opts...),
+	)
+	datastoreServiceReleaseStorageLockHandler := connect.NewUnaryHandler(
+		DatastoreServiceReleaseStorageLockProcedure,
+		svc.ReleaseStorageLock,
+		connect.WithSchema(datastoreServiceMethods.ByName("ReleaseStorageLock")),
+		connect.WithHandlerOptions(opts...),
+	)
 	datastoreServiceSetDatastoreQoSHandler := connect.NewUnaryHandler(
 		DatastoreServiceSetDatastoreQoSProcedure,
 		svc.SetDatastoreQoS,
@@ -313,6 +388,12 @@ func NewDatastoreServiceHandler(svc DatastoreServiceHandler, opts ...connect.Han
 			datastoreServiceValidateDatastoreHandler.ServeHTTP(w, r)
 		case DatastoreServiceTestDatastoreProcedure:
 			datastoreServiceTestDatastoreHandler.ServeHTTP(w, r)
+		case DatastoreServiceAcquireStorageLockProcedure:
+			datastoreServiceAcquireStorageLockHandler.ServeHTTP(w, r)
+		case DatastoreServiceRenewStorageLockProcedure:
+			datastoreServiceRenewStorageLockHandler.ServeHTTP(w, r)
+		case DatastoreServiceReleaseStorageLockProcedure:
+			datastoreServiceReleaseStorageLockHandler.ServeHTTP(w, r)
 		case DatastoreServiceSetDatastoreQoSProcedure:
 			datastoreServiceSetDatastoreQoSHandler.ServeHTTP(w, r)
 		default:
@@ -354,6 +435,18 @@ func (UnimplementedDatastoreServiceHandler) ValidateDatastore(context.Context, *
 
 func (UnimplementedDatastoreServiceHandler) TestDatastore(context.Context, *connect.Request[v1.TestDatastoreRequest]) (*connect.Response[v1.TestDatastoreResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.TestDatastore is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) AcquireStorageLock(context.Context, *connect.Request[v1.AcquireStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.AcquireStorageLock is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) RenewStorageLock(context.Context, *connect.Request[v1.RenewStorageLockRequest]) (*connect.Response[v1.AcquireStorageLockResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.RenewStorageLock is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) ReleaseStorageLock(context.Context, *connect.Request[v1.ReleaseStorageLockRequest]) (*connect.Response[v1.ReleaseStorageLockResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.ReleaseStorageLock is not implemented"))
 }
 
 func (UnimplementedDatastoreServiceHandler) SetDatastoreQoS(context.Context, *connect.Request[v1.SetDatastoreQoSRequest]) (*connect.Response[v1.SetDatastoreQoSResponse], error) {

@@ -253,6 +253,9 @@ const (
 	// StorageProvisioningServiceClearStorageEventsProcedure is the fully-qualified name of the
 	// StorageProvisioningService's ClearStorageEvents RPC.
 	StorageProvisioningServiceClearStorageEventsProcedure = "/pilab.core.v1.StorageProvisioningService/ClearStorageEvents"
+	// StorageProvisioningServiceScanSharedLvmProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ScanSharedLvm RPC.
+	StorageProvisioningServiceScanSharedLvmProcedure = "/pilab.core.v1.StorageProvisioningService/ScanSharedLvm"
 	// StorageProvisioningServiceCheckMigrationStorageProcedure is the fully-qualified name of the
 	// StorageProvisioningService's CheckMigrationStorage RPC.
 	StorageProvisioningServiceCheckMigrationStorageProcedure = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
@@ -347,6 +350,8 @@ type StorageProvisioningServiceClient interface {
 	ListStorageEvents(context.Context, *connect.Request[v1.ListStorageEventsRequest]) (*connect.Response[v1.ListStorageEventsResponse], error)
 	AcknowledgeStorageEvents(context.Context, *connect.Request[v1.AcknowledgeStorageEventsRequest]) (*connect.Response[v1.AcknowledgeStorageEventsResponse], error)
 	ClearStorageEvents(context.Context, *connect.Request[v1.ClearStorageEventsRequest]) (*connect.Response[v1.ClearStorageEventsResponse], error)
+	// Shared LVM (thick volume group on a LUN visible to every host)
+	ScanSharedLvm(context.Context, *connect.Request[v1.ScanSharedLvmRequest]) (*connect.Response[v1.ScanSharedLvmResponse], error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
@@ -800,6 +805,12 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("ClearStorageEvents")),
 			connect.WithClientOptions(opts...),
 		),
+		scanSharedLvm: connect.NewClient[v1.ScanSharedLvmRequest, v1.ScanSharedLvmResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceScanSharedLvmProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ScanSharedLvm")),
+			connect.WithClientOptions(opts...),
+		),
 		checkMigrationStorage: connect.NewClient[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse](
 			httpClient,
 			baseURL+StorageProvisioningServiceCheckMigrationStorageProcedure,
@@ -884,6 +895,7 @@ type storageProvisioningServiceClient struct {
 	listStorageEvents           *connect.Client[v1.ListStorageEventsRequest, v1.ListStorageEventsResponse]
 	acknowledgeStorageEvents    *connect.Client[v1.AcknowledgeStorageEventsRequest, v1.AcknowledgeStorageEventsResponse]
 	clearStorageEvents          *connect.Client[v1.ClearStorageEventsRequest, v1.ClearStorageEventsResponse]
+	scanSharedLvm               *connect.Client[v1.ScanSharedLvmRequest, v1.ScanSharedLvmResponse]
 	checkMigrationStorage       *connect.Client[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse]
 }
 
@@ -1253,6 +1265,11 @@ func (c *storageProvisioningServiceClient) ClearStorageEvents(ctx context.Contex
 	return c.clearStorageEvents.CallUnary(ctx, req)
 }
 
+// ScanSharedLvm calls pilab.core.v1.StorageProvisioningService.ScanSharedLvm.
+func (c *storageProvisioningServiceClient) ScanSharedLvm(ctx context.Context, req *connect.Request[v1.ScanSharedLvmRequest]) (*connect.Response[v1.ScanSharedLvmResponse], error) {
+	return c.scanSharedLvm.CallUnary(ctx, req)
+}
+
 // CheckMigrationStorage calls pilab.core.v1.StorageProvisioningService.CheckMigrationStorage.
 func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, req *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
 	return c.checkMigrationStorage.CallUnary(ctx, req)
@@ -1347,6 +1364,8 @@ type StorageProvisioningServiceHandler interface {
 	ListStorageEvents(context.Context, *connect.Request[v1.ListStorageEventsRequest]) (*connect.Response[v1.ListStorageEventsResponse], error)
 	AcknowledgeStorageEvents(context.Context, *connect.Request[v1.AcknowledgeStorageEventsRequest]) (*connect.Response[v1.AcknowledgeStorageEventsResponse], error)
 	ClearStorageEvents(context.Context, *connect.Request[v1.ClearStorageEventsRequest]) (*connect.Response[v1.ClearStorageEventsResponse], error)
+	// Shared LVM (thick volume group on a LUN visible to every host)
+	ScanSharedLvm(context.Context, *connect.Request[v1.ScanSharedLvmRequest]) (*connect.Response[v1.ScanSharedLvmResponse], error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
@@ -1796,6 +1815,12 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("ClearStorageEvents")),
 		connect.WithHandlerOptions(opts...),
 	)
+	storageProvisioningServiceScanSharedLvmHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceScanSharedLvmProcedure,
+		svc.ScanSharedLvm,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ScanSharedLvm")),
+		connect.WithHandlerOptions(opts...),
+	)
 	storageProvisioningServiceCheckMigrationStorageHandler := connect.NewUnaryHandler(
 		StorageProvisioningServiceCheckMigrationStorageProcedure,
 		svc.CheckMigrationStorage,
@@ -1950,6 +1975,8 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 			storageProvisioningServiceAcknowledgeStorageEventsHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceClearStorageEventsProcedure:
 			storageProvisioningServiceClearStorageEventsHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceScanSharedLvmProcedure:
+			storageProvisioningServiceScanSharedLvmHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceCheckMigrationStorageProcedure:
 			storageProvisioningServiceCheckMigrationStorageHandler.ServeHTTP(w, r)
 		default:
@@ -2251,6 +2278,10 @@ func (UnimplementedStorageProvisioningServiceHandler) AcknowledgeStorageEvents(c
 
 func (UnimplementedStorageProvisioningServiceHandler) ClearStorageEvents(context.Context, *connect.Request[v1.ClearStorageEventsRequest]) (*connect.Response[v1.ClearStorageEventsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ClearStorageEvents is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ScanSharedLvm(context.Context, *connect.Request[v1.ScanSharedLvmRequest]) (*connect.Response[v1.ScanSharedLvmResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ScanSharedLvm is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
