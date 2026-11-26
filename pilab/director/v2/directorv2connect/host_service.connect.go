@@ -61,6 +61,15 @@ const (
 	// HostAdminServiceDeleteDiskProcedure is the fully-qualified name of the HostAdminService's
 	// DeleteDisk RPC.
 	HostAdminServiceDeleteDiskProcedure = "/pilab.director.v2.HostAdminService/DeleteDisk"
+	// HostAdminServiceResizeDiskProcedure is the fully-qualified name of the HostAdminService's
+	// ResizeDisk RPC.
+	HostAdminServiceResizeDiskProcedure = "/pilab.director.v2.HostAdminService/ResizeDisk"
+	// HostAdminServiceSetDiskQoSProcedure is the fully-qualified name of the HostAdminService's
+	// SetDiskQoS RPC.
+	HostAdminServiceSetDiskQoSProcedure = "/pilab.director.v2.HostAdminService/SetDiskQoS"
+	// HostAdminServiceGetDiskQoSProcedure is the fully-qualified name of the HostAdminService's
+	// GetDiskQoS RPC.
+	HostAdminServiceGetDiskQoSProcedure = "/pilab.director.v2.HostAdminService/GetDiskQoS"
 	// HostAdminServiceRebootHostProcedure is the fully-qualified name of the HostAdminService's
 	// RebootHost RPC.
 	HostAdminServiceRebootHostProcedure = "/pilab.director.v2.HostAdminService/RebootHost"
@@ -108,6 +117,16 @@ type HostAdminServiceClient interface {
 	CreateDisk(context.Context, *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(context.Context, *connect.Request[v2.DeleteDiskRequest]) (*connect.Response[v2.DeleteDiskResponse], error)
+	// ResizeDisk grows a standalone disk image. Shrinking is refused: a
+	// filesystem may already fill the disk.
+	ResizeDisk(context.Context, *connect.Request[v2.ResizeDiskRequest]) (*connect.Response[v2.ResizeDiskResponse], error)
+	// SetDiskQoS sets a VirtualDisk's own QoS override, or clears it so the
+	// disk follows its pool default again. A running VM's throttling is
+	// updated live where the backend supports it.
+	SetDiskQoS(context.Context, *connect.Request[v2.SetDiskQoSRequest]) (*connect.Response[v2.SetDiskQoSResponse], error)
+	// GetDiskQoS returns the QoS the disk will actually get: its own override
+	// or the inherited pool default, and which of the two it is.
+	GetDiskQoS(context.Context, *connect.Request[v2.GetDiskQoSRequest]) (*connect.Response[v2.GetDiskQoSResponse], error)
 	// RebootHost reboots the hypervisor through its agent. The host should be
 	// in maintenance unless force is set.
 	RebootHost(context.Context, *connect.Request[v2.RebootHostRequest]) (*connect.Response[v2.RebootHostResponse], error)
@@ -192,6 +211,24 @@ func NewHostAdminServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(hostAdminServiceMethods.ByName("DeleteDisk")),
 			connect.WithClientOptions(opts...),
 		),
+		resizeDisk: connect.NewClient[v2.ResizeDiskRequest, v2.ResizeDiskResponse](
+			httpClient,
+			baseURL+HostAdminServiceResizeDiskProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("ResizeDisk")),
+			connect.WithClientOptions(opts...),
+		),
+		setDiskQoS: connect.NewClient[v2.SetDiskQoSRequest, v2.SetDiskQoSResponse](
+			httpClient,
+			baseURL+HostAdminServiceSetDiskQoSProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("SetDiskQoS")),
+			connect.WithClientOptions(opts...),
+		),
+		getDiskQoS: connect.NewClient[v2.GetDiskQoSRequest, v2.GetDiskQoSResponse](
+			httpClient,
+			baseURL+HostAdminServiceGetDiskQoSProcedure,
+			connect.WithSchema(hostAdminServiceMethods.ByName("GetDiskQoS")),
+			connect.WithClientOptions(opts...),
+		),
 		rebootHost: connect.NewClient[v2.RebootHostRequest, v2.RebootHostResponse](
 			httpClient,
 			baseURL+HostAdminServiceRebootHostProcedure,
@@ -247,6 +284,9 @@ type hostAdminServiceClient struct {
 	listHostResources    *connect.Client[v2.ListHostResourcesRequest, v2.ListHostResourcesResponse]
 	createDisk           *connect.Client[v2.CreateDiskRequest, v2.CreateDiskResponse]
 	deleteDisk           *connect.Client[v2.DeleteDiskRequest, v2.DeleteDiskResponse]
+	resizeDisk           *connect.Client[v2.ResizeDiskRequest, v2.ResizeDiskResponse]
+	setDiskQoS           *connect.Client[v2.SetDiskQoSRequest, v2.SetDiskQoSResponse]
+	getDiskQoS           *connect.Client[v2.GetDiskQoSRequest, v2.GetDiskQoSResponse]
 	rebootHost           *connect.Client[v2.RebootHostRequest, v2.RebootHostResponse]
 	powerOffHost         *connect.Client[v2.PowerOffHostRequest, v2.PowerOffHostResponse]
 	deleteHost           *connect.Client[v2.DeleteHostRequest, v2.DeleteHostResponse]
@@ -294,6 +334,21 @@ func (c *hostAdminServiceClient) CreateDisk(ctx context.Context, req *connect.Re
 // DeleteDisk calls pilab.director.v2.HostAdminService.DeleteDisk.
 func (c *hostAdminServiceClient) DeleteDisk(ctx context.Context, req *connect.Request[v2.DeleteDiskRequest]) (*connect.Response[v2.DeleteDiskResponse], error) {
 	return c.deleteDisk.CallUnary(ctx, req)
+}
+
+// ResizeDisk calls pilab.director.v2.HostAdminService.ResizeDisk.
+func (c *hostAdminServiceClient) ResizeDisk(ctx context.Context, req *connect.Request[v2.ResizeDiskRequest]) (*connect.Response[v2.ResizeDiskResponse], error) {
+	return c.resizeDisk.CallUnary(ctx, req)
+}
+
+// SetDiskQoS calls pilab.director.v2.HostAdminService.SetDiskQoS.
+func (c *hostAdminServiceClient) SetDiskQoS(ctx context.Context, req *connect.Request[v2.SetDiskQoSRequest]) (*connect.Response[v2.SetDiskQoSResponse], error) {
+	return c.setDiskQoS.CallUnary(ctx, req)
+}
+
+// GetDiskQoS calls pilab.director.v2.HostAdminService.GetDiskQoS.
+func (c *hostAdminServiceClient) GetDiskQoS(ctx context.Context, req *connect.Request[v2.GetDiskQoSRequest]) (*connect.Response[v2.GetDiskQoSResponse], error) {
+	return c.getDiskQoS.CallUnary(ctx, req)
 }
 
 // RebootHost calls pilab.director.v2.HostAdminService.RebootHost.
@@ -355,6 +410,16 @@ type HostAdminServiceHandler interface {
 	CreateDisk(context.Context, *connect.Request[v2.CreateDiskRequest]) (*connect.Response[v2.CreateDiskResponse], error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(context.Context, *connect.Request[v2.DeleteDiskRequest]) (*connect.Response[v2.DeleteDiskResponse], error)
+	// ResizeDisk grows a standalone disk image. Shrinking is refused: a
+	// filesystem may already fill the disk.
+	ResizeDisk(context.Context, *connect.Request[v2.ResizeDiskRequest]) (*connect.Response[v2.ResizeDiskResponse], error)
+	// SetDiskQoS sets a VirtualDisk's own QoS override, or clears it so the
+	// disk follows its pool default again. A running VM's throttling is
+	// updated live where the backend supports it.
+	SetDiskQoS(context.Context, *connect.Request[v2.SetDiskQoSRequest]) (*connect.Response[v2.SetDiskQoSResponse], error)
+	// GetDiskQoS returns the QoS the disk will actually get: its own override
+	// or the inherited pool default, and which of the two it is.
+	GetDiskQoS(context.Context, *connect.Request[v2.GetDiskQoSRequest]) (*connect.Response[v2.GetDiskQoSResponse], error)
 	// RebootHost reboots the hypervisor through its agent. The host should be
 	// in maintenance unless force is set.
 	RebootHost(context.Context, *connect.Request[v2.RebootHostRequest]) (*connect.Response[v2.RebootHostResponse], error)
@@ -435,6 +500,24 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 		connect.WithSchema(hostAdminServiceMethods.ByName("DeleteDisk")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostAdminServiceResizeDiskHandler := connect.NewUnaryHandler(
+		HostAdminServiceResizeDiskProcedure,
+		svc.ResizeDisk,
+		connect.WithSchema(hostAdminServiceMethods.ByName("ResizeDisk")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostAdminServiceSetDiskQoSHandler := connect.NewUnaryHandler(
+		HostAdminServiceSetDiskQoSProcedure,
+		svc.SetDiskQoS,
+		connect.WithSchema(hostAdminServiceMethods.ByName("SetDiskQoS")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostAdminServiceGetDiskQoSHandler := connect.NewUnaryHandler(
+		HostAdminServiceGetDiskQoSProcedure,
+		svc.GetDiskQoS,
+		connect.WithSchema(hostAdminServiceMethods.ByName("GetDiskQoS")),
+		connect.WithHandlerOptions(opts...),
+	)
 	hostAdminServiceRebootHostHandler := connect.NewUnaryHandler(
 		HostAdminServiceRebootHostProcedure,
 		svc.RebootHost,
@@ -495,6 +578,12 @@ func NewHostAdminServiceHandler(svc HostAdminServiceHandler, opts ...connect.Han
 			hostAdminServiceCreateDiskHandler.ServeHTTP(w, r)
 		case HostAdminServiceDeleteDiskProcedure:
 			hostAdminServiceDeleteDiskHandler.ServeHTTP(w, r)
+		case HostAdminServiceResizeDiskProcedure:
+			hostAdminServiceResizeDiskHandler.ServeHTTP(w, r)
+		case HostAdminServiceSetDiskQoSProcedure:
+			hostAdminServiceSetDiskQoSHandler.ServeHTTP(w, r)
+		case HostAdminServiceGetDiskQoSProcedure:
+			hostAdminServiceGetDiskQoSHandler.ServeHTTP(w, r)
 		case HostAdminServiceRebootHostProcedure:
 			hostAdminServiceRebootHostHandler.ServeHTTP(w, r)
 		case HostAdminServicePowerOffHostProcedure:
@@ -548,6 +637,18 @@ func (UnimplementedHostAdminServiceHandler) CreateDisk(context.Context, *connect
 
 func (UnimplementedHostAdminServiceHandler) DeleteDisk(context.Context, *connect.Request[v2.DeleteDiskRequest]) (*connect.Response[v2.DeleteDiskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.DeleteDisk is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) ResizeDisk(context.Context, *connect.Request[v2.ResizeDiskRequest]) (*connect.Response[v2.ResizeDiskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.ResizeDisk is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) SetDiskQoS(context.Context, *connect.Request[v2.SetDiskQoSRequest]) (*connect.Response[v2.SetDiskQoSResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.SetDiskQoS is not implemented"))
+}
+
+func (UnimplementedHostAdminServiceHandler) GetDiskQoS(context.Context, *connect.Request[v2.GetDiskQoSRequest]) (*connect.Response[v2.GetDiskQoSResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.director.v2.HostAdminService.GetDiskQoS is not implemented"))
 }
 
 func (UnimplementedHostAdminServiceHandler) RebootHost(context.Context, *connect.Request[v2.RebootHostRequest]) (*connect.Response[v2.RebootHostResponse], error) {

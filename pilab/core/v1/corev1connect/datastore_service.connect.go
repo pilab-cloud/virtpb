@@ -57,6 +57,9 @@ const (
 	// DatastoreServiceTestDatastoreProcedure is the fully-qualified name of the DatastoreService's
 	// TestDatastore RPC.
 	DatastoreServiceTestDatastoreProcedure = "/pilab.cloud.core.v1.DatastoreService/TestDatastore"
+	// DatastoreServiceSetDatastoreQoSProcedure is the fully-qualified name of the DatastoreService's
+	// SetDatastoreQoS RPC.
+	DatastoreServiceSetDatastoreQoSProcedure = "/pilab.cloud.core.v1.DatastoreService/SetDatastoreQoS"
 )
 
 // DatastoreServiceClient is a client for the pilab.cloud.core.v1.DatastoreService service.
@@ -76,6 +79,10 @@ type DatastoreServiceClient interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(context.Context, *connect.Request[v1.TestDatastoreRequest]) (*connect.Response[v1.TestDatastoreResponse], error)
+	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
+	// follows it; a disk with its own override is unaffected. A running VM's
+	// throttling is updated live where the host supports it.
+	SetDatastoreQoS(context.Context, *connect.Request[v1.SetDatastoreQoSRequest]) (*connect.Response[v1.SetDatastoreQoSResponse], error)
 }
 
 // NewDatastoreServiceClient constructs a client for the pilab.cloud.core.v1.DatastoreService
@@ -137,6 +144,12 @@ func NewDatastoreServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(datastoreServiceMethods.ByName("TestDatastore")),
 			connect.WithClientOptions(opts...),
 		),
+		setDatastoreQoS: connect.NewClient[v1.SetDatastoreQoSRequest, v1.SetDatastoreQoSResponse](
+			httpClient,
+			baseURL+DatastoreServiceSetDatastoreQoSProcedure,
+			connect.WithSchema(datastoreServiceMethods.ByName("SetDatastoreQoS")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -150,6 +163,7 @@ type datastoreServiceClient struct {
 	deactivateDatastore *connect.Client[v1.DatastoreHostsRequest, v1.DatastoreOperationResponse]
 	validateDatastore   *connect.Client[v1.CreateDatastoreRequest, v1.ValidateDatastoreResponse]
 	testDatastore       *connect.Client[v1.TestDatastoreRequest, v1.TestDatastoreResponse]
+	setDatastoreQoS     *connect.Client[v1.SetDatastoreQoSRequest, v1.SetDatastoreQoSResponse]
 }
 
 // ListDatastores calls pilab.cloud.core.v1.DatastoreService.ListDatastores.
@@ -192,6 +206,11 @@ func (c *datastoreServiceClient) TestDatastore(ctx context.Context, req *connect
 	return c.testDatastore.CallUnary(ctx, req)
 }
 
+// SetDatastoreQoS calls pilab.cloud.core.v1.DatastoreService.SetDatastoreQoS.
+func (c *datastoreServiceClient) SetDatastoreQoS(ctx context.Context, req *connect.Request[v1.SetDatastoreQoSRequest]) (*connect.Response[v1.SetDatastoreQoSResponse], error) {
+	return c.setDatastoreQoS.CallUnary(ctx, req)
+}
+
 // DatastoreServiceHandler is an implementation of the pilab.cloud.core.v1.DatastoreService service.
 type DatastoreServiceHandler interface {
 	ListDatastores(context.Context, *connect.Request[v1.ListDatastoresRequest]) (*connect.Response[v1.ListDatastoresResponse], error)
@@ -209,6 +228,10 @@ type DatastoreServiceHandler interface {
 	// TestDatastore probes an existing datastore against its hosts and reports
 	// what each host currently sees.
 	TestDatastore(context.Context, *connect.Request[v1.TestDatastoreRequest]) (*connect.Response[v1.TestDatastoreResponse], error)
+	// SetDatastoreQoS stores the pool's default disk QoS. A disk that inherits
+	// follows it; a disk with its own override is unaffected. A running VM's
+	// throttling is updated live where the host supports it.
+	SetDatastoreQoS(context.Context, *connect.Request[v1.SetDatastoreQoSRequest]) (*connect.Response[v1.SetDatastoreQoSResponse], error)
 }
 
 // NewDatastoreServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -266,6 +289,12 @@ func NewDatastoreServiceHandler(svc DatastoreServiceHandler, opts ...connect.Han
 		connect.WithSchema(datastoreServiceMethods.ByName("TestDatastore")),
 		connect.WithHandlerOptions(opts...),
 	)
+	datastoreServiceSetDatastoreQoSHandler := connect.NewUnaryHandler(
+		DatastoreServiceSetDatastoreQoSProcedure,
+		svc.SetDatastoreQoS,
+		connect.WithSchema(datastoreServiceMethods.ByName("SetDatastoreQoS")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/pilab.cloud.core.v1.DatastoreService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case DatastoreServiceListDatastoresProcedure:
@@ -284,6 +313,8 @@ func NewDatastoreServiceHandler(svc DatastoreServiceHandler, opts ...connect.Han
 			datastoreServiceValidateDatastoreHandler.ServeHTTP(w, r)
 		case DatastoreServiceTestDatastoreProcedure:
 			datastoreServiceTestDatastoreHandler.ServeHTTP(w, r)
+		case DatastoreServiceSetDatastoreQoSProcedure:
+			datastoreServiceSetDatastoreQoSHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -323,4 +354,8 @@ func (UnimplementedDatastoreServiceHandler) ValidateDatastore(context.Context, *
 
 func (UnimplementedDatastoreServiceHandler) TestDatastore(context.Context, *connect.Request[v1.TestDatastoreRequest]) (*connect.Response[v1.TestDatastoreResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.TestDatastore is not implemented"))
+}
+
+func (UnimplementedDatastoreServiceHandler) SetDatastoreQoS(context.Context, *connect.Request[v1.SetDatastoreQoSRequest]) (*connect.Response[v1.SetDatastoreQoSResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cloud.core.v1.DatastoreService.SetDatastoreQoS is not implemented"))
 }

@@ -11,7 +11,8 @@
 package directorv2
 
 import (
-	v11 "go.pilab.hu/cloud/virtpb/v3/pilab/pivirtd/v1"
+	v11 "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1"
+	v12 "go.pilab.hu/cloud/virtpb/v3/pilab/pivirtd/v1"
 	v1 "go.pilab.hu/cloud/virtpb/v3/pilab/resource/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -1173,6 +1174,430 @@ func (x *DeleteDiskResponse) GetOutcome() *ResourceOutcome {
 	return nil
 }
 
+type ResizeDiskRequest struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	HostId string                 `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
+	Name   string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// size_gb is the disk's new total size, not the amount to add.
+	SizeGb         int32 `protobuf:"varint,3,opt,name=size_gb,json=sizeGb,proto3" json:"size_gb,omitempty"`
+	TimeoutSeconds int32 `protobuf:"varint,4,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ResizeDiskRequest) Reset() {
+	*x = ResizeDiskRequest{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResizeDiskRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResizeDiskRequest) ProtoMessage() {}
+
+func (x *ResizeDiskRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResizeDiskRequest.ProtoReflect.Descriptor instead.
+func (*ResizeDiskRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ResizeDiskRequest) GetHostId() string {
+	if x != nil {
+		return x.HostId
+	}
+	return ""
+}
+
+func (x *ResizeDiskRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ResizeDiskRequest) GetSizeGb() int32 {
+	if x != nil {
+		return x.SizeGb
+	}
+	return 0
+}
+
+func (x *ResizeDiskRequest) GetTimeoutSeconds() int32 {
+	if x != nil {
+		return x.TimeoutSeconds
+	}
+	return 0
+}
+
+type ResizeDiskResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Outcome       *ResourceOutcome       `protobuf:"bytes,1,opt,name=outcome,proto3" json:"outcome,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResizeDiskResponse) Reset() {
+	*x = ResizeDiskResponse{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResizeDiskResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResizeDiskResponse) ProtoMessage() {}
+
+func (x *ResizeDiskResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResizeDiskResponse.ProtoReflect.Descriptor instead.
+func (*ResizeDiskResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ResizeDiskResponse) GetOutcome() *ResourceOutcome {
+	if x != nil {
+		return x.Outcome
+	}
+	return nil
+}
+
+// DiskQoS is a disk's effective throttling and where it came from.
+type DiskQoS struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// effective is the configuration the disk is limited to.
+	Effective *v11.DiskQoSConfig `protobuf:"bytes,1,opt,name=effective,proto3" json:"effective,omitempty"`
+	// inherited is true when the disk has no override and follows the pool
+	// default (or the platform baseline when the pool has none).
+	Inherited bool `protobuf:"varint,2,opt,name=inherited,proto3" json:"inherited,omitempty"`
+	// pool_default_qos is what the disk would inherit, when it has a pool.
+	PoolDefaultQos *v11.DiskQoSConfig `protobuf:"bytes,3,opt,name=pool_default_qos,json=poolDefaultQos,proto3" json:"pool_default_qos,omitempty"`
+	// live is true when the running VM's throttling was updated right away,
+	// rather than only stored for the next start.
+	Live bool `protobuf:"varint,4,opt,name=live,proto3" json:"live,omitempty"`
+	// message explains a partial outcome, such as a stored change that a
+	// running VM could not receive.
+	Message       string `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DiskQoS) Reset() {
+	*x = DiskQoS{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiskQoS) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiskQoS) ProtoMessage() {}
+
+func (x *DiskQoS) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DiskQoS.ProtoReflect.Descriptor instead.
+func (*DiskQoS) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *DiskQoS) GetEffective() *v11.DiskQoSConfig {
+	if x != nil {
+		return x.Effective
+	}
+	return nil
+}
+
+func (x *DiskQoS) GetInherited() bool {
+	if x != nil {
+		return x.Inherited
+	}
+	return false
+}
+
+func (x *DiskQoS) GetPoolDefaultQos() *v11.DiskQoSConfig {
+	if x != nil {
+		return x.PoolDefaultQos
+	}
+	return nil
+}
+
+func (x *DiskQoS) GetLive() bool {
+	if x != nil {
+		return x.Live
+	}
+	return false
+}
+
+func (x *DiskQoS) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type SetDiskQoSRequest struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	HostId string                 `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
+	Disk   string                 `protobuf:"bytes,2,opt,name=disk,proto3" json:"disk,omitempty"`
+	// qos is the disk's own override. Ignored when inherit is true.
+	Qos *v11.DiskQoSConfig `protobuf:"bytes,3,opt,name=qos,proto3" json:"qos,omitempty"`
+	// inherit clears the override so the disk follows its pool default.
+	Inherit        bool  `protobuf:"varint,4,opt,name=inherit,proto3" json:"inherit,omitempty"`
+	TimeoutSeconds int32 `protobuf:"varint,5,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SetDiskQoSRequest) Reset() {
+	*x = SetDiskQoSRequest{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetDiskQoSRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetDiskQoSRequest) ProtoMessage() {}
+
+func (x *SetDiskQoSRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetDiskQoSRequest.ProtoReflect.Descriptor instead.
+func (*SetDiskQoSRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *SetDiskQoSRequest) GetHostId() string {
+	if x != nil {
+		return x.HostId
+	}
+	return ""
+}
+
+func (x *SetDiskQoSRequest) GetDisk() string {
+	if x != nil {
+		return x.Disk
+	}
+	return ""
+}
+
+func (x *SetDiskQoSRequest) GetQos() *v11.DiskQoSConfig {
+	if x != nil {
+		return x.Qos
+	}
+	return nil
+}
+
+func (x *SetDiskQoSRequest) GetInherit() bool {
+	if x != nil {
+		return x.Inherit
+	}
+	return false
+}
+
+func (x *SetDiskQoSRequest) GetTimeoutSeconds() int32 {
+	if x != nil {
+		return x.TimeoutSeconds
+	}
+	return 0
+}
+
+type SetDiskQoSResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Qos           *DiskQoS               `protobuf:"bytes,1,opt,name=qos,proto3" json:"qos,omitempty"`
+	Outcome       *ResourceOutcome       `protobuf:"bytes,2,opt,name=outcome,proto3" json:"outcome,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetDiskQoSResponse) Reset() {
+	*x = SetDiskQoSResponse{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetDiskQoSResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetDiskQoSResponse) ProtoMessage() {}
+
+func (x *SetDiskQoSResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetDiskQoSResponse.ProtoReflect.Descriptor instead.
+func (*SetDiskQoSResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *SetDiskQoSResponse) GetQos() *DiskQoS {
+	if x != nil {
+		return x.Qos
+	}
+	return nil
+}
+
+func (x *SetDiskQoSResponse) GetOutcome() *ResourceOutcome {
+	if x != nil {
+		return x.Outcome
+	}
+	return nil
+}
+
+type GetDiskQoSRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	HostId        string                 `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
+	Disk          string                 `protobuf:"bytes,2,opt,name=disk,proto3" json:"disk,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDiskQoSRequest) Reset() {
+	*x = GetDiskQoSRequest{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDiskQoSRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDiskQoSRequest) ProtoMessage() {}
+
+func (x *GetDiskQoSRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDiskQoSRequest.ProtoReflect.Descriptor instead.
+func (*GetDiskQoSRequest) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetDiskQoSRequest) GetHostId() string {
+	if x != nil {
+		return x.HostId
+	}
+	return ""
+}
+
+func (x *GetDiskQoSRequest) GetDisk() string {
+	if x != nil {
+		return x.Disk
+	}
+	return ""
+}
+
+type GetDiskQoSResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Qos           *DiskQoS               `protobuf:"bytes,1,opt,name=qos,proto3" json:"qos,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDiskQoSResponse) Reset() {
+	*x = GetDiskQoSResponse{}
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDiskQoSResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDiskQoSResponse) ProtoMessage() {}
+
+func (x *GetDiskQoSResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDiskQoSResponse.ProtoReflect.Descriptor instead.
+func (*GetDiskQoSResponse) Descriptor() ([]byte, []int) {
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GetDiskQoSResponse) GetQos() *DiskQoS {
+	if x != nil {
+		return x.Qos
+	}
+	return nil
+}
+
 type RebootHostRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -1186,7 +1611,7 @@ type RebootHostRequest struct {
 
 func (x *RebootHostRequest) Reset() {
 	*x = RebootHostRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[18]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1198,7 +1623,7 @@ func (x *RebootHostRequest) String() string {
 func (*RebootHostRequest) ProtoMessage() {}
 
 func (x *RebootHostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[18]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1211,7 +1636,7 @@ func (x *RebootHostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebootHostRequest.ProtoReflect.Descriptor instead.
 func (*RebootHostRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{18}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RebootHostRequest) GetId() string {
@@ -1251,7 +1676,7 @@ type RebootHostResponse struct {
 
 func (x *RebootHostResponse) Reset() {
 	*x = RebootHostResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[19]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1263,7 +1688,7 @@ func (x *RebootHostResponse) String() string {
 func (*RebootHostResponse) ProtoMessage() {}
 
 func (x *RebootHostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[19]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1276,7 +1701,7 @@ func (x *RebootHostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebootHostResponse.ProtoReflect.Descriptor instead.
 func (*RebootHostResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{19}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RebootHostResponse) GetOutcome() *ResourceOutcome {
@@ -1299,7 +1724,7 @@ type PowerOffHostRequest struct {
 
 func (x *PowerOffHostRequest) Reset() {
 	*x = PowerOffHostRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[20]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1311,7 +1736,7 @@ func (x *PowerOffHostRequest) String() string {
 func (*PowerOffHostRequest) ProtoMessage() {}
 
 func (x *PowerOffHostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[20]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1324,7 +1749,7 @@ func (x *PowerOffHostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PowerOffHostRequest.ProtoReflect.Descriptor instead.
 func (*PowerOffHostRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{20}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *PowerOffHostRequest) GetId() string {
@@ -1364,7 +1789,7 @@ type PowerOffHostResponse struct {
 
 func (x *PowerOffHostResponse) Reset() {
 	*x = PowerOffHostResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[21]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1376,7 +1801,7 @@ func (x *PowerOffHostResponse) String() string {
 func (*PowerOffHostResponse) ProtoMessage() {}
 
 func (x *PowerOffHostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[21]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1389,7 +1814,7 @@ func (x *PowerOffHostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PowerOffHostResponse.ProtoReflect.Descriptor instead.
 func (*PowerOffHostResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{21}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *PowerOffHostResponse) GetOutcome() *ResourceOutcome {
@@ -1410,7 +1835,7 @@ type DeleteHostRequest struct {
 
 func (x *DeleteHostRequest) Reset() {
 	*x = DeleteHostRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[22]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1422,7 +1847,7 @@ func (x *DeleteHostRequest) String() string {
 func (*DeleteHostRequest) ProtoMessage() {}
 
 func (x *DeleteHostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[22]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1435,7 +1860,7 @@ func (x *DeleteHostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteHostRequest.ProtoReflect.Descriptor instead.
 func (*DeleteHostRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{22}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *DeleteHostRequest) GetId() string {
@@ -1460,7 +1885,7 @@ type DeleteHostResponse struct {
 
 func (x *DeleteHostResponse) Reset() {
 	*x = DeleteHostResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[23]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1472,7 +1897,7 @@ func (x *DeleteHostResponse) String() string {
 func (*DeleteHostResponse) ProtoMessage() {}
 
 func (x *DeleteHostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[23]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1485,7 +1910,7 @@ func (x *DeleteHostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteHostResponse.ProtoReflect.Descriptor instead.
 func (*DeleteHostResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{23}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{30}
 }
 
 type GetHostStatsRequest struct {
@@ -1497,7 +1922,7 @@ type GetHostStatsRequest struct {
 
 func (x *GetHostStatsRequest) Reset() {
 	*x = GetHostStatsRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[24]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1509,7 +1934,7 @@ func (x *GetHostStatsRequest) String() string {
 func (*GetHostStatsRequest) ProtoMessage() {}
 
 func (x *GetHostStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[24]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1522,7 +1947,7 @@ func (x *GetHostStatsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHostStatsRequest.ProtoReflect.Descriptor instead.
 func (*GetHostStatsRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{24}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *GetHostStatsRequest) GetId() string {
@@ -1536,14 +1961,14 @@ type GetHostStatsResponse struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	HostId string                 `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
 	// stats is the latest HostStats the host's agent reported.
-	Stats         *v11.HostStats `protobuf:"bytes,2,opt,name=stats,proto3" json:"stats,omitempty"`
+	Stats         *v12.HostStats `protobuf:"bytes,2,opt,name=stats,proto3" json:"stats,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetHostStatsResponse) Reset() {
 	*x = GetHostStatsResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[25]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1555,7 +1980,7 @@ func (x *GetHostStatsResponse) String() string {
 func (*GetHostStatsResponse) ProtoMessage() {}
 
 func (x *GetHostStatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[25]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1568,7 +1993,7 @@ func (x *GetHostStatsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHostStatsResponse.ProtoReflect.Descriptor instead.
 func (*GetHostStatsResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{25}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *GetHostStatsResponse) GetHostId() string {
@@ -1578,7 +2003,7 @@ func (x *GetHostStatsResponse) GetHostId() string {
 	return ""
 }
 
-func (x *GetHostStatsResponse) GetStats() *v11.HostStats {
+func (x *GetHostStatsResponse) GetStats() *v12.HostStats {
 	if x != nil {
 		return x.Stats
 	}
@@ -1594,7 +2019,7 @@ type GetHostHardwareRequest struct {
 
 func (x *GetHostHardwareRequest) Reset() {
 	*x = GetHostHardwareRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[26]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1606,7 +2031,7 @@ func (x *GetHostHardwareRequest) String() string {
 func (*GetHostHardwareRequest) ProtoMessage() {}
 
 func (x *GetHostHardwareRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[26]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1619,7 +2044,7 @@ func (x *GetHostHardwareRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHostHardwareRequest.ProtoReflect.Descriptor instead.
 func (*GetHostHardwareRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{26}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *GetHostHardwareRequest) GetId() string {
@@ -1632,9 +2057,9 @@ func (x *GetHostHardwareRequest) GetId() string {
 type GetHostHardwareResponse struct {
 	state           protoimpl.MessageState    `protogen:"open.v1"`
 	HostId          string                    `protobuf:"bytes,1,opt,name=host_id,json=hostId,proto3" json:"host_id,omitempty"`
-	Disks           []*v11.HostDisk           `protobuf:"bytes,2,rep,name=disks,proto3" json:"disks,omitempty"`
-	NetworkAdapters []*v11.HostNetworkAdapter `protobuf:"bytes,3,rep,name=network_adapters,json=networkAdapters,proto3" json:"network_adapters,omitempty"`
-	PciDevices      []*v11.HostPCIDeviceInfo  `protobuf:"bytes,4,rep,name=pci_devices,json=pciDevices,proto3" json:"pci_devices,omitempty"`
+	Disks           []*v12.HostDisk           `protobuf:"bytes,2,rep,name=disks,proto3" json:"disks,omitempty"`
+	NetworkAdapters []*v12.HostNetworkAdapter `protobuf:"bytes,3,rep,name=network_adapters,json=networkAdapters,proto3" json:"network_adapters,omitempty"`
+	PciDevices      []*v12.HostPCIDeviceInfo  `protobuf:"bytes,4,rep,name=pci_devices,json=pciDevices,proto3" json:"pci_devices,omitempty"`
 	// reported_at is when the agent last sent this inventory; unset when the
 	// host has never reported hardware.
 	ReportedAt    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=reported_at,json=reportedAt,proto3" json:"reported_at,omitempty"`
@@ -1644,7 +2069,7 @@ type GetHostHardwareResponse struct {
 
 func (x *GetHostHardwareResponse) Reset() {
 	*x = GetHostHardwareResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[27]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1656,7 +2081,7 @@ func (x *GetHostHardwareResponse) String() string {
 func (*GetHostHardwareResponse) ProtoMessage() {}
 
 func (x *GetHostHardwareResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[27]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1669,7 +2094,7 @@ func (x *GetHostHardwareResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHostHardwareResponse.ProtoReflect.Descriptor instead.
 func (*GetHostHardwareResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{27}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *GetHostHardwareResponse) GetHostId() string {
@@ -1679,21 +2104,21 @@ func (x *GetHostHardwareResponse) GetHostId() string {
 	return ""
 }
 
-func (x *GetHostHardwareResponse) GetDisks() []*v11.HostDisk {
+func (x *GetHostHardwareResponse) GetDisks() []*v12.HostDisk {
 	if x != nil {
 		return x.Disks
 	}
 	return nil
 }
 
-func (x *GetHostHardwareResponse) GetNetworkAdapters() []*v11.HostNetworkAdapter {
+func (x *GetHostHardwareResponse) GetNetworkAdapters() []*v12.HostNetworkAdapter {
 	if x != nil {
 		return x.NetworkAdapters
 	}
 	return nil
 }
 
-func (x *GetHostHardwareResponse) GetPciDevices() []*v11.HostPCIDeviceInfo {
+func (x *GetHostHardwareResponse) GetPciDevices() []*v12.HostPCIDeviceInfo {
 	if x != nil {
 		return x.PciDevices
 	}
@@ -1726,7 +2151,7 @@ type InventoryVolume struct {
 
 func (x *InventoryVolume) Reset() {
 	*x = InventoryVolume{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[28]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1738,7 +2163,7 @@ func (x *InventoryVolume) String() string {
 func (*InventoryVolume) ProtoMessage() {}
 
 func (x *InventoryVolume) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[28]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1751,7 +2176,7 @@ func (x *InventoryVolume) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InventoryVolume.ProtoReflect.Descriptor instead.
 func (*InventoryVolume) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{28}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *InventoryVolume) GetId() string {
@@ -1834,7 +2259,7 @@ type ListInventoryVolumesRequest struct {
 
 func (x *ListInventoryVolumesRequest) Reset() {
 	*x = ListInventoryVolumesRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[29]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1846,7 +2271,7 @@ func (x *ListInventoryVolumesRequest) String() string {
 func (*ListInventoryVolumesRequest) ProtoMessage() {}
 
 func (x *ListInventoryVolumesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[29]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1859,7 +2284,7 @@ func (x *ListInventoryVolumesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInventoryVolumesRequest.ProtoReflect.Descriptor instead.
 func (*ListInventoryVolumesRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{29}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ListInventoryVolumesRequest) GetHostId() string {
@@ -1878,7 +2303,7 @@ type ListInventoryVolumesResponse struct {
 
 func (x *ListInventoryVolumesResponse) Reset() {
 	*x = ListInventoryVolumesResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[30]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1890,7 +2315,7 @@ func (x *ListInventoryVolumesResponse) String() string {
 func (*ListInventoryVolumesResponse) ProtoMessage() {}
 
 func (x *ListInventoryVolumesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[30]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1903,7 +2328,7 @@ func (x *ListInventoryVolumesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInventoryVolumesResponse.ProtoReflect.Descriptor instead.
 func (*ListInventoryVolumesResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{30}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ListInventoryVolumesResponse) GetVolumes() []*InventoryVolume {
@@ -1929,7 +2354,7 @@ type ListDirectorTasksRequest struct {
 
 func (x *ListDirectorTasksRequest) Reset() {
 	*x = ListDirectorTasksRequest{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[31]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1941,7 +2366,7 @@ func (x *ListDirectorTasksRequest) String() string {
 func (*ListDirectorTasksRequest) ProtoMessage() {}
 
 func (x *ListDirectorTasksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[31]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1954,7 +2379,7 @@ func (x *ListDirectorTasksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDirectorTasksRequest.ProtoReflect.Descriptor instead.
 func (*ListDirectorTasksRequest) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{31}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *ListDirectorTasksRequest) GetLimit() int32 {
@@ -1994,7 +2419,7 @@ type ListDirectorTasksResponse struct {
 
 func (x *ListDirectorTasksResponse) Reset() {
 	*x = ListDirectorTasksResponse{}
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[32]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2006,7 +2431,7 @@ func (x *ListDirectorTasksResponse) String() string {
 func (*ListDirectorTasksResponse) ProtoMessage() {}
 
 func (x *ListDirectorTasksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pilab_director_v2_host_service_proto_msgTypes[32]
+	mi := &file_pilab_director_v2_host_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2019,7 +2444,7 @@ func (x *ListDirectorTasksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDirectorTasksResponse.ProtoReflect.Descriptor instead.
 func (*ListDirectorTasksResponse) Descriptor() ([]byte, []int) {
-	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{32}
+	return file_pilab_director_v2_host_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *ListDirectorTasksResponse) GetTasks() []*Task {
@@ -2033,7 +2458,7 @@ var File_pilab_director_v2_host_service_proto protoreflect.FileDescriptor
 
 const file_pilab_director_v2_host_service_proto_rawDesc = "" +
 	"\n" +
-	"$pilab/director/v2/host_service.proto\x12\x11pilab.director.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a$pilab/director/v2/node_service.proto\x1a$pilab/director/v2/task_service.proto\x1a$pilab/pivirtd/v1/host_resource.proto\x1a\x1epilab/pivirtd/v1/pivirtd.proto\x1a pilab/resource/v1/resource.proto\"\xd0\x03\n" +
+	"$pilab/director/v2/host_service.proto\x12\x11pilab.director.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a0pilab/core/v1/storage_provisioning_service.proto\x1a$pilab/director/v2/node_service.proto\x1a$pilab/director/v2/task_service.proto\x1a$pilab/pivirtd/v1/host_resource.proto\x1a\x1epilab/pivirtd/v1/pivirtd.proto\x1a pilab/resource/v1/resource.proto\"\xd0\x03\n" +
 	"\x04Host\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1a\n" +
@@ -2115,7 +2540,34 @@ const file_pilab_director_v2_host_service_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12'\n" +
 	"\x0ftimeout_seconds\x18\x03 \x01(\x05R\x0etimeoutSeconds\"R\n" +
 	"\x12DeleteDiskResponse\x12<\n" +
-	"\aoutcome\x18\x01 \x01(\v2\".pilab.director.v2.ResourceOutcomeR\aoutcome\"z\n" +
+	"\aoutcome\x18\x01 \x01(\v2\".pilab.director.v2.ResourceOutcomeR\aoutcome\"\x82\x01\n" +
+	"\x11ResizeDiskRequest\x12\x17\n" +
+	"\ahost_id\x18\x01 \x01(\tR\x06hostId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
+	"\asize_gb\x18\x03 \x01(\x05R\x06sizeGb\x12'\n" +
+	"\x0ftimeout_seconds\x18\x04 \x01(\x05R\x0etimeoutSeconds\"R\n" +
+	"\x12ResizeDiskResponse\x12<\n" +
+	"\aoutcome\x18\x01 \x01(\v2\".pilab.director.v2.ResourceOutcomeR\aoutcome\"\xd9\x01\n" +
+	"\aDiskQoS\x12:\n" +
+	"\teffective\x18\x01 \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\teffective\x12\x1c\n" +
+	"\tinherited\x18\x02 \x01(\bR\tinherited\x12F\n" +
+	"\x10pool_default_qos\x18\x03 \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x0epoolDefaultQos\x12\x12\n" +
+	"\x04live\x18\x04 \x01(\bR\x04live\x12\x18\n" +
+	"\amessage\x18\x05 \x01(\tR\amessage\"\xb3\x01\n" +
+	"\x11SetDiskQoSRequest\x12\x17\n" +
+	"\ahost_id\x18\x01 \x01(\tR\x06hostId\x12\x12\n" +
+	"\x04disk\x18\x02 \x01(\tR\x04disk\x12.\n" +
+	"\x03qos\x18\x03 \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x12\x18\n" +
+	"\ainherit\x18\x04 \x01(\bR\ainherit\x12'\n" +
+	"\x0ftimeout_seconds\x18\x05 \x01(\x05R\x0etimeoutSeconds\"\x80\x01\n" +
+	"\x12SetDiskQoSResponse\x12,\n" +
+	"\x03qos\x18\x01 \x01(\v2\x1a.pilab.director.v2.DiskQoSR\x03qos\x12<\n" +
+	"\aoutcome\x18\x02 \x01(\v2\".pilab.director.v2.ResourceOutcomeR\aoutcome\"@\n" +
+	"\x11GetDiskQoSRequest\x12\x17\n" +
+	"\ahost_id\x18\x01 \x01(\tR\x06hostId\x12\x12\n" +
+	"\x04disk\x18\x02 \x01(\tR\x04disk\"B\n" +
+	"\x12GetDiskQoSResponse\x12,\n" +
+	"\x03qos\x18\x01 \x01(\v2\x1a.pilab.director.v2.DiskQoSR\x03qos\"z\n" +
 	"\x11RebootHostRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05force\x18\x02 \x01(\bR\x05force\x12\x16\n" +
@@ -2172,7 +2624,7 @@ const file_pilab_director_v2_host_service_proto_rawDesc = "" +
 	"\x05vm_id\x18\x03 \x01(\tR\x04vmId\x129\n" +
 	"\bstatuses\x18\x04 \x03(\x0e2\x1d.pilab.director.v2.TaskStatusR\bstatuses\"J\n" +
 	"\x19ListDirectorTasksResponse\x12-\n" +
-	"\x05tasks\x18\x01 \x03(\v2\x17.pilab.director.v2.TaskR\x05tasks2\xdf\v\n" +
+	"\x05tasks\x18\x01 \x03(\v2\x17.pilab.director.v2.TaskR\x05tasks2\xf0\r\n" +
 	"\x10HostAdminService\x12V\n" +
 	"\tListHosts\x12#.pilab.director.v2.ListHostsRequest\x1a$.pilab.director.v2.ListHostsResponse\x12P\n" +
 	"\aGetHost\x12!.pilab.director.v2.GetHostRequest\x1a\".pilab.director.v2.GetHostResponse\x12e\n" +
@@ -2184,6 +2636,12 @@ const file_pilab_director_v2_host_service_proto_rawDesc = "" +
 	"CreateDisk\x12$.pilab.director.v2.CreateDiskRequest\x1a%.pilab.director.v2.CreateDiskResponse\x12Y\n" +
 	"\n" +
 	"DeleteDisk\x12$.pilab.director.v2.DeleteDiskRequest\x1a%.pilab.director.v2.DeleteDiskResponse\x12Y\n" +
+	"\n" +
+	"ResizeDisk\x12$.pilab.director.v2.ResizeDiskRequest\x1a%.pilab.director.v2.ResizeDiskResponse\x12Y\n" +
+	"\n" +
+	"SetDiskQoS\x12$.pilab.director.v2.SetDiskQoSRequest\x1a%.pilab.director.v2.SetDiskQoSResponse\x12Y\n" +
+	"\n" +
+	"GetDiskQoS\x12$.pilab.director.v2.GetDiskQoSRequest\x1a%.pilab.director.v2.GetDiskQoSResponse\x12Y\n" +
 	"\n" +
 	"RebootHost\x12$.pilab.director.v2.RebootHostRequest\x1a%.pilab.director.v2.RebootHostResponse\x12_\n" +
 	"\fPowerOffHost\x12&.pilab.director.v2.PowerOffHostRequest\x1a'.pilab.director.v2.PowerOffHostResponse\x12Y\n" +
@@ -2206,7 +2664,7 @@ func file_pilab_director_v2_host_service_proto_rawDescGZIP() []byte {
 	return file_pilab_director_v2_host_service_proto_rawDescData
 }
 
-var file_pilab_director_v2_host_service_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
+var file_pilab_director_v2_host_service_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
 var file_pilab_director_v2_host_service_proto_goTypes = []any{
 	(*Host)(nil),                         // 0: pilab.director.v2.Host
 	(*ListHostsRequest)(nil),             // 1: pilab.director.v2.ListHostsRequest
@@ -2226,89 +2684,110 @@ var file_pilab_director_v2_host_service_proto_goTypes = []any{
 	(*CreateDiskResponse)(nil),           // 15: pilab.director.v2.CreateDiskResponse
 	(*DeleteDiskRequest)(nil),            // 16: pilab.director.v2.DeleteDiskRequest
 	(*DeleteDiskResponse)(nil),           // 17: pilab.director.v2.DeleteDiskResponse
-	(*RebootHostRequest)(nil),            // 18: pilab.director.v2.RebootHostRequest
-	(*RebootHostResponse)(nil),           // 19: pilab.director.v2.RebootHostResponse
-	(*PowerOffHostRequest)(nil),          // 20: pilab.director.v2.PowerOffHostRequest
-	(*PowerOffHostResponse)(nil),         // 21: pilab.director.v2.PowerOffHostResponse
-	(*DeleteHostRequest)(nil),            // 22: pilab.director.v2.DeleteHostRequest
-	(*DeleteHostResponse)(nil),           // 23: pilab.director.v2.DeleteHostResponse
-	(*GetHostStatsRequest)(nil),          // 24: pilab.director.v2.GetHostStatsRequest
-	(*GetHostStatsResponse)(nil),         // 25: pilab.director.v2.GetHostStatsResponse
-	(*GetHostHardwareRequest)(nil),       // 26: pilab.director.v2.GetHostHardwareRequest
-	(*GetHostHardwareResponse)(nil),      // 27: pilab.director.v2.GetHostHardwareResponse
-	(*InventoryVolume)(nil),              // 28: pilab.director.v2.InventoryVolume
-	(*ListInventoryVolumesRequest)(nil),  // 29: pilab.director.v2.ListInventoryVolumesRequest
-	(*ListInventoryVolumesResponse)(nil), // 30: pilab.director.v2.ListInventoryVolumesResponse
-	(*ListDirectorTasksRequest)(nil),     // 31: pilab.director.v2.ListDirectorTasksRequest
-	(*ListDirectorTasksResponse)(nil),    // 32: pilab.director.v2.ListDirectorTasksResponse
-	(*v1.Resource)(nil),                  // 33: pilab.resource.v1.Resource
-	(*ResourceRef)(nil),                  // 34: pilab.director.v2.ResourceRef
-	(*ResourceResultEvent)(nil),          // 35: pilab.director.v2.ResourceResultEvent
-	(*ResourceOutcome)(nil),              // 36: pilab.director.v2.ResourceOutcome
-	(*v11.HostStats)(nil),                // 37: pilab.pivirtd.v1.HostStats
-	(*v11.HostDisk)(nil),                 // 38: pilab.pivirtd.v1.HostDisk
-	(*v11.HostNetworkAdapter)(nil),       // 39: pilab.pivirtd.v1.HostNetworkAdapter
-	(*v11.HostPCIDeviceInfo)(nil),        // 40: pilab.pivirtd.v1.HostPCIDeviceInfo
-	(*timestamppb.Timestamp)(nil),        // 41: google.protobuf.Timestamp
-	(TaskStatus)(0),                      // 42: pilab.director.v2.TaskStatus
-	(*Task)(nil),                         // 43: pilab.director.v2.Task
+	(*ResizeDiskRequest)(nil),            // 18: pilab.director.v2.ResizeDiskRequest
+	(*ResizeDiskResponse)(nil),           // 19: pilab.director.v2.ResizeDiskResponse
+	(*DiskQoS)(nil),                      // 20: pilab.director.v2.DiskQoS
+	(*SetDiskQoSRequest)(nil),            // 21: pilab.director.v2.SetDiskQoSRequest
+	(*SetDiskQoSResponse)(nil),           // 22: pilab.director.v2.SetDiskQoSResponse
+	(*GetDiskQoSRequest)(nil),            // 23: pilab.director.v2.GetDiskQoSRequest
+	(*GetDiskQoSResponse)(nil),           // 24: pilab.director.v2.GetDiskQoSResponse
+	(*RebootHostRequest)(nil),            // 25: pilab.director.v2.RebootHostRequest
+	(*RebootHostResponse)(nil),           // 26: pilab.director.v2.RebootHostResponse
+	(*PowerOffHostRequest)(nil),          // 27: pilab.director.v2.PowerOffHostRequest
+	(*PowerOffHostResponse)(nil),         // 28: pilab.director.v2.PowerOffHostResponse
+	(*DeleteHostRequest)(nil),            // 29: pilab.director.v2.DeleteHostRequest
+	(*DeleteHostResponse)(nil),           // 30: pilab.director.v2.DeleteHostResponse
+	(*GetHostStatsRequest)(nil),          // 31: pilab.director.v2.GetHostStatsRequest
+	(*GetHostStatsResponse)(nil),         // 32: pilab.director.v2.GetHostStatsResponse
+	(*GetHostHardwareRequest)(nil),       // 33: pilab.director.v2.GetHostHardwareRequest
+	(*GetHostHardwareResponse)(nil),      // 34: pilab.director.v2.GetHostHardwareResponse
+	(*InventoryVolume)(nil),              // 35: pilab.director.v2.InventoryVolume
+	(*ListInventoryVolumesRequest)(nil),  // 36: pilab.director.v2.ListInventoryVolumesRequest
+	(*ListInventoryVolumesResponse)(nil), // 37: pilab.director.v2.ListInventoryVolumesResponse
+	(*ListDirectorTasksRequest)(nil),     // 38: pilab.director.v2.ListDirectorTasksRequest
+	(*ListDirectorTasksResponse)(nil),    // 39: pilab.director.v2.ListDirectorTasksResponse
+	(*v1.Resource)(nil),                  // 40: pilab.resource.v1.Resource
+	(*ResourceRef)(nil),                  // 41: pilab.director.v2.ResourceRef
+	(*ResourceResultEvent)(nil),          // 42: pilab.director.v2.ResourceResultEvent
+	(*ResourceOutcome)(nil),              // 43: pilab.director.v2.ResourceOutcome
+	(*v11.DiskQoSConfig)(nil),            // 44: pilab.core.v1.DiskQoSConfig
+	(*v12.HostStats)(nil),                // 45: pilab.pivirtd.v1.HostStats
+	(*v12.HostDisk)(nil),                 // 46: pilab.pivirtd.v1.HostDisk
+	(*v12.HostNetworkAdapter)(nil),       // 47: pilab.pivirtd.v1.HostNetworkAdapter
+	(*v12.HostPCIDeviceInfo)(nil),        // 48: pilab.pivirtd.v1.HostPCIDeviceInfo
+	(*timestamppb.Timestamp)(nil),        // 49: google.protobuf.Timestamp
+	(TaskStatus)(0),                      // 50: pilab.director.v2.TaskStatus
+	(*Task)(nil),                         // 51: pilab.director.v2.Task
 }
 var file_pilab_director_v2_host_service_proto_depIdxs = []int32{
 	0,  // 0: pilab.director.v2.ListHostsResponse.hosts:type_name -> pilab.director.v2.Host
 	0,  // 1: pilab.director.v2.GetHostResponse.host:type_name -> pilab.director.v2.Host
 	0,  // 2: pilab.director.v2.SetMaintenanceResponse.host:type_name -> pilab.director.v2.Host
 	7,  // 3: pilab.director.v2.SetMaintenanceResponse.evacuations:type_name -> pilab.director.v2.Evacuation
-	33, // 4: pilab.director.v2.ApplyHostResourcesRequest.apply:type_name -> pilab.resource.v1.Resource
-	34, // 5: pilab.director.v2.ApplyHostResourcesRequest.delete:type_name -> pilab.director.v2.ResourceRef
-	35, // 6: pilab.director.v2.ApplyHostResourcesResponse.result:type_name -> pilab.director.v2.ResourceResultEvent
-	33, // 7: pilab.director.v2.ListHostResourcesResponse.resources:type_name -> pilab.resource.v1.Resource
-	36, // 8: pilab.director.v2.CreateDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
-	36, // 9: pilab.director.v2.DeleteDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
-	36, // 10: pilab.director.v2.RebootHostResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
-	36, // 11: pilab.director.v2.PowerOffHostResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
-	37, // 12: pilab.director.v2.GetHostStatsResponse.stats:type_name -> pilab.pivirtd.v1.HostStats
-	38, // 13: pilab.director.v2.GetHostHardwareResponse.disks:type_name -> pilab.pivirtd.v1.HostDisk
-	39, // 14: pilab.director.v2.GetHostHardwareResponse.network_adapters:type_name -> pilab.pivirtd.v1.HostNetworkAdapter
-	40, // 15: pilab.director.v2.GetHostHardwareResponse.pci_devices:type_name -> pilab.pivirtd.v1.HostPCIDeviceInfo
-	41, // 16: pilab.director.v2.GetHostHardwareResponse.reported_at:type_name -> google.protobuf.Timestamp
-	28, // 17: pilab.director.v2.ListInventoryVolumesResponse.volumes:type_name -> pilab.director.v2.InventoryVolume
-	42, // 18: pilab.director.v2.ListDirectorTasksRequest.statuses:type_name -> pilab.director.v2.TaskStatus
-	43, // 19: pilab.director.v2.ListDirectorTasksResponse.tasks:type_name -> pilab.director.v2.Task
-	1,  // 20: pilab.director.v2.HostAdminService.ListHosts:input_type -> pilab.director.v2.ListHostsRequest
-	3,  // 21: pilab.director.v2.HostAdminService.GetHost:input_type -> pilab.director.v2.GetHostRequest
-	6,  // 22: pilab.director.v2.HostAdminService.SetMaintenance:input_type -> pilab.director.v2.SetMaintenanceRequest
-	8,  // 23: pilab.director.v2.HostAdminService.MigrateVM:input_type -> pilab.director.v2.MigrateVMRequest
-	10, // 24: pilab.director.v2.HostAdminService.ApplyHostResources:input_type -> pilab.director.v2.ApplyHostResourcesRequest
-	12, // 25: pilab.director.v2.HostAdminService.ListHostResources:input_type -> pilab.director.v2.ListHostResourcesRequest
-	14, // 26: pilab.director.v2.HostAdminService.CreateDisk:input_type -> pilab.director.v2.CreateDiskRequest
-	16, // 27: pilab.director.v2.HostAdminService.DeleteDisk:input_type -> pilab.director.v2.DeleteDiskRequest
-	18, // 28: pilab.director.v2.HostAdminService.RebootHost:input_type -> pilab.director.v2.RebootHostRequest
-	20, // 29: pilab.director.v2.HostAdminService.PowerOffHost:input_type -> pilab.director.v2.PowerOffHostRequest
-	22, // 30: pilab.director.v2.HostAdminService.DeleteHost:input_type -> pilab.director.v2.DeleteHostRequest
-	24, // 31: pilab.director.v2.HostAdminService.GetHostStats:input_type -> pilab.director.v2.GetHostStatsRequest
-	26, // 32: pilab.director.v2.HostAdminService.GetHostHardware:input_type -> pilab.director.v2.GetHostHardwareRequest
-	29, // 33: pilab.director.v2.HostAdminService.ListInventoryVolumes:input_type -> pilab.director.v2.ListInventoryVolumesRequest
-	31, // 34: pilab.director.v2.HostAdminService.ListDirectorTasks:input_type -> pilab.director.v2.ListDirectorTasksRequest
-	2,  // 35: pilab.director.v2.HostAdminService.ListHosts:output_type -> pilab.director.v2.ListHostsResponse
-	4,  // 36: pilab.director.v2.HostAdminService.GetHost:output_type -> pilab.director.v2.GetHostResponse
-	5,  // 37: pilab.director.v2.HostAdminService.SetMaintenance:output_type -> pilab.director.v2.SetMaintenanceResponse
-	9,  // 38: pilab.director.v2.HostAdminService.MigrateVM:output_type -> pilab.director.v2.MigrateVMResponse
-	11, // 39: pilab.director.v2.HostAdminService.ApplyHostResources:output_type -> pilab.director.v2.ApplyHostResourcesResponse
-	13, // 40: pilab.director.v2.HostAdminService.ListHostResources:output_type -> pilab.director.v2.ListHostResourcesResponse
-	15, // 41: pilab.director.v2.HostAdminService.CreateDisk:output_type -> pilab.director.v2.CreateDiskResponse
-	17, // 42: pilab.director.v2.HostAdminService.DeleteDisk:output_type -> pilab.director.v2.DeleteDiskResponse
-	19, // 43: pilab.director.v2.HostAdminService.RebootHost:output_type -> pilab.director.v2.RebootHostResponse
-	21, // 44: pilab.director.v2.HostAdminService.PowerOffHost:output_type -> pilab.director.v2.PowerOffHostResponse
-	23, // 45: pilab.director.v2.HostAdminService.DeleteHost:output_type -> pilab.director.v2.DeleteHostResponse
-	25, // 46: pilab.director.v2.HostAdminService.GetHostStats:output_type -> pilab.director.v2.GetHostStatsResponse
-	27, // 47: pilab.director.v2.HostAdminService.GetHostHardware:output_type -> pilab.director.v2.GetHostHardwareResponse
-	30, // 48: pilab.director.v2.HostAdminService.ListInventoryVolumes:output_type -> pilab.director.v2.ListInventoryVolumesResponse
-	32, // 49: pilab.director.v2.HostAdminService.ListDirectorTasks:output_type -> pilab.director.v2.ListDirectorTasksResponse
-	35, // [35:50] is the sub-list for method output_type
-	20, // [20:35] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	40, // 4: pilab.director.v2.ApplyHostResourcesRequest.apply:type_name -> pilab.resource.v1.Resource
+	41, // 5: pilab.director.v2.ApplyHostResourcesRequest.delete:type_name -> pilab.director.v2.ResourceRef
+	42, // 6: pilab.director.v2.ApplyHostResourcesResponse.result:type_name -> pilab.director.v2.ResourceResultEvent
+	40, // 7: pilab.director.v2.ListHostResourcesResponse.resources:type_name -> pilab.resource.v1.Resource
+	43, // 8: pilab.director.v2.CreateDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	43, // 9: pilab.director.v2.DeleteDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	43, // 10: pilab.director.v2.ResizeDiskResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	44, // 11: pilab.director.v2.DiskQoS.effective:type_name -> pilab.core.v1.DiskQoSConfig
+	44, // 12: pilab.director.v2.DiskQoS.pool_default_qos:type_name -> pilab.core.v1.DiskQoSConfig
+	44, // 13: pilab.director.v2.SetDiskQoSRequest.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	20, // 14: pilab.director.v2.SetDiskQoSResponse.qos:type_name -> pilab.director.v2.DiskQoS
+	43, // 15: pilab.director.v2.SetDiskQoSResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	20, // 16: pilab.director.v2.GetDiskQoSResponse.qos:type_name -> pilab.director.v2.DiskQoS
+	43, // 17: pilab.director.v2.RebootHostResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	43, // 18: pilab.director.v2.PowerOffHostResponse.outcome:type_name -> pilab.director.v2.ResourceOutcome
+	45, // 19: pilab.director.v2.GetHostStatsResponse.stats:type_name -> pilab.pivirtd.v1.HostStats
+	46, // 20: pilab.director.v2.GetHostHardwareResponse.disks:type_name -> pilab.pivirtd.v1.HostDisk
+	47, // 21: pilab.director.v2.GetHostHardwareResponse.network_adapters:type_name -> pilab.pivirtd.v1.HostNetworkAdapter
+	48, // 22: pilab.director.v2.GetHostHardwareResponse.pci_devices:type_name -> pilab.pivirtd.v1.HostPCIDeviceInfo
+	49, // 23: pilab.director.v2.GetHostHardwareResponse.reported_at:type_name -> google.protobuf.Timestamp
+	35, // 24: pilab.director.v2.ListInventoryVolumesResponse.volumes:type_name -> pilab.director.v2.InventoryVolume
+	50, // 25: pilab.director.v2.ListDirectorTasksRequest.statuses:type_name -> pilab.director.v2.TaskStatus
+	51, // 26: pilab.director.v2.ListDirectorTasksResponse.tasks:type_name -> pilab.director.v2.Task
+	1,  // 27: pilab.director.v2.HostAdminService.ListHosts:input_type -> pilab.director.v2.ListHostsRequest
+	3,  // 28: pilab.director.v2.HostAdminService.GetHost:input_type -> pilab.director.v2.GetHostRequest
+	6,  // 29: pilab.director.v2.HostAdminService.SetMaintenance:input_type -> pilab.director.v2.SetMaintenanceRequest
+	8,  // 30: pilab.director.v2.HostAdminService.MigrateVM:input_type -> pilab.director.v2.MigrateVMRequest
+	10, // 31: pilab.director.v2.HostAdminService.ApplyHostResources:input_type -> pilab.director.v2.ApplyHostResourcesRequest
+	12, // 32: pilab.director.v2.HostAdminService.ListHostResources:input_type -> pilab.director.v2.ListHostResourcesRequest
+	14, // 33: pilab.director.v2.HostAdminService.CreateDisk:input_type -> pilab.director.v2.CreateDiskRequest
+	16, // 34: pilab.director.v2.HostAdminService.DeleteDisk:input_type -> pilab.director.v2.DeleteDiskRequest
+	18, // 35: pilab.director.v2.HostAdminService.ResizeDisk:input_type -> pilab.director.v2.ResizeDiskRequest
+	21, // 36: pilab.director.v2.HostAdminService.SetDiskQoS:input_type -> pilab.director.v2.SetDiskQoSRequest
+	23, // 37: pilab.director.v2.HostAdminService.GetDiskQoS:input_type -> pilab.director.v2.GetDiskQoSRequest
+	25, // 38: pilab.director.v2.HostAdminService.RebootHost:input_type -> pilab.director.v2.RebootHostRequest
+	27, // 39: pilab.director.v2.HostAdminService.PowerOffHost:input_type -> pilab.director.v2.PowerOffHostRequest
+	29, // 40: pilab.director.v2.HostAdminService.DeleteHost:input_type -> pilab.director.v2.DeleteHostRequest
+	31, // 41: pilab.director.v2.HostAdminService.GetHostStats:input_type -> pilab.director.v2.GetHostStatsRequest
+	33, // 42: pilab.director.v2.HostAdminService.GetHostHardware:input_type -> pilab.director.v2.GetHostHardwareRequest
+	36, // 43: pilab.director.v2.HostAdminService.ListInventoryVolumes:input_type -> pilab.director.v2.ListInventoryVolumesRequest
+	38, // 44: pilab.director.v2.HostAdminService.ListDirectorTasks:input_type -> pilab.director.v2.ListDirectorTasksRequest
+	2,  // 45: pilab.director.v2.HostAdminService.ListHosts:output_type -> pilab.director.v2.ListHostsResponse
+	4,  // 46: pilab.director.v2.HostAdminService.GetHost:output_type -> pilab.director.v2.GetHostResponse
+	5,  // 47: pilab.director.v2.HostAdminService.SetMaintenance:output_type -> pilab.director.v2.SetMaintenanceResponse
+	9,  // 48: pilab.director.v2.HostAdminService.MigrateVM:output_type -> pilab.director.v2.MigrateVMResponse
+	11, // 49: pilab.director.v2.HostAdminService.ApplyHostResources:output_type -> pilab.director.v2.ApplyHostResourcesResponse
+	13, // 50: pilab.director.v2.HostAdminService.ListHostResources:output_type -> pilab.director.v2.ListHostResourcesResponse
+	15, // 51: pilab.director.v2.HostAdminService.CreateDisk:output_type -> pilab.director.v2.CreateDiskResponse
+	17, // 52: pilab.director.v2.HostAdminService.DeleteDisk:output_type -> pilab.director.v2.DeleteDiskResponse
+	19, // 53: pilab.director.v2.HostAdminService.ResizeDisk:output_type -> pilab.director.v2.ResizeDiskResponse
+	22, // 54: pilab.director.v2.HostAdminService.SetDiskQoS:output_type -> pilab.director.v2.SetDiskQoSResponse
+	24, // 55: pilab.director.v2.HostAdminService.GetDiskQoS:output_type -> pilab.director.v2.GetDiskQoSResponse
+	26, // 56: pilab.director.v2.HostAdminService.RebootHost:output_type -> pilab.director.v2.RebootHostResponse
+	28, // 57: pilab.director.v2.HostAdminService.PowerOffHost:output_type -> pilab.director.v2.PowerOffHostResponse
+	30, // 58: pilab.director.v2.HostAdminService.DeleteHost:output_type -> pilab.director.v2.DeleteHostResponse
+	32, // 59: pilab.director.v2.HostAdminService.GetHostStats:output_type -> pilab.director.v2.GetHostStatsResponse
+	34, // 60: pilab.director.v2.HostAdminService.GetHostHardware:output_type -> pilab.director.v2.GetHostHardwareResponse
+	37, // 61: pilab.director.v2.HostAdminService.ListInventoryVolumes:output_type -> pilab.director.v2.ListInventoryVolumesResponse
+	39, // 62: pilab.director.v2.HostAdminService.ListDirectorTasks:output_type -> pilab.director.v2.ListDirectorTasksResponse
+	45, // [45:63] is the sub-list for method output_type
+	27, // [27:45] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_pilab_director_v2_host_service_proto_init() }
@@ -2324,7 +2803,7 @@ func file_pilab_director_v2_host_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilab_director_v2_host_service_proto_rawDesc), len(file_pilab_director_v2_host_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   33,
+			NumMessages:   40,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

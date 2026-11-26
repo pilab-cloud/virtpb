@@ -5,6 +5,7 @@ package pilab.pivirtd.v1;
 option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/pivirtd/v1;pivirtdv1";
 
 import "google/protobuf/timestamp.proto";
+import "pilab/core/v1/storage_provisioning_service.proto";
 
 // ==================== Host Event Types ====================
 
@@ -155,6 +156,9 @@ message StoragePoolSummary {
   int64 available_bytes = 4;
   string name = 5;
   string mount_path = 6;
+  // qos is the pool-level default disk QoS the datastore carries. Unset means
+  // the platform baseline.
+  pilab.core.v1.DiskQoSConfig qos = 7;
 }
 
 // ==================== Event Streaming ====================

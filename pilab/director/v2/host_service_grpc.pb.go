@@ -31,6 +31,9 @@ const (
 	HostAdminService_ListHostResources_FullMethodName    = "/pilab.director.v2.HostAdminService/ListHostResources"
 	HostAdminService_CreateDisk_FullMethodName           = "/pilab.director.v2.HostAdminService/CreateDisk"
 	HostAdminService_DeleteDisk_FullMethodName           = "/pilab.director.v2.HostAdminService/DeleteDisk"
+	HostAdminService_ResizeDisk_FullMethodName           = "/pilab.director.v2.HostAdminService/ResizeDisk"
+	HostAdminService_SetDiskQoS_FullMethodName           = "/pilab.director.v2.HostAdminService/SetDiskQoS"
+	HostAdminService_GetDiskQoS_FullMethodName           = "/pilab.director.v2.HostAdminService/GetDiskQoS"
 	HostAdminService_RebootHost_FullMethodName           = "/pilab.director.v2.HostAdminService/RebootHost"
 	HostAdminService_PowerOffHost_FullMethodName         = "/pilab.director.v2.HostAdminService/PowerOffHost"
 	HostAdminService_DeleteHost_FullMethodName           = "/pilab.director.v2.HostAdminService/DeleteHost"
@@ -66,6 +69,16 @@ type HostAdminServiceClient interface {
 	CreateDisk(ctx context.Context, in *CreateDiskRequest, opts ...grpc.CallOption) (*CreateDiskResponse, error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(ctx context.Context, in *DeleteDiskRequest, opts ...grpc.CallOption) (*DeleteDiskResponse, error)
+	// ResizeDisk grows a standalone disk image. Shrinking is refused: a
+	// filesystem may already fill the disk.
+	ResizeDisk(ctx context.Context, in *ResizeDiskRequest, opts ...grpc.CallOption) (*ResizeDiskResponse, error)
+	// SetDiskQoS sets a VirtualDisk's own QoS override, or clears it so the
+	// disk follows its pool default again. A running VM's throttling is
+	// updated live where the backend supports it.
+	SetDiskQoS(ctx context.Context, in *SetDiskQoSRequest, opts ...grpc.CallOption) (*SetDiskQoSResponse, error)
+	// GetDiskQoS returns the QoS the disk will actually get: its own override
+	// or the inherited pool default, and which of the two it is.
+	GetDiskQoS(ctx context.Context, in *GetDiskQoSRequest, opts ...grpc.CallOption) (*GetDiskQoSResponse, error)
 	// RebootHost reboots the hypervisor through its agent. The host should be
 	// in maintenance unless force is set.
 	RebootHost(ctx context.Context, in *RebootHostRequest, opts ...grpc.CallOption) (*RebootHostResponse, error)
@@ -179,6 +192,36 @@ func (c *hostAdminServiceClient) DeleteDisk(ctx context.Context, in *DeleteDiskR
 	return out, nil
 }
 
+func (c *hostAdminServiceClient) ResizeDisk(ctx context.Context, in *ResizeDiskRequest, opts ...grpc.CallOption) (*ResizeDiskResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResizeDiskResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_ResizeDisk_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostAdminServiceClient) SetDiskQoS(ctx context.Context, in *SetDiskQoSRequest, opts ...grpc.CallOption) (*SetDiskQoSResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetDiskQoSResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_SetDiskQoS_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hostAdminServiceClient) GetDiskQoS(ctx context.Context, in *GetDiskQoSRequest, opts ...grpc.CallOption) (*GetDiskQoSResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDiskQoSResponse)
+	err := c.cc.Invoke(ctx, HostAdminService_GetDiskQoS_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *hostAdminServiceClient) RebootHost(ctx context.Context, in *RebootHostRequest, opts ...grpc.CallOption) (*RebootHostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RebootHostResponse)
@@ -275,6 +318,16 @@ type HostAdminServiceServer interface {
 	CreateDisk(context.Context, *CreateDiskRequest) (*CreateDiskResponse, error)
 	// DeleteDisk removes a standalone disk image created by CreateDisk.
 	DeleteDisk(context.Context, *DeleteDiskRequest) (*DeleteDiskResponse, error)
+	// ResizeDisk grows a standalone disk image. Shrinking is refused: a
+	// filesystem may already fill the disk.
+	ResizeDisk(context.Context, *ResizeDiskRequest) (*ResizeDiskResponse, error)
+	// SetDiskQoS sets a VirtualDisk's own QoS override, or clears it so the
+	// disk follows its pool default again. A running VM's throttling is
+	// updated live where the backend supports it.
+	SetDiskQoS(context.Context, *SetDiskQoSRequest) (*SetDiskQoSResponse, error)
+	// GetDiskQoS returns the QoS the disk will actually get: its own override
+	// or the inherited pool default, and which of the two it is.
+	GetDiskQoS(context.Context, *GetDiskQoSRequest) (*GetDiskQoSResponse, error)
 	// RebootHost reboots the hypervisor through its agent. The host should be
 	// in maintenance unless force is set.
 	RebootHost(context.Context, *RebootHostRequest) (*RebootHostResponse, error)
@@ -331,6 +384,15 @@ func (UnimplementedHostAdminServiceServer) CreateDisk(context.Context, *CreateDi
 }
 func (UnimplementedHostAdminServiceServer) DeleteDisk(context.Context, *DeleteDiskRequest) (*DeleteDiskResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteDisk not implemented")
+}
+func (UnimplementedHostAdminServiceServer) ResizeDisk(context.Context, *ResizeDiskRequest) (*ResizeDiskResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResizeDisk not implemented")
+}
+func (UnimplementedHostAdminServiceServer) SetDiskQoS(context.Context, *SetDiskQoSRequest) (*SetDiskQoSResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetDiskQoS not implemented")
+}
+func (UnimplementedHostAdminServiceServer) GetDiskQoS(context.Context, *GetDiskQoSRequest) (*GetDiskQoSResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetDiskQoS not implemented")
 }
 func (UnimplementedHostAdminServiceServer) RebootHost(context.Context, *RebootHostRequest) (*RebootHostResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RebootHost not implemented")
@@ -518,6 +580,60 @@ func _HostAdminService_DeleteDisk_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HostAdminService_ResizeDisk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResizeDiskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).ResizeDisk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_ResizeDisk_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).ResizeDisk(ctx, req.(*ResizeDiskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostAdminService_SetDiskQoS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDiskQoSRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).SetDiskQoS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_SetDiskQoS_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).SetDiskQoS(ctx, req.(*SetDiskQoSRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HostAdminService_GetDiskQoS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDiskQoSRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HostAdminServiceServer).GetDiskQoS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HostAdminService_GetDiskQoS_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HostAdminServiceServer).GetDiskQoS(ctx, req.(*GetDiskQoSRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _HostAdminService_RebootHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RebootHostRequest)
 	if err := dec(in); err != nil {
@@ -682,6 +798,18 @@ var HostAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteDisk",
 			Handler:    _HostAdminService_DeleteDisk_Handler,
+		},
+		{
+			MethodName: "ResizeDisk",
+			Handler:    _HostAdminService_ResizeDisk_Handler,
+		},
+		{
+			MethodName: "SetDiskQoS",
+			Handler:    _HostAdminService_SetDiskQoS_Handler,
+		},
+		{
+			MethodName: "GetDiskQoS",
+			Handler:    _HostAdminService_GetDiskQoS_Handler,
 		},
 		{
 			MethodName: "RebootHost",
