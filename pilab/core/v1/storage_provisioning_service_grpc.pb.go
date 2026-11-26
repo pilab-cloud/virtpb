@@ -55,6 +55,14 @@ const (
 	StorageProvisioningService_ListVolumes_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListVolumes"
 	StorageProvisioningService_SetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/SetDiskQoS"
 	StorageProvisioningService_GetDiskQoS_FullMethodName            = "/pilab.core.v1.StorageProvisioningService/GetDiskQoS"
+	StorageProvisioningService_ListRaidSets_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/ListRaidSets"
+	StorageProvisioningService_CreateRaidSet_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/CreateRaidSet"
+	StorageProvisioningService_AssembleRaidSet_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/AssembleRaidSet"
+	StorageProvisioningService_GrowRaidSet_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/GrowRaidSet"
+	StorageProvisioningService_FailRaidMember_FullMethodName        = "/pilab.core.v1.StorageProvisioningService/FailRaidMember"
+	StorageProvisioningService_RemoveRaidMember_FullMethodName      = "/pilab.core.v1.StorageProvisioningService/RemoveRaidMember"
+	StorageProvisioningService_ReplaceRaidMember_FullMethodName     = "/pilab.core.v1.StorageProvisioningService/ReplaceRaidMember"
+	StorageProvisioningService_DeleteRaidSet_FullMethodName         = "/pilab.core.v1.StorageProvisioningService/DeleteRaidSet"
 	StorageProvisioningService_CheckMigrationStorage_FullMethodName = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
 )
 
@@ -105,6 +113,15 @@ type StorageProvisioningServiceClient interface {
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(ctx context.Context, in *SetDiskQoSRequest, opts ...grpc.CallOption) (*SetDiskQoSResponse, error)
 	GetDiskQoS(ctx context.Context, in *GetDiskQoSRequest, opts ...grpc.CallOption) (*GetDiskQoSResponse, error)
+	// Software RAID (mdadm)
+	ListRaidSets(ctx context.Context, in *ListRaidSetsRequest, opts ...grpc.CallOption) (*ListRaidSetsResponse, error)
+	CreateRaidSet(ctx context.Context, in *CreateRaidSetRequest, opts ...grpc.CallOption) (*CreateRaidSetResponse, error)
+	AssembleRaidSet(ctx context.Context, in *AssembleRaidSetRequest, opts ...grpc.CallOption) (*AssembleRaidSetResponse, error)
+	GrowRaidSet(ctx context.Context, in *GrowRaidSetRequest, opts ...grpc.CallOption) (*GrowRaidSetResponse, error)
+	FailRaidMember(ctx context.Context, in *FailRaidMemberRequest, opts ...grpc.CallOption) (*FailRaidMemberResponse, error)
+	RemoveRaidMember(ctx context.Context, in *RemoveRaidMemberRequest, opts ...grpc.CallOption) (*RemoveRaidMemberResponse, error)
+	ReplaceRaidMember(ctx context.Context, in *ReplaceRaidMemberRequest, opts ...grpc.CallOption) (*ReplaceRaidMemberResponse, error)
+	DeleteRaidSet(ctx context.Context, in *DeleteRaidSetRequest, opts ...grpc.CallOption) (*DeleteRaidSetResponse, error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error)
 }
@@ -477,6 +494,86 @@ func (c *storageProvisioningServiceClient) GetDiskQoS(ctx context.Context, in *G
 	return out, nil
 }
 
+func (c *storageProvisioningServiceClient) ListRaidSets(ctx context.Context, in *ListRaidSetsRequest, opts ...grpc.CallOption) (*ListRaidSetsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRaidSetsResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ListRaidSets_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) CreateRaidSet(ctx context.Context, in *CreateRaidSetRequest, opts ...grpc.CallOption) (*CreateRaidSetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateRaidSetResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_CreateRaidSet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) AssembleRaidSet(ctx context.Context, in *AssembleRaidSetRequest, opts ...grpc.CallOption) (*AssembleRaidSetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AssembleRaidSetResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_AssembleRaidSet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) GrowRaidSet(ctx context.Context, in *GrowRaidSetRequest, opts ...grpc.CallOption) (*GrowRaidSetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GrowRaidSetResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_GrowRaidSet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) FailRaidMember(ctx context.Context, in *FailRaidMemberRequest, opts ...grpc.CallOption) (*FailRaidMemberResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FailRaidMemberResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_FailRaidMember_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) RemoveRaidMember(ctx context.Context, in *RemoveRaidMemberRequest, opts ...grpc.CallOption) (*RemoveRaidMemberResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RemoveRaidMemberResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_RemoveRaidMember_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) ReplaceRaidMember(ctx context.Context, in *ReplaceRaidMemberRequest, opts ...grpc.CallOption) (*ReplaceRaidMemberResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReplaceRaidMemberResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ReplaceRaidMember_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageProvisioningServiceClient) DeleteRaidSet(ctx context.Context, in *DeleteRaidSetRequest, opts ...grpc.CallOption) (*DeleteRaidSetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteRaidSetResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_DeleteRaidSet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CheckMigrationStorageResponse)
@@ -534,6 +631,15 @@ type StorageProvisioningServiceServer interface {
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(context.Context, *SetDiskQoSRequest) (*SetDiskQoSResponse, error)
 	GetDiskQoS(context.Context, *GetDiskQoSRequest) (*GetDiskQoSResponse, error)
+	// Software RAID (mdadm)
+	ListRaidSets(context.Context, *ListRaidSetsRequest) (*ListRaidSetsResponse, error)
+	CreateRaidSet(context.Context, *CreateRaidSetRequest) (*CreateRaidSetResponse, error)
+	AssembleRaidSet(context.Context, *AssembleRaidSetRequest) (*AssembleRaidSetResponse, error)
+	GrowRaidSet(context.Context, *GrowRaidSetRequest) (*GrowRaidSetResponse, error)
+	FailRaidMember(context.Context, *FailRaidMemberRequest) (*FailRaidMemberResponse, error)
+	RemoveRaidMember(context.Context, *RemoveRaidMemberRequest) (*RemoveRaidMemberResponse, error)
+	ReplaceRaidMember(context.Context, *ReplaceRaidMemberRequest) (*ReplaceRaidMemberResponse, error)
+	DeleteRaidSet(context.Context, *DeleteRaidSetRequest) (*DeleteRaidSetResponse, error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error)
 	mustEmbedUnimplementedStorageProvisioningServiceServer()
@@ -653,6 +759,30 @@ func (UnimplementedStorageProvisioningServiceServer) SetDiskQoS(context.Context,
 }
 func (UnimplementedStorageProvisioningServiceServer) GetDiskQoS(context.Context, *GetDiskQoSRequest) (*GetDiskQoSResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDiskQoS not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ListRaidSets(context.Context, *ListRaidSetsRequest) (*ListRaidSetsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListRaidSets not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) CreateRaidSet(context.Context, *CreateRaidSetRequest) (*CreateRaidSetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateRaidSet not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) AssembleRaidSet(context.Context, *AssembleRaidSetRequest) (*AssembleRaidSetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AssembleRaidSet not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) GrowRaidSet(context.Context, *GrowRaidSetRequest) (*GrowRaidSetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GrowRaidSet not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) FailRaidMember(context.Context, *FailRaidMemberRequest) (*FailRaidMemberResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method FailRaidMember not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) RemoveRaidMember(context.Context, *RemoveRaidMemberRequest) (*RemoveRaidMemberResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RemoveRaidMember not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ReplaceRaidMember(context.Context, *ReplaceRaidMemberRequest) (*ReplaceRaidMemberResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReplaceRaidMember not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) DeleteRaidSet(context.Context, *DeleteRaidSetRequest) (*DeleteRaidSetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteRaidSet not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckMigrationStorage not implemented")
@@ -1327,6 +1457,150 @@ func _StorageProvisioningService_GetDiskQoS_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageProvisioningService_ListRaidSets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRaidSetsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ListRaidSets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ListRaidSets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ListRaidSets(ctx, req.(*ListRaidSetsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_CreateRaidSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRaidSetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).CreateRaidSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_CreateRaidSet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).CreateRaidSet(ctx, req.(*CreateRaidSetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_AssembleRaidSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssembleRaidSetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).AssembleRaidSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_AssembleRaidSet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).AssembleRaidSet(ctx, req.(*AssembleRaidSetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_GrowRaidSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GrowRaidSetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).GrowRaidSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_GrowRaidSet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).GrowRaidSet(ctx, req.(*GrowRaidSetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_FailRaidMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FailRaidMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).FailRaidMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_FailRaidMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).FailRaidMember(ctx, req.(*FailRaidMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_RemoveRaidMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveRaidMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).RemoveRaidMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_RemoveRaidMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).RemoveRaidMember(ctx, req.(*RemoveRaidMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_ReplaceRaidMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReplaceRaidMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ReplaceRaidMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ReplaceRaidMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ReplaceRaidMember(ctx, req.(*ReplaceRaidMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageProvisioningService_DeleteRaidSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRaidSetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).DeleteRaidSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_DeleteRaidSet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).DeleteRaidSet(ctx, req.(*DeleteRaidSetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageProvisioningService_CheckMigrationStorage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckMigrationStorageRequest)
 	if err := dec(in); err != nil {
@@ -1495,6 +1769,38 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDiskQoS",
 			Handler:    _StorageProvisioningService_GetDiskQoS_Handler,
+		},
+		{
+			MethodName: "ListRaidSets",
+			Handler:    _StorageProvisioningService_ListRaidSets_Handler,
+		},
+		{
+			MethodName: "CreateRaidSet",
+			Handler:    _StorageProvisioningService_CreateRaidSet_Handler,
+		},
+		{
+			MethodName: "AssembleRaidSet",
+			Handler:    _StorageProvisioningService_AssembleRaidSet_Handler,
+		},
+		{
+			MethodName: "GrowRaidSet",
+			Handler:    _StorageProvisioningService_GrowRaidSet_Handler,
+		},
+		{
+			MethodName: "FailRaidMember",
+			Handler:    _StorageProvisioningService_FailRaidMember_Handler,
+		},
+		{
+			MethodName: "RemoveRaidMember",
+			Handler:    _StorageProvisioningService_RemoveRaidMember_Handler,
+		},
+		{
+			MethodName: "ReplaceRaidMember",
+			Handler:    _StorageProvisioningService_ReplaceRaidMember_Handler,
+		},
+		{
+			MethodName: "DeleteRaidSet",
+			Handler:    _StorageProvisioningService_DeleteRaidSet_Handler,
 		},
 		{
 			MethodName: "CheckMigrationStorage",

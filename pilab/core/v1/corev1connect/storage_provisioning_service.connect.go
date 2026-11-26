@@ -142,6 +142,30 @@ const (
 	// StorageProvisioningServiceGetDiskQoSProcedure is the fully-qualified name of the
 	// StorageProvisioningService's GetDiskQoS RPC.
 	StorageProvisioningServiceGetDiskQoSProcedure = "/pilab.core.v1.StorageProvisioningService/GetDiskQoS"
+	// StorageProvisioningServiceListRaidSetsProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ListRaidSets RPC.
+	StorageProvisioningServiceListRaidSetsProcedure = "/pilab.core.v1.StorageProvisioningService/ListRaidSets"
+	// StorageProvisioningServiceCreateRaidSetProcedure is the fully-qualified name of the
+	// StorageProvisioningService's CreateRaidSet RPC.
+	StorageProvisioningServiceCreateRaidSetProcedure = "/pilab.core.v1.StorageProvisioningService/CreateRaidSet"
+	// StorageProvisioningServiceAssembleRaidSetProcedure is the fully-qualified name of the
+	// StorageProvisioningService's AssembleRaidSet RPC.
+	StorageProvisioningServiceAssembleRaidSetProcedure = "/pilab.core.v1.StorageProvisioningService/AssembleRaidSet"
+	// StorageProvisioningServiceGrowRaidSetProcedure is the fully-qualified name of the
+	// StorageProvisioningService's GrowRaidSet RPC.
+	StorageProvisioningServiceGrowRaidSetProcedure = "/pilab.core.v1.StorageProvisioningService/GrowRaidSet"
+	// StorageProvisioningServiceFailRaidMemberProcedure is the fully-qualified name of the
+	// StorageProvisioningService's FailRaidMember RPC.
+	StorageProvisioningServiceFailRaidMemberProcedure = "/pilab.core.v1.StorageProvisioningService/FailRaidMember"
+	// StorageProvisioningServiceRemoveRaidMemberProcedure is the fully-qualified name of the
+	// StorageProvisioningService's RemoveRaidMember RPC.
+	StorageProvisioningServiceRemoveRaidMemberProcedure = "/pilab.core.v1.StorageProvisioningService/RemoveRaidMember"
+	// StorageProvisioningServiceReplaceRaidMemberProcedure is the fully-qualified name of the
+	// StorageProvisioningService's ReplaceRaidMember RPC.
+	StorageProvisioningServiceReplaceRaidMemberProcedure = "/pilab.core.v1.StorageProvisioningService/ReplaceRaidMember"
+	// StorageProvisioningServiceDeleteRaidSetProcedure is the fully-qualified name of the
+	// StorageProvisioningService's DeleteRaidSet RPC.
+	StorageProvisioningServiceDeleteRaidSetProcedure = "/pilab.core.v1.StorageProvisioningService/DeleteRaidSet"
 	// StorageProvisioningServiceCheckMigrationStorageProcedure is the fully-qualified name of the
 	// StorageProvisioningService's CheckMigrationStorage RPC.
 	StorageProvisioningServiceCheckMigrationStorageProcedure = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
@@ -193,6 +217,15 @@ type StorageProvisioningServiceClient interface {
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error)
 	GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error)
+	// Software RAID (mdadm)
+	ListRaidSets(context.Context, *connect.Request[v1.ListRaidSetsRequest]) (*connect.Response[v1.ListRaidSetsResponse], error)
+	CreateRaidSet(context.Context, *connect.Request[v1.CreateRaidSetRequest]) (*connect.Response[v1.CreateRaidSetResponse], error)
+	AssembleRaidSet(context.Context, *connect.Request[v1.AssembleRaidSetRequest]) (*connect.Response[v1.AssembleRaidSetResponse], error)
+	GrowRaidSet(context.Context, *connect.Request[v1.GrowRaidSetRequest]) (*connect.Response[v1.GrowRaidSetResponse], error)
+	FailRaidMember(context.Context, *connect.Request[v1.FailRaidMemberRequest]) (*connect.Response[v1.FailRaidMemberResponse], error)
+	RemoveRaidMember(context.Context, *connect.Request[v1.RemoveRaidMemberRequest]) (*connect.Response[v1.RemoveRaidMemberResponse], error)
+	ReplaceRaidMember(context.Context, *connect.Request[v1.ReplaceRaidMemberRequest]) (*connect.Response[v1.ReplaceRaidMemberResponse], error)
+	DeleteRaidSet(context.Context, *connect.Request[v1.DeleteRaidSetRequest]) (*connect.Response[v1.DeleteRaidSetResponse], error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
@@ -424,6 +457,54 @@ func NewStorageProvisioningServiceClient(httpClient connect.HTTPClient, baseURL 
 			connect.WithSchema(storageProvisioningServiceMethods.ByName("GetDiskQoS")),
 			connect.WithClientOptions(opts...),
 		),
+		listRaidSets: connect.NewClient[v1.ListRaidSetsRequest, v1.ListRaidSetsResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceListRaidSetsProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ListRaidSets")),
+			connect.WithClientOptions(opts...),
+		),
+		createRaidSet: connect.NewClient[v1.CreateRaidSetRequest, v1.CreateRaidSetResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceCreateRaidSetProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateRaidSet")),
+			connect.WithClientOptions(opts...),
+		),
+		assembleRaidSet: connect.NewClient[v1.AssembleRaidSetRequest, v1.AssembleRaidSetResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceAssembleRaidSetProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("AssembleRaidSet")),
+			connect.WithClientOptions(opts...),
+		),
+		growRaidSet: connect.NewClient[v1.GrowRaidSetRequest, v1.GrowRaidSetResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceGrowRaidSetProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("GrowRaidSet")),
+			connect.WithClientOptions(opts...),
+		),
+		failRaidMember: connect.NewClient[v1.FailRaidMemberRequest, v1.FailRaidMemberResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceFailRaidMemberProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("FailRaidMember")),
+			connect.WithClientOptions(opts...),
+		),
+		removeRaidMember: connect.NewClient[v1.RemoveRaidMemberRequest, v1.RemoveRaidMemberResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceRemoveRaidMemberProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("RemoveRaidMember")),
+			connect.WithClientOptions(opts...),
+		),
+		replaceRaidMember: connect.NewClient[v1.ReplaceRaidMemberRequest, v1.ReplaceRaidMemberResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceReplaceRaidMemberProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("ReplaceRaidMember")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteRaidSet: connect.NewClient[v1.DeleteRaidSetRequest, v1.DeleteRaidSetResponse](
+			httpClient,
+			baseURL+StorageProvisioningServiceDeleteRaidSetProcedure,
+			connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteRaidSet")),
+			connect.WithClientOptions(opts...),
+		),
 		checkMigrationStorage: connect.NewClient[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse](
 			httpClient,
 			baseURL+StorageProvisioningServiceCheckMigrationStorageProcedure,
@@ -471,6 +552,14 @@ type storageProvisioningServiceClient struct {
 	listVolumes           *connect.Client[v1.ListVolumesRequest, v1.ListVolumesResponse]
 	setDiskQoS            *connect.Client[v1.SetDiskQoSRequest, v1.SetDiskQoSResponse]
 	getDiskQoS            *connect.Client[v1.GetDiskQoSRequest, v1.GetDiskQoSResponse]
+	listRaidSets          *connect.Client[v1.ListRaidSetsRequest, v1.ListRaidSetsResponse]
+	createRaidSet         *connect.Client[v1.CreateRaidSetRequest, v1.CreateRaidSetResponse]
+	assembleRaidSet       *connect.Client[v1.AssembleRaidSetRequest, v1.AssembleRaidSetResponse]
+	growRaidSet           *connect.Client[v1.GrowRaidSetRequest, v1.GrowRaidSetResponse]
+	failRaidMember        *connect.Client[v1.FailRaidMemberRequest, v1.FailRaidMemberResponse]
+	removeRaidMember      *connect.Client[v1.RemoveRaidMemberRequest, v1.RemoveRaidMemberResponse]
+	replaceRaidMember     *connect.Client[v1.ReplaceRaidMemberRequest, v1.ReplaceRaidMemberResponse]
+	deleteRaidSet         *connect.Client[v1.DeleteRaidSetRequest, v1.DeleteRaidSetResponse]
 	checkMigrationStorage *connect.Client[v1.CheckMigrationStorageRequest, v1.CheckMigrationStorageResponse]
 }
 
@@ -654,6 +743,46 @@ func (c *storageProvisioningServiceClient) GetDiskQoS(ctx context.Context, req *
 	return c.getDiskQoS.CallUnary(ctx, req)
 }
 
+// ListRaidSets calls pilab.core.v1.StorageProvisioningService.ListRaidSets.
+func (c *storageProvisioningServiceClient) ListRaidSets(ctx context.Context, req *connect.Request[v1.ListRaidSetsRequest]) (*connect.Response[v1.ListRaidSetsResponse], error) {
+	return c.listRaidSets.CallUnary(ctx, req)
+}
+
+// CreateRaidSet calls pilab.core.v1.StorageProvisioningService.CreateRaidSet.
+func (c *storageProvisioningServiceClient) CreateRaidSet(ctx context.Context, req *connect.Request[v1.CreateRaidSetRequest]) (*connect.Response[v1.CreateRaidSetResponse], error) {
+	return c.createRaidSet.CallUnary(ctx, req)
+}
+
+// AssembleRaidSet calls pilab.core.v1.StorageProvisioningService.AssembleRaidSet.
+func (c *storageProvisioningServiceClient) AssembleRaidSet(ctx context.Context, req *connect.Request[v1.AssembleRaidSetRequest]) (*connect.Response[v1.AssembleRaidSetResponse], error) {
+	return c.assembleRaidSet.CallUnary(ctx, req)
+}
+
+// GrowRaidSet calls pilab.core.v1.StorageProvisioningService.GrowRaidSet.
+func (c *storageProvisioningServiceClient) GrowRaidSet(ctx context.Context, req *connect.Request[v1.GrowRaidSetRequest]) (*connect.Response[v1.GrowRaidSetResponse], error) {
+	return c.growRaidSet.CallUnary(ctx, req)
+}
+
+// FailRaidMember calls pilab.core.v1.StorageProvisioningService.FailRaidMember.
+func (c *storageProvisioningServiceClient) FailRaidMember(ctx context.Context, req *connect.Request[v1.FailRaidMemberRequest]) (*connect.Response[v1.FailRaidMemberResponse], error) {
+	return c.failRaidMember.CallUnary(ctx, req)
+}
+
+// RemoveRaidMember calls pilab.core.v1.StorageProvisioningService.RemoveRaidMember.
+func (c *storageProvisioningServiceClient) RemoveRaidMember(ctx context.Context, req *connect.Request[v1.RemoveRaidMemberRequest]) (*connect.Response[v1.RemoveRaidMemberResponse], error) {
+	return c.removeRaidMember.CallUnary(ctx, req)
+}
+
+// ReplaceRaidMember calls pilab.core.v1.StorageProvisioningService.ReplaceRaidMember.
+func (c *storageProvisioningServiceClient) ReplaceRaidMember(ctx context.Context, req *connect.Request[v1.ReplaceRaidMemberRequest]) (*connect.Response[v1.ReplaceRaidMemberResponse], error) {
+	return c.replaceRaidMember.CallUnary(ctx, req)
+}
+
+// DeleteRaidSet calls pilab.core.v1.StorageProvisioningService.DeleteRaidSet.
+func (c *storageProvisioningServiceClient) DeleteRaidSet(ctx context.Context, req *connect.Request[v1.DeleteRaidSetRequest]) (*connect.Response[v1.DeleteRaidSetResponse], error) {
+	return c.deleteRaidSet.CallUnary(ctx, req)
+}
+
 // CheckMigrationStorage calls pilab.core.v1.StorageProvisioningService.CheckMigrationStorage.
 func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, req *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
 	return c.checkMigrationStorage.CallUnary(ctx, req)
@@ -705,6 +834,15 @@ type StorageProvisioningServiceHandler interface {
 	// Inheritable QoS & Live Throttling (QEMU iotune)
 	SetDiskQoS(context.Context, *connect.Request[v1.SetDiskQoSRequest]) (*connect.Response[v1.SetDiskQoSResponse], error)
 	GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error)
+	// Software RAID (mdadm)
+	ListRaidSets(context.Context, *connect.Request[v1.ListRaidSetsRequest]) (*connect.Response[v1.ListRaidSetsResponse], error)
+	CreateRaidSet(context.Context, *connect.Request[v1.CreateRaidSetRequest]) (*connect.Response[v1.CreateRaidSetResponse], error)
+	AssembleRaidSet(context.Context, *connect.Request[v1.AssembleRaidSetRequest]) (*connect.Response[v1.AssembleRaidSetResponse], error)
+	GrowRaidSet(context.Context, *connect.Request[v1.GrowRaidSetRequest]) (*connect.Response[v1.GrowRaidSetResponse], error)
+	FailRaidMember(context.Context, *connect.Request[v1.FailRaidMemberRequest]) (*connect.Response[v1.FailRaidMemberResponse], error)
+	RemoveRaidMember(context.Context, *connect.Request[v1.RemoveRaidMemberRequest]) (*connect.Response[v1.RemoveRaidMemberResponse], error)
+	ReplaceRaidMember(context.Context, *connect.Request[v1.ReplaceRaidMemberRequest]) (*connect.Response[v1.ReplaceRaidMemberResponse], error)
+	DeleteRaidSet(context.Context, *connect.Request[v1.DeleteRaidSetRequest]) (*connect.Response[v1.DeleteRaidSetResponse], error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error)
 }
@@ -932,6 +1070,54 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 		connect.WithSchema(storageProvisioningServiceMethods.ByName("GetDiskQoS")),
 		connect.WithHandlerOptions(opts...),
 	)
+	storageProvisioningServiceListRaidSetsHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceListRaidSetsProcedure,
+		svc.ListRaidSets,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ListRaidSets")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceCreateRaidSetHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceCreateRaidSetProcedure,
+		svc.CreateRaidSet,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("CreateRaidSet")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceAssembleRaidSetHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceAssembleRaidSetProcedure,
+		svc.AssembleRaidSet,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("AssembleRaidSet")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceGrowRaidSetHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceGrowRaidSetProcedure,
+		svc.GrowRaidSet,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("GrowRaidSet")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceFailRaidMemberHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceFailRaidMemberProcedure,
+		svc.FailRaidMember,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("FailRaidMember")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceRemoveRaidMemberHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceRemoveRaidMemberProcedure,
+		svc.RemoveRaidMember,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("RemoveRaidMember")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceReplaceRaidMemberHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceReplaceRaidMemberProcedure,
+		svc.ReplaceRaidMember,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("ReplaceRaidMember")),
+		connect.WithHandlerOptions(opts...),
+	)
+	storageProvisioningServiceDeleteRaidSetHandler := connect.NewUnaryHandler(
+		StorageProvisioningServiceDeleteRaidSetProcedure,
+		svc.DeleteRaidSet,
+		connect.WithSchema(storageProvisioningServiceMethods.ByName("DeleteRaidSet")),
+		connect.WithHandlerOptions(opts...),
+	)
 	storageProvisioningServiceCheckMigrationStorageHandler := connect.NewUnaryHandler(
 		StorageProvisioningServiceCheckMigrationStorageProcedure,
 		svc.CheckMigrationStorage,
@@ -1012,6 +1198,22 @@ func NewStorageProvisioningServiceHandler(svc StorageProvisioningServiceHandler,
 			storageProvisioningServiceSetDiskQoSHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceGetDiskQoSProcedure:
 			storageProvisioningServiceGetDiskQoSHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceListRaidSetsProcedure:
+			storageProvisioningServiceListRaidSetsHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceCreateRaidSetProcedure:
+			storageProvisioningServiceCreateRaidSetHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceAssembleRaidSetProcedure:
+			storageProvisioningServiceAssembleRaidSetHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceGrowRaidSetProcedure:
+			storageProvisioningServiceGrowRaidSetHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceFailRaidMemberProcedure:
+			storageProvisioningServiceFailRaidMemberHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceRemoveRaidMemberProcedure:
+			storageProvisioningServiceRemoveRaidMemberHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceReplaceRaidMemberProcedure:
+			storageProvisioningServiceReplaceRaidMemberHandler.ServeHTTP(w, r)
+		case StorageProvisioningServiceDeleteRaidSetProcedure:
+			storageProvisioningServiceDeleteRaidSetHandler.ServeHTTP(w, r)
 		case StorageProvisioningServiceCheckMigrationStorageProcedure:
 			storageProvisioningServiceCheckMigrationStorageHandler.ServeHTTP(w, r)
 		default:
@@ -1165,6 +1367,38 @@ func (UnimplementedStorageProvisioningServiceHandler) SetDiskQoS(context.Context
 
 func (UnimplementedStorageProvisioningServiceHandler) GetDiskQoS(context.Context, *connect.Request[v1.GetDiskQoSRequest]) (*connect.Response[v1.GetDiskQoSResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GetDiskQoS is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ListRaidSets(context.Context, *connect.Request[v1.ListRaidSetsRequest]) (*connect.Response[v1.ListRaidSetsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ListRaidSets is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) CreateRaidSet(context.Context, *connect.Request[v1.CreateRaidSetRequest]) (*connect.Response[v1.CreateRaidSetResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.CreateRaidSet is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) AssembleRaidSet(context.Context, *connect.Request[v1.AssembleRaidSetRequest]) (*connect.Response[v1.AssembleRaidSetResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.AssembleRaidSet is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) GrowRaidSet(context.Context, *connect.Request[v1.GrowRaidSetRequest]) (*connect.Response[v1.GrowRaidSetResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.GrowRaidSet is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) FailRaidMember(context.Context, *connect.Request[v1.FailRaidMemberRequest]) (*connect.Response[v1.FailRaidMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.FailRaidMember is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) RemoveRaidMember(context.Context, *connect.Request[v1.RemoveRaidMemberRequest]) (*connect.Response[v1.RemoveRaidMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.RemoveRaidMember is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) ReplaceRaidMember(context.Context, *connect.Request[v1.ReplaceRaidMemberRequest]) (*connect.Response[v1.ReplaceRaidMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.ReplaceRaidMember is not implemented"))
+}
+
+func (UnimplementedStorageProvisioningServiceHandler) DeleteRaidSet(context.Context, *connect.Request[v1.DeleteRaidSetRequest]) (*connect.Response[v1.DeleteRaidSetResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.core.v1.StorageProvisioningService.DeleteRaidSet is not implemented"))
 }
 
 func (UnimplementedStorageProvisioningServiceHandler) CheckMigrationStorage(context.Context, *connect.Request[v1.CheckMigrationStorageRequest]) (*connect.Response[v1.CheckMigrationStorageResponse], error) {
