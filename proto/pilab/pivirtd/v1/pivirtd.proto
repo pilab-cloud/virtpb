@@ -144,6 +144,9 @@ message CreateVMRequest {
   int32 memory_slots = 18;
   int32 max_vcpus = 19;
   ResourceSpec resources = 20;
+  string qemu_version = 21; // QEMU build to run this VM on (e.g. "8.2", "10.2"); empty = node default
+  bool tpm = 22;            // provision a vTPM (swtpm) for this VM
+  string boot_order = 23;   // comma-separated boot devices: hd,cdrom,network,floppy
 }
 
 message ApplyVMRequest {

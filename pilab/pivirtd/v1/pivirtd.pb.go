@@ -104,6 +104,9 @@ type CreateVMRequest struct {
 	MemorySlots   int32                  `protobuf:"varint,18,opt,name=memory_slots,json=memorySlots,proto3" json:"memory_slots,omitempty"`
 	MaxVcpus      int32                  `protobuf:"varint,19,opt,name=max_vcpus,json=maxVcpus,proto3" json:"max_vcpus,omitempty"`
 	Resources     *ResourceSpec          `protobuf:"bytes,20,opt,name=resources,proto3" json:"resources,omitempty"`
+	QemuVersion   string                 `protobuf:"bytes,21,opt,name=qemu_version,json=qemuVersion,proto3" json:"qemu_version,omitempty"` // QEMU build to run this VM on (e.g. "8.2", "10.2"); empty = node default
+	Tpm           bool                   `protobuf:"varint,22,opt,name=tpm,proto3" json:"tpm,omitempty"`                                   // provision a vTPM (swtpm) for this VM
+	BootOrder     string                 `protobuf:"bytes,23,opt,name=boot_order,json=bootOrder,proto3" json:"boot_order,omitempty"`       // comma-separated boot devices: hd,cdrom,network,floppy
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -276,6 +279,27 @@ func (x *CreateVMRequest) GetResources() *ResourceSpec {
 		return x.Resources
 	}
 	return nil
+}
+
+func (x *CreateVMRequest) GetQemuVersion() string {
+	if x != nil {
+		return x.QemuVersion
+	}
+	return ""
+}
+
+func (x *CreateVMRequest) GetTpm() bool {
+	if x != nil {
+		return x.Tpm
+	}
+	return false
+}
+
+func (x *CreateVMRequest) GetBootOrder() string {
+	if x != nil {
+		return x.BootOrder
+	}
+	return ""
 }
 
 type ApplyVMRequest struct {
@@ -8877,7 +8901,7 @@ var File_pilab_pivirtd_v1_pivirtd_proto protoreflect.FileDescriptor
 
 const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\n" +
-	"\x1epilab/pivirtd/v1/pivirtd.proto\x12\x10pilab.pivirtd.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18pilab/common/v1/vm.proto\x1a$pilab/pivirtd/v1/host_resource.proto\"\xec\x05\n" +
+	"\x1epilab/pivirtd/v1/pivirtd.proto\x12\x10pilab.pivirtd.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x18pilab/common/v1/vm.proto\x1a$pilab/pivirtd/v1/host_resource.proto\"\xc0\x06\n" +
 	"\x0fCreateVMRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
 	"\tmemory_mb\x18\x02 \x01(\x05R\bmemoryMb\x12\x14\n" +
@@ -8900,7 +8924,11 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\rmax_memory_mb\x18\x11 \x01(\x05R\vmaxMemoryMb\x12!\n" +
 	"\fmemory_slots\x18\x12 \x01(\x05R\vmemorySlots\x12\x1b\n" +
 	"\tmax_vcpus\x18\x13 \x01(\x05R\bmaxVcpus\x12<\n" +
-	"\tresources\x18\x14 \x01(\v2\x1e.pilab.pivirtd.v1.ResourceSpecR\tresources\"5\n" +
+	"\tresources\x18\x14 \x01(\v2\x1e.pilab.pivirtd.v1.ResourceSpecR\tresources\x12!\n" +
+	"\fqemu_version\x18\x15 \x01(\tR\vqemuVersion\x12\x10\n" +
+	"\x03tpm\x18\x16 \x01(\bR\x03tpm\x12\x1d\n" +
+	"\n" +
+	"boot_order\x18\x17 \x01(\tR\tbootOrder\"5\n" +
 	"\x0eApplyVMRequest\x12#\n" +
 	"\ryaml_manifest\x18\x01 \x01(\tR\fyamlManifest\"$\n" +
 	"\x0eStartVMRequest\x12\x12\n" +
