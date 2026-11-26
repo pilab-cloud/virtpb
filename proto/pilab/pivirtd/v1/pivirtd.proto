@@ -7,6 +7,7 @@ option go_package = "go.pilab.hu/cloud/virtpb/v3/pilab/pivirtd/v1;pivirtdv1";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "pilab/common/v1/vm.proto";
+import "pilab/core/v1/storage_provisioning_service.proto";
 import "pilab/pivirtd/v1/host_resource.proto";
 
 // Main Pivirtd Service - Replacement for libvirtd
@@ -704,6 +705,9 @@ message StoragePool {
   // message explains a pool that is not available, or carries a non-fatal
   // note about one that is.
   string message = 12;
+  // qos is the pool-level default disk QoS stored on the pool. Empty means
+  // the platform baseline applies.
+  pilab.core.v1.DiskQoSConfig qos = 14;
   // desired_active is the stored intent, which differs from active when a
   // pool failed to come up or went away underneath the daemon.
   bool desired_active = 13;

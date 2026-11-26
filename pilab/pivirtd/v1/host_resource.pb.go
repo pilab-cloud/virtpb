@@ -7,6 +7,7 @@
 package pivirtdv1
 
 import (
+	v1 "go.pilab.hu/cloud/virtpb/v3/pilab/core/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -899,8 +900,11 @@ type StoragePoolSummary struct {
 	AvailableBytes int64                  `protobuf:"varint,4,opt,name=available_bytes,json=availableBytes,proto3" json:"available_bytes,omitempty"`
 	Name           string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 	MountPath      string                 `protobuf:"bytes,6,opt,name=mount_path,json=mountPath,proto3" json:"mount_path,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// qos is the pool-level default disk QoS the datastore carries. Unset means
+	// the platform baseline.
+	Qos           *v1.DiskQoSConfig `protobuf:"bytes,7,opt,name=qos,proto3" json:"qos,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StoragePoolSummary) Reset() {
@@ -973,6 +977,13 @@ func (x *StoragePoolSummary) GetMountPath() string {
 		return x.MountPath
 	}
 	return ""
+}
+
+func (x *StoragePoolSummary) GetQos() *v1.DiskQoSConfig {
+	if x != nil {
+		return x.Qos
+	}
+	return nil
 }
 
 // SubscribeEventsRequest is an empty request to subscribe to VM events.
@@ -1678,7 +1689,7 @@ var File_pilab_pivirtd_v1_host_resource_proto protoreflect.FileDescriptor
 
 const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\n" +
-	"$pilab/pivirtd/v1/host_resource.proto\x12\x10pilab.pivirtd.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\t\n" +
+	"$pilab/pivirtd/v1/host_resource.proto\x12\x10pilab.pivirtd.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a0pilab/core/v1/storage_provisioning_service.proto\"\x90\t\n" +
 	"\x12HostResourceReport\x12#\n" +
 	"\rphysical_cpus\x18\x01 \x01(\x05R\fphysicalCpus\x12%\n" +
 	"\x0ephysical_cores\x18\x02 \x01(\x05R\rphysicalCores\x12)\n" +
@@ -1763,7 +1774,7 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x0eStorageSummary\x12(\n" +
 	"\x10pool_total_bytes\x18\x01 \x01(\x03R\x0epoolTotalBytes\x120\n" +
 	"\x14pool_available_bytes\x18\x02 \x01(\x03R\x12poolAvailableBytes\x12&\n" +
-	"\x0fpool_used_bytes\x18\x03 \x01(\x03R\rpoolUsedBytes\"\xb5\x01\n" +
+	"\x0fpool_used_bytes\x18\x03 \x01(\x03R\rpoolUsedBytes\"\xe5\x01\n" +
 	"\x12StoragePoolSummary\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1f\n" +
@@ -1772,7 +1783,8 @@ const file_pilab_pivirtd_v1_host_resource_proto_rawDesc = "" +
 	"\x0favailable_bytes\x18\x04 \x01(\x03R\x0eavailableBytes\x12\x12\n" +
 	"\x04name\x18\x05 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
-	"mount_path\x18\x06 \x01(\tR\tmountPath\"\x18\n" +
+	"mount_path\x18\x06 \x01(\tR\tmountPath\x12.\n" +
+	"\x03qos\x18\a \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\"\x18\n" +
 	"\x16SubscribeEventsRequest\"\xa3\x05\n" +
 	"\tHostEvent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x123\n" +
@@ -1891,7 +1903,8 @@ var file_pilab_pivirtd_v1_host_resource_proto_goTypes = []any{
 	(*VmDiskMoveEvent)(nil),        // 13: pilab.pivirtd.v1.VmDiskMoveEvent
 	(*VmSnapshotEvent)(nil),        // 14: pilab.pivirtd.v1.VmSnapshotEvent
 	(*VmMigrationEvent)(nil),       // 15: pilab.pivirtd.v1.VmMigrationEvent
-	(*timestamppb.Timestamp)(nil),  // 16: google.protobuf.Timestamp
+	(*v1.DiskQoSConfig)(nil),       // 16: pilab.core.v1.DiskQoSConfig
+	(*timestamppb.Timestamp)(nil),  // 17: google.protobuf.Timestamp
 }
 var file_pilab_pivirtd_v1_host_resource_proto_depIdxs = []int32{
 	5,  // 0: pilab.pivirtd.v1.HostResourceReport.numa_nodes:type_name -> pilab.pivirtd.v1.NUMANode
@@ -1900,20 +1913,21 @@ var file_pilab_pivirtd_v1_host_resource_proto_depIdxs = []int32{
 	2,  // 3: pilab.pivirtd.v1.HostResourceReport.disks:type_name -> pilab.pivirtd.v1.HostDisk
 	3,  // 4: pilab.pivirtd.v1.HostResourceReport.network_adapters:type_name -> pilab.pivirtd.v1.HostNetworkAdapter
 	4,  // 5: pilab.pivirtd.v1.HostResourceReport.pci_devices:type_name -> pilab.pivirtd.v1.HostPCIDeviceInfo
-	0,  // 6: pilab.pivirtd.v1.HostEvent.type:type_name -> pilab.pivirtd.v1.HostEventType
-	16, // 7: pilab.pivirtd.v1.HostEvent.timestamp:type_name -> google.protobuf.Timestamp
-	10, // 8: pilab.pivirtd.v1.HostEvent.vm_lifecycle:type_name -> pilab.pivirtd.v1.VmLifecycleEvent
-	11, // 9: pilab.pivirtd.v1.HostEvent.host_health:type_name -> pilab.pivirtd.v1.HostHealthEvent
-	12, // 10: pilab.pivirtd.v1.HostEvent.resource_pressure:type_name -> pilab.pivirtd.v1.ResourcePressureEvent
-	1,  // 11: pilab.pivirtd.v1.HostEvent.resource_report:type_name -> pilab.pivirtd.v1.HostResourceReport
-	13, // 12: pilab.pivirtd.v1.HostEvent.vm_disk_move:type_name -> pilab.pivirtd.v1.VmDiskMoveEvent
-	14, // 13: pilab.pivirtd.v1.HostEvent.vm_snapshot:type_name -> pilab.pivirtd.v1.VmSnapshotEvent
-	15, // 14: pilab.pivirtd.v1.HostEvent.vm_migration:type_name -> pilab.pivirtd.v1.VmMigrationEvent
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	16, // 6: pilab.pivirtd.v1.StoragePoolSummary.qos:type_name -> pilab.core.v1.DiskQoSConfig
+	0,  // 7: pilab.pivirtd.v1.HostEvent.type:type_name -> pilab.pivirtd.v1.HostEventType
+	17, // 8: pilab.pivirtd.v1.HostEvent.timestamp:type_name -> google.protobuf.Timestamp
+	10, // 9: pilab.pivirtd.v1.HostEvent.vm_lifecycle:type_name -> pilab.pivirtd.v1.VmLifecycleEvent
+	11, // 10: pilab.pivirtd.v1.HostEvent.host_health:type_name -> pilab.pivirtd.v1.HostHealthEvent
+	12, // 11: pilab.pivirtd.v1.HostEvent.resource_pressure:type_name -> pilab.pivirtd.v1.ResourcePressureEvent
+	1,  // 12: pilab.pivirtd.v1.HostEvent.resource_report:type_name -> pilab.pivirtd.v1.HostResourceReport
+	13, // 13: pilab.pivirtd.v1.HostEvent.vm_disk_move:type_name -> pilab.pivirtd.v1.VmDiskMoveEvent
+	14, // 14: pilab.pivirtd.v1.HostEvent.vm_snapshot:type_name -> pilab.pivirtd.v1.VmSnapshotEvent
+	15, // 15: pilab.pivirtd.v1.HostEvent.vm_migration:type_name -> pilab.pivirtd.v1.VmMigrationEvent
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_pilab_pivirtd_v1_host_resource_proto_init() }
