@@ -456,6 +456,9 @@ enum StoragePoolDriver {
   STORAGE_POOL_DRIVER_LVM_THIN = 4;       // LVM Thin pool
   STORAGE_POOL_DRIVER_NFS = 5;            // NFSv4 mount
   STORAGE_POOL_DRIVER_ISCSI = 6;          // iSCSI target/LUN
+  // Thick LVM volume group. Shared=true means the VG is one LUN visible to
+  // every host of the cluster, and only the lock holder may mutate it.
+  STORAGE_POOL_DRIVER_LVM = 7;
 }
 
 // Inheritable Disk QoS Configuration
@@ -613,6 +616,8 @@ message CreateVolumeRequest {
   int64 size_mb = 4;
   string format = 5;            // "raw", "qcow2" (default: "raw" for Ceph, "qcow2" for Dir)
   DiskQoSConfig qos = 6;        // Optional QoS overrides; if nil/zero, inherits pool.default_qos
+  // fencing is required for a shared volume group and ignored otherwise.
+  StorageFencing fencing = 7;
 }
 
 message CreateVolumeResponse {
@@ -626,6 +631,8 @@ message DeleteVolumeRequest {
   string pool_name = 2;
   string volume_name = 3;
   bool force = 4;
+  // fencing is required for a shared volume group and ignored otherwise.
+  StorageFencing fencing = 5;
 }
 
 message DeleteVolumeResponse {
@@ -638,6 +645,8 @@ message ResizeVolumeRequest {
   string pool_name = 2;
   string volume_name = 3;
   int64 new_size_mb = 4;
+  // fencing is required for a shared volume group and ignored otherwise.
+  StorageFencing fencing = 5;
 }
 
 message ResizeVolumeResponse {
@@ -1507,6 +1516,60 @@ message ClearStorageEventsResponse {
   int32 cleared = 1;
 }
 
+
+// ==========================================
+// Shared LVM over iSCSI (PIVIRT-303)
+// ==========================================
+
+// SharedLvmHost is one host's view of a volume group that is supposed to be
+// shared: whether it can see the VG, which backing LUN it sees, and whether
+// every path to it is healthy.
+message SharedLvmHost {
+  string node_id = 1;
+  bool vg_visible = 2;
+  // vg_uuid is the volume group's UUID. It must match on every host.
+  string vg_uuid = 3;
+  // wwid is the SCSI WWID of the backing LUN. It must match on every host;
+  // a different value means the hosts are looking at different disks.
+  string wwid = 4;
+  // devices are the PVs the host sees in the VG.
+  repeated LvmPhysicalVolume devices = 5;
+  // paths is how many block paths the host has to the LUN (multipath).
+  int32 paths = 6;
+  bool multipath = 7;
+  // issues explain why this host cannot take part.
+  repeated string issues = 8;
+}
+
+message LvmPhysicalVolume {
+  string device = 1;
+  string pv_uuid = 2;
+  int64 size_bytes = 3;
+  // state is "active" or "missing".
+  string state = 4;
+}
+
+message ScanSharedLvmRequest {
+  string node_id = 1;
+  string vg_name = 2;
+}
+
+message ScanSharedLvmResponse {
+  SharedLvmHost host = 1;
+  // issues are pre-flight failures for this host, already phrased for an
+  // operator.
+  repeated string issues = 2;
+}
+
+// Shared Lvm mutations carry the director's fencing token. A host refuses a
+// mutation on a shared VG without a token it issued and that is still valid,
+// so two directors (or a stale one) cannot both write.
+message StorageFencing {
+  string token = 1;
+  // ttl_seconds is how long the caller's lease has left.
+  int64 ttl_seconds = 2;
+}
+
 // ---------------- Service ----------------
 
 service StorageProvisioningService {
@@ -1608,6 +1671,9 @@ service StorageProvisioningService {
   rpc ListStorageEvents(ListStorageEventsRequest) returns (ListStorageEventsResponse);
   rpc AcknowledgeStorageEvents(AcknowledgeStorageEventsRequest) returns (AcknowledgeStorageEventsResponse);
   rpc ClearStorageEvents(ClearStorageEventsRequest) returns (ClearStorageEventsResponse);
+
+  // Shared LVM (thick volume group on a LUN visible to every host)
+  rpc ScanSharedLvm(ScanSharedLvmRequest) returns (ScanSharedLvmResponse);
 
   // Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
   rpc CheckMigrationStorage(CheckMigrationStorageRequest) returns (CheckMigrationStorageResponse);

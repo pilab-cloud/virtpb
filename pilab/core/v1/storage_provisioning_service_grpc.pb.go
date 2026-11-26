@@ -92,6 +92,7 @@ const (
 	StorageProvisioningService_ListStorageEvents_FullMethodName           = "/pilab.core.v1.StorageProvisioningService/ListStorageEvents"
 	StorageProvisioningService_AcknowledgeStorageEvents_FullMethodName    = "/pilab.core.v1.StorageProvisioningService/AcknowledgeStorageEvents"
 	StorageProvisioningService_ClearStorageEvents_FullMethodName          = "/pilab.core.v1.StorageProvisioningService/ClearStorageEvents"
+	StorageProvisioningService_ScanSharedLvm_FullMethodName               = "/pilab.core.v1.StorageProvisioningService/ScanSharedLvm"
 	StorageProvisioningService_CheckMigrationStorage_FullMethodName       = "/pilab.core.v1.StorageProvisioningService/CheckMigrationStorage"
 )
 
@@ -185,6 +186,8 @@ type StorageProvisioningServiceClient interface {
 	ListStorageEvents(ctx context.Context, in *ListStorageEventsRequest, opts ...grpc.CallOption) (*ListStorageEventsResponse, error)
 	AcknowledgeStorageEvents(ctx context.Context, in *AcknowledgeStorageEventsRequest, opts ...grpc.CallOption) (*AcknowledgeStorageEventsResponse, error)
 	ClearStorageEvents(ctx context.Context, in *ClearStorageEventsRequest, opts ...grpc.CallOption) (*ClearStorageEventsResponse, error)
+	// Shared LVM (thick volume group on a LUN visible to every host)
+	ScanSharedLvm(ctx context.Context, in *ScanSharedLvmRequest, opts ...grpc.CallOption) (*ScanSharedLvmResponse, error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error)
 }
@@ -927,6 +930,16 @@ func (c *storageProvisioningServiceClient) ClearStorageEvents(ctx context.Contex
 	return out, nil
 }
 
+func (c *storageProvisioningServiceClient) ScanSharedLvm(ctx context.Context, in *ScanSharedLvmRequest, opts ...grpc.CallOption) (*ScanSharedLvmResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ScanSharedLvmResponse)
+	err := c.cc.Invoke(ctx, StorageProvisioningService_ScanSharedLvm_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageProvisioningServiceClient) CheckMigrationStorage(ctx context.Context, in *CheckMigrationStorageRequest, opts ...grpc.CallOption) (*CheckMigrationStorageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CheckMigrationStorageResponse)
@@ -1027,6 +1040,8 @@ type StorageProvisioningServiceServer interface {
 	ListStorageEvents(context.Context, *ListStorageEventsRequest) (*ListStorageEventsResponse, error)
 	AcknowledgeStorageEvents(context.Context, *AcknowledgeStorageEventsRequest) (*AcknowledgeStorageEventsResponse, error)
 	ClearStorageEvents(context.Context, *ClearStorageEventsRequest) (*ClearStorageEventsResponse, error)
+	// Shared LVM (thick volume group on a LUN visible to every host)
+	ScanSharedLvm(context.Context, *ScanSharedLvmRequest) (*ScanSharedLvmResponse, error)
 	// Migration Pre-Flight Classifier (Zero-Disk-Copy vs Block Copy)
 	CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error)
 	mustEmbedUnimplementedStorageProvisioningServiceServer()
@@ -1257,6 +1272,9 @@ func (UnimplementedStorageProvisioningServiceServer) AcknowledgeStorageEvents(co
 }
 func (UnimplementedStorageProvisioningServiceServer) ClearStorageEvents(context.Context, *ClearStorageEventsRequest) (*ClearStorageEventsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ClearStorageEvents not implemented")
+}
+func (UnimplementedStorageProvisioningServiceServer) ScanSharedLvm(context.Context, *ScanSharedLvmRequest) (*ScanSharedLvmResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ScanSharedLvm not implemented")
 }
 func (UnimplementedStorageProvisioningServiceServer) CheckMigrationStorage(context.Context, *CheckMigrationStorageRequest) (*CheckMigrationStorageResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckMigrationStorage not implemented")
@@ -2597,6 +2615,24 @@ func _StorageProvisioningService_ClearStorageEvents_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageProvisioningService_ScanSharedLvm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ScanSharedLvmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageProvisioningServiceServer).ScanSharedLvm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageProvisioningService_ScanSharedLvm_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageProvisioningServiceServer).ScanSharedLvm(ctx, req.(*ScanSharedLvmRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageProvisioningService_CheckMigrationStorage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckMigrationStorageRequest)
 	if err := dec(in); err != nil {
@@ -2913,6 +2949,10 @@ var StorageProvisioningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ClearStorageEvents",
 			Handler:    _StorageProvisioningService_ClearStorageEvents_Handler,
+		},
+		{
+			MethodName: "ScanSharedLvm",
+			Handler:    _StorageProvisioningService_ScanSharedLvm_Handler,
 		},
 		{
 			MethodName: "CheckMigrationStorage",
