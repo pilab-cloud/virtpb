@@ -145,6 +145,9 @@ message CreateVMRequest {
   int32 memory_slots = 18;
   int32 max_vcpus = 19;
   ResourceSpec resources = 20;
+  string qemu_version = 21; // QEMU build to run this VM on (e.g. "8.2", "10.2"); empty = node default
+  bool tpm = 22;            // provision a vTPM (swtpm) for this VM
+  string boot_order = 23;   // comma-separated boot devices: hd,cdrom,network,floppy
 }
 
 message ApplyVMRequest {
@@ -276,6 +279,10 @@ message DiskConfig {
   string bus = 5;  // virtio, ide, scsi
   bool readonly = 6;
   bool cache = 7;
+  // size_bytes is the exact virtual size. A storage migration needs it: a
+  // mirror refuses a target whose virtual size differs by even a byte, and
+  // size_gb cannot express a disk that is not a whole number of GiB.
+  int64 size_bytes = 8;
 }
 
 message NetworkConfig {
@@ -604,13 +611,51 @@ message VMConfig {
   int32 max_vcpus = 13;
 }
 
+// IncomingPhase splits receiving a storage migration into the two moments it
+// actually has: the disks are filled, and the VM starts.
+//
+// They cannot be one call. The destination's disks hang off devices, a device
+// holds write on its node, and a block export may not share write with a
+// device, so a running VM cannot export the disks a source must mirror into.
+// Exporting from a second process that shares the VM's open files would leave
+// the VM's cached metadata stale, which is corruption. So the files belong to a
+// helper process until the mirror is done, and only then does the VM open them.
+enum IncomingPhase {
+  INCOMING_PHASE_UNSPECIFIED = 0;  // no storage migration (shared storage)
+  INCOMING_PHASE_DISKS = 1;        // create the disks, expose them, do not start the VM
+  INCOMING_PHASE_START = 2;        // the mirror is done: start the VM, accept the RAM stream
+}
+
 message PrepareIncomingRequest {
   VMConfig config = 1;
   string listen_address = 2;
+  // mirror_disks asks the destination to create its own disk files and expose
+  // them over NBD on the migration network, so the source can copy the disks
+  // without shared storage. When false the destination expects to open the
+  // source's disks directly, as today.
+  bool mirror_disks = 3;
+  // phase is which half of a storage migration this call performs. UNSPECIFIED
+  // with mirror_disks is refused: it names no phase, and the one-call form
+  // cannot work (see IncomingPhase).
+  IncomingPhase phase = 4;
+}
+
+// MigrationDiskExport is one disk the destination created and exposes over its
+// built-in NBD server, so the source can mirror into it without shared
+// storage. The NBD listener binds to the node's migration address and the
+// reserved live-migration port range, never to the storage path.
+message MigrationDiskExport {
+  string device = 1;       // driveN as seen by the source QEMU
+  string export_name = 2;  // NBD export name
+  string uri = 3;          // nbd:<migration-address>:<port>:<export_name>
+  string path = 4;         // disk file created on the destination
 }
 
 message PrepareIncomingResponse {
   string uri = 1;  // "tcp:<addr>:<port>"
+  // disk_exports is empty when the destination sees the source's disks
+  // directly (shared storage); otherwise the source must mirror each one.
+  repeated MigrationDiskExport disk_exports = 2;
 }
 
 message FinalizeMigrationRequest {
@@ -631,6 +676,29 @@ message MigrateVMRequest {
   int64 downtime_limit_ms = 6;
   bool postcopy = 7;
   bool multifd = 8;
+
+  // Storage migration: disk_exports are the destination disks to mirror into
+  // before the RAM stream switches the VM over. Empty means the destination
+  // sees the source's disks (shared storage).
+  repeated MigrationDiskExport disk_exports = 9;
+  // mirror_speed_bytes_sec caps each drive-mirror job (the migration class
+  // rate, not the storage class).
+  int64 mirror_speed_bytes_sec = 10;
+  // mirror_timeout_seconds bounds the convergence wait; zero means 6 hours.
+  int64 mirror_timeout_seconds = 11;
+  // mirror_only runs just the disk copy: the destination's disks are already
+  // exposed (INCOMING_PHASE_DISKS) and the VM there does not exist yet, so the
+  // RAM stream cannot start until that call has finished. Without it the copy
+  // and the RAM stream are one call, which requires the destination VM to be
+  // up before its disks are filled -- the pairing QEMU refuses.
+  bool mirror_only = 12;
+  // skip_mirror runs only the RAM stream, for the call that follows a
+  // successful mirror_only.
+  bool skip_mirror = 13;
+  // cancel_mirror drops the block jobs a mirror_only call left running and
+  // lets the guest write again. It is the cleanup for a storage migration that
+  // failed after its copy but before the destination took over.
+  bool cancel_mirror = 14;
 }
 
 message MigrateVMResponse {
