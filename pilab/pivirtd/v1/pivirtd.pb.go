@@ -5193,6 +5193,8 @@ type StoragePool struct {
 	// qos is the pool-level default disk QoS stored on the pool. Empty means
 	// the platform baseline applies.
 	Qos *v11.DiskQoSConfig `protobuf:"bytes,14,opt,name=qos,proto3" json:"qos,omitempty"`
+	// shared reports that this pool is the same storage on more than one host.
+	Shared bool `protobuf:"varint,15,opt,name=shared,proto3" json:"shared,omitempty"`
 	// desired_active is the stored intent, which differs from active when a
 	// pool failed to come up or went away underneath the daemon.
 	DesiredActive bool `protobuf:"varint,13,opt,name=desired_active,json=desiredActive,proto3" json:"desired_active,omitempty"`
@@ -5319,6 +5321,13 @@ func (x *StoragePool) GetQos() *v11.DiskQoSConfig {
 		return x.Qos
 	}
 	return nil
+}
+
+func (x *StoragePool) GetShared() bool {
+	if x != nil {
+		return x.Shared
+	}
+	return false
 }
 
 func (x *StoragePool) GetDesiredActive() bool {
@@ -9075,7 +9084,7 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	"\x05force\x18\x02 \x01(\bR\x05force\"K\n" +
 	"\x19DeleteStoragePoolResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\"\x93\x04\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"\xab\x04\n" +
 	"\vStoragePool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x12\n" +
@@ -9090,7 +9099,8 @@ const file_pilab_pivirtd_v1_pivirtd_proto_rawDesc = "" +
 	" \x01(\tR\x06device\x12\x14\n" +
 	"\x05phase\x18\v \x01(\tR\x05phase\x12\x18\n" +
 	"\amessage\x18\f \x01(\tR\amessage\x12.\n" +
-	"\x03qos\x18\x0e \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x12%\n" +
+	"\x03qos\x18\x0e \x01(\v2\x1c.pilab.core.v1.DiskQoSConfigR\x03qos\x12\x16\n" +
+	"\x06shared\x18\x0f \x01(\bR\x06shared\x12%\n" +
 	"\x0edesired_active\x18\r \x01(\bR\rdesiredActive\x1a:\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
