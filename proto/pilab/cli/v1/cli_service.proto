@@ -60,7 +60,15 @@ service ImageService {
   rpc GetImage(GetImageRequest) returns (Image);
   rpc ListImages(ListImagesRequest) returns (ListImagesResponse);
   rpc CreateImage(CreateImageRequest) returns (Image);
+  // UploadImage carries the whole file in one message, so it is bounded by the
+  // message size limit. Use UploadImageStream for real images.
   rpc UploadImage(UploadImageRequest) returns (Image);
+  // UploadImageStream stores an image in the library. The first message must
+  // be the metadata, every following one a chunk of the file.
+  rpc UploadImageStream(stream UploadImageStreamRequest) returns (Image);
+  // DownloadImage streams an image out of the library. The first message
+  // describes the image, every following one is a chunk of the file.
+  rpc DownloadImage(DownloadImageRequest) returns (stream DownloadImageResponse);
   rpc DeleteImage(DeleteImageRequest) returns (google.protobuf.Empty);
 }
 
@@ -489,6 +497,43 @@ message UploadImageRequest {
   map<string, string> labels = 5;
   string visibility = 6;
   bool wait = 7;
+}
+
+message UploadImageStreamRequest {
+  oneof payload {
+    ImageUploadMetadata metadata = 1;
+    bytes chunk = 2;
+  }
+}
+
+message ImageUploadMetadata {
+  // name is the image slug. Uploading to an existing slug replaces its file.
+  string name = 1;
+  string format = 2;
+  string description = 3;
+  string visibility = 4;
+  string os_family = 5;
+  string os_version = 6;
+  string architecture = 7;
+  bool cloud_init = 8;
+  // size_bytes is the file size when the client knows it; 0 means unknown.
+  int64 size_bytes = 9;
+  // sha256 is the lowercase hex digest of the file. When set, the upload is
+  // refused unless the received bytes match.
+  string sha256 = 10;
+}
+
+message DownloadImageRequest {
+  string name = 1;
+}
+
+message DownloadImageResponse {
+  oneof payload {
+    Image image = 1;
+    bytes chunk = 2;
+  }
+  // size_bytes is set on the message carrying image.
+  int64 size_bytes = 3;
 }
 
 message DeleteImageRequest {

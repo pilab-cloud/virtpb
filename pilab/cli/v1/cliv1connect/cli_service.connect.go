@@ -137,6 +137,12 @@ const (
 	// ImageServiceUploadImageProcedure is the fully-qualified name of the ImageService's UploadImage
 	// RPC.
 	ImageServiceUploadImageProcedure = "/pilab.cli.v1.ImageService/UploadImage"
+	// ImageServiceUploadImageStreamProcedure is the fully-qualified name of the ImageService's
+	// UploadImageStream RPC.
+	ImageServiceUploadImageStreamProcedure = "/pilab.cli.v1.ImageService/UploadImageStream"
+	// ImageServiceDownloadImageProcedure is the fully-qualified name of the ImageService's
+	// DownloadImage RPC.
+	ImageServiceDownloadImageProcedure = "/pilab.cli.v1.ImageService/DownloadImage"
 	// ImageServiceDeleteImageProcedure is the fully-qualified name of the ImageService's DeleteImage
 	// RPC.
 	ImageServiceDeleteImageProcedure = "/pilab.cli.v1.ImageService/DeleteImage"
@@ -1291,7 +1297,15 @@ type ImageServiceClient interface {
 	GetImage(context.Context, *connect.Request[v1.GetImageRequest]) (*connect.Response[v1.Image], error)
 	ListImages(context.Context, *connect.Request[v1.ListImagesRequest]) (*connect.Response[v1.ListImagesResponse], error)
 	CreateImage(context.Context, *connect.Request[v1.CreateImageRequest]) (*connect.Response[v1.Image], error)
+	// UploadImage carries the whole file in one message, so it is bounded by the
+	// message size limit. Use UploadImageStream for real images.
 	UploadImage(context.Context, *connect.Request[v1.UploadImageRequest]) (*connect.Response[v1.Image], error)
+	// UploadImageStream stores an image in the library. The first message must
+	// be the metadata, every following one a chunk of the file.
+	UploadImageStream(context.Context) *connect.ClientStreamForClient[v1.UploadImageStreamRequest, v1.Image]
+	// DownloadImage streams an image out of the library. The first message
+	// describes the image, every following one is a chunk of the file.
+	DownloadImage(context.Context, *connect.Request[v1.DownloadImageRequest]) (*connect.ServerStreamForClient[v1.DownloadImageResponse], error)
 	DeleteImage(context.Context, *connect.Request[v1.DeleteImageRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
@@ -1330,6 +1344,18 @@ func NewImageServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(imageServiceMethods.ByName("UploadImage")),
 			connect.WithClientOptions(opts...),
 		),
+		uploadImageStream: connect.NewClient[v1.UploadImageStreamRequest, v1.Image](
+			httpClient,
+			baseURL+ImageServiceUploadImageStreamProcedure,
+			connect.WithSchema(imageServiceMethods.ByName("UploadImageStream")),
+			connect.WithClientOptions(opts...),
+		),
+		downloadImage: connect.NewClient[v1.DownloadImageRequest, v1.DownloadImageResponse](
+			httpClient,
+			baseURL+ImageServiceDownloadImageProcedure,
+			connect.WithSchema(imageServiceMethods.ByName("DownloadImage")),
+			connect.WithClientOptions(opts...),
+		),
 		deleteImage: connect.NewClient[v1.DeleteImageRequest, emptypb.Empty](
 			httpClient,
 			baseURL+ImageServiceDeleteImageProcedure,
@@ -1341,11 +1367,13 @@ func NewImageServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // imageServiceClient implements ImageServiceClient.
 type imageServiceClient struct {
-	getImage    *connect.Client[v1.GetImageRequest, v1.Image]
-	listImages  *connect.Client[v1.ListImagesRequest, v1.ListImagesResponse]
-	createImage *connect.Client[v1.CreateImageRequest, v1.Image]
-	uploadImage *connect.Client[v1.UploadImageRequest, v1.Image]
-	deleteImage *connect.Client[v1.DeleteImageRequest, emptypb.Empty]
+	getImage          *connect.Client[v1.GetImageRequest, v1.Image]
+	listImages        *connect.Client[v1.ListImagesRequest, v1.ListImagesResponse]
+	createImage       *connect.Client[v1.CreateImageRequest, v1.Image]
+	uploadImage       *connect.Client[v1.UploadImageRequest, v1.Image]
+	uploadImageStream *connect.Client[v1.UploadImageStreamRequest, v1.Image]
+	downloadImage     *connect.Client[v1.DownloadImageRequest, v1.DownloadImageResponse]
+	deleteImage       *connect.Client[v1.DeleteImageRequest, emptypb.Empty]
 }
 
 // GetImage calls pilab.cli.v1.ImageService.GetImage.
@@ -1368,6 +1396,16 @@ func (c *imageServiceClient) UploadImage(ctx context.Context, req *connect.Reque
 	return c.uploadImage.CallUnary(ctx, req)
 }
 
+// UploadImageStream calls pilab.cli.v1.ImageService.UploadImageStream.
+func (c *imageServiceClient) UploadImageStream(ctx context.Context) *connect.ClientStreamForClient[v1.UploadImageStreamRequest, v1.Image] {
+	return c.uploadImageStream.CallClientStream(ctx)
+}
+
+// DownloadImage calls pilab.cli.v1.ImageService.DownloadImage.
+func (c *imageServiceClient) DownloadImage(ctx context.Context, req *connect.Request[v1.DownloadImageRequest]) (*connect.ServerStreamForClient[v1.DownloadImageResponse], error) {
+	return c.downloadImage.CallServerStream(ctx, req)
+}
+
 // DeleteImage calls pilab.cli.v1.ImageService.DeleteImage.
 func (c *imageServiceClient) DeleteImage(ctx context.Context, req *connect.Request[v1.DeleteImageRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteImage.CallUnary(ctx, req)
@@ -1378,7 +1416,15 @@ type ImageServiceHandler interface {
 	GetImage(context.Context, *connect.Request[v1.GetImageRequest]) (*connect.Response[v1.Image], error)
 	ListImages(context.Context, *connect.Request[v1.ListImagesRequest]) (*connect.Response[v1.ListImagesResponse], error)
 	CreateImage(context.Context, *connect.Request[v1.CreateImageRequest]) (*connect.Response[v1.Image], error)
+	// UploadImage carries the whole file in one message, so it is bounded by the
+	// message size limit. Use UploadImageStream for real images.
 	UploadImage(context.Context, *connect.Request[v1.UploadImageRequest]) (*connect.Response[v1.Image], error)
+	// UploadImageStream stores an image in the library. The first message must
+	// be the metadata, every following one a chunk of the file.
+	UploadImageStream(context.Context, *connect.ClientStream[v1.UploadImageStreamRequest]) (*connect.Response[v1.Image], error)
+	// DownloadImage streams an image out of the library. The first message
+	// describes the image, every following one is a chunk of the file.
+	DownloadImage(context.Context, *connect.Request[v1.DownloadImageRequest], *connect.ServerStream[v1.DownloadImageResponse]) error
 	DeleteImage(context.Context, *connect.Request[v1.DeleteImageRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
@@ -1413,6 +1459,18 @@ func NewImageServiceHandler(svc ImageServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(imageServiceMethods.ByName("UploadImage")),
 		connect.WithHandlerOptions(opts...),
 	)
+	imageServiceUploadImageStreamHandler := connect.NewClientStreamHandler(
+		ImageServiceUploadImageStreamProcedure,
+		svc.UploadImageStream,
+		connect.WithSchema(imageServiceMethods.ByName("UploadImageStream")),
+		connect.WithHandlerOptions(opts...),
+	)
+	imageServiceDownloadImageHandler := connect.NewServerStreamHandler(
+		ImageServiceDownloadImageProcedure,
+		svc.DownloadImage,
+		connect.WithSchema(imageServiceMethods.ByName("DownloadImage")),
+		connect.WithHandlerOptions(opts...),
+	)
 	imageServiceDeleteImageHandler := connect.NewUnaryHandler(
 		ImageServiceDeleteImageProcedure,
 		svc.DeleteImage,
@@ -1429,6 +1487,10 @@ func NewImageServiceHandler(svc ImageServiceHandler, opts ...connect.HandlerOpti
 			imageServiceCreateImageHandler.ServeHTTP(w, r)
 		case ImageServiceUploadImageProcedure:
 			imageServiceUploadImageHandler.ServeHTTP(w, r)
+		case ImageServiceUploadImageStreamProcedure:
+			imageServiceUploadImageStreamHandler.ServeHTTP(w, r)
+		case ImageServiceDownloadImageProcedure:
+			imageServiceDownloadImageHandler.ServeHTTP(w, r)
 		case ImageServiceDeleteImageProcedure:
 			imageServiceDeleteImageHandler.ServeHTTP(w, r)
 		default:
@@ -1454,6 +1516,14 @@ func (UnimplementedImageServiceHandler) CreateImage(context.Context, *connect.Re
 
 func (UnimplementedImageServiceHandler) UploadImage(context.Context, *connect.Request[v1.UploadImageRequest]) (*connect.Response[v1.Image], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cli.v1.ImageService.UploadImage is not implemented"))
+}
+
+func (UnimplementedImageServiceHandler) UploadImageStream(context.Context, *connect.ClientStream[v1.UploadImageStreamRequest]) (*connect.Response[v1.Image], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cli.v1.ImageService.UploadImageStream is not implemented"))
+}
+
+func (UnimplementedImageServiceHandler) DownloadImage(context.Context, *connect.Request[v1.DownloadImageRequest], *connect.ServerStream[v1.DownloadImageResponse]) error {
+	return connect.NewError(connect.CodeUnimplemented, errors.New("pilab.cli.v1.ImageService.DownloadImage is not implemented"))
 }
 
 func (UnimplementedImageServiceHandler) DeleteImage(context.Context, *connect.Request[v1.DeleteImageRequest]) (*connect.Response[emptypb.Empty], error) {

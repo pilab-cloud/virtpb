@@ -64,6 +64,13 @@ message BgpSdnConfig {
   bool hardware_offload_enabled = 7;
   repeated BgpNeighbor peers = 8;
   google.protobuf.Timestamp updated_at = 9;
+  // Route reflection (iBGP): the listed nodes reflect EVPN routes for every
+  // other node, which peer only with them. Peers are derived from the VTEP
+  // inventory, so adding a site needs no peer list change. Empty means the
+  // configured peers are used as given (full mesh).
+  repeated string route_reflector_nodes = 10;
+  // Cluster id of the reflectors; defaults to the first reflector's router-id.
+  string cluster_id = 11;
 }
 
 message NodeVtep {

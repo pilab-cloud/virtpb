@@ -359,8 +359,15 @@ type BgpSdnConfig struct {
 	HardwareOffloadEnabled bool                   `protobuf:"varint,7,opt,name=hardware_offload_enabled,json=hardwareOffloadEnabled,proto3" json:"hardware_offload_enabled,omitempty"`
 	Peers                  []*BgpNeighbor         `protobuf:"bytes,8,rep,name=peers,proto3" json:"peers,omitempty"`
 	UpdatedAt              *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Route reflection (iBGP): the listed nodes reflect EVPN routes for every
+	// other node, which peer only with them. Peers are derived from the VTEP
+	// inventory, so adding a site needs no peer list change. Empty means the
+	// configured peers are used as given (full mesh).
+	RouteReflectorNodes []string `protobuf:"bytes,10,rep,name=route_reflector_nodes,json=routeReflectorNodes,proto3" json:"route_reflector_nodes,omitempty"`
+	// Cluster id of the reflectors; defaults to the first reflector's router-id.
+	ClusterId     string `protobuf:"bytes,11,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BgpSdnConfig) Reset() {
@@ -454,6 +461,20 @@ func (x *BgpSdnConfig) GetUpdatedAt() *timestamppb.Timestamp {
 		return x.UpdatedAt
 	}
 	return nil
+}
+
+func (x *BgpSdnConfig) GetRouteReflectorNodes() []string {
+	if x != nil {
+		return x.RouteReflectorNodes
+	}
+	return nil
+}
+
+func (x *BgpSdnConfig) GetClusterId() string {
+	if x != nil {
+		return x.ClusterId
+	}
+	return ""
 }
 
 type NodeVtep struct {
@@ -1702,7 +1723,7 @@ const file_pilab_core_v1_bgp_sdn_service_proto_rawDesc = "" +
 	"\x16keepalive_time_seconds\x18\x06 \x01(\rR\x14keepaliveTimeSeconds\x12%\n" +
 	"\x0euptime_seconds\x18\a \x01(\x03R\ruptimeSeconds\x12'\n" +
 	"\x0froutes_received\x18\b \x01(\rR\x0eroutesReceived\x12+\n" +
-	"\x11routes_advertised\x18\t \x01(\rR\x10routesAdvertised\"\xb1\x03\n" +
+	"\x11routes_advertised\x18\t \x01(\rR\x10routesAdvertised\"\x84\x04\n" +
 	"\fBgpSdnConfig\x127\n" +
 	"\n" +
 	"sdn_driver\x18\x01 \x01(\x0e2\x18.pilab.core.v1.SdnDriverR\tsdnDriver\x12\x1b\n" +
@@ -1715,7 +1736,11 @@ const file_pilab_core_v1_bgp_sdn_service_proto_rawDesc = "" +
 	"\x18hardware_offload_enabled\x18\a \x01(\bR\x16hardwareOffloadEnabled\x120\n" +
 	"\x05peers\x18\b \x03(\v2\x1a.pilab.core.v1.BgpNeighborR\x05peers\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x8a\x03\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x122\n" +
+	"\x15route_reflector_nodes\x18\n" +
+	" \x03(\tR\x13routeReflectorNodes\x12\x1d\n" +
+	"\n" +
+	"cluster_id\x18\v \x01(\tR\tclusterId\"\x8a\x03\n" +
 	"\bNodeVtep\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x1f\n" +

@@ -1398,11 +1398,13 @@ var DiskService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ImageService_GetImage_FullMethodName    = "/pilab.cli.v1.ImageService/GetImage"
-	ImageService_ListImages_FullMethodName  = "/pilab.cli.v1.ImageService/ListImages"
-	ImageService_CreateImage_FullMethodName = "/pilab.cli.v1.ImageService/CreateImage"
-	ImageService_UploadImage_FullMethodName = "/pilab.cli.v1.ImageService/UploadImage"
-	ImageService_DeleteImage_FullMethodName = "/pilab.cli.v1.ImageService/DeleteImage"
+	ImageService_GetImage_FullMethodName          = "/pilab.cli.v1.ImageService/GetImage"
+	ImageService_ListImages_FullMethodName        = "/pilab.cli.v1.ImageService/ListImages"
+	ImageService_CreateImage_FullMethodName       = "/pilab.cli.v1.ImageService/CreateImage"
+	ImageService_UploadImage_FullMethodName       = "/pilab.cli.v1.ImageService/UploadImage"
+	ImageService_UploadImageStream_FullMethodName = "/pilab.cli.v1.ImageService/UploadImageStream"
+	ImageService_DownloadImage_FullMethodName     = "/pilab.cli.v1.ImageService/DownloadImage"
+	ImageService_DeleteImage_FullMethodName       = "/pilab.cli.v1.ImageService/DeleteImage"
 )
 
 // ImageServiceClient is the client API for ImageService service.
@@ -1412,7 +1414,15 @@ type ImageServiceClient interface {
 	GetImage(ctx context.Context, in *GetImageRequest, opts ...grpc.CallOption) (*Image, error)
 	ListImages(ctx context.Context, in *ListImagesRequest, opts ...grpc.CallOption) (*ListImagesResponse, error)
 	CreateImage(ctx context.Context, in *CreateImageRequest, opts ...grpc.CallOption) (*Image, error)
+	// UploadImage carries the whole file in one message, so it is bounded by the
+	// message size limit. Use UploadImageStream for real images.
 	UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*Image, error)
+	// UploadImageStream stores an image in the library. The first message must
+	// be the metadata, every following one a chunk of the file.
+	UploadImageStream(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadImageStreamRequest, Image], error)
+	// DownloadImage streams an image out of the library. The first message
+	// describes the image, every following one is a chunk of the file.
+	DownloadImage(ctx context.Context, in *DownloadImageRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DownloadImageResponse], error)
 	DeleteImage(ctx context.Context, in *DeleteImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -1464,6 +1474,38 @@ func (c *imageServiceClient) UploadImage(ctx context.Context, in *UploadImageReq
 	return out, nil
 }
 
+func (c *imageServiceClient) UploadImageStream(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadImageStreamRequest, Image], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ImageService_ServiceDesc.Streams[0], ImageService_UploadImageStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[UploadImageStreamRequest, Image]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ImageService_UploadImageStreamClient = grpc.ClientStreamingClient[UploadImageStreamRequest, Image]
+
+func (c *imageServiceClient) DownloadImage(ctx context.Context, in *DownloadImageRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DownloadImageResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ImageService_ServiceDesc.Streams[1], ImageService_DownloadImage_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[DownloadImageRequest, DownloadImageResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ImageService_DownloadImageClient = grpc.ServerStreamingClient[DownloadImageResponse]
+
 func (c *imageServiceClient) DeleteImage(ctx context.Context, in *DeleteImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -1481,7 +1523,15 @@ type ImageServiceServer interface {
 	GetImage(context.Context, *GetImageRequest) (*Image, error)
 	ListImages(context.Context, *ListImagesRequest) (*ListImagesResponse, error)
 	CreateImage(context.Context, *CreateImageRequest) (*Image, error)
+	// UploadImage carries the whole file in one message, so it is bounded by the
+	// message size limit. Use UploadImageStream for real images.
 	UploadImage(context.Context, *UploadImageRequest) (*Image, error)
+	// UploadImageStream stores an image in the library. The first message must
+	// be the metadata, every following one a chunk of the file.
+	UploadImageStream(grpc.ClientStreamingServer[UploadImageStreamRequest, Image]) error
+	// DownloadImage streams an image out of the library. The first message
+	// describes the image, every following one is a chunk of the file.
+	DownloadImage(*DownloadImageRequest, grpc.ServerStreamingServer[DownloadImageResponse]) error
 	DeleteImage(context.Context, *DeleteImageRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedImageServiceServer()
 }
@@ -1504,6 +1554,12 @@ func (UnimplementedImageServiceServer) CreateImage(context.Context, *CreateImage
 }
 func (UnimplementedImageServiceServer) UploadImage(context.Context, *UploadImageRequest) (*Image, error) {
 	return nil, status.Error(codes.Unimplemented, "method UploadImage not implemented")
+}
+func (UnimplementedImageServiceServer) UploadImageStream(grpc.ClientStreamingServer[UploadImageStreamRequest, Image]) error {
+	return status.Error(codes.Unimplemented, "method UploadImageStream not implemented")
+}
+func (UnimplementedImageServiceServer) DownloadImage(*DownloadImageRequest, grpc.ServerStreamingServer[DownloadImageResponse]) error {
+	return status.Error(codes.Unimplemented, "method DownloadImage not implemented")
 }
 func (UnimplementedImageServiceServer) DeleteImage(context.Context, *DeleteImageRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteImage not implemented")
@@ -1601,6 +1657,24 @@ func _ImageService_UploadImage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ImageService_UploadImageStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ImageServiceServer).UploadImageStream(&grpc.GenericServerStream[UploadImageStreamRequest, Image]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ImageService_UploadImageStreamServer = grpc.ClientStreamingServer[UploadImageStreamRequest, Image]
+
+func _ImageService_DownloadImage_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(DownloadImageRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ImageServiceServer).DownloadImage(m, &grpc.GenericServerStream[DownloadImageRequest, DownloadImageResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ImageService_DownloadImageServer = grpc.ServerStreamingServer[DownloadImageResponse]
+
 func _ImageService_DeleteImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteImageRequest)
 	if err := dec(in); err != nil {
@@ -1647,7 +1721,18 @@ var ImageService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ImageService_DeleteImage_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "UploadImageStream",
+			Handler:       _ImageService_UploadImageStream_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "DownloadImage",
+			Handler:       _ImageService_DownloadImage_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "pilab/cli/v1/cli_service.proto",
 }
 
