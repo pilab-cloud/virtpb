@@ -47,6 +47,12 @@ message HaConfig {
   // Virtual CPUs allowed per physical thread when sizing failover capacity;
   // 0 means 4.
   double cpu_overcommit_ratio = 10;
+  // Configured memory allowed per physical memory unit when sizing failover
+  // capacity. 1 (the default) means no memory overcommit: a cluster can only
+  // tolerate its host failures if the running VMs fit in the memory that
+  // survives. Raise it only where memory overcommit is a deliberate policy.
+  // 0 means 1.
+  double memory_overcommit_ratio = 11;
 }
 
 message FailoverEvent {

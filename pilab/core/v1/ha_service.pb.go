@@ -145,8 +145,14 @@ type HaConfig struct {
 	// Virtual CPUs allowed per physical thread when sizing failover capacity;
 	// 0 means 4.
 	CpuOvercommitRatio float64 `protobuf:"fixed64,10,opt,name=cpu_overcommit_ratio,json=cpuOvercommitRatio,proto3" json:"cpu_overcommit_ratio,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Configured memory allowed per physical memory unit when sizing failover
+	// capacity. 1 (the default) means no memory overcommit: a cluster can only
+	// tolerate its host failures if the running VMs fit in the memory that
+	// survives. Raise it only where memory overcommit is a deliberate policy.
+	// 0 means 1.
+	MemoryOvercommitRatio float64 `protobuf:"fixed64,11,opt,name=memory_overcommit_ratio,json=memoryOvercommitRatio,proto3" json:"memory_overcommit_ratio,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *HaConfig) Reset() {
@@ -245,6 +251,13 @@ func (x *HaConfig) GetHostFailuresToTolerate() uint32 {
 func (x *HaConfig) GetCpuOvercommitRatio() float64 {
 	if x != nil {
 		return x.CpuOvercommitRatio
+	}
+	return 0
+}
+
+func (x *HaConfig) GetMemoryOvercommitRatio() float64 {
+	if x != nil {
+		return x.MemoryOvercommitRatio
 	}
 	return 0
 }
@@ -1038,7 +1051,7 @@ var File_pilab_core_v1_ha_service_proto protoreflect.FileDescriptor
 
 const file_pilab_core_v1_ha_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1epilab/core/v1/ha_service.proto\x12\x13pilab.cloud.core.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x04\n" +
+	"\x1epilab/core/v1/ha_service.proto\x12\x13pilab.cloud.core.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x04\n" +
 	"\bHaConfig\x12\x1d\n" +
 	"\n" +
 	"cluster_id\x18\x01 \x01(\tR\tclusterId\x12\x18\n" +
@@ -1051,7 +1064,8 @@ const file_pilab_core_v1_ha_service_proto_rawDesc = "" +
 	"\x13max_restart_retries\x18\b \x01(\rR\x11maxRestartRetries\x129\n" +
 	"\x19host_failures_to_tolerate\x18\t \x01(\rR\x16hostFailuresToTolerate\x120\n" +
 	"\x14cpu_overcommit_ratio\x18\n" +
-	" \x01(\x01R\x12cpuOvercommitRatio\"\xa2\x02\n" +
+	" \x01(\x01R\x12cpuOvercommitRatio\x126\n" +
+	"\x17memory_overcommit_ratio\x18\v \x01(\x01R\x15memoryOvercommitRatio\"\xa2\x02\n" +
 	"\rFailoverEvent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
